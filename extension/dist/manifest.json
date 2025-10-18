@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "Custom UI Extension",
+  "version": "1.0.0",
+  "description": "Replace page content with custom React UI",
+  "permissions": ["activeTab","scripting"],
+  "content_scripts": [
+    {
+      "matches": ["https://is.mendelu.cz/auth*"],
+      "js": ["content.js"],
+      "css": ["content.css"]
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'",
+    "sandbox": "sandbox allow-scripts allow-forms allow-popups allow-modals; script-src 'self' https://cdn.tailwindcss.com; object-src 'self'"
+  }
+}

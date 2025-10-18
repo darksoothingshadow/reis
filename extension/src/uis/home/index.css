@@ -1,0 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Encode+Sans:wght@100..900&family=Germania+One&family=Kode+Mono:wght@400..700&family=Lilita+One&family=Montserrat:ital,wght@0,100..900;1,100..900&family=New+Rocker&family=Outfit:wght@100..900&family=Racing+Sans+One&family=Readex+Pro:wght@160..700&family=Secular+One&family=Sour+Gummy:ital,wght@0,100..900;1,100..900&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #8DC843; /* Creates utilities like bg-primary */
+  --color-primarywhite:#79be15;
+  --color-accent: oklch(59% 0.18 100); /* Creates utilities like text-accent */
+  
+  --color-secondary-50: #FEE2E2;
+  --color-secondary-500: #EF4444;
+  --color-secondary-900: #7F1D1D;
+  --color-background:#121212;
+  --color-background1:#1F2124;
+  --color-gray0:#3F4349;
+  --color-uigray:#C5C5C5;
+  --color-uiwhite:#8DC843;
+  --color-graylayer0:#1F2124;
+  --color-gray1:#3F4349;
+  --color-gray2:#B9BABA;
+
+  
+  --font-sans: 'Roboto', sans-serif;
+  
+  /* To create a new utility class, e.g., 'font-heading' */
+  --font-dm: "DM Sans", sans-serif;
+  --font-pepi: "Pepi", Arial, sans-serif;
+}
