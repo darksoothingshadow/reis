@@ -43,7 +43,7 @@ function getSchedueleFormat(date:Date){
     const pad = (num: number): string => String(num).padStart(2, '0');
 
     // Format as MM.DD.YYYY
-    const current_day: string = `${pad(month)}.${pad(dayOfMonth)}.${year}`;
+    const current_day: string = `${pad(dayOfMonth)}.${pad(month)}.${year}`;
 
     // Example of how you might use current_day
     // console.log(`Fetching schedule for: ${current_day}`);
@@ -62,7 +62,10 @@ export async function fetchDayScheduele(day?:Date):Promise<BlockLesson[]|null>{
         return null;
     }
     //
-    const day_to_fetch:string = getSchedueleFormat(day??new Date())
+    console.log("[ID] Student id:",user_id);
+    //
+    const day_to_fetch:string = getSchedueleFormat(day??new Date());
+    console.log("[TIMESTAMP] Day format:",day_to_fetch);
     //
     try {
         const f = await fetch("https://is.mendelu.cz/auth/katalog/rozvrhy_view.pl", {
@@ -86,12 +89,13 @@ export async function fetchDayScheduele(day?:Date):Promise<BlockLesson[]|null>{
         "mode": "cors",
         "credentials": "include"
         });
+        //
         const r:ScheduleData = await f.json();
         return r.blockLessons;
         //
     } catch (error) {
         console.error(error);
-        return null;
+        return [];
     };
 }
 export async function fetchWeekScheduele(specific?:{start:Date,end:Date}):Promise<BlockLesson[]|null>{
@@ -143,6 +147,6 @@ export async function fetchWeekScheduele(specific?:{start:Date,end:Date}):Promis
         //
     } catch (error) {
         console.error(error);
-        return null;
+        return [];
     };
 }
