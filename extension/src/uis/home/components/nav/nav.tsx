@@ -44,8 +44,8 @@ export function Nav(_:NavProps){
                 {/*Tabs*/}
                 <div className="hidden absolute left-50 top-0 h-full min-w-64 w-fit md:flex flex-row items-center [&>*]:mr-5">
                     <RoundIconButton text="Osobní rozvrh" color={"bg-primary"} icon={<ArrowRight></ArrowRight>} onClick={_.setScreen?()=>{_.setScreen?_.setScreen("SCHEDUELE"):undefined}:undefined}/>
-                    <RoundIconButton text="Testy" disabled color={"bg-primary"} icon={<ArrowRight></ArrowRight>}/>
-                    <RoundIconButton text="Materiály k výuce" disabled color={"bg-primary"} icon={<ArrowRight></ArrowRight>}/>
+                    <RoundIconButton text="Testy" color={"bg-primary"} icon={<ArrowRight></ArrowRight>} onClick={()=>{window.open("https://is.mendelu.cz/auth/elis/ot/psani_testu.pl?;lang=cz","_blank")}}/>
+                    <RoundIconButton text="Materiály k výuce" color={"bg-primary"} icon={<ArrowRight></ArrowRight>} onClick={()=>{window.open("https://is.mendelu.cz/auth/student/list.pl?lang=cz", "_blank")}}/>
                 </div>
                 {/*Svátek*/}
                 <div className="invisible absolute m-auto left-0 right-0 top-0 h-full w-fit 2xl:flex flex-col items-center justify-center">
