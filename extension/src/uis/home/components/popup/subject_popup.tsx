@@ -325,7 +325,16 @@ export function SubjectPopup(props:SubjectPopupPropsV2){
                 </div>
                 <div className="text-base text-gray-700 w-full flex flex-col mt-4">
                     <span className="text-base xl:text-xl text-gray-700 font-medium">Místnost</span>
-                    <span className="w-fit relative text-base xl:text-lg text-gray-700" onClick={()=>{window.open(`https://mm.mendelu.cz/mapwidget/embed?placeName=${props.code.room}`,"_blank")}}>{props.code.room}<Map className="absolute top-0 -right-1 h-full aspect-square text-primary translate-x-1/1 cursor-pointer"></Map></span>
+                    <span className="w-fit relative text-base xl:text-lg text-gray-700">
+                        {props.code.room}
+                        {/* Only rooms are 'Q' are currently supported in the widget with simple config */}
+                        {props.code.room.startsWith('Q') && (
+                            <Map 
+                                className="absolute top-0 -right-1 h-full aspect-square text-primary translate-x-1/1 cursor-pointer hover:scale-110 transition-transform" 
+                                onClick={()=>{window.open(`https://mm.mendelu.cz/mapwidget/embed?placeName=${props.code.room}`,"_blank")}}
+                            />
+                        )}
+                    </span>
                 </div>
                 <div className="text-base text-gray-700 w-full flex flex-col mt-4 h-3/5">
                     <div className="flex flex-row justify-between items-center min-h-fit">
