@@ -268,7 +268,7 @@ export function SchoolCalendar(props:SchedueleProps){
                   return (
                     <div
                       key={lesson.id}
-                      className={`absolute ${/*getColorForCourse(lesson.courseCode)*/""} ${lesson.isSeminar=="true"?"bg-[#b3e6ea]"/*"bg-gradient-to-br from-[#b3e6ea] to-white"*/:"bg-[#79be15]/25"/*"bg-gradient-to-br from-[#79be15]/25 to-white"*/} text-gray-700 font-dm p-3 rounded shadow-md cursor-pointer hover:shadow-lg transition-shadow overflow-hidden`}
+                      className={`absolute ${/*getColorForCourse(lesson.courseCode)*/""} ${lesson.isSeminar=="true"?"bg-gradient-to-br from-[#b3e6ea] to-white":"bg-gradient-to-br from-[#79be15]/25 to-white"} text-gray-700 font-dm p-3 rounded shadow-md cursor-pointer hover:shadow-lg transition-shadow overflow-hidden`}
                       style={{
                         left: `${leftPos}px`,
                         width: `${width - 4}px`, // Adjusted width for padding/margin
@@ -282,7 +282,7 @@ export function SchoolCalendar(props:SchedueleProps){
                       <div className="text-xs truncate mt-1">{lesson.courseName}</div>
                       <div className="text-xs mt-1 opacity-90">{lesson.startTime} - {lesson.endTime}</div>
                       {/*<div className="text-xs opacity-90 truncate">📍 {lesson.room}</div>*/}
-                      <span className={`absolute left-0 top-0 h-full w-0.5 border-l-4 ${lesson.isSeminar=="false"?"border-l-primary":"border-l-blue-500"}`}></span>
+                      <span className={`absolute left-0 top-0 h-full w-0.5 border-l-2 ${lesson.isSeminar=="false"?"border-l-primary":"border-l-blue-500"}`}></span>
                       <span className='absolute right-1 top-1 text-gray-500 font-semibold font-dm text-xs'>{lesson.roomStructured.name}</span>
                     </div>
                   );

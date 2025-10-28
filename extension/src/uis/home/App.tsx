@@ -41,6 +41,34 @@ export function HomePage(){
   //
   useEffect(()=>{
     (async()=>{
+      // Check if cached user_id matches current logged-in user
+      const cachedUserId = localStorage.getItem("user_id");
+      if (cachedUserId) {
+        // Fetch current user's actual ID
+        const currentUserId = await (async () => {
+          try {
+            const response = await fetch("https://is.mendelu.cz/auth/student/studium.pl");
+            const html = await response.text();
+            const parser = new DOMParser().parseFromString(html, "text/html");
+            const tds = parser.getElementsByTagName("td");
+            for (let i = 0; i < tds.length; i++) {
+              if (tds[i].innerText?.toLowerCase().includes("identif")) {
+                return tds[i + 1]?.innerText.replace(" ", "") || null;
+              }
+            }
+            return null;
+          } catch {
+            return null;
+          }
+        })();
+        
+        // If IDs don't match, clear all cached data
+        if (currentUserId && currentUserId !== cachedUserId) {
+          console.log(`[STORAGE] User changed from ${cachedUserId} to ${currentUserId}, clearing cache`);
+          localStorage.clear(); // Clear everything
+        }
+      }
+      
       const stored_subjects = await checkStoredSubjects();
       if(stored_subjects == false){
         try {

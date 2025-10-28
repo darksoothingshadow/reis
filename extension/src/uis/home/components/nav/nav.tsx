@@ -41,7 +41,7 @@ export function Nav(_:NavProps){
     if(_.page == undefined || _.page == "home"){
         return (
             <nav className="relative w-full h-16 bg-gray-50 shadow-xl p-2 font-dm select-none pl-4 flex flex-row items-center">
-                <img draggable={false} src={MENDELU_IMAGE} className="h-3/4 w-fit object-contain object-center"></img>
+                <img draggable={false} src={MENDELU_IMAGE} className="h-3/4 w-fit object-contain object-center cursor-pointer" onClick={() => {}}></img>
                 {/*Tabs*/}
                 <div className="hidden absolute left-50 top-0 h-full min-w-64 w-fit md:flex flex-row items-center [&>*]:mr-5">
                     <RoundIconButton text="Osobní rozvrh" color={"bg-primary"} icon={<ArrowRight></ArrowRight>} onClick={_.setScreen?()=>{_.setScreen?_.setScreen("SCHEDUELE"):undefined}:undefined}/>
