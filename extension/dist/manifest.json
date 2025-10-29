@@ -3,7 +3,7 @@
   "name": "Custom UI Extension",
   "version": "1.0.0",
   "description": "Replace page content with custom React UI",
-  "permissions": ["activeTab","scripting"],
+  "permissions": ["activeTab"],
   "content_scripts": [
     {
       "matches": [
