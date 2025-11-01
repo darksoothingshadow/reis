@@ -55,7 +55,7 @@ export function SchedueleScreenComponent(props:{type:string,setter:React.Dispatc
         (async()=>{
             const week_scheduele = await fetchWeekScheduele();
             if(week_scheduele == null){
-                setError("Pči načítání rozvrhu došlo k chybě.");
+                setError("Při načítání rozvrhu došlo k chybě.");
                 return;
             }
             setScheduele(week_scheduele);
