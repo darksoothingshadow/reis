@@ -7,7 +7,7 @@ export interface RoundButtonProps{
 }
 export interface RoundIconButtonProps{
     text?:string,
-    icon:ReactNode,
+    icon?:ReactNode,
     color:string,
     onClick?:()=>void,
     textscale?:boolean,
@@ -28,16 +28,16 @@ export function RoundIconButton(props:RoundIconButtonProps){
         props.disabled == false || props.disabled == undefined?
         <button className={`${props.text!=null?"hover:[&>*]:left-2":""} pl-4 pr-4 transition-all h-10 min-w-12 rounded-full flex items-center justify-center text-white font-dm cursor-pointer font-semibold flex-row ${props.color}`} onClick={props.onClick}>
             {props.text?<span className={props.textscale?"hidden xl:block":undefined}>{props.text}</span>:<></>}
-            <span className={`transition-all relative ${props.text!=null?"left-1":"left-0"} h-fit aspect-square flex items-center justify-center`}>
+            {props.icon && <span className={`transition-all relative ${props.text!=null?"left-1":"left-0"} h-fit aspect-square flex items-center justify-center`}>
                 {props.icon}
-            </span>
+            </span>}
         </button>
         :
         <button className={`pl-4 pr-4 transition-all h-10 min-w-12 rounded-full flex items-center justify-center text-white font-dm cursor-not-allowed font-semibold flex-row ${"bg-gray-300"}`}>
             {props.text?<span className={props.textscale?"hidden xl:block":undefined}>{props.text}</span>:<></>}
-            <span className={`transition-all relative ${props.text!=null?"left-1":"left-0"} h-fit aspect-square flex items-center justify-center`}>
+            {props.icon && <span className={`transition-all relative ${props.text!=null?"left-1":"left-0"} h-fit aspect-square flex items-center justify-center`}>
                 {props.icon}
-            </span>
+            </span>}
         </button>
     )
 }

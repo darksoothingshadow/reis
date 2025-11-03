@@ -43,7 +43,6 @@ We are developing the project in three distinct phases:
 -   **Phase 1 (September/October 2025):** Development and internal testing of the core MVP (Dashboard & UI Simplification).
 -   **Phase 2 (November 2025):** Open beta testing with a wider group of students to gather qualitative and quantitative feedback.
 -   **Phase 3 (December 2025 / February 2026):** Final polish and public release on official browser stores.
--   **Future:** We are constantly exploring new ideas, including advanced personalization and machine learning applications.
 
 ## 🤝 How to Contribute
 

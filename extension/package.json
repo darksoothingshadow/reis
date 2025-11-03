@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build && copyfiles -u 1 src/output.css dist && copyfiles -u 1 public/manifest.json dist && copyfiles -u 1 src/output.css dist/content.css",
+    "build": "tsc -b && vite build && copyfiles -u 1 src/output.css dist && copyfiles -u 1 public/manifest.json dist && cp src/output.css dist/content.css",
     "lint": "eslint .",
     "preview": "vite preview",
     "copy-manifest": "cp public/manifest.json dist/manifest.json",
