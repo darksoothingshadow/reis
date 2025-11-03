@@ -156,14 +156,14 @@ export function SubjectPopup(props:SubjectPopupPropsV2){
     const [loadingFiles, setLoadingFiles] = useState<boolean>(true);
     const [subfolderFilter, setSubfolderFilter] = useState<string>("all");
     //
-    function parseName(name:string){
-        const MAX_LENGTH = 40;
-        if(name.length>MAX_LENGTH){
-            const name_deducted = name.substring(0,MAX_LENGTH-3);
-            return name_deducted+"...";
-        }else{
-            return name;
+    function parseName(name:string, hasComment: boolean = false){
+        const MAX_LENGTH = hasComment ? 40 : 100; // kratší pro položky s komentářem, delší bez komentáře
+        
+        if(name.length > MAX_LENGTH){
+            const name_deducted = name.substring(0, MAX_LENGTH-3);
+            return name_deducted + "...";
         }
+        return name;
     }
     //
     useEffect(()=>{
@@ -370,15 +370,17 @@ export function SubjectPopup(props:SubjectPopupPropsV2){
                         ) : (
                             groupFilesByFolder(files).map((data, i) =>
                                 data.files.map((_, l) => (
-                                    <div key={`${i}-${l}`} className="relative w-full min-h-10 flex flex-row items-center text-xs xl:text-base">
-                                    <div className="aspect-square h-full flex justify-center items-center">
+                                    <div key={`${i}-${l}`} className="relative w-full min-h-10 flex flex-row items-center text-xs xl:text-base gap-2">
+                                    <div className="aspect-square flex-none flex justify-center items-center">
                                         <File />
                                     </div>
                                     <span
-                                        className="text-gray-700 pl-2 pr-2 w-80 hover:text-primary cursor-pointer"
+                                        className={`text-gray-700 pl-2 pr-2 hover:text-primary cursor-pointer ${data.file_comment ? 'w-80' : 'w-full'}`}
                                         onClick={() => loadFile(_.link)}
                                     >
-                                        {data.files.length === 1 ? parseName(data.file_name) : parseName(data.file_name + ": část " + (l + 1))}
+                                        {data.files.length === 1 ? 
+                                            parseName(data.file_name, !!data.file_comment) : 
+                                            parseName(data.file_name + ": část " + (l + 1), !!data.file_comment)}
                                     </span>
                                     {data.file_comment && (
                                         <>
