@@ -14,11 +14,13 @@ export interface UniversityPerson{
     officeLocation:string,
     phoneNumber:string,
 }
-export interface FileObject{
-    file_name:string,
-    author:string,
-    date:string,
-    files:FileActual[],
+export interface FileObject {
+  subfolder: string;
+  file_name: string;
+  file_comment: string;
+  author: string;
+  date: string;
+  files: FileActual[];
 }
 export interface FileActual{
     name:string,

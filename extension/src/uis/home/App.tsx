@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { checkStoredSubjects, fetchSubjectsFromServer, storeFetchedSubjects } from "./components/helper_ignore";
 import { Divider } from "./components/devider/devider";
 import { Ellipsis } from "lucide-react";
-import { SchedueleScreenComponent, type ScreenType } from "./components/screens/screens";
+import { SchedueleScreenComponent } from "./components/screens/screens";
 import SchoolCalendar, { type BlockLesson } from "./components/scheduele/scheduele";
 import { fetchDayScheduele } from "./components/subject_fetcher";
 import { GenericFooter } from "./components/footer/footer";
@@ -13,19 +13,62 @@ export function HomePage(){
   const [loading,setLoading] = useState<boolean>(true);
   const [error,setError] = useState<string>("");
   const [scheduele,setScheduele] = useState<BlockLesson[]|null>(null);
-  const [screen_type,setScreenType] = useState<ScreenType|null>(null);
-  //
-  function renderScreenV2(type:string,setter:any){
-    switch(type){
-      case "SCHEDUELE":
-        return <SchedueleScreenComponent type={type} setter={setter}/>
-      default:
-        return <></>
-    }
-  }
+  const [currentRoute, setCurrentRoute] = useState(window.location.pathname);
+  
+  // Check URL to determine which screen to show
+  const isScheduleScreen = currentRoute.includes('/osobni_rozvrh');
+  
+  // Function to navigate to schedule by changing URL
+  const navigateToSchedule = () => {
+    window.history.pushState({}, '', '/auth/osobni_rozvrh');
+    setCurrentRoute('/auth/osobni_rozvrh');
+  };
+  
+  // Function to navigate home
+  const navigateToHome = () => {
+    window.history.pushState({}, '', '/auth/');
+    setCurrentRoute('/auth/');
+  };
+  
+  // Listen for URL changes (back/forward buttons)
+  useEffect(() => {
+    const handlePopState = () => {
+      setCurrentRoute(window.location.pathname);
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
   //
   useEffect(()=>{
     (async()=>{
+      // Check if cached user_id matches current logged-in user
+      const cachedUserId = localStorage.getItem("user_id");
+      if (cachedUserId) {
+        // Fetch current user's actual ID
+        const currentUserId = await (async () => {
+          try {
+            const response = await fetch("https://is.mendelu.cz/auth/student/studium.pl");
+            const html = await response.text();
+            const parser = new DOMParser().parseFromString(html, "text/html");
+            const tds = parser.getElementsByTagName("td");
+            for (let i = 0; i < tds.length; i++) {
+              if (tds[i].innerText?.toLowerCase().includes("identif")) {
+                return tds[i + 1]?.innerText.replace(" ", "") || null;
+              }
+            }
+            return null;
+          } catch {
+            return null;
+          }
+        })();
+        
+        // If IDs don't match, clear all cached data
+        if (currentUserId && currentUserId !== cachedUserId) {
+          console.log(`[STORAGE] User changed from ${cachedUserId} to ${currentUserId}, clearing cache`);
+          localStorage.clear(); // Clear everything
+        }
+      }
+      
       const stored_subjects = await checkStoredSubjects();
       if(stored_subjects == false){
         try {
@@ -88,9 +131,14 @@ export function HomePage(){
     )
   }
   //
+  // Render schedule screen or home screen based on URL
+  if (isScheduleScreen) {
+    return <SchedueleScreenComponent type="SCHEDUELE" setter={()=>navigateToHome()}/>;
+  }
+  //
   return (
     <div className="w-screen h-screen flex flex-col items-center bg-gray-50 select-none">
-      <Nav setScreen={setScreenType}/>
+      <Nav setScreen={()=>navigateToSchedule()}/>
       <Spacemaker space="mt-8"/>
       <span className="font-dm text-lg font-semibold text-gray-800 text-xl">{"Dnešní rozvrh"}</span>
       <Spacemaker space="mb-1"/>
@@ -103,7 +151,7 @@ export function HomePage(){
           <span className="flex flex-row items-center"><Ellipsis className="mr-1"></Ellipsis>Jiné</span>
           <ul className="list-disc list-outside pl-8 w-full">
             <li><a href="https://is.mendelu.cz/auth/student/moje_studium.pl?_m=3110;lang=cz" target="_blank" className="hover:text-primary">Portál studenta</a></li>
-            <li><a href="https://is.mendelu.cz/auth/student/studium.pl?studium=141978;obdobi=801;lang=cz" target="_blank" className="hover:text-primary">Další informace o Mendelu</a></li>
+            <li><a href="https://is.mendelu.cz/auth/verejne_informace.pl?_m=8301;lang=cz" target="_blank" className="hover:text-primary">Další informace o Mendelu</a></li>
             <li><a href="https://is.mendelu.cz/auth/student/hodnoceni.pl?_m=3167;lang=cz" target="_blank" className="hover:text-primary">Hodnocení úspešnosti předmětů</a></li>
             <li><a href="https://is.mendelu.cz/auth/dok_server/?_m=229;lang=cz" target="_blank" className="hover:text-primary">Dokumentový server</a></li>
             <li><a href="https://is.mendelu.cz/auth/kc/kc.pl?zalozka=novy;lang=cz" target="_blank" className="hover:text-primary">Žádosti a formuláře</a></li>
@@ -116,9 +164,6 @@ export function HomePage(){
       <div className="flex flex-1 w-full"></div>
       {/**/}
       <GenericFooter/>
-      {
-        screen_type?renderScreenV2(screen_type,setScreenType):<></>
-      }
     </div>
   )
 }

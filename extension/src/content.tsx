@@ -17,12 +17,14 @@ async function firstLoad() {
   const contains = document.body.innerHTML.includes("/system/login.pl");
   if(contains){
     console.log("[INFO] Login detected.");
+    document.documentElement.style.visibility = 'visible'; // Show original login page
     return;
   }
   //HIDDEN CHECK
   const storage = window.localStorage;
   if(storage.getItem("hidden") == "true"){
     console.log("[INFO] Hidden detected.");
+    document.documentElement.style.visibility = 'visible'; // Show original page
     return;
   };
   //

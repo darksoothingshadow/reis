@@ -5,7 +5,7 @@ import { getFilesFromId, getStoredSubject } from "../helper_ignore";
 import type { FileObject, StoredSubject } from "../object_types";
 import { useEffect, useState } from "react";
 import { File } from 'lucide-react';
-import { UserStar } from 'lucide-react';
+import { FileType } from 'lucide-react';
 import { Map } from 'lucide-react';
 import type { BlockLesson } from '../scheduele/scheduele';
 
@@ -111,8 +111,14 @@ export function RenderEmptySubject(props:{code:string,setter:()=>void}){
 }
 
 export function RenderLoading(props:{code:string,setter:()=>void}){
+    const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (e.target === e.currentTarget) {
+            props.setter();
+        }
+    };
+    
     return (
-        <div className="fixed z-999 top-0 left-0 w-screen h-screen flex justify-center items-center bg-black/50 backdrop-grayscale font-dm p-8">
+        <div className="fixed z-999 top-0 left-0 w-screen h-screen flex justify-center items-center bg-black/50 backdrop-grayscale font-dm p-8" onClick={handleBackdropClick}>
             <div className="p-1 pl-4 pr-4 relative h-full w-100 xl:w-180 rounded-xl bg-gray-50 shadow-xl flex flex-col items-center font-dm">
                 <span className="absolute right-2 top-2 w-6 h-6 xl:w-8 xl:h-8 flex justify-center items-center text-gray-500 cursor-pointer hover:scale-90 transition-all" onClick={()=>{props.setter()}}>
                     <X size={"2rem"}></X>
@@ -144,18 +150,20 @@ export function RenderLoading(props:{code:string,setter:()=>void}){
 
 export function SubjectPopup(props:SubjectPopupPropsV2){
     //FETCH SUBJECT FROM STORAGE
-    const [subject_data,setSubjectData] = useState<StoredSubject|number|null>(0);
-    const [files,setFiles] = useState<FileObject[]|number|null>(0);
+    const [subject_data,setSubjectData] = useState<StoredSubject|null>(null);
+    const [files,setFiles] = useState<FileObject[]|null>(null);
     const [loadingfile,setLoadingFile] = useState<boolean>(false);
+    const [loadingFiles, setLoadingFiles] = useState<boolean>(true);
+    const [subfolderFilter, setSubfolderFilter] = useState<string>("all");
     //
-    function parseName(name:string){
-        const MAX_LENGTH = 40;
-        if(name.length>MAX_LENGTH){
-            const name_deducted = name.substring(0,MAX_LENGTH-3);
-            return name_deducted+"...";
-        }else{
-            return name;
+    function parseName(name:string, hasComment: boolean = false){
+        const MAX_LENGTH = hasComment ? 40 : 100; // kratší pro položky s komentářem, delší bez komentáře
+        
+        if(name.length > MAX_LENGTH){
+            const name_deducted = name.substring(0, MAX_LENGTH-3);
+            return name_deducted + "...";
         }
+        return name;
     }
     //
     useEffect(()=>{
@@ -163,14 +171,50 @@ export function SubjectPopup(props:SubjectPopupPropsV2){
             const STORED_SUBJECT = await getStoredSubject(props.code.courseCode);
             setSubjectData(STORED_SUBJECT);
             if(STORED_SUBJECT == null){
-                setFiles(null);
+                setFiles([]);
+                setLoadingFiles(false);
                 return;
             }
+            
+            // Try to load cached files first
+            const cachedKey = `files_${props.code.courseCode}`;
+            const cachedFiles = localStorage.getItem(cachedKey);
+            if (cachedFiles) {
+                try {
+                    setFiles(JSON.parse(cachedFiles));
+                } catch (e) {
+                    console.error("Failed to parse cached files", e);
+                }
+            }
+            
+            // Fetch fresh files in background
             console.log(GetIdFromLink(STORED_SUBJECT.folderUrl),STORED_SUBJECT.folderUrl);
             const files = await getFilesFromId(GetIdFromLink(STORED_SUBJECT.folderUrl));
             setFiles(files);
+            setLoadingFiles(false);
+            
+            // Cache for next time
+            if (files && files.length > 0) {
+                localStorage.setItem(cachedKey, JSON.stringify(files));
+            }
         })();
     },[])
+    //
+    // Add ESC key listener to close popup
+    useEffect(() => {
+        const handleEscKey = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                props.onClose();
+            }
+        };
+        
+        window.addEventListener('keydown', handleEscKey);
+        
+        // Cleanup listener when component unmounts
+        return () => {
+            window.removeEventListener('keydown', handleEscKey);
+        };
+    }, [props.onClose])
     //
     async function loadFile(link:string){
         setLoadingFile(true);
@@ -190,14 +234,85 @@ export function SubjectPopup(props:SubjectPopupPropsV2){
         //
     };
     //
-    if(subject_data == 0){
-        return <RenderLoading code={props.code.courseCode} setter={props.onClose}/>
+    function groupFilesByFolder(files: FileObject[]) {
+        const grouped: { [folderId: string]: FileObject[] } = {};
+        
+        // Filter files by subfolder if a filter is active
+        const filteredFiles = subfolderFilter === "all" 
+            ? files 
+            : files.filter(file => file.subfolder === subfolderFilter);
+        
+        filteredFiles.forEach(file => {
+            const link = file.files[0]?.link || '';
+            const match = link.match(/id=(\d+)/);
+            const folderId = match ? match[1] : 'unknown';
+            
+            if (!grouped[folderId]) {
+                grouped[folderId] = [];
+            }
+            grouped[folderId].push(file);
+        });
+        
+        const sortedFolderIds = Object.keys(grouped).sort((a, b) => parseInt(a) - parseInt(b));
+        
+        // Flatten and sort files within each folder by comment number
+        const sortedFiles: FileObject[] = [];
+        sortedFolderIds.forEach(folderId => {
+            const folderFiles = grouped[folderId].sort((a, b) => {
+                // Extract numbers from file_comment (e.g., "Přednáška 3" -> 3)
+                const numA = parseInt(a.file_comment.match(/\d+/)?.[0] || '0');
+                const numB = parseInt(b.file_comment.match(/\d+/)?.[0] || '0');
+                return numA - numB;
+            });
+            sortedFiles.push(...folderFiles);
+        });
+        
+        return sortedFiles;
+    }
+    
+    // Get unique subfolders for filter dropdown
+    function getUniqueSubfolders(files: FileObject[]): string[] {
+        const subfolders = new Set<string>();
+        files.forEach(file => {
+            if (file.subfolder && file.subfolder.trim() !== '') {
+                subfolders.add(file.subfolder);
+            }
+        });
+        return Array.from(subfolders).sort();
+    }
+    
+    // Extract display name from subfolder (part after "/")
+    function getSubfolderDisplayName(subfolder: string): string {
+        const parts = subfolder.split('/');
+        return parts.length > 1 ? parts[1].trim() : subfolder;
+    }
+    //
+    // Handle click outside popup to close
+    const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+        // Only close if clicking on the backdrop itself, not on child elements
+        if (e.target === e.currentTarget) {
+            props.onClose();
+        }
+    };
+    //
+    // Show empty state if no subject data
+    if(subject_data === null && !loadingFiles){
+        return (
+            <div className="fixed z-999 top-0 left-0 w-screen h-screen flex justify-center items-center bg-black/50 backdrop-grayscale font-dm p-8" onClick={handleBackdropClick}>
+                <div className="p-4 relative h-fit w-100 xl:w-180 rounded-xl bg-gray-50 shadow-xl flex flex-col items-center justify-center font-dm">
+                    <span className="absolute right-2 top-2 w-6 h-6 xl:w-8 xl:h-8 flex justify-center items-center text-gray-500 cursor-pointer hover:scale-90 transition-all" onClick={props.onClose}>
+                        <X size={"2rem"}></X>
+                    </span>
+                    <span className="text-base xl:text-xl text-gray-700 py-8">{`Předmět ${props.code.courseCode} nenalezen`}</span>
+                </div>
+            </div>
+        );
     }
     //
     return (
-        <div className="fixed z-999 top-0 left-0 w-screen h-screen flex justify-center items-center bg-black/50 backdrop-grayscale font-dm p-8">
+        <div className="fixed z-999 top-0 left-0 w-screen h-screen flex justify-center items-center bg-black/50 backdrop-grayscale font-dm p-8" onClick={handleBackdropClick}>
             {/*Window*/}
-            {subject_data!=null && typeof subject_data != "number"?
+            {subject_data?
             <div className="p-1 pl-4 pr-4 relative h-full w-100 xl:w-180 rounded-xl bg-gray-50 shadow-xl flex flex-col items-center font-dm">
                 <span className="absolute right-2 top-2 w-6 h-6 xl:w-8 xl:h-8 flex justify-center items-center text-gray-500 cursor-pointer hover:scale-90 transition-all" onClick={()=>{props.onClose()}}>
                     <X size={"2rem"}></X>
@@ -210,34 +325,75 @@ export function SubjectPopup(props:SubjectPopupPropsV2){
                 </div>
                 <div className="text-base text-gray-700 w-full flex flex-col mt-4">
                     <span className="text-base xl:text-xl text-gray-700 font-medium">Místnost</span>
-                    <span className="w-fit relative text-base xl:text-lg text-gray-700" onClick={()=>{window.open(`https://mm.mendelu.cz/mapwidget/embed?placeName=${props.code.room}`,"_blank")}}>{props.code.room}<Map className="absolute top-0 -right-1 h-full aspect-square text-primary translate-x-1/1 cursor-pointer"></Map></span>
+                    <span className="w-fit relative text-base xl:text-lg text-gray-700">
+                        {props.code.room}
+                        {/* Only rooms are 'Q' are currently supported in the widget with simple config */}
+                        {props.code.room.startsWith('Q') && (
+                            <Map 
+                                className="absolute top-0 -right-1 h-full aspect-square text-primary translate-x-1/1 cursor-pointer hover:scale-110 transition-transform" 
+                                onClick={()=>{window.open(`https://mm.mendelu.cz/mapwidget/embed?placeName=${props.code.room}`,"_blank")}}
+                            />
+                        )}
+                    </span>
                 </div>
                 <div className="text-base text-gray-700 w-full flex flex-col mt-4 h-3/5">
-                    <span className="text-base xl:text-xl text-gray-700 font-medium min-h-fit">Dostupné soubory</span>
+                    <div className="flex flex-row justify-between items-center min-h-fit">
+                        <span className="text-base xl:text-xl text-gray-700 font-medium">Dostupné soubory</span>
+                        {typeof files !== "number" && files !== null && files.length > 0 && getUniqueSubfolders(files).length > 1 && (
+                            <select 
+                                value={subfolderFilter}
+                                onChange={(e) => setSubfolderFilter(e.target.value)}
+                                className="text-gray-900 text-sm px-2 py-1 border border-primary rounded bg-white cursor-pointer"
+                            >
+                                <option value="all">Vše</option>
+                                {getUniqueSubfolders(files).map((subfolder) => (
+                                    <option key={subfolder} value={subfolder}>
+                                        {getSubfolderDisplayName(subfolder)}
+                                    </option>
+                                ))}
+                            </select>
+                        )}
+                    </div>
                     <div className='w-full flex flex-1 flex-col overflow-y-auto'>
-                        {typeof files == "number" || files == null ?<RenderSubFiles status={files}/>:
-                           files.length === 0 ? (
-                                <RenderSubFiles status={1} />
-                            ) : loadingfile ? <RenderSubFiles status={2}/> : (
-                                files.map((data, i) =>
+                        {loadingFiles && (!files || files.length === 0) ? (
+                            <div className="w-full h-32 flex justify-center items-center">
+                                <span className="text-sm text-gray-500">Načítání souborů...</span>
+                            </div>
+                        ) : files === null || files.length === 0 ? (
+                            <div className="w-full h-32 flex justify-center items-center">
+                                <span className="text-sm text-gray-500">Žádné soubory nejsou dostupné</span>
+                            </div>
+                        ) : loadingfile ? (
+                            <div className="w-full h-32 flex justify-center items-center">
+                                <span className="text-sm text-gray-500">Otevírání souboru...</span>
+                            </div>
+                        ) : (
+                            groupFilesByFolder(files).map((data, i) =>
                                 data.files.map((_, l) => (
-                                    <div key={`${i}-${l}`} className="relative w-full min-h-10 flex flex-row items-center text-xs xl:text-base">
-                                    <div className="aspect-square h-full flex justify-center items-center">
+                                    <div key={`${i}-${l}`} className="relative w-full min-h-10 flex flex-row items-center text-xs xl:text-base gap-2">
+                                    <div className="aspect-square flex-none flex justify-center items-center">
                                         <File />
                                     </div>
                                     <span
-                                        className="text-gray-700 pl-2 pr-2 w-80 hover:text-primary cursor-pointer"
+                                        className={`text-gray-700 pl-2 pr-2 hover:text-primary cursor-pointer ${data.file_comment ? 'w-80' : 'w-full'}`}
                                         onClick={() => loadFile(_.link)}
                                     >
-                                        {l === 0 ? parseName(data.file_name) : parseName(data.file_name + " (" + l.toString()+ ")")}
+                                        {data.files.length === 1 ? 
+                                            parseName(data.file_name, !!data.file_comment) : 
+                                            parseName(data.file_name + ": část " + (l + 1), !!data.file_comment)}
                                     </span>
-                                    <div className="aspect-square h-full flex justify-center items-center">
-                                        <UserStar />
-                                    </div>
-                                    <span className="text-gray-400 ml-2">{data.author}</span>
+                                    {data.file_comment && (
+                                        <>
+                                            <div className="aspect-square h-full flex justify-center items-center">
+                                                <FileType />
+                                            </div>
+                                            <span className="text-gray-400 ml-2">{data.file_comment}</span>
+                                        </>
+                                    )}
+                                    {/* <span className="text-gray-400 ml-2">{data.author}</span> */}
                                     </div>
                                 ))
-                                )
+                            )
                             )}
                     </div>
                 </div>

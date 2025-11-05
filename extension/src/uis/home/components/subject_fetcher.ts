@@ -6,29 +6,44 @@ function getLastWeekData(){
     const today:Date = new Date();
     let start:string;
     let end:string;
-    // 1. Calculate the last Monday (including today if it's Monday)
-    // new Date().getDay() returns 0 for Sunday, 1 for Monday, ..., 6 for Saturday.
-    // We want Monday (1) to result in 0 days back, Tuesday (2) in 1 day back, ..., 
-    // Sunday (0) in 6 days back.
-    // The expression (today.getDay() + 6) % 7 calculates days since Monday.
-    // e.g., Mon (1) -> (1+6)%7 = 0; Tue (2) -> (2+6)%7 = 1; Sun (0) -> (0+6)%7 = 6
-    const daysSinceMonday:number = (today.getDay() + 6) % 7;
     
-    // Clone today's date and set it back to the Monday
-    const lastMonday:Date = new Date(today);
-    lastMonday.setDate(today.getDate() - daysSinceMonday);
+    const currentDayOfWeek = today.getDay(); // 0 = Sunday, 6 = Saturday
+    
+    // If it's Saturday (6) or Sunday (0), show next week's schedule
+    const isWeekend = currentDayOfWeek === 0 || currentDayOfWeek === 6;
+    
+    // 1. Calculate the target Monday
+    // If it's weekend, we want NEXT Monday (days forward)
+    // If it's weekday, we want THIS WEEK's Monday (days back)
+    let targetMonday:Date;
+    
+    if (isWeekend) {
+        // For weekend: calculate days until next Monday
+        // Saturday (6) -> 2 days forward to Monday
+        // Sunday (0) -> 1 day forward to Monday
+        const daysUntilMonday = currentDayOfWeek === 6 ? 2 : 1;
+        targetMonday = new Date(today);
+        targetMonday.setDate(today.getDate() + daysUntilMonday);
+    } else {
+        // For weekday: calculate days back to this week's Monday
+        // The expression (today.getDay() + 6) % 7 calculates days since Monday.
+        // e.g., Mon (1) -> (1+6)%7 = 0; Tue (2) -> (2+6)%7 = 1
+        const daysSinceMonday:number = (today.getDay() + 6) % 7;
+        targetMonday = new Date(today);
+        targetMonday.setDate(today.getDate() - daysSinceMonday);
+    }
     
     // Set the time to the very start of the day (00:00:00)
-    lastMonday.setHours(0, 0, 0, 0);
+    targetMonday.setHours(0, 0, 0, 0);
     // 2. Calculate the corresponding Friday
     // Friday is 4 days after Monday
-    const correspondingFriday:Date = new Date(lastMonday);
-    correspondingFriday.setDate(lastMonday.getDate() + 4); 
+    const correspondingFriday:Date = new Date(targetMonday);
+    correspondingFriday.setDate(targetMonday.getDate() + 4); 
     
     // Set the time to the very end of the day (23:59:59.999)
     correspondingFriday.setHours(23, 59, 59, 999);
     // 3. Format the dates
-    start = getSchedueleFormat(lastMonday);
+    start = getSchedueleFormat(targetMonday);
     end = getSchedueleFormat(correspondingFriday);
     return [start,end];
 }

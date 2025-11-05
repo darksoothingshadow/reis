@@ -16,19 +16,16 @@ export function renderScreen(type:ScreenType,setter:React.Dispatch<React.SetStat
     return SCREEN_ROUTES[type](type,setter) ?? <></>;
 }
 export function SchedueleScreen(_type:ScreenType,setter:React.Dispatch<React.SetStateAction<ScreenType | null>>){
-    const [loading,setLoading] = useState<boolean>(true);
     const [error,setError] = useState<string>("");
     const [scheduele,setScheduele] = useState<BlockLesson[]|null>(null);
     useEffect(()=>{
         (async()=>{
             const week_scheduele = await fetchWeekScheduele();
             if(week_scheduele == null){
-                setError("Pči načítání rozvrhu došlo k chybě.");
+                setError("Při načítání rozvrhu došlo k chybě.");
                 return;
             }
             setScheduele(week_scheduele);
-            //
-            setLoading(false);
         })();
     },[]);
     if(error != ""){
@@ -37,33 +34,6 @@ export function SchedueleScreen(_type:ScreenType,setter:React.Dispatch<React.Set
                 <Nav setScreen={setter} page="scheduele"/>
                 <div className="w-full h-full flex justify-center items-center font-semibold font-dm text-gray-600 text-base">
                     {error}
-                </div>
-            </div>
-        )
-    }
-    if(loading){
-        return (
-            <div className="fixed z-999 top-0 left-0 w-full h-full flex flex-col items-center bg-gray-50">
-                <Nav setScreen={setter} page="scheduele"/>
-                <div className="w-full h-full flex justify-center items-center">
-                    <>
-                        <style>
-                            {`@keyframes rotation {
-                            0% { transform: rotate(0deg); }
-                            100% { transform: rotate(360deg); }
-                            }`}
-                        </style>
-                        <span className='w-16 h-16'
-                            style={{
-                            border: "5px solid #8DC843",
-                            borderBottomColor: "transparent",
-                            borderRadius: "50%",
-                            display: "inline-block",
-                            boxSizing: "border-box",
-                            animation: "rotation 1s linear infinite",
-                            }}
-                        ></span>
-                    </>
                 </div>
             </div>
         )
@@ -79,19 +49,16 @@ export function SchedueleScreen(_type:ScreenType,setter:React.Dispatch<React.Set
     )
 }
 export function SchedueleScreenComponent(props:{type:string,setter:React.Dispatch<React.SetStateAction<ScreenType | null>>}){
-    const [loading,setLoading] = useState<boolean>(true);
     const [error,setError] = useState<string>("");
     const [scheduele,setScheduele] = useState<BlockLesson[]|null>(null);
     useEffect(()=>{
         (async()=>{
             const week_scheduele = await fetchWeekScheduele();
             if(week_scheduele == null){
-                setError("Pči načítání rozvrhu došlo k chybě.");
+                setError("Při načítání rozvrhu došlo k chybě.");
                 return;
             }
             setScheduele(week_scheduele);
-            //
-            setLoading(false);
         })();
     },[]);
     if(error != ""){
@@ -100,37 +67,6 @@ export function SchedueleScreenComponent(props:{type:string,setter:React.Dispatc
                 <Nav setScreen={props.setter} page="scheduele"/>
                 <div className="w-full h-full flex justify-center items-center font-semibold font-dm text-gray-600 text-base">
                     {error}
-                </div>
-                {/*Space filler*/}
-                <div className="flex flex-1 w-full"></div>
-                {/**/}
-                <GenericFooter/>
-            </div>
-        )
-    }
-    if(loading){
-        return (
-            <div className="fixed z-999 top-0 left-0 w-full h-full flex flex-col items-center bg-gray-50">
-                <Nav setScreen={props.setter} page="scheduele"/>
-                <div className="w-full h-full flex justify-center items-center">
-                    <>
-                        <style>
-                            {`@keyframes rotation {
-                            0% { transform: rotate(0deg); }
-                            100% { transform: rotate(360deg); }
-                            }`}
-                        </style>
-                        <span className='w-16 h-16'
-                            style={{
-                            border: "5px solid #8DC843",
-                            borderBottomColor: "transparent",
-                            borderRadius: "50%",
-                            display: "inline-block",
-                            boxSizing: "border-box",
-                            animation: "rotation 1s linear infinite",
-                            }}
-                        ></span>
-                    </>
                 </div>
                 {/*Space filler*/}
                 <div className="flex flex-1 w-full"></div>

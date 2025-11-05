@@ -8,7 +8,9 @@ interface FileAttachment {
 }
 
 interface ParsedFile {
+  subfolder: string,
   file_name: string;
+  file_comment: string;
   author: string;
   date: string;
   files: FileAttachment[];
@@ -139,9 +141,15 @@ export async function parseServerFiles(html: string): Promise<ParsedFile[]> {
     // Skip if we don't have enough cells
     if (cells.length < (7 + adder)) return;
     console.log("Not skipped");
+
+    // Extract the folder name (2nd child - index 1)
+    const subfolder = cells[(adder)].textContent?.trim() || '';
     
     // Extract file name (3rd child - index 2)
     const file_name = cells[(1 + adder)].textContent?.trim() || '';
+
+    // Extract file comment (4th child - index 3)
+    const file_comment = cells[(2 + adder)].textContent?.trim()|| '';
     
     // Extract author (5th child - index 4)
     const authorLink = cells[(3 + adder)].querySelector('a');
@@ -173,7 +181,9 @@ export async function parseServerFiles(html: string): Promise<ParsedFile[]> {
     // Only add if we found at least one file
     if (extractedFiles.length > 0) {
       files.push({
+        subfolder: subfolder,
         file_name: file_name,
+        file_comment,
         author: author,
         date: date,
         files: extractedFiles
