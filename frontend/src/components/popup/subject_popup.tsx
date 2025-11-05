@@ -321,7 +321,14 @@ export function SubjectPopup(props:SubjectPopupPropsV2){
                 <span className="w-full h-0.25 bg-gray-200 mb-2"></span>
                 <div className="text-base text-gray-700 w-full flex flex-col mt-4">
                     <span className="text-base xl:text-xl text-gray-700 font-medium">Vyučující události</span>
-                    <span className="text-base xl:text-lg text-gray-700">{props.code.teachers[0].shortName}</span>
+                    <a 
+                        href={`https://is.mendelu.cz/auth/lide/clovek.pl?id=${props.code.teachers[0].id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-base xl:text-lg text-gray-700 hover:underline"
+                    >
+                        {props.code.teachers[0].shortName}
+                    </a>
                 </div>
                 <div className="text-base text-gray-700 w-full flex flex-col mt-4">
                     <span className="text-base xl:text-xl text-gray-700 font-medium">Místnost</span>

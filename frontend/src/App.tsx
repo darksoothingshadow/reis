@@ -151,12 +151,12 @@ export function HomePage(){
           <span className="flex flex-row items-center"><Ellipsis className="mr-1"></Ellipsis>Jiné</span>
           <ul className="list-disc list-outside pl-8 w-full">
             <li><a href="https://is.mendelu.cz/auth/student/moje_studium.pl?_m=3110;lang=cz" target="_blank" className="hover:text-primary">Portál studenta</a></li>
-            <li><a href="https://is.mendelu.cz/auth/verejne_informace.pl?_m=8301;lang=cz" target="_blank" className="hover:text-primary">Další informace o Mendelu</a></li>
             <li><a href="https://is.mendelu.cz/auth/student/hodnoceni.pl?_m=3167;lang=cz" target="_blank" className="hover:text-primary">Hodnocení úspešnosti předmětů</a></li>
+            <li><a href="https://is.mendelu.cz/auth/katalog/plany.pl?_m=140;lang=cz" target="_blank" className="hover:text-primary">Studijní plány</a></li>
+            <div className="m-1"></div>
             <li><a href="https://is.mendelu.cz/auth/dok_server/?_m=229;lang=cz" target="_blank" className="hover:text-primary">Dokumentový server</a></li>
-            <li><a href="https://is.mendelu.cz/auth/kc/kc.pl?zalozka=novy;lang=cz" target="_blank" className="hover:text-primary">Žádosti a formuláře</a></li>
-            <li><a href="https://is.mendelu.cz/auth/evolby/portal_volice.pl?_m=23942;lang=cz" target="_blank" className="hover:text-primary">Portál voliče</a></li>
             <li><a href="https://is.mendelu.cz/auth/wifi/certifikat.pl?_m=177;lang=cz" target="_blank" className="hover:text-primary">Návod pro EduRoam (Wi-Fi)</a></li>
+            <li><a href="https://is.mendelu.cz/auth/kc/kc.pl?zalozka=novy;lang=cz" target="_blank" className="hover:text-primary">Žádosti a formuláře</a></li>
           </ul>
         </div>
       </section>
