@@ -1,5 +1,5 @@
 import { MOCK_WEEK_SCHEDUELE, sleep } from "./calendarUtils";
-import type { BlockLesson, ScheduleData } from "../types/calendarTypes";
+import type { BlockLesson } from "../types/calendarTypes";
 import { getUserId } from "./user_id_fetcher";
 
 // You can control production/mock mode here or via an env variable
@@ -68,7 +68,9 @@ function getSchedueleFormat(date: Date) {
 }
 
 export async function fetchWeekScheduele(specific?: { start: Date, end: Date }): Promise<BlockLesson[] | null> {
+    console.log("fetchWeekScheduele called. PRODUCTION:", PRODUCTION);
     if (PRODUCTION == false) {
+        console.log("Returning MOCK_WEEK_SCHEDUELE");
         await sleep(2000);
         return MOCK_WEEK_SCHEDUELE;
     };
@@ -88,34 +90,33 @@ export async function fetchWeekScheduele(specific?: { start: Date, end: Date }):
         start = week_results[0];
         end = week_results[1];
     }
-    //
+    const url = `https://is.mendelu.cz/katalog/rozvrhy_view.pl?zobraz=1;vypis=1;id_obdobi=;id_predmet=;id_ucitel=;id_student=${user_id};id_katedra=;id_poslucharna=;od=${start};do=${end};rozvrh_typ=1;zpet=../katalog/rozvrhy_view.pl?zobraz=1,vypis=1,id_student=${user_id},rozvrh_typ=1`;
+    console.log("Fetching URL:", url);
+
     try {
-        const f = await fetch("https://is.mendelu.cz/auth/katalog/rozvrhy_view.pl", {
-            "headers": {
-                "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-                "accept-language": "cs,en;q=0.9,en-GB;q=0.8,en-US;q=0.7",
-                "cache-control": "max-age=0",
-                "content-type": "application/x-www-form-urlencoded",
-                "sec-ch-ua": "\"Microsoft Edge\";v=\"141\", \"Not?A_Brand\";v=\"8\", \"Chromium\";v=\"141\"",
-                "sec-ch-ua-mobile": "?1",
-                "sec-ch-ua-platform": "\"Android\"",
-                "sec-fetch-dest": "document",
-                "sec-fetch-mode": "navigate",
-                "sec-fetch-site": "same-origin",
-                "sec-fetch-user": "?1",
-                "upgrade-insecure-requests": "1"
+        const response = await fetch(url, {
+            method: "GET",
+            headers: {
+                "Content-Type": "text/html; charset=windows-1250"
             },
-            "referrer": "https://is.mendelu.cz/auth/katalog/rozvrhy_view.pl",
-            "body": `rozvrh_student=${user_id}&zpet=..%2Fstudent%2Fmoje_studium.pl%3F_m%3D3110%2Cstudium%3D141978%2Cobdobi%3D801&rezervace=0&poznamky_base=1&poznamky_parovani=1&poznamky_jiny_areal=1&poznamky_dl_omez=1&typ_vypisu=konani&konani_od=${start}&konani_do=${end}&format=json&nezvol_all=2&poznamky=1&poznamky_zmeny=1&poznamky_dalsi_ucit=1&zobraz=1&zobraz2=Zobrazit`,
-            "method": "POST",
-            "mode": "cors",
-            "credentials": "include"
+            credentials: "include"
         });
-        const r: ScheduleData = await f.json();
-        return r.blockLessons;
-        //
+
+        console.log("Fetch response status:", response.status);
+
+        if (!response.ok) {
+            console.error("Fetch failed with status:", response.status);
+            return null;
+        }
+
+        const text = await response.text();
+        console.log("Fetch response text length:", text.length);
+
+        // Placeholder for parsing logic or just return null for now as we are debugging
+        return null;
+
     } catch (error) {
         console.error(error);
         return null;
-    };
+    }
 }

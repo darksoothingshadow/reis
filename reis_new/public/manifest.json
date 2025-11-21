@@ -24,6 +24,16 @@
             ]
         }
     ],
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "mendelu-logo.png"
+            ],
+            "matches": [
+                "https://is.mendelu.cz/*"
+            ]
+        }
+    ],
     "icons": {
         "16": "vite.svg",
         "48": "vite.svg",

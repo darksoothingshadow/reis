@@ -143,15 +143,14 @@ export function SearchBar({ placeholder = "Prohledej reIS", onSearch }: SearchBa
           {/* THE "SHAPE SHIFTER" */}
           <div className={`
             flex items-center w-full bg-white transition-all duration-200
-            border border-gray-400
             ${isOpen
-              ? 'rounded-t-lg rounded-b-none border-b-gray-200 shadow-lg'
-              : 'rounded-lg shadow-sm hover:border-gray-500'
+              ? 'rounded-t-lg rounded-b-none shadow-lg'
+              : 'shadow-sm'
             }
           `}>
 
             {/* Input Area */}
-            <div className="flex-1 flex items-center h-10 px-3">
+            <div className="flex-1 flex items-center h-10 px-3 border border-gray-300 rounded-md">
               <Search className={`w-4 h-4 mr-3 transition-colors ${isOpen ? 'text-gray-800' : 'text-gray-500'}`} />
 
               <input

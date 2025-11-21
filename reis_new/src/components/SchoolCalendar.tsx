@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { SubjectPopup } from './SubjectPopup';
 import { timeToMinutes } from '../utils/calendarUtils';
-import { fetchWeekScheduele } from '../utils/subject_fetcher';
+import { fetchWeekSchedule } from '../api/schedule';
 import type { BlockLesson, LessonWithRow, OrganizedLessons, DateInfo } from '../types/calendarTypes';
 
 const DAYS = ['PO', 'ÚT', 'ST', 'ČT', 'PÁ'];
@@ -30,7 +30,7 @@ export function SchoolCalendar({ initialDate = new Date() }: SchoolCalendarProps
             const endOfWeek = new Date(startOfWeek);
             endOfWeek.setDate(startOfWeek.getDate() + 4); // Set to Friday
 
-            const data = await fetchWeekScheduele({ start: startOfWeek, end: endOfWeek });
+            const data = await fetchWeekSchedule({ start: startOfWeek, end: endOfWeek });
             if (data) {
                 setScheduleData(data);
             }
@@ -143,7 +143,7 @@ export function SchoolCalendar({ initialDate = new Date() }: SchoolCalendarProps
                                 {/* Row Grid */}
                                 <div className="absolute inset-0 flex pointer-events-none z-0">
                                     {Array.from({ length: END_HOUR - START_HOUR + 1 }).map((_, i) => (
-                                        <div key={i} className="flex-1 border-r border-gray-100 h-full"></div>
+                                        <div key={i} className="flex-1 border-r border-gray-300 h-full"></div>
                                     ))}
                                 </div>
                                 {lessons.map((lesson) => {
