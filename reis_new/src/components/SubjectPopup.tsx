@@ -54,8 +54,8 @@ async function resolveFinalFileUrl(link: string): Promise<string> {
             // Extract parameters
             // Handle both & and ; as separators
             const normalizedLink = link.replace(/;/g, '&').replace(/\?/g, '&');
-            const idMatch = normalizedLink.match(/[?&]id=(\d+)/);
-            const dokMatch = normalizedLink.match(/[?&]dok=(\d+)/);
+            const idMatch = normalizedLink.match(/[&]id=(\d+)/);
+            const dokMatch = normalizedLink.match(/[&]dok=(\d+)/);
 
             if (idMatch && dokMatch) {
                 const id = idMatch[1];
@@ -320,7 +320,7 @@ export function SubjectPopup(props: SubjectPopupPropsV2) {
     }
     //
     function groupFilesByFolder(files: FileObject[]) {
-        const grouped: { [folderId: string]: FileObject[] } = {};
+        const grouped: { [subfolder: string]: FileObject[] } = {};
 
         // Filter files by subfolder if a filter is active
         const filteredFiles = subfolderFilter === "all"
@@ -328,26 +328,36 @@ export function SubjectPopup(props: SubjectPopupPropsV2) {
             : files.filter(file => file.subfolder === subfolderFilter);
 
         filteredFiles.forEach(file => {
-            const link = file.files[0]?.link || '';
-            const match = link.match(/id=(\d+)/);
-            const folderId = match ? match[1] : 'unknown';
+            // Group by subfolder name (or 'Ostatní' if empty)
+            const groupKey = file.subfolder || 'Ostatní';
 
-            if (!grouped[folderId]) {
-                grouped[folderId] = [];
+            if (!grouped[groupKey]) {
+                grouped[groupKey] = [];
             }
-            grouped[folderId].push(file);
+            grouped[groupKey].push(file);
         });
 
-        const sortedFolderIds = Object.keys(grouped).sort((a, b) => parseInt(a) - parseInt(b));
+        // Sort folders: 'Ostatní' last, others alphabetically
+        const sortedFolderKeys = Object.keys(grouped).sort((a, b) => {
+            if (a === 'Ostatní') return 1;
+            if (b === 'Ostatní') return -1;
+            return a.localeCompare(b, 'cs');
+        });
 
-        // Flatten and sort files within each folder by comment number
+        // Flatten and sort files within each folder
         const sortedFiles: FileObject[] = [];
-        sortedFolderIds.forEach(folderId => {
-            const folderFiles = grouped[folderId].sort((a, b) => {
-                // Extract numbers from file_comment (e.g., "Přednáška 3" -> 3)
+        sortedFolderKeys.forEach(key => {
+            const folderFiles = grouped[key].sort((a, b) => {
+                // Primary sort: Comment number (if present)
                 const numA = parseInt(a.file_comment.match(/\d+/)?.[0] || '0');
                 const numB = parseInt(b.file_comment.match(/\d+/)?.[0] || '0');
-                return numA - numB;
+
+                if (numA !== numB && numA !== 0 && numB !== 0) {
+                    return numA - numB;
+                }
+
+                // Secondary sort: Filename
+                return a.file_name.localeCompare(b.file_name, 'cs');
             });
             sortedFiles.push(...folderFiles);
         });

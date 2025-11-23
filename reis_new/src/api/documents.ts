@@ -40,20 +40,33 @@ export async function fetchFilesFromFolder(folderUrl: string, recursive: boolean
 
                 if (isFolder && file.files.length > 0) {
                     let folderLink = file.files[0].link;
-
-                    // Clean up the link - IS Mendelu uses semicolons in URLs which causes 404s
-                    // Replace ?; with ? and any remaining ; with &
-                    folderLink = folderLink.replace(/\?;/g, '?').replace(/;/g, '&');
-
-                    let absoluteUrl = '';
+                    let absoluteUrl: string;
 
                     // Robust handling for slozka.pl links
                     if (folderLink.includes('slozka.pl')) {
-                        // Extract query string
-                        const queryMatch = folderLink.match(/slozka\.pl(\?.*)$/);
-                        const query = queryMatch ? queryMatch[1] : '';
-                        // Force correct path
-                        absoluteUrl = `${BASE_URL}/auth/dok_server/slozka.pl${query}`;
+                        // Extract query string - handle both ? and ; as separators
+                        // First, normalize the link to use ? for the start of query and & for parameters
+                        // But be careful not to double-replace if it's already correct
+
+                        // Strategy: find where slozka.pl ends
+                        const splitIndex = folderLink.indexOf('slozka.pl') + 9;
+                        const queryPart = folderLink.substring(splitIndex);
+
+                        // If there is a query part
+                        if (queryPart.length > 0) {
+                            // Replace all semicolons with ampersands
+                            let cleanQuery = queryPart.replace(/;/g, '&');
+                            // Ensure the first character is ? if it's not empty
+                            if (cleanQuery.startsWith('&') || cleanQuery.startsWith('?')) {
+                                cleanQuery = '?' + cleanQuery.substring(1);
+                            } else if (cleanQuery.length > 0) {
+                                cleanQuery = '?' + cleanQuery;
+                            }
+
+                            absoluteUrl = `${BASE_URL}/auth/dok_server/slozka.pl${cleanQuery}`;
+                        } else {
+                            absoluteUrl = `${BASE_URL}/auth/dok_server/slozka.pl`;
+                        }
                     } else {
                         // Standard handling for other links
                         absoluteUrl = folderLink.startsWith('http')
