@@ -59,20 +59,26 @@ export async function getStoredSubject(courseCode: string): Promise<StoredSubjec
             await setChromeStorageData(STORAGE_KEY, subjectsCache);
         }
 
-        // Decrypt data when reading from cache
-        const decryptedData = await decryptData(subjectsCache.data);
-        const parsedData = JSON.parse(decryptedData);
-        const subject = parsedData[courseCode];
+        try {
+            // Decrypt data when reading from cache
+            const decryptedData = await decryptData(subjectsCache.data);
+            const parsedData = JSON.parse(decryptedData);
+            const subject = parsedData[courseCode];
 
-        if (!subject) {
-            console.warn(`Subject ${courseCode} not found in subjects data`);
+            if (!subject) {
+                console.warn(`Subject ${courseCode} not found in subjects data`);
+                return null;
+            }
+
+            return {
+                fullName: subject.fullName,
+                folderUrl: subject.folderUrl
+            };
+        } catch (error) {
+            console.warn("Cache corruption detected (decryption/parse failed), clearing cache...", error);
+            await setChromeStorageData(STORAGE_KEY, null);
             return null;
         }
-
-        return {
-            fullName: subject.fullName,
-            folderUrl: subject.folderUrl
-        };
     } catch (error) {
         console.error("Error fetching stored subject:", error);
         return null;
@@ -94,9 +100,15 @@ export async function getFilesFromId(folderId: string | null): Promise<FileObjec
         if (cachedData && (now - cachedData.timestamp < FILE_CACHE_DURATION)) {
             // Check if data is encrypted (string) or legacy (array)
             if (typeof cachedData.files === 'string') {
-                // Decrypt cached files
-                const decryptedFiles = await decryptData(cachedData.files);
-                return JSON.parse(decryptedFiles);
+                try {
+                    // Decrypt cached files
+                    const decryptedFiles = await decryptData(cachedData.files);
+                    return JSON.parse(decryptedFiles);
+                } catch (error) {
+                    console.warn("Cache corruption detected (files), clearing cache...", error);
+                    await setChromeStorageData(STORAGE_KEY, null);
+                    // Fall through to fetch
+                }
             } else {
                 // Legacy cache (plaintext) - ignore and re-fetch to encrypt
                 console.log('Legacy cache detected, re-fetching to encrypt...');

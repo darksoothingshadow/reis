@@ -22,18 +22,69 @@ export async function fetchDocumentsForSubject(subjectCode: string): Promise<Fil
     return allFiles;
 }
 
-export async function fetchFilesFromFolder(folderUrl: string, recursive: boolean = true): Promise<ParsedFile[]> {
+export async function fetchFilesFromFolder(folderUrl: string, recursive: boolean = true, currentDepth: number = 0, maxDepth: number = 2): Promise<ParsedFile[]> {
+    console.log(`Fetching files from: ${folderUrl} (Depth: ${currentDepth}, MaxDepth: ${maxDepth})`);
     try {
-        const response = await fetchWithAuth(folderUrl);
+        // Ensure lang=cz is present
+        let urlToFetch = folderUrl;
+        if (!urlToFetch.includes('lang=')) {
+            urlToFetch += (urlToFetch.includes('?') ? ';' : '?') + 'lang=cz';
+        }
+
+        const response = await fetchWithAuth(urlToFetch);
         const html = await response.text();
-        const files = parseServerFiles(html);
+        const { files, paginationLinks } = parseServerFiles(html);
+
+        // Handle pagination
+        if (paginationLinks && paginationLinks.length > 0) {
+            console.log(`Found ${paginationLinks.length} pagination links. Fetching other pages...`);
+
+            // We need to fetch other pages. 
+            // paginationLinks contains links to ALL pages (including the current one usually, or at least others).
+            // We should fetch them all and merge results, removing duplicates if any.
+            // A simple strategy: 
+            // 1. We have files from current page.
+            // 2. Filter paginationLinks to exclude current page if possible, or just fetch all unique links found in pagination that are NOT the current URL.
+            // However, IS Mendelu pagination links usually look like "slozka.pl?id=...;od=11;..."
+
+            // Let's just fetch all unique pagination links that we haven't fetched yet.
+            // To avoid infinite loops or re-fetching current, we can check if the link is different.
+
+            for (const link of paginationLinks) {
+                // Construct absolute URL
+                let pageUrl = link.startsWith('http') ? link : `${BASE_URL}/auth/dok_server/${link.replace(/^\/auth\/dok_server\//, '')}`;
+
+                // Ensure lang=cz
+                if (!pageUrl.includes('lang=')) {
+                    pageUrl += (pageUrl.includes('?') ? ';' : '?') + 'lang=cz';
+                }
+
+                // Skip if it's effectively the same as current URL (simplified check)
+                // or if we've already fetched it (we'd need to track visited URLs, but for now let's assume 
+                // parseServerFiles returns links to *other* pages or we just fetch them and deduplicate files by ID/link).
+                // Actually, the current page might be "1-10", and links are "11-20", "21-22".
+                // If we are on "1-10", we just need to fetch the others.
+
+                // Ideally, we shouldn't re-fetch the current page. 
+                // But identifying "current page" from URL might be tricky if params differ slightly.
+                // Let's rely on the fact that we usually start at the first page.
+                // If the pagination row contains "1-10" (no link) and "11-20" (link), we just fetch the links.
+
+                console.log(`Fetching pagination page: ${pageUrl}`);
+                const pageResponse = await fetchWithAuth(pageUrl);
+                const pageHtml = await pageResponse.text();
+                const pageResult = parseServerFiles(pageHtml);
+                files.push(...pageResult.files);
+            }
+        }
 
         // If recursive mode is enabled, fetch files from subfolders too
-        if (recursive) {
+        if (recursive && currentDepth < maxDepth) {
             const allFiles: ParsedFile[] = [...files];
 
             for (const file of files) {
                 // Check if this is a folder link (not a downloadable file)
+                // Folders usually have slozka.pl and NO download parameter
                 const isFolder = file.files.some(f =>
                     f.link.includes('slozka.pl') && !f.link.includes('download')
                 );
@@ -44,28 +95,14 @@ export async function fetchFilesFromFolder(folderUrl: string, recursive: boolean
 
                     // Robust handling for slozka.pl links
                     if (folderLink.includes('slozka.pl')) {
-                        // Extract query string - handle both ? and ; as separators
-                        // First, normalize the link to use ? for the start of query and & for parameters
-                        // But be careful not to double-replace if it's already correct
+                        // We must NOT replace ; with & because IS Mendelu uses ; as separator
+                        // Just ensure it starts with ? if it has parameters
 
-                        // Strategy: find where slozka.pl ends
-                        const splitIndex = folderLink.indexOf('slozka.pl') + 9;
-                        const queryPart = folderLink.substring(splitIndex);
-
-                        // If there is a query part
-                        if (queryPart.length > 0) {
-                            // Replace all semicolons with ampersands
-                            let cleanQuery = queryPart.replace(/;/g, '&');
-                            // Ensure the first character is ? if it's not empty
-                            if (cleanQuery.startsWith('&') || cleanQuery.startsWith('?')) {
-                                cleanQuery = '?' + cleanQuery.substring(1);
-                            } else if (cleanQuery.length > 0) {
-                                cleanQuery = '?' + cleanQuery;
-                            }
-
-                            absoluteUrl = `${BASE_URL}/auth/dok_server/slozka.pl${cleanQuery}`;
+                        // Check if it's absolute or relative
+                        if (folderLink.startsWith('http')) {
+                            absoluteUrl = folderLink;
                         } else {
-                            absoluteUrl = `${BASE_URL}/auth/dok_server/slozka.pl`;
+                            absoluteUrl = `${BASE_URL}/auth/dok_server/${folderLink.replace(/^\/auth\/dok_server\//, '')}`;
                         }
                     } else {
                         // Standard handling for other links
@@ -76,11 +113,14 @@ export async function fetchFilesFromFolder(folderUrl: string, recursive: boolean
                                 : `${BASE_URL}/auth/dok_server/${folderLink}`;
                     }
 
-                    console.log(`Fetching subfolder: ${file.file_name}`, absoluteUrl);
-                    const subfolderFiles = await fetchFilesFromFolder(absoluteUrl, false); // Don't recurse deeper
+                    console.log(`Fetching subfolder (depth ${currentDepth + 1}): ${file.file_name}`, absoluteUrl);
+                    const subfolderFiles = await fetchFilesFromFolder(absoluteUrl, true, currentDepth + 1, maxDepth);
 
                     // Add subfolder info to each file
                     subfolderFiles.forEach(sf => {
+                        // If we are deeper, we might want to preserve the path?
+                        // For now, just use the immediate parent folder name as subfolder
+                        // This flattens the structure visually but keeps files grouped by their immediate parent
                         sf.subfolder = file.file_name;
                     });
 
@@ -89,7 +129,20 @@ export async function fetchFilesFromFolder(folderUrl: string, recursive: boolean
             }
 
             // Filter out folder entries, keep only actual files
-            return allFiles.filter(file =>
+            // Also deduplicate files based on link just in case pagination caused overlaps
+            const uniqueFiles = new Map<string, ParsedFile>();
+            allFiles.forEach(f => {
+                // Use the first file's link as key (assuming one file per ParsedFile entry usually)
+                if (f.files.length > 0) {
+                    const key = f.files[0].link;
+                    // Only keep if it's a download link or we haven't seen it
+                    if (!uniqueFiles.has(key) || (key.includes('download') && !uniqueFiles.get(key)?.files[0].link.includes('download'))) {
+                        uniqueFiles.set(key, f);
+                    }
+                }
+            });
+
+            return Array.from(uniqueFiles.values()).filter(file =>
                 file.files.some(f => f.link.includes('download') || !f.link.includes('slozka.pl'))
             );
         }
@@ -102,8 +155,10 @@ export async function fetchFilesFromFolder(folderUrl: string, recursive: boolean
 }
 
 
-export function parseServerFiles(html: string): ParsedFile[] {
+export function parseServerFiles(html: string): { files: ParsedFile[], paginationLinks: string[] } {
     const doc = new DOMParser().parseFromString(html, 'text/html');
+    const files: ParsedFile[] = [];
+    const paginationLinks: string[] = [];
 
     // Check if this is a "Read document" page (detail page)
     const attachmentsLabel = Array.from(doc.querySelectorAll('td')).find(td => td.textContent?.includes('Attachments:') || td.textContent?.includes('Přílohy:'));
@@ -135,66 +190,130 @@ export function parseServerFiles(html: string): ParsedFile[] {
             const sanitizedAuthor = sanitizeString(author, 200);
             const validatedUrl = validateUrl(link, 'is.mendelu.cz');
 
-            if (!sanitizedName || !validatedUrl) {
-                console.warn('parseServerFiles: invalid file metadata');
-                return [];
+            if (sanitizedName && validatedUrl) {
+                return {
+                    files: [{
+                        subfolder: '',
+                        file_name: sanitizedName,
+                        file_comment: sanitizedComment,
+                        author: sanitizedAuthor,
+                        date: date,
+                        files: [{
+                            name: sanitizedName,
+                            type: type,
+                            link: validatedUrl
+                        }]
+                    }],
+                    paginationLinks: []
+                };
             }
-
-            return [{
-                subfolder: '',
-                file_name: sanitizedName,
-                file_comment: sanitizedComment,
-                author: sanitizedAuthor,
-                date: date,
-                files: [{
-                    name: sanitizedName,
-                    type: type,
-                    link: validatedUrl
-                }]
-            }];
         }
     }
 
     // Try multiple selectors to find the table rows
+    // The screenshot shows rows with alternating colors, likely standard IS Mendelu tables
     let rows = doc.querySelectorAll('tr.uis-hl-table.lbn');
-    console.log(`Found ${rows.length} rows with 'tr.uis-hl-table.lbn'`);
 
     // If no rows found, try less strict selector
     if (rows.length === 0) {
         rows = doc.querySelectorAll('tr.uis-hl-table');
-        console.log(`Found ${rows.length} rows with 'tr.uis-hl-table'`);
     }
 
-    // If still no rows, try even more general
+    // If still no rows, try even more general but filter for data rows
     if (rows.length === 0) {
-        rows = doc.querySelectorAll('table tr');
-        console.log(`Found ${rows.length} rows with 'table tr'`);
+        // Select all rows that have at least 5 cells (likely data rows)
+        const allRows = doc.querySelectorAll('table tr');
+        const dataRows: Element[] = [];
+        allRows.forEach(r => {
+            const cells = r.querySelectorAll('td');
+            // Check for data rows
+            if (cells.length >= 5) {
+                dataRows.push(r);
+            }
+        });
+
+        // Convert to NodeList-like structure for compatibility if needed, or just map
+        // For now, let's just iterate the array
+        rows = dataRows as any;
+        console.log(`Found ${rows.length} rows with generic 'table tr' filter`);
+    } else {
+        console.log(`Found ${rows.length} rows with specific class selectors`);
     }
 
-    const files: ParsedFile[] = [];
+    // Robust pagination detection: Scan ALL links in the document
+    // This avoids issues where pagination rows are not inside the expected table structure
+    const allLinks = doc.querySelectorAll('a');
+    allLinks.forEach(a => {
+        const href = a.getAttribute('href');
+        const text = a.textContent?.trim() || '';
 
-    rows.forEach((row, index) => {
+        // Check for pagination links
+        // Pattern 1: Text matches "11-20", "21-30", etc.
+        // Pattern 2: Link contains "typ=mod" (often used for pagination/sorting) AND text is numeric range
+        if (href && href.includes('slozka.pl') && !href.includes('download')) {
+            if (text.match(/^\d+-\d+$/)) {
+                if (!paginationLinks.includes(href)) {
+                    paginationLinks.push(href);
+                }
+            }
+        }
+    });
+
+    rows.forEach((row) => {
         const cells = row.querySelectorAll('td');
 
         // Skip rows with too few cells
-        if (cells.length < 6) {
-            // console.log(`Row ${index}: Skipped (too few cells: ${cells.length})`);
-            return;
-        }
+        // Based on screenshot: Folder | Name | Comment | Inserted By | Date | View | Attach
+        // That's 7 columns. Some might be hidden or merged.
+        // Let's be lenient and say at least 5.
+
 
         let adder = 0;
-        if (cells[0] && cells[0].classList.contains("UISTMNumberCell")) {
+        // Check for checkbox/number column
+        if (cells[0] && (cells[0].classList.contains("UISTMNumberCell") || cells[0].querySelector('input[type="checkbox"]'))) {
             adder = 1;
         }
 
-        // More lenient check
-        if (cells.length < (6 + adder)) {
-            // console.log(`Row ${index}: Skipped (too few cells with adder: ${cells.length}, adder: ${adder})`);
+        // More lenient check - if it has a link, we try to parse it
+        const hasLink = Array.from(cells).some(c => c.querySelector('a[href*="download"]') || c.querySelector('a[href*="slozka.pl"]'));
+
+        // We need at least 2 cells (Name + Link usually)
+        if (cells.length < 2) {
+            return;
+        }
+
+        // If it doesn't have a link and has few cells, skip it
+        if (!hasLink && cells.length < (5 + adder)) {
             return;
         }
 
         const subfolder = sanitizeString(cells[(adder)]?.textContent || '', 100);
-        const file_name = validateFileName(cells[(1 + adder)]?.textContent || '');
+        const nameCell = cells[(1 + adder)];
+        let link = nameCell?.querySelector('a');
+        let file_name = validateFileName(nameCell?.textContent || '');
+
+        // If the name cell doesn't have a link, look for it in other cells
+        if (!link) {
+            const allCells = Array.from(cells);
+            // Priority 1: Direct download link
+            const downloadLink = allCells.find(c => c.querySelector('a[href*="download"]'))?.querySelector('a');
+            if (downloadLink) {
+                link = downloadLink;
+            } else {
+                // Priority 2: Folder link or Document view link
+                const otherLink = allCells.find(c => c.querySelector('a[href*="slozka.pl"]') || c.querySelector('a[href*="dokumenty_cteni.pl"]'))?.querySelector('a');
+                if (otherLink) {
+                    link = otherLink;
+                }
+            }
+        }
+
+        if (!link) {
+            console.debug('Row skipped: No link found in any cell');
+            return;
+        }
+
+        // href at line 314 was unused, removing it.
         const file_comment = sanitizeString(cells[(2 + adder)]?.textContent || '', 500);
 
         const authorLink = cells[(3 + adder)]?.querySelector('a');
@@ -207,36 +326,67 @@ export function parseServerFiles(html: string): ParsedFile[] {
 
         // Skip rows with invalid/empty file names
         if (!file_name) {
+            console.debug('Row skipped: Empty file name');
             return;
         }
 
-        // Look for file links - try multiple cell indices
-        let filesCell = cells[(6 + adder)];
-        if (!filesCell) {
-            filesCell = cells[(5 + adder)]; // Try one cell earlier
-        }
+        console.debug(`Processing row: ${file_name}`);
 
-        if (!filesCell) {
-            // console.log(`Row ${index}: Skipped (no files cell found)`);
-            return;
-        }
+        // Look for file links - try multiple cell indices starting from the end
+        // Usually the last two columns are View and Attach
+        let filesCell = cells[cells.length - 1];
+        let viewCell = cells[cells.length - 2];
 
-        const fileLinks = filesCell.querySelectorAll('a');
-        // console.log(`Row ${index}: Found ${fileLinks.length} file links in cell. Cell content: ${filesCell.innerHTML.substring(0, 50)}...`);
+        // Collect links from both View and Attach cells
+        const potentialLinks: Element[] = [];
+        if (viewCell) potentialLinks.push(...Array.from(viewCell.querySelectorAll('a')));
+        if (filesCell) potentialLinks.push(...Array.from(filesCell.querySelectorAll('a')));
+
+        // Also add the main link we found if it's not already in potentialLinks (by href comparison)
+        // This handles cases where the link is in the name column or elsewhere but not in the last 2 columns
+        if (link && !potentialLinks.some(pl => pl.getAttribute('href') === link?.getAttribute('href'))) {
+            potentialLinks.push(link);
+        }
 
         const extractedFiles: FileAttachment[] = [];
-        fileLinks.forEach(link => {
+
+        potentialLinks.forEach(link => {
             const img = link.querySelector('img[sysid]');
             let href = link.getAttribute('href') || '';
 
-            // Clean up the link - IS Mendelu uses semicolons in URLs which causes 404s
-            // Replace ?; with ? and any remaining ; with &
-            href = href.replace(/\?;/g, '?').replace(/;/g, '&');
+            // Fix relative paths for document server scripts
+            // If it's a relative link like "slozka.pl?..." or "dokumenty_cteni.pl?...", 
+            // we need to make it absolute path relative to /auth/dok_server/
+            if (!href.startsWith('http') && !href.startsWith('/')) {
+                // Remove leading ./ if present
+                let cleanHref = href;
+                if (cleanHref.startsWith('./')) {
+                    cleanHref = cleanHref.substring(2);
+                }
+
+                if (cleanHref.startsWith('slozka.pl') || cleanHref.startsWith('dokumenty_cteni.pl')) {
+                    href = `/auth/dok_server/${cleanHref}`;
+                }
+            }
+
+            // DO NOT replace ; with & here. IS Mendelu needs ;
+            // Just ensure we don't have double ??
 
             // Validate URL before adding
             const validatedUrl = validateUrl(href, 'is.mendelu.cz');
             if (!validatedUrl) {
-                console.warn('parseServerFiles: invalid file URL', href);
+                return;
+            }
+
+            // Filter out navigation links / folders that look like files
+            if (file_name.includes('Všechny moje složky') ||
+                file_name.includes('Nadřazená složka') ||
+                file_name.includes('Zobrazení dokumentů') ||
+                file_name.includes('Strom od složky') ||
+                link.textContent?.includes('Všechny moje složky') ||
+                link.textContent?.includes('Nadřazená složka') ||
+                link.textContent?.includes('Zobrazení dokumentů') ||
+                link.textContent?.includes('Strom od složky')) {
                 return;
             }
 
@@ -250,6 +400,15 @@ export function parseServerFiles(html: string): ParsedFile[] {
                     link: validatedUrl
                 });
             } else if (href && (href.includes('download') || href.includes('.pl'))) {
+                // If it's a text link or other icon
+                // For folders (slozka.pl without download), we only want to add them if we are NOT recursing (handled in fetchFilesFromFolder)
+                // BUT parseServerFiles is used by fetchFilesFromFolder which then filters.
+                // However, we should be careful not to add "folder views" as "files" unless they are the only thing.
+
+                // Actually, fetchFilesFromFolder uses these entries to recurse. 
+                // So we MUST return them, but maybe mark them?
+                // The current logic adds them as "unknown" type files.
+
                 extractedFiles.push({
                     name: file_name || sanitizeString(link.textContent || 'Unknown', 200),
                     type: 'unknown',
@@ -259,7 +418,6 @@ export function parseServerFiles(html: string): ParsedFile[] {
         });
 
         if (extractedFiles.length > 0) {
-            console.log(`Extracted ${extractedFiles.length} files from row ${index}`);
             files.push({
                 subfolder,
                 file_name,
@@ -271,6 +429,6 @@ export function parseServerFiles(html: string): ParsedFile[] {
         }
     });
 
-    console.log(`Total files parsed: ${files.length}`);
-    return files;
+    console.log(`Total files parsed: ${files.length}, Pagination links: ${paginationLinks.length}`);
+    return { files, paginationLinks };
 }

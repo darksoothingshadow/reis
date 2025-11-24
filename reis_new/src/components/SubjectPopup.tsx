@@ -357,7 +357,7 @@ export function SubjectPopup(props: SubjectPopupPropsV2) {
                 }
 
                 // Secondary sort: Filename
-                return a.file_name.localeCompare(b.file_name, 'cs');
+                return a.file_name.localeCompare(b.file_name, 'cs', { numeric: true });
             });
             sortedFiles.push(...folderFiles);
         });
@@ -392,12 +392,17 @@ export function SubjectPopup(props: SubjectPopupPropsV2) {
     };
 
     const handleSelectAll = (filteredFiles: FileObject[]) => {
-        const allIds = filteredFiles.flatMap(f => f.files.map(subFile => subFile.link)); // Using link as ID since it's unique
+        const visibleIds = filteredFiles.flatMap(f => f.files.map(subFile => subFile.link));
 
-        if (selectedFileIds.length === allIds.length) {
-            setSelectedFileIds([]);
+        // Check if all visible files are currently selected
+        const allVisibleSelected = visibleIds.length > 0 && visibleIds.every(id => selectedFileIds.includes(id));
+
+        if (allVisibleSelected) {
+            // Deselect visible files, keep others
+            setSelectedFileIds(prev => prev.filter(id => !visibleIds.includes(id)));
         } else {
-            setSelectedFileIds(allIds);
+            // Select all visible files, keep others
+            setSelectedFileIds(prev => [...new Set([...prev, ...visibleIds])]);
         }
     };
 
@@ -512,6 +517,13 @@ export function SubjectPopup(props: SubjectPopupPropsV2) {
         );
     }
     //
+    // Calculate visible files for rendering and selection
+    const visibleFiles = files ? groupFilesByFolder(files) : [];
+    const visibleCount = visibleFiles.flatMap(f => f.files).length;
+    const selectedVisibleCount = visibleFiles.flatMap(f => f.files).filter(sf => selectedFileIds.includes(sf.link)).length;
+    const allVisibleSelected = visibleCount > 0 && selectedVisibleCount === visibleCount;
+    const someVisibleSelected = selectedVisibleCount > 0 && !allVisibleSelected;
+
     return (
         <div className="fixed z-[999] top-0 left-0 w-screen h-screen flex justify-center items-center bg-black/50 backdrop-grayscale font-dm p-8" onClick={handleBackdropClick}>
             {/*Window*/}
@@ -552,15 +564,15 @@ export function SubjectPopup(props: SubjectPopupPropsV2) {
                                 {files && files.length > 0 && (
                                     <div
                                         className="w-5 h-5 rounded border-2 border-gray-600 bg-white flex items-center justify-center cursor-pointer hover:border-primary transition-colors"
-                                        onClick={() => handleSelectAll(files)}
+                                        onClick={() => handleSelectAll(visibleFiles)}
                                     >
-                                        {selectedFileIds.length > 0 && selectedFileIds.length === files.flatMap(f => f.files).length && (
+                                        {allVisibleSelected && (
                                             <Check size={14} className="text-primary" strokeWidth={3} />
                                         )}
-                                        {selectedFileIds.length > 0 && selectedFileIds.length < files.flatMap(f => f.files).length && (
+                                        {someVisibleSelected && (
                                             <div className="w-2.5 h-2.5 bg-primary rounded-sm" />
                                         )}
-                                        {selectedFileIds.length === 0 && (
+                                        {!allVisibleSelected && !someVisibleSelected && (
                                             <Minus size={14} className="text-gray-400" strokeWidth={2} />
                                         )}
                                     </div>
@@ -589,7 +601,7 @@ export function SubjectPopup(props: SubjectPopupPropsV2) {
                                 </div>
                             ) : files === null || files.length === 0 ? (
                                 <div className="w-full h-32 flex justify-center items-center">
-                                    <span className="text-sm text-gray-500">Žádné soubory nejsou dostupné</span>
+                                    <span className="text-sm text-gray-500">Ve složce nejsou žádné soubory</span>
                                 </div>
                             ) : loadingfile ? (
                                 <div className="w-full h-32 flex justify-center items-center">
@@ -597,7 +609,7 @@ export function SubjectPopup(props: SubjectPopupPropsV2) {
                                     <span className="ml-3 text-sm text-gray-500">Otevírání souboru...</span>
                                 </div>
                             ) : (
-                                groupFilesByFolder(files).map((data, i) =>
+                                visibleFiles.map((data, i) =>
                                     data.files.map((subFile, l) => {
                                         const isSelected = selectedFileIds.includes(subFile.link);
                                         return (
