@@ -5,6 +5,8 @@ import { GetIdFromLink } from "../utils/calendarUtils";
 import { getFilesFromId, getStoredSubject } from "../utils/apiUtils";
 import type { FileObject, StoredSubject, BlockLesson } from "../types/calendarTypes";
 import { useEffect, useState, useRef } from "react";
+import { resolveFinalFileUrl } from "../utils/fileUtils";
+
 
 export interface SubjectPopupPropsV2 {
     code: BlockLesson,
@@ -39,92 +41,6 @@ export function RenderEmptySubject(props: { code: string, setter: () => void }) 
             <span className="w-full h-8 xl:h-16 text-gray-800 flex flex-col justify-center items-center font-dm text-base xl:text-2xl">{`Předmět ${props.code} nenalezen v lokálním uložišti`}</span>
         </div>
     )
-}
-
-// Helper to resolve the final file URL (handling intermediate pages and path corrections)
-async function resolveFinalFileUrl(link: string): Promise<string> {
-    // Clean up the link - IS Mendelu uses semicolons in URLs which causes 404s
-    // Replace ?; with ? and any remaining ; with &
-    link = link.replace(/\?;/g, '?').replace(/;/g, '&');
-
-    // Check if it's a "dokumenty_cteni.pl" link (view link)
-    // We can directly construct the download link and bypass the intermediate page
-    if (link.includes('dokumenty_cteni.pl')) {
-        try {
-            // Extract parameters
-            // Handle both & and ; as separators
-            const normalizedLink = link.replace(/;/g, '&').replace(/\?/g, '&');
-            const idMatch = normalizedLink.match(/[&]id=(\d+)/);
-            const dokMatch = normalizedLink.match(/[&]dok=(\d+)/);
-
-            if (idMatch && dokMatch) {
-                const id = idMatch[1];
-                const dok = dokMatch[1];
-                // Construct direct download URL
-                // Using z=1 as requested by user
-                return `https://is.mendelu.cz/auth/dok_server/slozka.pl?download=${dok}&id=${id}&z=1`;
-            }
-        } catch (e) {
-            console.warn('Failed to construct direct download URL:', e);
-            // Fallback to standard processing if extraction fails
-        }
-    }
-
-    // Construct the full URL for other cases
-    let fullUrl = '';
-    if (link.startsWith('http')) {
-        fullUrl = link;
-    } else {
-        // It's usually relative to /auth/dok_server/
-        if (link.startsWith('/')) {
-            fullUrl = `https://is.mendelu.cz${link}`;
-        } else {
-            fullUrl = `https://is.mendelu.cz/auth/dok_server/${link}`;
-        }
-    }
-
-    // Check if we need to find the download link (if it's an intermediate page)
-    // dokumenty_cteni.pl IS an intermediate page that contains the download link
-    if (!fullUrl.includes('download=')) {
-        try {
-            const pageResponse = await fetch(fullUrl, { credentials: 'include' });
-            const pageText = await pageResponse.text();
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(pageText, 'text/html');
-
-            // Look for the download link: <a> containing <img sysid> and href with 'download='
-            const downloadLink = Array.from(doc.querySelectorAll('a')).find(a =>
-                a.href.includes('download=') && a.querySelector('img[sysid]')
-            );
-
-            if (downloadLink) {
-                let newLink = downloadLink.getAttribute('href');
-                if (newLink) {
-                    // Handle relative paths
-                    if (!newLink.startsWith('http')) {
-                        if (newLink.startsWith('/')) {
-                            if (newLink.includes('dokumenty_cteni.pl')) {
-                                fullUrl = `https://is.mendelu.cz/auth/dok_server${newLink}`;
-                            } else {
-                                fullUrl = `https://is.mendelu.cz${newLink}`;
-                            }
-                        } else {
-                            fullUrl = `https://is.mendelu.cz/auth/dok_server/${newLink}`;
-                        }
-                    } else {
-                        fullUrl = newLink;
-                        if (fullUrl.includes('dokumenty_cteni.pl') && !fullUrl.includes('/auth/')) {
-                            fullUrl = fullUrl.replace('is.mendelu.cz/dokumenty_cteni.pl', 'is.mendelu.cz/auth/dok_server/dokumenty_cteni.pl');
-                        }
-                    }
-                }
-            }
-        } catch (e) {
-            console.warn('Failed to parse intermediate page:', e);
-            // Fallback to original URL if parsing fails
-        }
-    }
-    return fullUrl;
 }
 
 export function SubjectPopup(props: SubjectPopupPropsV2) {

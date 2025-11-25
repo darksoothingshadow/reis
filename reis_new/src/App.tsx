@@ -1,9 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
 import { Sidebar } from './components/Sidebar'
 import { SearchBar } from './components/SearchBar'
 import { SchoolCalendar } from './components/SchoolCalendar'
 import { DashboardWidgets } from './components/DashboardWidgets'
+import { DriveSetupWizard } from './components/DriveSetupWizard'
+import { SyncService } from './services/sync_service'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { getSmartWeekRange } from './utils/calendarUtils'
 
@@ -12,6 +14,20 @@ function App() {
     const { start } = getSmartWeekRange();
     return start;
   });
+  const [showDriveWizard, setShowDriveWizard] = useState(false);
+
+  useEffect(() => {
+    const checkDriveSetup = async () => {
+      const syncService = SyncService.getInstance();
+      const settings = await syncService.getSettings();
+      const dismissed = await syncService.isSetupDismissed();
+
+      if (!settings.isAuthorized && !dismissed) {
+        setShowDriveWizard(true);
+      }
+    };
+    checkDriveSetup();
+  }, []);
 
   const handlePrevWeek = () => {
     const newDate = new Date(currentDate);
@@ -36,6 +52,15 @@ function App() {
 
   return (
     <div className="flex min-h-screen bg-white font-sans text-gray-900">
+      {showDriveWizard && (
+        <DriveSetupWizard
+          onComplete={() => setShowDriveWizard(false)}
+          onClose={async () => {
+            setShowDriveWizard(false);
+            await SyncService.getInstance().dismissSetup();
+          }}
+        />
+      )}
       <Sidebar />
       <main className="flex-1 ml-0 md:ml-20 transition-all duration-300">
         <div className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-gray-200 px-8 py-4">
@@ -63,7 +88,7 @@ function App() {
               <SearchBar />
             </div>
 
-            <div className="w-[200px]"></div> {/* Spacer to balance layout if needed, or add profile/actions here */}
+            <div className="w-[200px]"></div>
           </div>
         </div>
 

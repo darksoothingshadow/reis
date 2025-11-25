@@ -4,8 +4,19 @@
     "version": "2.0.0",
     "description": "Modernized reIS extension for IS Mendelu",
     "permissions": [
-        "storage"
+        "storage",
+        "identity",
+        "alarms"
     ],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "oauth2": {
+        "client_id": "576873601004-apldk3o75gacgqqr8la5mtodaj5ngrsa.apps.googleusercontent.com",
+        "scopes": [
+            "https://www.googleapis.com/auth/drive.file"
+        ]
+    },
     "content_security_policy": {
         "extension_pages": "script-src 'self'; object-src 'self'; font-src 'self'; style-src 'self'"
     },
@@ -31,6 +42,8 @@
                 "mendelu_logo_16.png",
                 "mendelu_logo_48.png",
                 "mendelu_logo_128.png",
+                "google_drive_logo.svg",
+                "drive_icon.svg",
                 "fonts/*"
             ],
             "matches": [

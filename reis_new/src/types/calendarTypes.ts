@@ -58,6 +58,7 @@ export interface FileObject {
 }
 
 export interface StoredSubject {
+    code?: string;
     fullName: string;
     folderUrl: string;
     // Add other properties if needed based on usage

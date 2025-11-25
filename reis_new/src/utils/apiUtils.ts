@@ -70,6 +70,7 @@ export async function getStoredSubject(courseCode: string): Promise<StoredSubjec
             }
 
             return {
+                code: courseCode,
                 fullName: subject.fullName,
                 folderUrl: subject.folderUrl
             };
@@ -131,5 +132,36 @@ export async function getFilesFromId(folderId: string | null): Promise<FileObjec
     } catch (error) {
         console.error("Error fetching files:", error);
         return null;
+    }
+}
+
+export async function getAllStoredSubjects(): Promise<StoredSubject[]> {
+    try {
+        const now = Date.now();
+        const STORAGE_KEY = 'subjects_cache';
+        const CACHE_DURATION = 5 * 60 * 1000;
+
+        let subjectsCache = await getChromeStorageData<{ data: string, timestamp: number }>(STORAGE_KEY);
+
+        if (!subjectsCache || (now - subjectsCache.timestamp > CACHE_DURATION)) {
+            const subjectsData = await fetchSubjects();
+            if (!subjectsData) return [];
+
+            const encryptedData = await encryptData(JSON.stringify(subjectsData.data));
+            subjectsCache = { data: encryptedData, timestamp: now };
+            await setChromeStorageData(STORAGE_KEY, subjectsCache);
+        }
+
+        const decryptedData = await decryptData(subjectsCache.data);
+        const parsedData = JSON.parse(decryptedData);
+
+        return Object.entries(parsedData).map(([code, s]: [string, any]) => ({
+            code,
+            fullName: s.fullName,
+            folderUrl: s.folderUrl
+        }));
+    } catch (error) {
+        console.error("Error fetching all stored subjects:", error);
+        return [];
     }
 }
