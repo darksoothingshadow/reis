@@ -60,7 +60,7 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
 
             chrome.identity.launchWebAuthFlow({
                 url: authUrl.toString(),
-                interactive: true
+                interactive: request.interactive ?? false
             }, (redirectUrl) => {
                 if (chrome.runtime.lastError) {
                     console.error("[Background] Auth error:", chrome.runtime.lastError);

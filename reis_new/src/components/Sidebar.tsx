@@ -18,6 +18,21 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { MENDELU_LOGO_PATH } from '../constants/icons';
 import { useUserParams } from '../hooks/useUserParams';
+import { Switch } from './ui/switch';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "./ui/alert-dialog";
+import { SyncService } from '../services/sync_service';
+import { GoogleDriveService } from '../services/google_drive';
+import { DriveSetupWizard } from './DriveSetupWizard';
+import { useEffect } from 'react';
 
 
 interface MenuItem {
@@ -40,6 +55,34 @@ export const Sidebar = () => {
   const { params } = useUserParams();
   const studiumId = params?.studium || '';
   const obdobiId = params?.obdobi || '';
+
+  const [driveEnabled, setDriveEnabled] = useState(false);
+  const [showDriveWizard, setShowDriveWizard] = useState(false);
+  const [showDisconnectConfirm, setShowDisconnectConfirm] = useState(false);
+
+  useEffect(() => {
+    checkDriveStatus();
+  }, []);
+
+  const checkDriveStatus = async () => {
+    const settings = await SyncService.getInstance().getSettings();
+    setDriveEnabled(settings.isAuthorized);
+  };
+
+  const handleDriveToggle = (checked: boolean) => {
+    if (checked) {
+      setShowDriveWizard(true);
+    } else {
+      setShowDisconnectConfirm(true);
+    }
+  };
+
+  const handleDisconnect = async () => {
+    await GoogleDriveService.getInstance().signOut();
+    await SyncService.getInstance().clearSettings();
+    setDriveEnabled(false);
+    setShowDisconnectConfirm(false);
+  };
 
   // Menu configuration
   const mainMenuItems: MenuItem[] = [
@@ -212,12 +255,87 @@ export const Sidebar = () => {
             <Mail className="w-5 h-5 group-hover:scale-110 transition-transform" />
             <span className="text-[10px] mt-1 font-medium">Outlook</span>
           </a>
-          <button className="w-12 h-12 rounded-xl flex flex-col items-center justify-center text-gray-500 hover:bg-white hover:text-gray-900 hover:shadow-sm transition-all mx-auto">
-            <Settings className="w-5 h-5" />
-            <span className="text-[10px] mt-1 font-medium">Profil</span>
-          </button>
+          <div
+            className="relative group"
+            onMouseEnter={() => handleMouseEnter('profile')}
+            onMouseLeave={handleMouseLeave}
+          >
+            <button className="w-12 h-12 rounded-xl flex flex-col items-center justify-center text-gray-500 hover:bg-white hover:text-gray-900 hover:shadow-sm transition-all mx-auto">
+              <Settings className="w-5 h-5" />
+              <span className="text-[10px] mt-1 font-medium">Profil</span>
+            </button>
+
+            <AnimatePresence>
+              {hoveredItem === 'profile' && (
+                <motion.div
+                  initial={{ opacity: 0, x: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, x: 0, scale: 1 }}
+                  exit={{ opacity: 0, x: 10, scale: 0.95 }}
+                  transition={{ duration: 0.15, ease: "easeOut" }}
+                  className="absolute left-14 bottom-0 w-72 bg-white rounded-xl shadow-xl border border-gray-100 p-4 z-50"
+                  style={{ bottom: '0' }}
+                >
+                  <div className="px-1 py-1 border-b border-gray-50 mb-3">
+                    <h3 className="font-semibold text-gray-900">Nastavení profilu</h3>
+                  </div>
+
+                  <div className="space-y-4">
+                    {/* Outlook Sync */}
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex-1">
+                        <div className="text-sm font-medium text-gray-700">Outlook kalendář</div>
+                        <div className="text-xs text-gray-400">Synchronizace rozvrhu</div>
+                      </div>
+                      <Switch disabled checked={false} />
+                    </div>
+
+                    {/* Google Drive Sync */}
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex-1">
+                        <div className="text-sm font-medium text-gray-700">Google Drive</div>
+                        <div className="text-xs text-gray-400">Záloha materiálů</div>
+                      </div>
+                      <Switch
+                        checked={driveEnabled}
+                        onCheckedChange={handleDriveToggle}
+                      />
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </aside>
+
+      {/* Drive Setup Wizard */}
+      {showDriveWizard && (
+        <DriveSetupWizard
+          onComplete={() => {
+            setShowDriveWizard(false);
+            checkDriveStatus();
+          }}
+          onClose={() => setShowDriveWizard(false)}
+        />
+      )}
+
+      {/* Disconnect Confirmation */}
+      <AlertDialog open={showDisconnectConfirm} onOpenChange={setShowDisconnectConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Odpojit Google Drive?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tímto zastavíte automatickou synchronizaci souborů. Vaše již nahrané soubory na Disku zůstanou zachovány.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Zrušit</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDisconnect} className="bg-red-600 hover:bg-red-700">
+              Odpojit
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };

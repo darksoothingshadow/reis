@@ -54,6 +54,13 @@ export class SyncService {
     }
 
     /**
+     * Clear Drive settings (disconnect)
+     */
+    public async clearSettings(): Promise<void> {
+        await chrome.storage.local.remove(['driveSettings']);
+    }
+
+    /**
      * Sync a specific subject
      */
     public async syncSubject(courseCode: string, onProgress?: (status: SyncStatus) => void): Promise<void> {

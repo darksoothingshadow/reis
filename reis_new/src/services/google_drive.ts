@@ -27,10 +27,10 @@ export class GoogleDriveService {
     /**
      * Authenticate with Google Drive using Chrome Identity API (via background script)
      */
-    public async authenticate(): Promise<string> {
-        console.log('[GoogleDrive] Sending auth request to background...');
+    public async authenticate(interactive: boolean = false): Promise<string> {
+        console.log(`[GoogleDrive] Sending auth request to background (interactive: ${interactive})...`);
         return new Promise((resolve, reject) => {
-            chrome.runtime.sendMessage({ type: 'AUTH_GOOGLE_DRIVE' }, (response) => {
+            chrome.runtime.sendMessage({ type: 'AUTH_GOOGLE_DRIVE', interactive }, (response) => {
                 console.log('[GoogleDrive] Response received:', response);
                 if (chrome.runtime.lastError) {
                     console.error('[GoogleDrive] Runtime error:', chrome.runtime.lastError);
@@ -59,7 +59,7 @@ export class GoogleDriveService {
      */
     public async getToken(): Promise<string> {
         if (this.token) return this.token;
-        return this.authenticate();
+        return this.authenticate(false);
     }
 
     /**
@@ -109,7 +109,12 @@ export class GoogleDriveService {
                 chrome.identity.removeCachedAuthToken({ token }, () => resolve());
             });
             this.token = null;
-            token = await this.getToken();
+            try {
+                token = await this.authenticate(false);
+            } catch (e) {
+                console.log("Silent refresh failed, token expired.");
+                throw new Error("Token expired");
+            }
             response = await makeRequest(token);
         }
 

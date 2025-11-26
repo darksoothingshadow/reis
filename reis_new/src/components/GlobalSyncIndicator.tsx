@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { CloudOff, Check, AlertCircle, Loader2 } from 'lucide-react';
+import { CloudOff, Check, AlertCircle, Loader2, Settings } from 'lucide-react';
 import { SyncService } from '../services/sync_service';
+import { DriveSetupWizard } from './DriveSetupWizard';
 
 interface SyncStatus {
     isSyncing: boolean;
@@ -13,6 +14,7 @@ export function GlobalSyncIndicator() {
     const [isSyncing, setIsSyncing] = useState(false);
     const [lastSync, setLastSync] = useState<number | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [showWizard, setShowWizard] = useState(false);
 
     useEffect(() => {
         checkStatus();
@@ -77,22 +79,43 @@ export function GlobalSyncIndicator() {
     }
 
     return (
-        <button
-            onClick={handleManualSync}
-            disabled={isSyncing}
-            className="flex items-center gap-2 text-sm hover:bg-gray-50 px-3 py-2 rounded-lg transition-colors disabled:opacity-50"
-            title={`Poslední synchronizace: ${getTimeSinceLastSync()}`}
-        >
-            {isSyncing ? (
-                <Loader2 size={18} className="animate-spin text-blue-500" />
-            ) : error ? (
-                <AlertCircle size={18} className="text-red-500" />
-            ) : (
-                <Check size={18} className="text-green-500" />
+        <>
+            <div className="flex items-center gap-2">
+                <button
+                    onClick={handleManualSync}
+                    disabled={isSyncing}
+                    className="flex items-center gap-2 text-sm hover:bg-gray-50 px-3 py-2 rounded-lg transition-colors disabled:opacity-50"
+                    title={`Poslední synchronizace: ${getTimeSinceLastSync()}`}
+                >
+                    {isSyncing ? (
+                        <Loader2 size={18} className="animate-spin text-blue-500" />
+                    ) : error ? (
+                        <AlertCircle size={18} className="text-red-500" />
+                    ) : (
+                        <Check size={18} className="text-green-500" />
+                    )}
+                    <span className="hidden lg:inline text-gray-600">
+                        {getTimeSinceLastSync()}
+                    </span>
+                </button>
+                <button
+                    onClick={() => setShowWizard(true)}
+                    className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+                    title="Nastavení Google Drive"
+                >
+                    <Settings size={18} />
+                </button>
+            </div>
+
+            {showWizard && (
+                <DriveSetupWizard
+                    onComplete={() => {
+                        setShowWizard(false);
+                        checkStatus(); // Refresh status
+                    }}
+                    onClose={() => setShowWizard(false)}
+                />
             )}
-            <span className="hidden lg:inline text-gray-600">
-                {getTimeSinceLastSync()}
-            </span>
-        </button>
+        </>
     );
 }

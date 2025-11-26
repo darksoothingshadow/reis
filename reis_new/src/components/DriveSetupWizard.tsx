@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { GoogleDriveService } from '../services/google_drive';
 import { SyncService } from '../services/sync_service';
 import { DRIVE_CONSTANTS } from '../constants/drive';
-import { Cloud, Check, Loader2, AlertCircle, X } from 'lucide-react';
+import { Cloud, Check, Loader2, AlertCircle, X, FolderSearch } from 'lucide-react';
+import { DriveFolderPicker } from './DriveFolderPicker';
 
 interface DriveSetupWizardProps {
     onComplete: () => void;
@@ -13,6 +14,8 @@ export function DriveSetupWizard({ onComplete, onClose }: DriveSetupWizardProps)
     const [step, setStep] = useState<'intro' | 'folder' | 'loading' | 'success'>('intro');
     const [folderMode, setFolderMode] = useState<'auto' | 'custom'>('auto');
     const [customFolderId, setCustomFolderId] = useState('');
+    const [customFolderName, setCustomFolderName] = useState('');
+    const [showPicker, setShowPicker] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const driveService = GoogleDriveService.getInstance();
@@ -35,15 +38,8 @@ export function DriveSetupWizard({ onComplete, onClose }: DriveSetupWizardProps)
             let folderName: string;
 
             if (folderMode === 'custom') {
-                // Validate custom folder ID
-                const isValid = await driveService.validateFolderId(customFolderId.trim());
-                if (!isValid) {
-                    setError('Neplatné ID složky. Zkontrolujte prosím a zkuste to znovu.');
-                    setStep('folder');
-                    return;
-                }
                 folderId = customFolderId.trim();
-                folderName = 'Custom Folder'; // Name doesn't matter for custom
+                folderName = customFolderName || 'Custom Folder';
             } else {
                 // Auto-create default folder
                 let folder = await driveService.searchFolder(DEFAULT_FOLDER_NAME);
@@ -105,6 +101,17 @@ export function DriveSetupWizard({ onComplete, onClose }: DriveSetupWizardProps)
     if (step === 'folder') {
         return (
             <div className="fixed z-[1000] inset-0 flex justify-center items-center bg-black/50 backdrop-blur-sm font-dm p-4">
+                {showPicker && (
+                    <DriveFolderPicker
+                        initialFolderId={customFolderId || undefined}
+                        onSelect={(id, name) => {
+                            setCustomFolderId(id);
+                            setCustomFolderName(name);
+                            setShowPicker(false);
+                        }}
+                        onCancel={() => setShowPicker(false)}
+                    />
+                )}
                 <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden relative">
                     <button
                         onClick={onClose}
@@ -159,24 +166,28 @@ export function DriveSetupWizard({ onComplete, onClose }: DriveSetupWizardProps)
                         </div>
 
                         {folderMode === 'custom' && (
-                            <div className="space-y-2 pl-10">
-                                <label className="text-sm font-medium text-gray-700">ID složky Google Drive</label>
-                                <input
-                                    type="text"
-                                    value={customFolderId}
-                                    onChange={(e) => setCustomFolderId(e.target.value)}
-                                    placeholder="Vložte ID složky..."
-                                    className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-[#8DC843] focus:outline-none transition-colors"
-                                />
-                                <details className="text-xs text-gray-500">
-                                    <summary className="cursor-pointer hover:text-gray-700">Jak získat ID složky?</summary>
-                                    <ol className="mt-2 ml-4 space-y-1 list-decimal">
-                                        <li>Otevřete Google Drive</li>
-                                        <li>Přejděte do požadované složky</li>
-                                        <li>Zkontrolujte URL: <code className="bg-gray-100 px-1 rounded">drive.google.com/drive/folders/XXXXX</code></li>
-                                        <li>Zkopírujte část XXXXX</li>
-                                    </ol>
-                                </details>
+                            <div className="pl-10">
+                                <button
+                                    onClick={() => setShowPicker(true)}
+                                    className="w-full flex items-center justify-between px-4 py-3 bg-white border-2 border-gray-200 rounded-xl hover:border-gray-300 hover:bg-gray-50 transition-all group"
+                                >
+                                    <div className="flex items-center gap-3 overflow-hidden">
+                                        <div className="p-2 bg-blue-50 text-blue-500 rounded-lg group-hover:bg-blue-100 transition-colors">
+                                            <FolderSearch size={20} />
+                                        </div>
+                                        <div className="flex flex-col items-start overflow-hidden">
+                                            <span className="text-sm font-medium text-gray-900 truncate max-w-[200px]">
+                                                {customFolderName || "Vybrat složku..."}
+                                            </span>
+                                            {customFolderName && (
+                                                <span className="text-xs text-gray-400">Klikněte pro změnu</span>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="px-3 py-1 text-xs font-semibold bg-gray-100 text-gray-600 rounded-md group-hover:bg-gray-200 transition-colors">
+                                        Procházet
+                                    </div>
+                                </button>
                             </div>
                         )}
 
