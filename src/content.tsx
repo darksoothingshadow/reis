@@ -16,6 +16,15 @@ function injectDmSansFont() {
     document.head.appendChild(fontLink);
 }
 
+// ✨ 3. Inject Favicon
+function injectFavicon() {
+    const link = document.createElement('link');
+    link.type = 'image/png';
+    link.rel = 'icon';
+    link.href = chrome.runtime.getURL('mendelu_logo_128.png');
+    document.head.appendChild(link);
+}
+
 async function firstLoad() {
     //LOGIN CHECK
     const contains = document.body.innerHTML.includes("/system/login.pl");
@@ -39,6 +48,7 @@ async function firstLoad() {
 
     // ✨ 2. Call the function to add the font link to the new, empty head.
     injectDmSansFont();
+    injectFavicon();
 
     document.documentElement.style.fontFamily = '"DM Sans", sans-serif';
 

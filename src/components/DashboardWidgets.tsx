@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
-import { Clock, MapPin, Calendar } from 'lucide-react';
+import { Clock, MapPin } from 'lucide-react';
 import { fetchWeekSchedule } from '../api/schedule';
-import { fetchExams, getCachedExams } from '../api/exams';
+import { fetchExamData } from '../api/exams';
 import { timeToMinutes, getSmartWeekRange } from '../utils/calendarUtils';
+import { parseDate } from '../utils/dateHelpers';
 import type { BlockLesson } from '../types/calendarTypes';
 
 export function DashboardWidgets() {
     const [nextClass, setNextClass] = useState<BlockLesson | null>(null);
+    const [currentClass, setCurrentClass] = useState<BlockLesson | null>(null);
+    const [minutesUntil, setMinutesUntil] = useState<number | null>(null);
     const [upcomingExams, setUpcomingExams] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -25,48 +28,99 @@ export function DashboardWidgets() {
                 const currentDayStr = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`;
                 const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
-                // Filter for classes happening today after now, or future days
-                const futureClasses = schedule.filter(lesson => {
-                    // Parse lesson date
-                    // lesson.date is YYYYMMDD
-                    if (lesson.date > currentDayStr) return true;
-                    if (lesson.date === currentDayStr) {
-                        const start = timeToMinutes(lesson.startTime);
-                        return start > currentMinutes;
-                    }
-                    return false;
-                });
-
-                // Sort by date and time
-                futureClasses.sort((a, b) => {
+                // Sort by date and time first
+                schedule.sort((a, b) => {
                     if (a.date !== b.date) return a.date.localeCompare(b.date);
                     return timeToMinutes(a.startTime) - timeToMinutes(b.startTime);
                 });
 
-                if (futureClasses.length > 0) {
-                    setNextClass(futureClasses[0]);
+                let foundCurrent = null;
+                let foundNext = null;
+
+                for (const lesson of schedule) {
+                    const start = timeToMinutes(lesson.startTime);
+                    const end = timeToMinutes(lesson.endTime);
+
+                    // Check if it's today
+                    if (lesson.date === currentDayStr) {
+                        // Check if currently happening
+                        if (currentMinutes >= start && currentMinutes <= end) {
+                            foundCurrent = lesson;
+                            break; // Priority to current class
+                        }
+                        // Check if future today
+                        if (start > currentMinutes) {
+                            if (!foundNext) foundNext = lesson;
+                            // We don't break here because we might find a "current" one later if sorting was weird, 
+                            // but we sorted, so actually we can break if we only care about the *first* next.
+                            // But let's keep searching for a potential "current" one just in case of overlaps? 
+                            // Actually, if we sorted by time, the first one > currentMinutes is the next one.
+                            // If we found a next one, we can stop searching for next, but we still need to check for current.
+                            // Since we sorted, if we are at index i, and start > current, we can't be "in" it.
+                            break;
+                        }
+                    } else if (lesson.date > currentDayStr) {
+                        // Future day
+                        if (!foundNext) {
+                            foundNext = lesson;
+                            break; // Found the first class of a future day
+                        }
+                    }
+                }
+
+                setCurrentClass(foundCurrent);
+                setNextClass(foundNext);
+
+                if (foundNext) {
+                    // Calculate minutes until
+                    // If it's today
+                    if (foundNext.date === currentDayStr) {
+                        const start = timeToMinutes(foundNext.startTime);
+                        setMinutesUntil(start - currentMinutes);
+                    } else {
+                        // If it's a future day, we can just show the date/time, no minute countdown usually needed unless it's very close.
+                        // For simplicity, let's null out minutesUntil if it's not today, or calculate full diff.
+                        // User request: "countdown how many minutes until the start"
+                        // Let's do it only if it's today for now, or maybe < 24h?
+                        // Simple approach: only today.
+                        setMinutesUntil(null);
+                    }
                 } else {
-                    setNextClass(null);
+                    setMinutesUntil(null);
                 }
             }
 
             // 2. Fetch Exams
-            let exams = await getCachedExams();
-            if (!exams || exams.length === 0) {
-                exams = await fetchExams();
-            }
+            const subjects = await fetchExamData();
 
-            if (exams) {
+            if (subjects) {
+                // Flatten to exams
+                const exams: any[] = [];
+                subjects.forEach(subject => {
+                    subject.sections.forEach(section => {
+                        if (section.status === 'registered' && section.registeredTerm) {
+                            const cleanSubjectName = subject.name.replace(/ZS\s+\d{4}\/\d{4}\s+-\s+\w+(\s+-\s+)?/, '').trim();
+                            const cleanSectionName = section.name.charAt(0).toUpperCase() + section.name.slice(1);
+
+                            exams.push({
+                                title: cleanSubjectName ? `${cleanSubjectName} - ${cleanSectionName}` : cleanSectionName,
+                                start: parseDate(section.registeredTerm.date, section.registeredTerm.time),
+                                location: section.registeredTerm.room || 'Unknown'
+                            });
+                        }
+                    });
+                });
+
                 // Filter for next 14 days
                 const twoWeeksFromNow = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
 
                 const upcoming = exams.filter((exam: any) => {
-                    const examDate = new Date(exam.start);
+                    const examDate = exam.start;
                     return examDate >= now && examDate <= twoWeeksFromNow;
                 });
 
                 // Sort by date
-                upcoming.sort((a: any, b: any) => new Date(a.start).getTime() - new Date(b.start).getTime());
+                upcoming.sort((a: any, b: any) => a.start.getTime() - b.start.getTime());
                 setUpcomingExams(upcoming);
             }
 
@@ -89,31 +143,46 @@ export function DashboardWidgets() {
         return days[dayIndex];
     };
 
+    const formatCountdown = (minutes: number) => {
+        if (minutes <= 60) return `${minutes} min`;
+        if (minutes <= 120) {
+            const h = Math.floor(minutes / 60);
+            const m = minutes % 60;
+            return `${h}h ${m}min`;
+        }
+        return `${Math.floor(minutes / 60)}h`;
+    };
+
     if (loading) return null; // Or a skeleton loader
+
+    // Determine what to display in the first widget
+    const displayClass = currentClass || nextClass;
+    const isCurrent = !!currentClass;
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            {/* Next Class Widget */}
+            {/* Next/Current Class Widget */}
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col justify-between relative overflow-hidden group hover:shadow-md transition-all">
-                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                    <Clock size={80} className="text-primary" />
-                </div>
 
                 <div>
-                    <h3 className="text-gray-500 text-sm font-medium uppercase tracking-wide mb-1">Následující hodina</h3>
-                    {nextClass ? (
+                    <h3 className="text-gray-500 text-sm font-medium uppercase tracking-wide mb-1">
+                        {isCurrent ? 'Teďka jsi na:' : 'Následující hodina'}
+                    </h3>
+                    {displayClass ? (
                         <>
-                            <div className="text-2xl font-bold text-gray-900 line-clamp-1" title={nextClass.courseName}>
-                                {nextClass.courseName}
+                            <div className="text-2xl font-bold text-gray-900 line-clamp-1" title={displayClass.courseName}>
+                                {displayClass.courseName}
                             </div>
                             <div className="flex items-center gap-2 mt-2 text-gray-600">
-                                <span className="font-medium text-primary bg-primary/10 px-2 py-0.5 rounded text-sm">
-                                    {getDayName(nextClass.date)} • {nextClass.startTime}
+                                <span className={`font-medium px-2 py-0.5 rounded text-sm ${isCurrent ? 'bg-emerald-100 text-emerald-700' : 'bg-primary/10 text-primary'}`}>
+                                    {isCurrent ? 'Právě probíhá' : (
+                                        minutesUntil !== null ? `Začíná za ${formatCountdown(minutesUntil)}` : `${getDayName(displayClass.date)} • ${displayClass.startTime}`
+                                    )}
                                 </span>
                                 <span className="text-sm text-gray-400">•</span>
                                 <div className="flex items-center gap-1 text-sm font-medium">
                                     <MapPin size={14} />
-                                    {nextClass.roomStructured.name}
+                                    {displayClass.roomStructured.name}
                                 </div>
                             </div>
                         </>
@@ -124,10 +193,10 @@ export function DashboardWidgets() {
                     )}
                 </div>
 
-                {nextClass && (
+                {displayClass && (
                     <div className="mt-4 pt-4 border-t border-gray-50 flex justify-between items-center">
                         <span className="text-xs text-gray-400 font-medium">
-                            {nextClass.teachers[0]?.shortName}
+                            {displayClass.teachers[0]?.shortName}
                         </span>
                         {/* Could add a "Show details" button here later */}
                     </div>
@@ -136,19 +205,11 @@ export function DashboardWidgets() {
 
             {/* Exam Radar Widget */}
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col justify-between relative overflow-hidden group hover:shadow-md transition-all">
-                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                    <Calendar size={80} className="text-red-500" />
-                </div>
 
                 <div>
                     <h3 className="text-gray-500 text-sm font-medium uppercase tracking-wide mb-1">Exam Radar (14 dní)</h3>
                     {upcomingExams.length > 0 ? (
                         <>
-                            <div className="flex items-baseline gap-2">
-                                <span className="text-3xl font-bold text-gray-900">{upcomingExams.length}</span>
-                                <span className="text-gray-500 font-medium">nadcházející</span>
-                            </div>
-
                             <div className="mt-4 space-y-3">
                                 {upcomingExams.slice(0, 2).map((exam: any, i: number) => (
                                     <div key={i} className="flex items-center gap-3 bg-red-50/50 p-2 rounded-lg border border-red-100">

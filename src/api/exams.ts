@@ -1,69 +1,57 @@
-import { fetchWithAuth, BASE_URL } from "./client";
-import { getUserParams } from "../utils/userParams";
-import { parseRegisteredExams } from "../utils/examParser";
-import type { ExamEvent } from "../utils/examParser";
-import { encryptData, decryptData } from "../utils/encryption";
+import { parseExamData } from "../utils/examParser";
+import type { ExamSubject } from "../components/ExamDrawer";
 
-// Hardcoded URL for now as per request, but ideally should be dynamic
-// const EXAMS_URL = `${BASE_URL}/auth/student/terminy_seznam.pl?studium=XXXXXX;obdobi=XXX;lang=cz`;
+const EXAM_URL = 'https://is.mendelu.cz/auth/student/terminy_seznam.pl?studium=149707;obdobi=801;lang=cz';
 
-const STORAGE_KEY = 'reis_exams_cache';
-const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours (or adjust as needed)
-
-export async function getCachedExams(): Promise<ExamEvent[] | null> {
+export async function fetchExamData(): Promise<ExamSubject[]> {
     try {
-        const result = await chrome.storage.local.get(STORAGE_KEY);
-        const cached = result[STORAGE_KEY] as { data: string, timestamp: number };
-        if (cached && cached.timestamp && (Date.now() - cached.timestamp < CACHE_DURATION)) {
-            try {
-                // Decrypt cached exam data
-                const decryptedData = await decryptData(cached.data);
-                return JSON.parse(decryptedData);
-            } catch (e) {
-                console.error("Decryption failed, clearing cache:", e);
-                await chrome.storage.local.remove(STORAGE_KEY);
-                return [];
-            }
+        const response = await fetch(EXAM_URL);
+        if (!response.ok) {
+            throw new Error(`Failed to fetch exams: ${response.statusText}`);
         }
-        return null;
+        const html = await response.text();
+        const data = parseExamData(html);
+        return data;
     } catch (error) {
-        console.error("Failed to get cached exams:", error);
-        return null;
+        console.error("Error fetching exam data:", error);
+        return [];
     }
 }
 
-export async function fetchExams(): Promise<ExamEvent[]> {
+export async function registerExam(termId: string): Promise<boolean> {
     try {
-        const userParams = await getUserParams();
-        if (!userParams) {
-            console.error("Could not fetch user params for exams URL");
-            return [];
+        // URL based on user provided HTML: 
+        // terminy_seznam.pl?termin=327621;studium=149707;obdobi=801;prihlasit_ihned=1;lang=cz
+        const url = `https://is.mendelu.cz/auth/student/terminy_seznam.pl?termin=${termId}&studium=149707&obdobi=801&prihlasit_ihned=1&lang=cz`;
+
+        const response = await fetch(url);
+        if (!response.ok) {
+            console.error(`Registration failed: ${response.statusText}`);
+            return false;
         }
-
-        const examsUrl = `${BASE_URL}/auth/student/terminy_seznam.pl?studium=${userParams.studium};obdobi=${userParams.obdobi};lang=cz`;
-
-        const response = await fetchWithAuth(examsUrl, {
-            method: "GET",
-        });
-
-        // The response might be HTML
-        const html = await response.text();
-        const events = parseRegisteredExams(html);
-
-        // Encrypt and cache the results
-        if (events.length > 0) {
-            const encryptedData = await encryptData(JSON.stringify(events));
-            await chrome.storage.local.set({
-                [STORAGE_KEY]: {
-                    data: encryptedData,
-                    timestamp: Date.now()
-                }
-            });
-        }
-
-        return events;
+        // Ideally we check the response text for success message, but for now assuming 200 OK is success
+        // or at least that the action was processed.
+        return true;
     } catch (error) {
-        console.error("Failed to fetch exams:", error);
-        return [];
+        console.error("Error registering for exam:", error);
+        return false;
+    }
+}
+
+export async function unregisterExam(termId: string): Promise<boolean> {
+    try {
+        // URL based on user provided HTML:
+        // terminy_seznam.pl?termin=327145;studium=149707;obdobi=801;odhlasit_ihned=1;lang=cz
+        const url = `https://is.mendelu.cz/auth/student/terminy_seznam.pl?termin=${termId}&studium=149707&obdobi=801&odhlasit_ihned=1&lang=cz`;
+
+        const response = await fetch(url);
+        if (!response.ok) {
+            console.error(`Unregistration failed: ${response.statusText}`);
+            return false;
+        }
+        return true;
+    } catch (error) {
+        console.error("Error unregistering from exam:", error);
+        return false;
     }
 }

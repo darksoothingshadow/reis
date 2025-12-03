@@ -1,37 +1,20 @@
 import { useState, useRef } from 'react';
 import {
-  Home,
-  User,
-  GraduationCap,
-  Settings,
   ChevronRight,
-  BookOpen,
-  Award,
-  BookMarked,
-  ClipboardList,
-  Wifi,
-  ClipboardCheck,
-  FileQuestion,
   LayoutGrid,
-  Mail
+  Mail,
+  Settings
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { MENDELU_LOGO_PATH } from '../constants/icons';
 import { useUserParams } from '../hooks/useUserParams';
+import { getMainMenuItems, type MenuItem } from './menuConfig';
 
-
-interface MenuItem {
-  id: string;
-  label: string;
-  icon: React.ReactNode;
-  expandable?: boolean;
-  children?: { label: string; id: string; icon?: React.ReactNode; href?: string }[];
-  danger?: boolean;
-  onClick?: () => void;
-  href?: string;
+interface SidebarProps {
+  onOpenExamDrawer?: () => void;
 }
 
-export const Sidebar = () => {
+export const Sidebar = ({ onOpenExamDrawer }: SidebarProps) => {
   const [activeItem, setActiveItem] = useState<string>('dashboard');
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -42,78 +25,7 @@ export const Sidebar = () => {
   const obdobiId = params?.obdobi || '';
 
   // Menu configuration
-  const mainMenuItems: MenuItem[] = [
-    {
-      id: 'dashboard',
-      label: 'Domů',
-      icon: <Home className="w-5 h-5" />,
-      href: 'https://is.mendelu.cz/auth/'
-    },
-    {
-      id: 'portal',
-      label: 'Student',
-      icon: <User className="w-5 h-5" />,
-      expandable: true,
-      children: [
-        {
-          id: 'testy',
-          label: 'Testy',
-          icon: <FileQuestion className="w-4 h-4" />,
-          href: 'https://is.mendelu.cz/auth/elis/ot/psani_testu.pl?_m=205;lang=cz'
-        },
-        {
-          id: 'zkousky',
-          label: 'Zkoušky',
-          icon: <ClipboardCheck className="w-4 h-4" />,
-          href: `https://is.mendelu.cz/auth/student/terminy_seznam.pl?studium=${studiumId};obdobi=${obdobiId};lang=cz`
-        },
-        {
-          id: 'cvicne-testy',
-          label: 'Cvičné testy',
-          icon: <FileQuestion className="w-4 h-4" />,
-          href: `https://is.mendelu.cz/auth/elis/student/seznam_osnov.pl?studium=${studiumId};obdobi=${obdobiId};lang=cz`
-        },
-        {
-          id: 'zapisy-predmetu',
-          label: 'Zápisy předmětů',
-          icon: <BookOpen className="w-4 h-4" />,
-          href: `https://is.mendelu.cz/auth/student/registrace.pl?studium=${studiumId};obdobi=${obdobiId};lang=cz`
-        }
-      ]
-    },
-    {
-      id: 'o-studiu',
-      label: 'Studium',
-      icon: <GraduationCap className="w-5 h-5" />,
-      expandable: true,
-      children: [
-        {
-          id: 'hodnoceni-uspesnosti',
-          label: 'Hodnocení úspěšnosti předmětů',
-          icon: <Award className="w-4 h-4" />,
-          href: 'https://is.mendelu.cz/auth/student/hodnoceni.pl?_m=3167;lang=cz'
-        },
-        {
-          id: 'studijni-plany',
-          label: 'Studijní plány',
-          icon: <BookMarked className="w-4 h-4" />,
-          href: 'https://is.mendelu.cz/auth/katalog/plany.pl?lang=cz'
-        },
-        {
-          id: 'wifi',
-          label: 'Nastavení Wi-Fi',
-          icon: <Wifi className="w-4 h-4" />,
-          href: 'https://is.mendelu.cz/auth/wifi/certifikat.pl?_m=177;lang=cz'
-        },
-        {
-          id: 'zadosti-formular',
-          label: 'Žádosti a formuláře',
-          icon: <ClipboardList className="w-4 h-4" />,
-          href: 'https://is.mendelu.cz/auth/kc/kc.pl?_m=17022;lang=cz'
-        }
-      ]
-    }
-  ];
+  const mainMenuItems: MenuItem[] = getMainMenuItems(studiumId, obdobiId);
 
   const handleMouseEnter = (itemId: string) => {
     if (timeoutRef.current) {
@@ -186,7 +98,13 @@ export const Sidebar = () => {
                         <a
                           key={child.id}
                           href={child.href}
-                          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 hover:text-primary transition-colors group/item"
+                          onClick={(e) => {
+                            if (child.id === 'zapisy-zkousky') {
+                              e.preventDefault();
+                              onOpenExamDrawer?.();
+                            }
+                          }}
+                          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 hover:text-primary transition-colors group/item cursor-pointer"
                         >
                           <span className="text-gray-400 group-hover/item:text-primary transition-colors">
                             {child.icon || <ChevronRight className="w-4 h-4" />}

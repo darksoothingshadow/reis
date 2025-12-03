@@ -1,13 +1,14 @@
 import { Search, X, ChevronUp, ChevronDown, Clock, FileText, GraduationCap, Briefcase } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { searchPeople } from '../api/search';
-import { pagesData, BASE_URL } from '../data/pagesData';
+import { pagesData } from '../data/pagesData';
 import type { PageItem, PageCategory } from '../data/pagesData';
 import { fuzzyIncludes } from '../utils/searchUtils';
 
 interface SearchBarProps {
   placeholder?: string;
   onSearch?: (query: string) => void;
+  onOpenExamDrawer?: () => void;
 }
 
 interface SearchResult {
@@ -24,7 +25,7 @@ interface SearchResult {
 const MAX_RECENT_SEARCHES = 5;
 const STORAGE_KEY = 'reis_recent_searches';
 
-export function SearchBar({ placeholder = "Prohledej reIS", onSearch }: SearchBarProps) {
+export function SearchBar({ placeholder = "Prohledej reIS", onSearch, onOpenExamDrawer }: SearchBarProps) {
   const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
@@ -93,20 +94,17 @@ export function SearchBar({ placeholder = "Prohledej reIS", onSearch }: SearchBa
         // Search pages
         const pageResults: SearchResult[] = [];
         pagesData.forEach((category: PageCategory) => {
-          category.items.forEach((page: PageItem) => {
-            // Match on label or keywords using fuzzy matching
+          category.children.forEach((page: PageItem) => {
+            // Match on label using fuzzy matching
             const matchesLabel = fuzzyIncludes(page.label, searchQuery);
-            const matchesKeyword = page.keywords.some(keyword =>
-              fuzzyIncludes(keyword, searchQuery)
-            );
 
-            if (matchesLabel || matchesKeyword) {
+            if (matchesLabel) {
               pageResults.push({
                 id: page.id,
                 title: page.label,
                 type: 'page' as const,
                 detail: category.label,
-                link: page.path.startsWith('http') ? page.path : `${BASE_URL}${page.path}`,
+                link: page.href,
                 category: category.label
               });
             }
@@ -171,6 +169,17 @@ export function SearchBar({ placeholder = "Prohledej reIS", onSearch }: SearchBa
   const handleSelect = (result: SearchResult) => {
     console.log('Selected:', result);
     saveToHistory(result);
+
+    // Check for exam registration pages
+    if (['zapisy-zkousky', 'prihlasovani-zkouskam'].includes(result.id)) {
+      if (onOpenExamDrawer) {
+        onOpenExamDrawer();
+        setQuery('');
+        setIsOpen(false);
+        setSelectedIndex(-1);
+        return;
+      }
+    }
 
     // For keyboard navigation, open the link programmatically
     if (result.link) {
