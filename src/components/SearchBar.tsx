@@ -8,6 +8,7 @@ import { fuzzyIncludes } from '../utils/searchUtils';
 interface SearchBarProps {
   placeholder?: string;
   onSearch?: (query: string) => void;
+  onOpenExamDrawer?: () => void;
 }
 
 interface SearchResult {
@@ -24,7 +25,7 @@ interface SearchResult {
 const MAX_RECENT_SEARCHES = 5;
 const STORAGE_KEY = 'reis_recent_searches';
 
-export function SearchBar({ placeholder = "Prohledej reIS", onSearch }: SearchBarProps) {
+export function SearchBar({ placeholder = "Prohledej reIS", onSearch, onOpenExamDrawer }: SearchBarProps) {
   const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
@@ -168,6 +169,17 @@ export function SearchBar({ placeholder = "Prohledej reIS", onSearch }: SearchBa
   const handleSelect = (result: SearchResult) => {
     console.log('Selected:', result);
     saveToHistory(result);
+
+    // Check for exam registration pages
+    if (['zapisy-zkousky', 'prihlasovani-zkouskam'].includes(result.id)) {
+      if (onOpenExamDrawer) {
+        onOpenExamDrawer();
+        setQuery('');
+        setIsOpen(false);
+        setSelectedIndex(-1);
+        return;
+      }
+    }
 
     // For keyboard navigation, open the link programmatically
     if (result.link) {

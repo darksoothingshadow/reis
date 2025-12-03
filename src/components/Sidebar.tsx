@@ -10,7 +10,11 @@ import { MENDELU_LOGO_PATH } from '../constants/icons';
 import { useUserParams } from '../hooks/useUserParams';
 import { getMainMenuItems, type MenuItem } from './menuConfig';
 
-export const Sidebar = () => {
+interface SidebarProps {
+  onOpenExamDrawer?: () => void;
+}
+
+export const Sidebar = ({ onOpenExamDrawer }: SidebarProps) => {
   const [activeItem, setActiveItem] = useState<string>('dashboard');
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -94,7 +98,13 @@ export const Sidebar = () => {
                         <a
                           key={child.id}
                           href={child.href}
-                          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 hover:text-primary transition-colors group/item"
+                          onClick={(e) => {
+                            if (child.id === 'zapisy-zkousky') {
+                              e.preventDefault();
+                              onOpenExamDrawer?.();
+                            }
+                          }}
+                          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 hover:text-primary transition-colors group/item cursor-pointer"
                         >
                           <span className="text-gray-400 group-hover/item:text-primary transition-colors">
                             {child.icon || <ChevronRight className="w-4 h-4" />}

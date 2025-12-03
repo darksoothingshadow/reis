@@ -1,4 +1,4 @@
-import { X, Check, ChevronDown, Calendar, Clock } from 'lucide-react';
+import { X, ChevronDown, Calendar, Clock } from 'lucide-react';
 import * as Accordion from '@radix-ui/react-accordion';
 import { Button } from './ui/button';
 import {
@@ -9,7 +9,7 @@ import {
     SelectValue,
 } from "./ui/select"
 import { useState, useEffect } from 'react';
-import { fetchExamData } from '../api/exams';
+import { fetchExamData, registerExam, unregisterExam } from '../api/exams';
 
 export interface ExamTerm {
     id: string;
@@ -19,6 +19,7 @@ export interface ExamTerm {
     full?: boolean;
     room?: string;
     teacher?: string;
+    registrationStart?: string;
 }
 
 export interface ExamSection {
@@ -26,7 +27,7 @@ export interface ExamSection {
     name: string;
     type: string;
     status: string;
-    registeredTerm?: { date: string; time: string; room?: string; teacher?: string };
+    registeredTerm?: { id?: string; date: string; time: string; room?: string; teacher?: string };
     terms: ExamTerm[];
 }
 
@@ -40,6 +41,13 @@ export interface ExamSubject {
 interface ExamDrawerProps {
     isOpen: boolean;
     onClose: () => void;
+}
+
+function getDayOfWeek(dateString: string): string {
+    const [day, month, year] = dateString.split('.');
+    const date = new Date(Number(year), Number(month) - 1, Number(day));
+    const days = ['ne', 'po', 'út', 'st', 'čt', 'pá', 'so'];
+    return days[date.getDay()];
 }
 
 export function ExamDrawer({ isOpen, onClose }: ExamDrawerProps) {
@@ -67,6 +75,72 @@ export function ExamDrawer({ isOpen, onClose }: ExamDrawerProps) {
 
     const [selections, setSelections] = useState<Record<string, { date: string | undefined; time: string | undefined }>>({});
     const [editingSections, setEditingSections] = useState<Record<string, boolean>>({});
+    const [processingSectionId, setProcessingSectionId] = useState<string | null>(null);
+    const [autoBookingTermId, setAutoBookingTermId] = useState<string | null>(null);
+    const [now, setNow] = useState(new Date());
+
+    useEffect(() => {
+        const interval = setInterval(() => setNow(new Date()), 1000);
+        return () => clearInterval(interval);
+    }, []);
+
+    useEffect(() => {
+        const handleEscape = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                onClose();
+            }
+        };
+
+        if (isOpen) {
+            document.addEventListener('keydown', handleEscape);
+        }
+
+        return () => {
+            document.removeEventListener('keydown', handleEscape);
+        };
+    }, [isOpen, onClose]);
+
+    const parseDate = (dateStr: string): Date => {
+        const [datePart, timePart] = dateStr.split(' ');
+        const [day, month, year] = datePart.split('.').map(Number);
+        const [hours, minutes] = timePart.split(':').map(Number);
+        return new Date(year, month - 1, day, hours, minutes);
+    };
+
+    useEffect(() => {
+        if (!autoBookingTermId) return;
+
+        const interval = setInterval(() => {
+            // Find the term
+            let foundTerm: ExamTerm | undefined;
+            let foundSection: ExamSection | undefined;
+
+            for (const subject of exams) {
+                for (const section of subject.sections) {
+                    const term = section.terms.find(t => t.id === autoBookingTermId);
+                    if (term) {
+                        foundTerm = term;
+                        foundSection = section;
+                        break;
+                    }
+                }
+                if (foundTerm) break;
+            }
+
+            if (foundTerm && foundSection && foundTerm.registrationStart) {
+                const start = parseDate(foundTerm.registrationStart);
+                if (new Date() >= start) {
+                    handleRegister(foundSection, foundTerm.id);
+                    setAutoBookingTermId(null);
+                }
+            } else {
+                // Term not found or no start date, stop
+                setAutoBookingTermId(null);
+            }
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, [autoBookingTermId, exams]);
 
     const toggleEdit = (sectionId: string) => {
         setEditingSections(prev => ({
@@ -89,6 +163,41 @@ export function ExamDrawer({ isOpen, onClose }: ExamDrawerProps) {
         }));
     };
 
+    const handleRegister = async (section: ExamSection, termId: string) => {
+        setProcessingSectionId(section.id);
+
+        try {
+            // If already registered and we are changing (editing), unregister first
+            if (section.status === 'registered' && section.registeredTerm?.id) {
+                const successUnreg = await unregisterExam(section.registeredTerm.id);
+                if (!successUnreg) {
+                    alert("Failed to unregister from previous term.");
+                    setProcessingSectionId(null);
+                    return;
+                }
+            }
+
+            // Register for new term
+            const successReg = await registerExam(termId);
+            if (successReg) {
+                // Refresh data
+                const data = await fetchExamData();
+                setExams(data);
+                // Reset edit state
+                setEditingSections(prev => ({ ...prev, [section.id]: false }));
+                // Reset selection
+                setSelections(prev => ({ ...prev, [section.id]: { date: undefined, time: undefined } }));
+            } else {
+                alert("Registration failed. The term might be full.");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("An error occurred.");
+        } finally {
+            setProcessingSectionId(null);
+        }
+    };
+
     return (
         <div className="fixed inset-0 z-50 flex justify-end items-stretch p-4 isolate">
             {/* Layer 0: Scrim */}
@@ -98,7 +207,7 @@ export function ExamDrawer({ isOpen, onClose }: ExamDrawerProps) {
             />
 
             {/* Layer 1: The Component - Exam Drawer */}
-            <div className="relative w-[700px] bg-white shadow-2xl rounded-2xl flex flex-col animate-in slide-in-from-right duration-300 overflow-hidden border border-gray-100 font-sans">
+            <div className="relative w-[800px] bg-white shadow-2xl rounded-2xl flex flex-col animate-in slide-in-from-right duration-300 overflow-hidden border border-gray-100 font-sans">
 
                 {/* Header */}
                 <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-5 bg-white border-b border-slate-100">
@@ -110,6 +219,16 @@ export function ExamDrawer({ isOpen, onClose }: ExamDrawerProps) {
                         <X size={20} />
                     </button>
                 </div>
+
+                {/* Auto-booking Banner */}
+                {autoBookingTermId && (
+                    <div className="bg-amber-50 border-b border-amber-100 px-6 py-3 flex items-center gap-3 animate-in slide-in-from-top-2">
+                        <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                        <span className="text-sm text-amber-800 font-medium">
+                            Auto-rezervace aktivní. Nezavírejte tuto záložku!
+                        </span>
+                    </div>
+                )}
 
                 {/* Content - Scrollable List */}
                 <div className="flex-1 overflow-y-auto">
@@ -135,15 +254,10 @@ export function ExamDrawer({ isOpen, onClose }: ExamDrawerProps) {
                                             <Accordion.Trigger className="flex flex-1 items-center justify-between px-6 py-4 bg-white hover:bg-slate-50 transition-all group data-[state=open]:bg-slate-50/50">
                                                 <div className="flex flex-col items-start gap-0.5">
                                                     <span className="font-semibold text-slate-900 text-base truncate max-w-[250px]">{subject.code}</span>
-                                                    <span className="text-sm text-slate-500 font-medium">{subject.name.replace(/ZS\s+\d{4}\/\d{4}\s+-\s+\w+/, '').trim() || 'Zkouška'}</span>
+                                                    <span className="text-sm text-slate-500 font-medium">{subject.name.replace(/ZS\s+\d{4}\/\d{4}\s+-\s+\w+/, '').trim()}</span>
                                                 </div>
                                                 <div className="flex items-center gap-3">
-                                                    {isRegistered ? (
-                                                        <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md flex items-center gap-1">
-                                                            <Check size={12} strokeWidth={3} />
-                                                            Přihlášen
-                                                        </span>
-                                                    ) : (
+                                                    {!isRegistered && (
                                                         <div className="w-2 h-2 rounded-full bg-amber-500" />
                                                     )}
                                                     <ChevronDown className="text-slate-400 transition-transform duration-200 ease-out group-data-[state=open]:rotate-180" size={16} />
@@ -165,140 +279,151 @@ export function ExamDrawer({ isOpen, onClose }: ExamDrawerProps) {
                                                     return (
                                                         <div key={section.id} className="group flex items-center gap-4 p-3 rounded-lg hover:bg-white hover:shadow-sm transition-all border border-transparent hover:border-slate-200">
 
-                                                            {/* Column 1: Name */}
-                                                            <div className="w-[180px] shrink-0">
-                                                                <div className="font-medium text-slate-900 text-sm">{section.name}</div>
+                                                            {/* Column 1: Name (Fixed Width) */}
+                                                            <div className="w-[200px] shrink-0 flex flex-col justify-center">
+                                                                <span className="font-medium text-slate-900 text-sm capitalize truncate" title={section.name}>
+                                                                    {section.name}
+                                                                </span>
+                                                                {section.registeredTerm?.room && (
+                                                                    <span className="text-slate-500 text-xs truncate" title={section.registeredTerm?.room}>
+                                                                        {section.registeredTerm.room}
+                                                                    </span>
+                                                                )}
                                                             </div>
 
-                                                            {section.status === 'registered' && !isEditing ? (
-                                                                /* Registered State Row */
-                                                                <div className="flex-1 flex items-center justify-between group/row">
-                                                                    <div className="flex items-center gap-3">
-                                                                        {/* Date Box */}
-                                                                        <div className="px-3 py-1.5 bg-white border border-slate-200 rounded-md text-sm font-medium text-slate-900 shadow-sm">
-                                                                            {section.registeredTerm?.date}
+                                                            {/* Column 2: Date/Time (Fixed Width) */}
+                                                            <div className="w-[320px] shrink-0 flex items-center">
+                                                                {section.status === 'registered' && !isEditing ? (
+                                                                    /* Registered State: Text Display */
+                                                                    <div className="font-medium text-slate-900 text-sm">
+                                                                        {section.registeredTerm?.date} {section.registeredTerm?.time} ({getDayOfWeek(section.registeredTerm?.date || '')})
+                                                                    </div>
+                                                                ) : (
+                                                                    /* Open/Editing State: Selectors */
+                                                                    <div className="flex items-center gap-2 w-full">
+                                                                        {/* Date Select */}
+                                                                        <div className="w-[160px] shrink-0">
+                                                                            <Select
+                                                                                value={selectedDate}
+                                                                                onValueChange={(val) => handleDateSelect(section.id, val)}
+                                                                            >
+                                                                                <SelectTrigger className={`w-full h-9 text-sm transition-colors ${selectedDate ? 'bg-white border-slate-200 text-slate-900' : 'bg-slate-50 border-transparent text-slate-500'}`}>
+                                                                                    <div className="flex items-center gap-2 overflow-hidden">
+                                                                                        <Calendar size={14} className={selectedDate ? "text-slate-500 shrink-0" : "text-slate-400 shrink-0"} />
+                                                                                        <SelectValue placeholder="Datum" />
+                                                                                    </div>
+                                                                                </SelectTrigger>
+                                                                                <SelectContent>
+                                                                                    {uniqueDates.map(date => (
+                                                                                        <SelectItem key={date} value={date}>{date}</SelectItem>
+                                                                                    ))}
+                                                                                </SelectContent>
+                                                                            </Select>
                                                                         </div>
 
                                                                         {/* Arrow */}
-                                                                        <div className="text-slate-300">
+                                                                        <div className={`shrink-0 transition-colors ${selectedDate ? 'text-slate-400' : 'text-slate-200'}`}>
                                                                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
                                                                         </div>
 
-                                                                        {/* Time Box */}
-                                                                        <div className="px-3 py-1.5 bg-white border border-slate-200 rounded-md text-sm font-medium text-slate-900 shadow-sm">
-                                                                            {section.registeredTerm?.time}
+                                                                        {/* Time Select */}
+                                                                        <div className="flex-1 min-w-0">
+                                                                            <Select
+                                                                                value={selectedTime}
+                                                                                onValueChange={(val) => handleTimeSelect(section.id, val)}
+                                                                                disabled={!selectedDate}
+                                                                            >
+                                                                                <SelectTrigger className={`w-full h-9 text-sm transition-colors ${selectedTime ? 'bg-white border-slate-200 text-slate-900' : (!selectedDate ? 'bg-slate-50 border-transparent text-slate-300 cursor-not-allowed' : 'bg-slate-100 border-transparent text-slate-500 hover:bg-white hover:border-slate-200')}`}>
+                                                                                    <div className="flex items-center gap-2 overflow-hidden">
+                                                                                        <Clock size={14} className={!selectedDate ? "text-slate-200 shrink-0" : "text-slate-400 shrink-0"} />
+                                                                                        {selectedTime ? (
+                                                                                            <span>{availableTerms.find(t => t.id === selectedTime)?.time}</span>
+                                                                                        ) : (
+                                                                                            <SelectValue placeholder="Čas" />
+                                                                                        )}
+                                                                                    </div>
+                                                                                </SelectTrigger>
+                                                                                <SelectContent>
+                                                                                    {availableTerms.map(term => (
+                                                                                        <SelectItem key={term.id} value={term.id} disabled={term.full} textValue={term.time}>
+                                                                                            <span className={term.full ? 'text-red-500' : ''}>
+                                                                                                {term.time} {term.capacity ? `(${term.capacity})` : ''}
+                                                                                            </span>
+                                                                                        </SelectItem>
+                                                                                    ))}
+                                                                                </SelectContent>
+                                                                            </Select>
                                                                         </div>
-
-                                                                        {/* Location/Teacher Info (Optional, maybe on hover or below?) 
-                                                                            User sketch doesn't explicitly show it in the row, but requested "I should definitely see...". 
-                                                                            Let's put it next to it or keep it simple as per sketch.
-                                                                            Sketch shows: [Date] -> [Time] [Potvrdit/Přihlášen]
-                                                                            Let's add the green badge at the end.
-                                                                        */}
                                                                     </div>
+                                                                )}
+                                                            </div>
 
-                                                                    <div className="flex items-center gap-3">
-                                                                        {/* Room/Teacher info - subtle */}
-                                                                        {(section.registeredTerm?.room || section.registeredTerm?.teacher) && (
-                                                                            <div className="flex flex-col items-end mr-2 text-xs text-slate-500">
-                                                                                {section.registeredTerm?.room && <span>{section.registeredTerm.room}</span>}
-                                                                                {section.registeredTerm?.teacher && <span>{section.registeredTerm.teacher}</span>}
-                                                                            </div>
-                                                                        )}
-
-                                                                        <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-md border border-emerald-100 uppercase tracking-wider flex items-center gap-1.5">
-                                                                            <Check size={14} strokeWidth={2.5} />
-                                                                            Přihlášen
-                                                                        </span>
-
-                                                                        <Button
-                                                                            variant="outline"
-                                                                            size="sm"
-                                                                            className="h-8 text-xs font-medium text-slate-500 hover:text-slate-700 hover:bg-slate-50 opacity-0 group-hover/row:opacity-100 transition-opacity"
-                                                                            onClick={() => toggleEdit(section.id)}
-                                                                        >
-                                                                            Změnit
-                                                                        </Button>
-                                                                    </div>
-                                                                </div>
-                                                            ) : (
-                                                                /* Open State Row */
-                                                                <>
-                                                                    {/* Column 2: Date */}
-                                                                    <div className="w-[140px]">
-                                                                        <Select
-                                                                            value={selectedDate}
-                                                                            onValueChange={(val) => handleDateSelect(section.id, val)}
-                                                                        >
-                                                                            <SelectTrigger className={`w-full h-9 text-sm transition-colors ${selectedDate ? 'bg-white border-slate-200 text-slate-900' : 'bg-slate-100 border-transparent text-slate-500 hover:bg-white hover:border-slate-200'}`}>
-                                                                                <div className="flex items-center gap-2">
-                                                                                    <Calendar size={14} className="text-slate-400" />
-                                                                                    <SelectValue placeholder="Datum" />
-                                                                                </div>
-                                                                            </SelectTrigger>
-                                                                            <SelectContent>
-                                                                                {uniqueDates.map(date => (
-                                                                                    <SelectItem key={date} value={date}>{date}</SelectItem>
-                                                                                ))}
-                                                                            </SelectContent>
-                                                                        </Select>
-                                                                    </div>
-
-                                                                    {/* Arrow */}
-                                                                    <div className={`transition-colors ${selectedDate ? 'text-slate-400' : 'text-slate-200'}`}>
-                                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
-                                                                    </div>
-
-                                                                    {/* Column 3: Time */}
-                                                                    <div className="w-[120px]">
-                                                                        <Select
-                                                                            value={selectedTime}
-                                                                            onValueChange={(val) => handleTimeSelect(section.id, val)}
-                                                                            disabled={!selectedDate}
-                                                                        >
-                                                                            <SelectTrigger className={`w-full h-9 text-sm transition-colors ${selectedTime ? 'bg-white border-slate-200 text-slate-900' : (!selectedDate ? 'bg-slate-50 border-transparent text-slate-300 cursor-not-allowed' : 'bg-slate-100 border-transparent text-slate-500 hover:bg-white hover:border-slate-200')}`}>
-                                                                                <div className="flex items-center gap-2">
-                                                                                    <Clock size={14} className={!selectedDate ? "text-slate-200" : "text-slate-400"} />
-                                                                                    <SelectValue placeholder="Čas" />
-                                                                                </div>
-                                                                            </SelectTrigger>
-                                                                            <SelectContent>
-                                                                                {availableTerms.map(term => (
-                                                                                    <SelectItem key={term.id} value={term.id} disabled={term.full}>
-                                                                                        <span className={term.full ? 'text-red-500' : ''}>
-                                                                                            {term.time} {term.capacity ? `(${term.capacity})` : ''}
-                                                                                        </span>
-                                                                                    </SelectItem>
-                                                                                ))}
-                                                                            </SelectContent>
-                                                                        </Select>
-                                                                    </div>
-
-                                                                    {/* Column 4: Action */}
-                                                                    <div className="flex-1 flex justify-end gap-2">
+                                                            {/* Column 3: Action (Flex) */}
+                                                            <div className="flex-1 flex justify-end gap-2">
+                                                                {section.status === 'registered' && !isEditing ? (
+                                                                    <button
+                                                                        onClick={() => toggleEdit(section.id)}
+                                                                        className="text-sm font-medium text-rose-400 hover:text-rose-500 transition-colors"
+                                                                    >
+                                                                        Změnit
+                                                                    </button>
+                                                                ) : (
+                                                                    <>
                                                                         {isEditing && (
                                                                             <Button
                                                                                 variant="ghost"
                                                                                 size="sm"
                                                                                 className="h-9 text-slate-400 hover:text-slate-600"
                                                                                 onClick={() => toggleEdit(section.id)}
+                                                                                disabled={processingSectionId === section.id}
                                                                             >
                                                                                 Zrušit
                                                                             </Button>
                                                                         )}
-                                                                        <Button
-                                                                            size="sm"
-                                                                            disabled={!selectedDate || !selectedTime}
-                                                                            className={`font-medium h-9 px-4 rounded-md shadow-sm transition-all ${selectedDate && selectedTime
-                                                                                ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-200'
-                                                                                : 'bg-slate-100 text-slate-300 shadow-none cursor-not-allowed'
-                                                                                }`}
-                                                                        >
-                                                                            Potvrdit
-                                                                        </Button>
-                                                                    </div>
-                                                                </>
-                                                            )}
+                                                                        {(() => {
+                                                                            const selectedTermData = selectedTime ? section.terms.find(t => t.id === selectedTime) : null;
+                                                                            const registrationStart = selectedTermData?.registrationStart ? parseDate(selectedTermData.registrationStart) : null;
+                                                                            const isLocked = registrationStart && registrationStart > now;
+                                                                            const isAutoBooking = autoBookingTermId === selectedTime;
+
+                                                                            return (
+                                                                                <div className="flex flex-col items-end gap-1">
+                                                                                    <Button
+                                                                                        size="sm"
+                                                                                        disabled={!selectedDate || !selectedTime || processingSectionId === section.id || (!!isLocked && isAutoBooking && false)} // Allow cancelling
+                                                                                        onClick={() => {
+                                                                                            if (isLocked) {
+                                                                                                if (isAutoBooking) {
+                                                                                                    setAutoBookingTermId(null);
+                                                                                                } else {
+                                                                                                    setAutoBookingTermId(selectedTime!);
+                                                                                                }
+                                                                                            } else {
+                                                                                                handleRegister(section, selectedTime!);
+                                                                                            }
+                                                                                        }}
+                                                                                        className={`font-medium h-9 px-4 rounded-md shadow-sm transition-all ${isAutoBooking
+                                                                                            ? 'bg-amber-100 text-amber-700 hover:bg-amber-200 border border-amber-200'
+                                                                                            : selectedDate && selectedTime
+                                                                                                ? (isLocked ? 'bg-slate-800 text-white hover:bg-slate-700' : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-200')
+                                                                                                : 'bg-slate-100 text-slate-300 shadow-none cursor-not-allowed'
+                                                                                            }`}
+                                                                                    >
+                                                                                        {processingSectionId === section.id ? '...' :
+                                                                                            isAutoBooking ? 'Zrušit rezervaci' :
+                                                                                                isLocked ? 'Rezervovat' : 'Potvrdit'}
+                                                                                    </Button>
+                                                                                    {isLocked && !isAutoBooking && (
+                                                                                        <span className="text-[10px] text-slate-400">
+                                                                                            Otevře se: {selectedTermData?.registrationStart}
+                                                                                        </span>
+                                                                                    )}
+                                                                                </div>
+                                                                            );
+                                                                        })()}
+                                                                    </>
+                                                                )}
+                                                            </div>
                                                         </div>
                                                     );
                                                 })}
@@ -310,7 +435,19 @@ export function ExamDrawer({ isOpen, onClose }: ExamDrawerProps) {
                         </Accordion.Root>
                     )}
                 </div>
+                {/* Footer */}
+                <div className="p-4 border-t border-gray-100 bg-gray-50 flex justify-center">
+                    <a
+                        href="https://is.mendelu.cz/auth/student/terminy_seznam.pl?lang=cz"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-slate-400 hover:text-slate-600 transition-colors flex items-center gap-1"
+                    >
+                        Přejít na stránku zkoušek v IS
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
+                    </a>
+                </div>
             </div>
-        </div >
+        </div>
     );
 }

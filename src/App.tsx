@@ -43,7 +43,7 @@ function App() {
   return (
     <PortalContext.Provider value={portalContainerRef.current}>
       <div className="flex min-h-screen bg-white font-sans text-gray-900" ref={portalContainerRef}>
-        <Sidebar />
+        <Sidebar onOpenExamDrawer={() => setIsExamDrawerOpen(true)} />
         <main className="flex-1 ml-0 md:ml-20 transition-all duration-300">
           <div className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-gray-200 px-8 py-4">
             <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
@@ -67,16 +67,7 @@ function App() {
               </div>
 
               <div className="flex-1 max-w-2xl">
-                <SearchBar />
-              </div>
-
-              <div className="w-[200px] flex justify-end">
-                <button
-                  onClick={() => setIsExamDrawerOpen(true)}
-                  className="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg shadow-sm transition-all"
-                >
-                  Zkoušky
-                </button>
+                <SearchBar onOpenExamDrawer={() => setIsExamDrawerOpen(true)} />
               </div>
             </div>
           </div>
