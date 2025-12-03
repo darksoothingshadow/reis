@@ -1,1 +1,0 @@
-cookie:str|None = None

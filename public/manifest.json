@@ -1,0 +1,46 @@
+{
+    "manifest_version": 3,
+    "name": "reIS",
+    "version": "2.0.0",
+    "description": "Modernized reIS extension for IS Mendelu",
+    "permissions": [
+        "storage"
+    ],
+    "content_security_policy": {
+        "extension_pages": "script-src 'self'; object-src 'self'; font-src 'self'; style-src 'self'"
+    },
+    "host_permissions": [
+        "https://is.mendelu.cz/*"
+    ],
+    "content_scripts": [
+        {
+            "matches": [
+                "https://is.mendelu.cz/auth/",
+                "https://is.mendelu.cz/auth/?*",
+                "https://is.mendelu.cz/auth/index.pl*"
+            ],
+            "js": [
+                "content.js"
+            ],
+            "run_at": "document_start"
+        }
+    ],
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "mendelu_logo_16.png",
+                "mendelu_logo_48.png",
+                "mendelu_logo_128.png",
+                "fonts/*"
+            ],
+            "matches": [
+                "https://is.mendelu.cz/*"
+            ]
+        }
+    ],
+    "icons": {
+        "16": "mendelu_logo_16.png",
+        "48": "mendelu_logo_48.png",
+        "128": "mendelu_logo_128.png"
+    }
+}

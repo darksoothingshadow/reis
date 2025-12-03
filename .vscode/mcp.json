@@ -1,0 +1,9 @@
+{
+	"servers": {
+		"my-mcp-server-ab5379ac": {
+			"url": "https://cube-thorn-30111048.figma.site",
+			"type": "http"
+		}
+	},
+	"inputs": []
+}
