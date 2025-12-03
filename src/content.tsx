@@ -80,8 +80,19 @@ async function firstLoad() {
 
 // Run when DOM is ready
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', firstLoad);
+    document.addEventListener('DOMContentLoaded', () => {
+        try {
+            firstLoad();
+        } catch (e) {
+            // Error handled by global handler in polyfill.ts
+            throw e;
+        }
+    });
 } else {
-    firstLoad();
+    try {
+        firstLoad();
+    } catch (e) {
+        // Error handled by global handler in polyfill.ts
+        throw e;
+    }
 }
-

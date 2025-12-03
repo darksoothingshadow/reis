@@ -19,5 +19,8 @@ export default defineConfig([
       ecmaVersion: 2020,
       globals: globals.browser,
     },
+    rules: {
+      'no-restricted-globals': ['error', { name: 'chrome', message: 'Use window.chrome instead.' }],
+    },
   },
 ])

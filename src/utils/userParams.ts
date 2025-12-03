@@ -11,7 +11,7 @@ const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 export async function getUserParams(): Promise<UserParams | null> {
     // 1. Try to get from cache
     try {
-        const result = await chrome.storage.local.get(STORAGE_KEY);
+        const result = await window.chrome.storage.local.get(STORAGE_KEY);
         const cached = result[STORAGE_KEY] as { data: UserParams, timestamp: number };
 
         if (cached && cached.timestamp && (Date.now() - cached.timestamp < CACHE_DURATION)) {
@@ -41,7 +41,7 @@ export async function getUserParams(): Promise<UserParams | null> {
             };
 
             // Cache the result
-            await chrome.storage.local.set({
+            await window.chrome.storage.local.set({
                 [STORAGE_KEY]: {
                     data: params,
                     timestamp: Date.now()
