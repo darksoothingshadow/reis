@@ -92,7 +92,7 @@ function CollapsibleTrigger({
   );
 }
 
-interface CollapsibleContentProps extends React.HTMLAttributes<HTMLDivElement> { }
+type CollapsibleContentProps = React.HTMLAttributes<HTMLDivElement>;
 
 function CollapsibleContent({ className, children, ...props }: CollapsibleContentProps) {
   const context = React.useContext(CollapsibleContext);

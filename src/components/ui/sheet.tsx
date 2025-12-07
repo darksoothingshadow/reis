@@ -123,7 +123,7 @@ function SheetContent({ className, children, side = "right", ...props }: SheetCo
       document.addEventListener("keydown", handleEscape);
     }
     return () => document.removeEventListener("keydown", handleEscape);
-  }, [context?.open]);
+  }, [context]);
 
   if (!context?.open) return null;
 

@@ -519,7 +519,7 @@ export function SubjectPopup(props: SubjectPopupPropsV2) {
 
                     zip.file(finalName, blob);
 
-                } catch (error) {
+                } catch {
                     // Continue without this file
                 }
             });
@@ -529,7 +529,7 @@ export function SubjectPopup(props: SubjectPopupPropsV2) {
             const content = await zip.generateAsync({ type: "blob" });
             saveAs(content, `${folderName}.zip`);
 
-        } catch (error) {
+        } catch {
             alert("Chyba při vytváření ZIP archivu.");
         } finally {
             setIsDownloading(false);

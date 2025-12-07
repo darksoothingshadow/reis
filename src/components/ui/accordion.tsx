@@ -37,7 +37,6 @@ function Accordion({
   value: controlledValue,
   defaultValue,
   onValueChange,
-  collapsible = true,
   className,
   children,
   ...props
@@ -142,7 +141,7 @@ function AccordionTrigger({ className, children, showChevron = false, ...props }
   );
 }
 
-interface AccordionContentProps extends React.HTMLAttributes<HTMLDivElement> { }
+type AccordionContentProps = React.HTMLAttributes<HTMLDivElement>;
 
 function AccordionContent({ className, children, ...props }: AccordionContentProps) {
   const itemContext = React.useContext(AccordionItemContext);

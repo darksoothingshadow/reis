@@ -35,7 +35,7 @@ interface TooltipTriggerProps extends React.HTMLAttributes<HTMLDivElement> {
   asChild?: boolean;
 }
 
-function TooltipTrigger({ className, children, asChild, ...props }: TooltipTriggerProps) {
+function TooltipTrigger({ className, children, ...props }: TooltipTriggerProps) {
   // The tooltip trigger wraps the TooltipContent
   return (
     <div

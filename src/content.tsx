@@ -36,8 +36,7 @@ function debugCssUtilities(css: string) {
         { name: 'bg-surface-primary', pattern: /surface-primary/ },
         { name: 'bg-surface-secondary', pattern: /surface-secondary/ },
         { name: 'text-content-primary', pattern: /content-primary/ },
-        // Font
-        { name: 'font-sans (Inter)', pattern: /Inter/ },
+        // Note: Inter font is loaded via fonts/inter.css, not in this bundle
     ];
 
     console.group('[CSS Debug] Checking custom Tailwind utilities in Shadow DOM');

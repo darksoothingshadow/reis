@@ -35,7 +35,7 @@ function Avatar({ className, size, children, ...props }: AvatarProps) {
   );
 }
 
-interface AvatarImageProps extends React.ImgHTMLAttributes<HTMLImageElement> { }
+type AvatarImageProps = React.ImgHTMLAttributes<HTMLImageElement>;
 
 function AvatarImage({ className, alt = "", ...props }: AvatarImageProps) {
   const [hasError, setHasError] = React.useState(false);

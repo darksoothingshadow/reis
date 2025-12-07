@@ -46,7 +46,7 @@ function getEventPosition(event: CalendarEvent) {
   return { top, height };
 }
 
-export function WeeklyCalendar({ currentWeek, onNavigateWeek: _onNavigateWeek, onGoToToday, events, isLoading, onEventClick }: WeeklyCalendarProps) {
+export function WeeklyCalendar({ currentWeek, onGoToToday, events, isLoading, onEventClick }: WeeklyCalendarProps) {
   // const [events] = useState<CalendarEvent[]>(SAMPLE_EVENTS);
 
   if (isLoading) {

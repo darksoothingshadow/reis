@@ -27,12 +27,9 @@ interface MenuItem {
   href?: string;
 }
 
-interface SidebarProps {
-  isOpen?: boolean;
-  onToggle?: () => void;
-}
 
-export function Sidebar({ isOpen: _isOpen, onToggle: _onToggle }: SidebarProps) {
+
+export function Sidebar() {
   const [activeItem, setActiveItem] = useState<string>('dashboard');
   const [popupItem, setPopupItem] = useState<string | null>(null);
   const [popupPosition, setPopupPosition] = useState<{ top: number; left: number } | null>(null);

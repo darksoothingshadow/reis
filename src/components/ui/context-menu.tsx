@@ -45,7 +45,7 @@ interface ContextMenuTriggerProps extends React.HTMLAttributes<HTMLDivElement> {
   asChild?: boolean;
 }
 
-function ContextMenuTrigger({ className, children, asChild, ...props }: ContextMenuTriggerProps) {
+function ContextMenuTrigger({ className, children, ...props }: ContextMenuTriggerProps) {
   const context = React.useContext(ContextMenuContext);
 
   const handleContextMenu = (e: React.MouseEvent) => {
@@ -115,7 +115,7 @@ function ContextMenuSubContent({ className, children, ...props }: React.HTMLAttr
   );
 }
 
-interface ContextMenuContentProps extends React.HTMLAttributes<HTMLUListElement> { }
+type ContextMenuContentProps = React.HTMLAttributes<HTMLUListElement>;
 
 function ContextMenuContent({ className, children, ...props }: ContextMenuContentProps) {
   const context = React.useContext(ContextMenuContext);
@@ -130,7 +130,7 @@ function ContextMenuContent({ className, children, ...props }: ContextMenuConten
       document.removeEventListener("click", handleClickOutside);
       document.removeEventListener("contextmenu", handleClickOutside);
     };
-  }, [context?.open]);
+  }, [context]);
 
   if (!context?.open) return null;
 

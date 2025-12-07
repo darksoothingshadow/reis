@@ -38,7 +38,8 @@ interface ScrollBarProps extends React.HTMLAttributes<HTMLDivElement> {
   orientation?: "vertical" | "horizontal";
 }
 
-function ScrollBar(_props: ScrollBarProps) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function ScrollBar(_ignore: ScrollBarProps) {
   // This is a placeholder for API compatibility
   // Modern browsers handle scrollbar styling via CSS
   return null;

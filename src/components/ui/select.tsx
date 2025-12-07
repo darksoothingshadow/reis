@@ -188,7 +188,7 @@ function SelectItem({
   React.useEffect(() => {
     context?.registerItem(value, textValue || children, disabled);
     return () => context?.unregisterItem(value);
-  }, [value, textValue, children, disabled]);
+  }, [value, textValue, children, disabled, context]);
 
   // Don't render anything - the native select handles display
   return null;

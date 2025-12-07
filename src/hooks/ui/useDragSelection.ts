@@ -215,22 +215,27 @@ export function useDragSelection(options: UseDragSelectionOptions = {}): UseDrag
         }
     }, [dragThreshold, scrollThreshold, scrollSpeed, scrollDelay, processSelection, clearAutoScroll]);
 
-    // Global mouse up handler
-    const handleGlobalMouseUp = useCallback(() => {
-        clearAutoScroll();
-        window.removeEventListener('mousemove', handleGlobalMouseMove);
-        window.removeEventListener('mouseup', handleGlobalMouseUp);
+    // Use ref to avoid circular dependency in handleGlobalMouseUp
+    const handleGlobalMouseUpRef = useRef<() => void>(() => { });
 
-        if (isDraggingRef.current) {
-            ignoreClickRef.current = true;
-            setTimeout(() => { ignoreClickRef.current = false; }, 100);
-            setIsDragging(false);
-            isDraggingRef.current = false;
-        }
+    // Update ref in effect to satisfy eslint refs rule
+    useEffect(() => {
+        handleGlobalMouseUpRef.current = () => {
+            clearAutoScroll();
+            window.removeEventListener('mousemove', handleGlobalMouseMove);
+            window.removeEventListener('mouseup', handleGlobalMouseUpRef.current);
 
-        setSelectionStart(null);
-        setSelectionEnd(null);
-        selectionStartRef.current = null;
+            if (isDraggingRef.current) {
+                ignoreClickRef.current = true;
+                setTimeout(() => { ignoreClickRef.current = false; }, 100);
+                setIsDragging(false);
+                isDraggingRef.current = false;
+            }
+
+            setSelectionStart(null);
+            setSelectionEnd(null);
+            selectionStartRef.current = null;
+        };
     }, [clearAutoScroll, handleGlobalMouseMove]);
 
     // Container mouse down handler
@@ -253,8 +258,8 @@ export function useDragSelection(options: UseDragSelectionOptions = {}): UseDrag
         initialSelectedIds.current = [...selectedIds];
 
         window.addEventListener('mousemove', handleGlobalMouseMove);
-        window.addEventListener('mouseup', handleGlobalMouseUp);
-    }, [selectedIds, handleGlobalMouseMove, handleGlobalMouseUp]);
+        window.addEventListener('mouseup', handleGlobalMouseUpRef.current);
+    }, [selectedIds, handleGlobalMouseMove]);
 
     // Handle backdrop click
     const handleBackdropClick = useCallback((e: React.MouseEvent, onClose: () => void) => {
@@ -297,9 +302,9 @@ export function useDragSelection(options: UseDragSelectionOptions = {}): UseDrag
         return () => {
             clearAutoScroll();
             window.removeEventListener('mousemove', handleGlobalMouseMove);
-            window.removeEventListener('mouseup', handleGlobalMouseUp);
+            window.removeEventListener('mouseup', handleGlobalMouseUpRef.current);
         };
-    }, [clearAutoScroll, handleGlobalMouseMove, handleGlobalMouseUp]);
+    }, [clearAutoScroll, handleGlobalMouseMove]);
 
     return {
         selectedIds,

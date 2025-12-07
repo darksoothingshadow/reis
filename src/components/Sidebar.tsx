@@ -5,7 +5,8 @@ import {
   Mail,
   Settings,
   ExternalLink,
-  Calendar
+  Calendar,
+  HardDrive
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { MENDELU_LOGO_PATH } from '../constants/icons';
@@ -27,6 +28,9 @@ export const Sidebar = ({ onOpenExamDrawer }: SidebarProps) => {
 
   // Outlook sync hook
   const { isEnabled: outlookSyncEnabled, isLoading: outlookSyncLoading, toggle: toggleOutlookSync } = useOutlookSync();
+
+  // Google Drive sync (placeholder - no functionality yet)
+  const [driveSyncEnabled, setDriveSyncEnabled] = useState(false);
 
 
   const { params } = useUserParams();
@@ -172,8 +176,8 @@ export const Sidebar = ({ onOpenExamDrawer }: SidebarProps) => {
                     <h3 className="font-semibold text-gray-900">Nastavení</h3>
                   </div>
 
-                  {/* Outlook Sync Toggle - Custom inline styles (DaisyUI toggle broken) */}
-                  <label className="flex items-center justify-between gap-3 px-1 py-2 cursor-pointer">
+                  {/* Outlook Sync Toggle */}
+                  <label className="flex items-center justify-between gap-3 px-1 py-2 cursor-pointer hover:bg-gray-50 rounded-lg transition-colors">
                     <div className="flex items-center gap-2 flex-1">
                       <Calendar className="w-4 h-4 text-gray-400 shrink-0" />
                       <span className="text-xs text-gray-600">Synchronizace rozvrhu do Outlooku</span>
@@ -184,15 +188,48 @@ export const Sidebar = ({ onOpenExamDrawer }: SidebarProps) => {
                       aria-checked={outlookSyncEnabled ?? false}
                       disabled={outlookSyncLoading || outlookSyncEnabled === null}
                       onClick={() => toggleOutlookSync()}
-                      className="relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="relative inline-flex h-[22px] w-[42px] shrink-0 cursor-pointer items-center rounded-full transition-all duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                       style={{
-                        backgroundColor: (outlookSyncEnabled ?? false) ? '#79be15' : '#e5e7eb'
+                        backgroundColor: (outlookSyncEnabled ?? false) ? '#79be15' : '#d1d5db',
+                        boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.1)'
                       }}
                     >
                       <span
-                        className="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                        className="pointer-events-none inline-block rounded-full bg-white transition-transform duration-200 ease-in-out"
                         style={{
-                          transform: (outlookSyncEnabled ?? false) ? 'translateX(16px)' : 'translateX(0)'
+                          width: '18px',
+                          height: '18px',
+                          transform: (outlookSyncEnabled ?? false) ? 'translateX(22px)' : 'translateX(2px)',
+                          boxShadow: '0 1px 3px rgba(0,0,0,0.2), 0 1px 2px rgba(0,0,0,0.1)'
+                        }}
+                      />
+                    </button>
+                  </label>
+
+                  {/* Google Drive Sync Toggle (placeholder) */}
+                  <label className="flex items-center justify-between gap-3 px-1 py-2 cursor-pointer hover:bg-gray-50 rounded-lg transition-colors">
+                    <div className="flex items-center gap-2 flex-1">
+                      <HardDrive className="w-4 h-4 text-gray-400 shrink-0" />
+                      <span className="text-xs text-gray-600">Synchronizace souborů do Google Drive</span>
+                    </div>
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={driveSyncEnabled}
+                      onClick={() => setDriveSyncEnabled(!driveSyncEnabled)}
+                      className="relative inline-flex h-[22px] w-[42px] shrink-0 cursor-pointer items-center rounded-full transition-all duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2"
+                      style={{
+                        backgroundColor: driveSyncEnabled ? '#79be15' : '#d1d5db',
+                        boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.1)'
+                      }}
+                    >
+                      <span
+                        className="pointer-events-none inline-block rounded-full bg-white transition-transform duration-200 ease-in-out"
+                        style={{
+                          width: '18px',
+                          height: '18px',
+                          transform: driveSyncEnabled ? 'translateX(22px)' : 'translateX(2px)',
+                          boxShadow: '0 1px 3px rgba(0,0,0,0.2), 0 1px 2px rgba(0,0,0,0.1)'
                         }}
                       />
                     </button>

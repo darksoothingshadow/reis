@@ -29,7 +29,7 @@ interface HoverCardTriggerProps extends React.HTMLAttributes<HTMLDivElement> {
   asChild?: boolean;
 }
 
-function HoverCardTrigger({ className, children, asChild, ...props }: HoverCardTriggerProps) {
+function HoverCardTrigger({ className, children, ...props }: HoverCardTriggerProps) {
   return (
     <div
       data-slot="hover-card-trigger"
