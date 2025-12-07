@@ -75,17 +75,15 @@ describe('Checkbox', () => {
     });
 
     it('should apply active styles when checked', () => {
-        render(<Checkbox checked={true} onClick={() => { }} />);
-
+        render(<Checkbox checked={true} onClick={vi.fn()} />);
         const checkbox = screen.getByRole('checkbox');
-        expect(checkbox.className).toContain('bg-brand-primary');
+        expect(checkbox.className).toContain('bg-[#79be15]');
     });
 
     it('should apply inactive styles when unchecked', () => {
-        render(<Checkbox checked={false} onClick={() => { }} />);
-
+        render(<Checkbox checked={false} onClick={vi.fn()} />);
         const checkbox = screen.getByRole('checkbox');
         expect(checkbox.className).toContain('bg-white');
-        expect(checkbox.className).toContain('border-gray-400');
+        expect(checkbox.className).toContain('border-slate-300');
     });
 });

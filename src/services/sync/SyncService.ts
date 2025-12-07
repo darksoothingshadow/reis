@@ -11,6 +11,7 @@ import { StorageService, STORAGE_KEYS } from '../storage';
 import { syncExams } from './syncExams';
 import { syncSchedule } from './syncSchedule';
 import { syncSubjects } from './syncSubjects';
+import { syncFiles } from './syncFiles';
 
 const SYNC_INTERVAL = 5 * 60 * 1000; // 5 minutes
 
@@ -73,7 +74,7 @@ class SyncServiceClass {
         const startTime = Date.now();
 
         try {
-            // Run all syncs in parallel
+            // Run schedule, exams, subjects in parallel
             const results = await Promise.allSettled([
                 syncSchedule(),
                 syncExams(),
@@ -87,6 +88,13 @@ class SyncServiceClass {
                     console.error(`[SyncService] ${syncNames[index]} sync failed:`, result.reason);
                 }
             });
+
+            // Sync files AFTER subjects (files depend on subjects data)
+            try {
+                await syncFiles();
+            } catch (filesError) {
+                console.error('[SyncService] files sync failed:', filesError);
+            }
 
             // Update sync metadata
             StorageService.set(STORAGE_KEYS.LAST_SYNC, Date.now());

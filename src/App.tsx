@@ -3,7 +3,7 @@ import './App.css'
 import { Sidebar } from './components/Sidebar'
 import { SearchBar } from './components/SearchBar'
 import { SchoolCalendar } from './components/SchoolCalendar'
-import { DashboardWidgets } from './components/DashboardWidgets'
+
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { getSmartWeekRange } from './utils/calendarUtils'
 import { ExamDrawer } from './components/ExamDrawer'
@@ -79,7 +79,7 @@ function App() {
           </div>
 
           <div className="p-8 max-w-8xl mx-auto">
-            <DashboardWidgets />
+
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden min-h-[800px]">
               <SchoolCalendar key={currentDate.toISOString()} initialDate={currentDate} />
             </div>

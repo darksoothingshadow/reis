@@ -280,12 +280,12 @@ export function DatePickerPopup({
                                     onClick={() => setSelectedTermId(term.id)}
                                     disabled={term.full}
                                     className={`
-                                        px-2 py-1 rounded text-xs font-medium transition-all
+                                        btn btn-xs font-medium h-auto py-1 px-2 min-h-0
                                         ${term.full
-                                            ? 'bg-slate-100 text-slate-300 cursor-not-allowed'
+                                            ? 'btn-disabled bg-slate-100 text-slate-300'
                                             : selectedTermId === term.id
-                                                ? 'bg-primary text-primary-content'
-                                                : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'
+                                                ? 'btn-primary text-white'
+                                                : 'btn-ghost bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
                                         }
                                     `}
                                 >

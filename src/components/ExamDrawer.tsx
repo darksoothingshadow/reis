@@ -209,7 +209,7 @@ export function ExamDrawer({ isOpen, onClose }: ExamDrawerProps) {
                             <h2 className="text-xl font-semibold text-slate-900 tracking-tight">Zkoušky</h2>
                             <button
                                 onClick={onClose}
-                                className="p-2 -mr-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-full transition-colors"
+                                className="btn btn-ghost btn-circle btn-sm -mr-2 text-slate-400 hover:text-slate-600"
                             >
                                 <X size={20} />
                             </button>

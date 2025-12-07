@@ -49,16 +49,16 @@ export function Checkbox({
                 'rounded border-2 flex items-center justify-center cursor-pointer transition-colors shadow-sm',
                 sizeClasses,
                 isActive
-                    ? 'bg-brand-primary border-brand-primary'
-                    : 'bg-white border-gray-400 hover:border-brand-primary',
+                    ? 'bg-[#79be15] border-[#79be15]'
+                    : 'bg-white border-slate-300 hover:border-[#79be15]',
                 className
             )}
         >
             {checked && !indeterminate && (
-                <Check size={iconSize} className="text-white" strokeWidth={4} />
+                <Check size={iconSize} className="text-white" strokeWidth={3} />
             )}
             {indeterminate && (
-                <Minus size={iconSize} className="text-white" strokeWidth={4} />
+                <Minus size={iconSize} className="text-white" strokeWidth={3} />
             )}
         </div>
     );

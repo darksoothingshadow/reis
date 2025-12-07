@@ -1,3 +1,10 @@
+/**
+ * User Parameters - Study and period IDs.
+ * 
+ * Read from storage (populated by syncUserParams or on first use).
+ * No TTL expiry - data persists until manually refreshed.
+ */
+
 import { fetchWithAuth, BASE_URL } from "../api/client";
 import { StorageService } from "../services/storage";
 import { STORAGE_KEYS } from "../services/storage/keys";
@@ -7,40 +14,28 @@ export interface UserParams {
     obdobi: string;
 }
 
-interface CachedUserParams {
-    data: UserParams;
-    timestamp: number;
-}
-
-const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
-
+/**
+ * Get user params from storage.
+ * If not in storage, fetches once and stores permanently.
+ */
 export async function getUserParams(): Promise<UserParams | null> {
-    console.debug('[getUserParams] Starting fetch');
+    console.debug('[getUserParams] Getting user params');
 
-    // 1. Try to get from cache
-    try {
-        const cached = await StorageService.getAsync<CachedUserParams>(STORAGE_KEYS.USER_PARAMS);
+    // Try to get from storage
+    const cached = StorageService.get<UserParams>(STORAGE_KEYS.USER_PARAMS);
 
-        if (cached && cached.timestamp && (Date.now() - cached.timestamp < CACHE_DURATION)) {
-            console.debug('[getUserParams] Returning cached params:', cached.data);
-            return cached.data;
-        }
-        console.debug('[getUserParams] Cache miss or expired');
-    } catch (e) {
-        console.warn("[getUserParams] Failed to read from cache", e);
+    if (cached && cached.studium && cached.obdobi) {
+        console.debug('[getUserParams] Returning stored params:', cached);
+        return cached;
     }
 
-    // 2. Fetch from IS
+    console.debug('[getUserParams] Not in storage, fetching from IS...');
+
+    // Fetch from IS (only if not in storage)
     try {
-        console.debug('[getUserParams] Fetching from IS...');
-        // Fetching the main auth page usually redirects or contains links with the current period and study ID
-        // A reliable place to find these is often the "Student" page or similar.
-        // Let's try fetching the main student page which usually has these links.
         const response = await fetchWithAuth(`${BASE_URL}/auth/student/studium.pl`);
         const html = await response.text();
 
-        // Parse the HTML to find links containing studium=...;obdobi=...
-        // Example: .../auth/student/terminy_seznam.pl?studium=XXXXXX;obdobi=XXX;lang=cz
         const regex = /studium=(\d+);obdobi=(\d+)/;
         const match = html.match(regex);
 
@@ -50,14 +45,8 @@ export async function getUserParams(): Promise<UserParams | null> {
                 obdobi: match[2]
             };
 
-            console.debug('[getUserParams] Parsed params:', params);
-
-            // Cache the result
-            await StorageService.setAsync<CachedUserParams>(STORAGE_KEYS.USER_PARAMS, {
-                data: params,
-                timestamp: Date.now()
-            });
-
+            console.debug('[getUserParams] Parsed and stored params:', params);
+            StorageService.set(STORAGE_KEYS.USER_PARAMS, params);
             return params;
         }
 
