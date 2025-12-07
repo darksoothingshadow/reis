@@ -47,6 +47,7 @@ export async function syncFiles(): Promise<void> {
             if (files && files.length > 0) {
                 const storageKey = `${STORAGE_KEYS.SUBJECT_FILES_PREFIX}${courseCode}`;
                 StorageService.set(storageKey, files);
+                await StorageService.setAsync(storageKey, files);
                 console.debug(`[syncFiles] Stored ${files.length} files for ${courseCode}`);
                 successCount++;
             }
@@ -57,4 +58,16 @@ export async function syncFiles(): Promise<void> {
     }
 
     console.log(`[syncFiles] Completed: ${successCount} subjects synced, ${errorCount} errors`);
+
+    // Trigger Drive sync if files were updated
+    if (successCount > 0) {
+        console.log('[syncFiles] Triggering Google Drive sync...');
+        try {
+            await new Promise<void>((resolve) => {
+                chrome.runtime.sendMessage({ type: 'TRIGGER_DRIVE_SYNC' }, () => resolve());
+            });
+        } catch (e) {
+            console.error('[syncFiles] Failed to trigger Drive sync:', e);
+        }
+    }
 }

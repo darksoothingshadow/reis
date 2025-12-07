@@ -12,7 +12,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { MENDELU_LOGO_PATH } from '../constants/icons';
 import { useUserParams } from '../hooks/useUserParams';
 import { getMainMenuItems, type MenuItem } from './menuConfig';
-import { useOutlookSync } from '../hooks/data';
+import { useOutlookSync, useDriveSync } from '../hooks/data';
 
 
 interface SidebarProps {
@@ -29,8 +29,8 @@ export const Sidebar = ({ onOpenExamDrawer }: SidebarProps) => {
   // Outlook sync hook
   const { isEnabled: outlookSyncEnabled, isLoading: outlookSyncLoading, toggle: toggleOutlookSync } = useOutlookSync();
 
-  // Google Drive sync (placeholder - no functionality yet)
-  const [driveSyncEnabled, setDriveSyncEnabled] = useState(false);
+  // Google Drive sync
+  const { isEnabled: driveSyncEnabled, isLoading: driveSyncLoading, toggle: toggleDriveSync } = useDriveSync();
 
 
   const { params } = useUserParams();
@@ -206,18 +206,19 @@ export const Sidebar = ({ onOpenExamDrawer }: SidebarProps) => {
                     </button>
                   </label>
 
-                  {/* Google Drive Sync Toggle (placeholder) */}
+                  {/* Google Drive Sync Toggle */}
                   <label className="flex items-center justify-between gap-3 px-1 py-2 cursor-pointer hover:bg-gray-50 rounded-lg transition-colors">
                     <div className="flex items-center gap-2 flex-1">
                       <HardDrive className="w-4 h-4 text-gray-400 shrink-0" />
-                      <span className="text-xs text-gray-600">Synchronizace souborů do Google Drive</span>
+                      <span className="text-xs text-gray-600">Synchronizace souborů do Google Drive (beta)</span>
                     </div>
                     <button
                       type="button"
                       role="switch"
                       aria-checked={driveSyncEnabled}
-                      onClick={() => setDriveSyncEnabled(!driveSyncEnabled)}
-                      className="relative inline-flex h-[22px] w-[42px] shrink-0 cursor-pointer items-center rounded-full transition-all duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2"
+                      disabled={driveSyncLoading}
+                      onClick={() => toggleDriveSync()}
+                      className="relative inline-flex h-[22px] w-[42px] shrink-0 cursor-pointer items-center rounded-full transition-all duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                       style={{
                         backgroundColor: driveSyncEnabled ? '#79be15' : '#d1d5db',
                         boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.1)'

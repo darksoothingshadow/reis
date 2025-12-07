@@ -1,16 +1,33 @@
 {
     "manifest_version": 3,
     "name": "reIS",
-    "version": "3.0.0",
-    "description": "Modernized reIS extension for IS Mendelu",
+    "version": "3.1.0",
+    "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApTFvKOPI1a7MCuouE8wl1zNYua3HamLPmP0OK0/+d/7mjx1thjoEEsodRxr4E2Uu3CX9BUvqVf8KfQEQsdhUgaa2qSdRxqCSX/cp4onSybajX+g3FXqyM1LrccnNMmDqT/Qy6EIuYXypBDG6T6a7oNwlzLDUtvimfHNRcHh9vXc87I2lq14qZQ+XPyBJHOh2CU/B1ye89Mvu5DtYJ6d4pCNh+YmW/480ZsLPdGUtcKYpuBxlxtx7MTMwmgtQJ765j3CXjFpOTh127aolhJiQzG9IJwTGAZUYbx2Nm5D2exW2lBD0AM8/sYB1DhkQd65NrNLVuIkmnGKvs0de1yXG/QIDAQAB",
+    "description": "Modernized reIS extension for IS Mendelu with Google Drive sync",
     "permissions": [
-        "storage"
+        "storage",
+        "identity",
+        "alarms",
+        "offscreen"
     ],
+    "background": {
+        "service_worker": "background.js",
+        "type": "module"
+    },
+    "oauth2": {
+        "client_id": "576873601004-o0cpoh8d23tc4p0fb9t68b4n5aqe02f8.apps.googleusercontent.com",
+        "scopes": [
+            "https://www.googleapis.com/auth/drive.file"
+        ]
+    },
     "content_security_policy": {
         "extension_pages": "script-src 'self'; object-src 'self'; font-src 'self'; style-src 'self'"
     },
     "host_permissions": [
-        "https://is.mendelu.cz/*"
+        "https://is.mendelu.cz/*",
+        "https://www.googleapis.com/*",
+        "https://oauth2.googleapis.com/*",
+        "https://accounts.google.com/*"
     ],
     "content_scripts": [
         {
@@ -31,7 +48,8 @@
                 "mendelu_logo_16.png",
                 "mendelu_logo_48.png",
                 "mendelu_logo_128.png",
-                "fonts/*"
+                "fonts/*",
+                "offscreen.html"
             ],
             "matches": [
                 "https://is.mendelu.cz/*"
