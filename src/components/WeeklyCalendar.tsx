@@ -90,8 +90,8 @@ interface WeeklyCalendarProps {
 
 export function WeeklyCalendar({ initialDate = new Date() }: WeeklyCalendarProps) {
     // Get stored semester data from hooks
-    const { schedule: storedSchedule } = useSchedule();
-    const { exams: storedExams } = useExams();
+    const { schedule: storedSchedule, isLoaded: isScheduleLoaded } = useSchedule();
+    const { exams: storedExams, isLoaded: isExamsLoaded } = useExams();
 
     const [selected, setSelected] = useState<BlockLesson | null>(null);
     const anchorRef = useRef<HTMLDivElement | null>(null);
@@ -243,6 +243,9 @@ export function WeeklyCalendar({ initialDate = new Date() }: WeeklyCalendarProps
         return -1;
     }, [weekDates]);
 
+    // Determine if we should show skeleton loading state
+    const showSkeleton = scheduleData.length === 0 && !isScheduleLoaded;
+
     return (
         <div className="flex h-full overflow-hidden flex-col font-inter bg-base-100">
             {/* Day headers - compact */}
@@ -350,8 +353,28 @@ export function WeeklyCalendar({ initialDate = new Date() }: WeeklyCalendarProps
                                         </div>
                                     )}
 
+                                    {/* Skeleton */}
+                                    {!holiday && showSkeleton && (
+                                        <>
+                                            {[
+                                                { top: '7%', height: '15%' },  // ~8:00 - 10:00
+                                                { top: '30%', height: '12%' }, // ~11:00 - 12:30
+                                                { top: '50%', height: '11%' }  // ~13:30 - 15:00
+                                            ].map((pos, i) => (
+                                                <div 
+                                                    key={i}
+                                                    className="absolute w-[94%] left-[3%] rounded-lg bg-base-300/50 animate-pulse"
+                                                    style={{ 
+                                                        top: pos.top, 
+                                                        height: pos.height 
+                                                    }}
+                                                />
+                                            ))}
+                                        </>
+                                    )}
+
                                     {/* Events */}
-                                    {!holiday && organizedLessons.map((lesson) => {
+                                    {!holiday && !showSkeleton && organizedLessons.map((lesson) => {
                                         const style = getEventStyle(lesson.startTime, lesson.endTime);
                                         const hasOverlap = totalRows > 1;
 

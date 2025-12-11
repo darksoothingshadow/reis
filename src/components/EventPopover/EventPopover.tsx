@@ -5,7 +5,7 @@
  * Files are pre-synced to localStorage - no network calls needed.
  */
 
-import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
+import { useState, useMemo, useEffect, useLayoutEffect, useRef, useCallback } from 'react';
 import { Loader2 } from 'lucide-react';
 import { useSubjects } from '../../hooks/data';
 import { getFilesForSubject } from '../../utils/apiUtils';
@@ -16,7 +16,7 @@ import { PopoverHeader } from './PopoverHeader';
 import { PopoverTabs } from './PopoverTabs';
 import { FileItem } from './FileItem';
 import { DownloadButton } from './DownloadButton';
-import type { StoredSubject, BlockLesson } from '../../types/calendarTypes';
+import type { BlockLesson } from '../../types/calendarTypes';
 import type { ParsedFile } from '../../types/documents';
 
 const log = createLogger('EventPopover');
@@ -30,9 +30,9 @@ interface EventPopoverProps {
 
 export function EventPopover({ lesson, isOpen, onClose, anchorRef }: EventPopoverProps) {
     const popupRef = useRef<HTMLDivElement>(null);
-    const { getSubject, isLoaded: subjectsLoaded } = useSubjects();
+    const { isLoaded: subjectsLoaded } = useSubjects();
 
-    const [position, setPosition] = useState({ top: 0, left: 0 });
+    const [position, setPosition] = useState<{ top: number, left: number, maxHeight: number }>({ top: 0, left: 0, maxHeight: 450 });
     const [files, setFiles] = useState<ParsedFile[] | null>(null);
     const [loading, setLoading] = useState(false);
     const [activeTab, setActiveTab] = useState('all');
@@ -40,50 +40,72 @@ export function EventPopover({ lesson, isOpen, onClose, anchorRef }: EventPopove
 
     const { isDownloading, openFile, downloadZip } = useFileActions();
 
-    // Get subject data
-    const subject: StoredSubject | null = useMemo(() => {
-        if (!lesson) return null;
-        const s = getSubject(lesson.courseCode);
-        if (!s) return null;
-        return { fullName: s.fullName, folderUrl: s.folderUrl };
-    }, [getSubject, lesson]);
-
     // Calculate position - viewport-relative since wrapper is fixed
-    useEffect(() => {
-        if (isOpen && anchorRef.current && lesson) {
+    useLayoutEffect(() => {
+        if (isOpen && anchorRef.current && popupRef.current && lesson) {
             log.debug(`Calculating position for lesson: ${lesson.courseCode}`);
             const anchorRect = anchorRef.current.getBoundingClientRect();
-
-            const popupWidth = 450;
-            const popupHeight = 400;
+            
+            // Get natural height (clamped to 450px default max)
+            const naturalHeight = Math.min(popupRef.current.scrollHeight, 450);
+            
+            const popupWidth = 450; // Fixed width from CSS (w-[450px])
             const padding = 16;
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
 
             let left = anchorRect.right + 8;
             let top = anchorRect.top;
+            let calculatedMaxHeight = 450; // Start with default max
 
+            // Horizontal positioning (Prefer Right, then Left)
             if (left + popupWidth > viewportWidth - padding) {
                 const leftCandidate = anchorRect.left - popupWidth - 8;
                 if (leftCandidate > padding) {
                     left = leftCandidate;
                 } else {
+                    // Try to fit in viewport if neither side is perfect
                     left = Math.max(padding, anchorRect.left);
                     if (left + popupWidth > viewportWidth - padding) {
                         left = viewportWidth - popupWidth - padding;
                     }
-                    top = anchorRect.bottom + 4;
+                    top = anchorRect.bottom + 4; // Move below if overlapping horizontally?
                 }
             }
 
-            if (top + popupHeight > viewportHeight - padding) {
-                const diff = (top + popupHeight) - (viewportHeight - padding);
-                top = Math.max(padding, top - diff);
+            // Vertical positioning: "Sticky Top" vs "Shift Up"
+            const spaceBelow = viewportHeight - top - padding;
+
+            if (naturalHeight > spaceBelow) {
+                // It doesn't fit naturally below the anchor.
+                
+                // Strategy A: Shrink content if we have decent space (>250px)
+                // This keeps the popover aligned with the event top (visually cleaner)
+                if (spaceBelow >= 250) {
+                    calculatedMaxHeight = spaceBelow;
+                    // Top stays at anchorRect.top
+                } else {
+                    // Strategy B: Space is too tight, we must shift up.
+                    // Try to shift up to fit the full naturalHeight (or 450)
+                    const shiftedTop = viewportHeight - naturalHeight - padding;
+                    
+                    if (shiftedTop >= padding) {
+                        top = shiftedTop;
+                        calculatedMaxHeight = naturalHeight;
+                    } else {
+                        // Even shifted it doesn't fit (small screen). Clamp to full height.
+                        top = padding;
+                        calculatedMaxHeight = viewportHeight - 2 * padding;
+                    }
+                }
+            } else {
+                // It fits naturally
+                calculatedMaxHeight = naturalHeight;
             }
 
-            setPosition({ top, left });
+            setPosition({ top, left, maxHeight: calculatedMaxHeight });
         }
-    }, [isOpen, anchorRef, lesson]);
+    }, [isOpen, anchorRef, lesson, files, activeTab, loading]); // Recalculate when content changes
 
     // Load files when opened - reads from localStorage (pre-synced)
     useEffect(() => {
@@ -211,8 +233,8 @@ export function EventPopover({ lesson, isOpen, onClose, anchorRef }: EventPopove
         <div className="fixed inset-0 z-[100]" onClick={handleBackdropClick}>
             <div
                 ref={popupRef}
-                className="absolute bg-white rounded-lg shadow-2xl border border-slate-200 ring-1 ring-slate-900/10 w-[450px] max-h-[450px] flex flex-col"
-                style={{ top: position.top, left: position.left }}
+                className="absolute bg-white rounded-lg shadow-2xl border border-slate-200 ring-1 ring-slate-900/10 w-[450px] flex flex-col"
+                style={{ top: position.top, left: position.left, maxHeight: position.maxHeight }}
                 onClick={e => e.stopPropagation()}
             >
                 <PopoverHeader

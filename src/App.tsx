@@ -4,7 +4,7 @@ import { Sidebar } from './components/Sidebar'
 import { SearchBar } from './components/SearchBar'
 import { WeeklyCalendar } from './components/WeeklyCalendar'
 
-import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { getSmartWeekRange } from './utils/calendarUtils'
 import { ExamDrawer } from './components/ExamDrawer'
 import { signalReady, requestData, isInIframe } from './api/proxyClient'
@@ -98,7 +98,7 @@ function App() {
   });
 
   const [isExamDrawerOpen, setIsExamDrawerOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+
   const [syncData, setSyncData] = useState<SyncedData | null>(null);
 
   // Set up postMessage communication with Content Script
@@ -151,7 +151,6 @@ function App() {
           // Trigger hooks to re-read from localStorage
           syncService.triggerRefresh();
 
-          setIsLoading(false);
           console.log('[App] Data received, written to localStorage, loading complete');
         }
       };
@@ -168,9 +167,8 @@ function App() {
         window.removeEventListener('message', handleMessage);
       };
     } else {
-      // Not in iframe (dev mode), skip loading state
+      // Not in iframe (dev mode)
       console.log('[App] Running standalone (dev mode)');
-      setIsLoading(false);
     }
   }, []);
 
@@ -209,17 +207,7 @@ function App() {
     }
   };
 
-  // Show loading spinner while waiting for data from content script
-  if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-base-200">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="h-12 w-12 animate-spin text-primary" />
-          <p className="text-lg text-base-content/70">Načítání dat...</p>
-        </div>
-      </div>
-    );
-  }
+
 
   // Log sync data for debugging
   if (syncData) {

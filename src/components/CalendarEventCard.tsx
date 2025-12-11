@@ -28,16 +28,15 @@ function cleanExamTitle(title: string): string {
     return title.replace(/^[ZL]S\s*\d{4}\/\d{4}\s*-\s*[A-Z]+\s*-\s*/i, '').trim();
 }
 
-// Extract short code from exam courseCode (e.g., "Algoritmizace-průběžný-test-2" -> "ALG")
-function getExamShortCode(courseCode: string): string {
-    // Try to extract a 3-letter code from the beginning
-    const match = courseCode.match(/^([A-Za-z]+)/);
-    if (match) {
-        const code = match[1].toUpperCase();
-        // Return first 3-4 letters as abbreviation
-        return code.substring(0, Math.min(4, code.length));
+// Extract display name from exam courseCode (e.g., "Algoritmizace-průběžný-test-2" -> "Algoritmizace")
+function getExamDisplayName(courseCode: string): string {
+    // Return the first part of the code (before the first dash)
+    // This usually contains the full subject name
+    const parts = courseCode.split('-');
+    if (parts.length > 0 && parts[0]) {
+        return parts[0];
     }
-    return courseCode.substring(0, 4).toUpperCase();
+    return courseCode;
 }
 
 export function CalendarEventCard({ lesson, onClick }: CalendarEventCardProps) {
@@ -71,9 +70,9 @@ export function CalendarEventCard({ lesson, onClick }: CalendarEventCardProps) {
 
     const styles = getEventStyles();
 
-    // For exams: show short code like "ALGO", for others: show full course code
+    // For exams: show the subject name, for others: show full course code
     const displayCode = lesson.isExam
-        ? getExamShortCode(lesson.courseCode)
+        ? getExamDisplayName(lesson.courseCode)
         : lesson.courseCode;
 
     // Clean the course name for exams
