@@ -28,15 +28,15 @@ function cleanExamTitle(title: string): string {
     return title.replace(/^[ZL]S\s*\d{4}\/\d{4}\s*-\s*[A-Z]+\s*-\s*/i, '').trim();
 }
 
-// Extract display name from exam courseCode (e.g., "Algoritmizace-průběžný-test-2" -> "Algoritmizace")
-function getExamDisplayName(courseCode: string): string {
-    // Return the first part of the code (before the first dash)
-    // This usually contains the full subject name
-    const parts = courseCode.split('-');
+// Extract display name from exam courseName (e.g., "Algoritmizace - průběžný test 2" -> "Algoritmizace")
+function getExamDisplayName(courseName: string): string {
+    // Return the name part (before the " - type" suffix)
+    // The format from WeeklyCalendar is `${subject.name} - ${section.name}`
+    const parts = courseName.split(' - ');
     if (parts.length > 0 && parts[0]) {
         return parts[0];
     }
-    return courseCode;
+    return courseName;
 }
 
 export function CalendarEventCard({ lesson, onClick }: CalendarEventCardProps) {
@@ -72,7 +72,7 @@ export function CalendarEventCard({ lesson, onClick }: CalendarEventCardProps) {
 
     // For exams: show the subject name, for others: show full course code
     const displayCode = lesson.isExam
-        ? getExamDisplayName(lesson.courseCode)
+        ? getExamDisplayName(lesson.courseName)
         : lesson.courseCode;
 
     // Clean the course name for exams

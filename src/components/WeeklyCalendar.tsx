@@ -7,7 +7,7 @@
 
 import { useState, useMemo, useRef } from 'react';
 import { CalendarEventCard } from './CalendarEventCard';
-import { EventPopover } from './EventPopover';
+import { SubjectFileDrawer } from './SubjectFileDrawer';
 import { useSchedule, useExams } from '../hooks/data';
 import { getCzechHoliday } from '../utils/holidays';
 import { parseDate } from '../utils/dateHelpers';
@@ -94,7 +94,6 @@ export function WeeklyCalendar({ initialDate = new Date() }: WeeklyCalendarProps
     const { exams: storedExams, isLoaded: isExamsLoaded } = useExams();
 
     const [selected, setSelected] = useState<BlockLesson | null>(null);
-    const anchorRef = useRef<HTMLDivElement | null>(null);
 
     // Calculate week dates (Mon-Fri)
     const weekDates = useMemo((): DateInfo[] => {
@@ -381,7 +380,6 @@ export function WeeklyCalendar({ initialDate = new Date() }: WeeklyCalendarProps
                                         return (
                                             <div
                                                 key={lesson.id}
-                                                ref={selected?.id === lesson.id ? anchorRef : null}
                                                 className="absolute"
                                                 style={{
                                                     top: style.top,
@@ -392,8 +390,8 @@ export function WeeklyCalendar({ initialDate = new Date() }: WeeklyCalendarProps
                                             >
                                                 <CalendarEventCard
                                                     lesson={lesson}
-                                                    onClick={(e) => {
-                                                        anchorRef.current = e.currentTarget as HTMLDivElement;
+                                                    onClick={() => {
+                                                        console.log('[WeeklyCalendar] Event clicked:', lesson.courseCode);
                                                         setSelected(lesson);
                                                     }}
                                                 />
@@ -407,12 +405,11 @@ export function WeeklyCalendar({ initialDate = new Date() }: WeeklyCalendarProps
                 </div>
             </div>
 
-            {/* Event Popover - same as current implementation */}
-            <EventPopover
+            {/* Subject File Sidebar (Drawer) */}
+            <SubjectFileDrawer
                 lesson={selected}
                 isOpen={!!selected}
                 onClose={() => setSelected(null)}
-                anchorRef={anchorRef}
             />
         </div>
     );

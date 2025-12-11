@@ -12,7 +12,10 @@ export function parseExamData(html: string): ExamSubject[] {
         // Clean name: Remove "ZS 202X/202X - FACULTY" prefix/suffix
         // Example: "ZS 2025/2026 - PEF Algoritmizace" or "Algoritmizace ZS 2025/2026 - PEF"
         // Usually it's "ZS 2025/2026 - PEF <Name>"
-        const name = rawName.replace(/ZS\s+\d{4}\/\d{4}\s+-\s+\w+\s+/, '').trim();
+        // Clean name: Remove "ZS 202X/202X - FACULTY" prefix/suffix
+        // Example: "ZS 2025/2026 - PEF Algoritmizace"
+        // Regex handles ZS/LS, year format, faculty code (letters), and following hyphen
+        const name = rawName.replace(/^[ZL]S\s*\d{4}\/\d{4}\s*-\s*[A-Z]+\s*(-)?\s*/i, '').trim();
 
         if (!subjectsMap.has(code)) {
             subjectsMap.set(code, {
