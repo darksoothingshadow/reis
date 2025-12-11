@@ -22,19 +22,13 @@ function calculateDuration(startTime: string, endTime: string): number {
     return (endHours * 60 + endMinutes) - (startHours * 60 + startMinutes);
 }
 
-// Clean exam/test name - extract just the test type name
-function cleanExamTitle(title: string): string {
-    // Remove patterns like "ZS 2025/2026 - PEF - " or "LS 2024/2025 - PEF - "
-    return title.replace(/^[ZL]S\s*\d{4}\/\d{4}\s*-\s*[A-Z]+\s*-\s*/i, '').trim();
-}
-
-// Extract display name from exam courseName (e.g., "Algoritmizace - průběžný test 2" -> "Algoritmizace")
-function getExamDisplayName(courseName: string): string {
-    // Return the name part (before the " - type" suffix)
+// Extract exam section name from the composite title
+function getExamSectionName(courseName: string): string {
     // The format from WeeklyCalendar is `${subject.name} - ${section.name}`
+    // We want to extract just the section name part
     const parts = courseName.split(' - ');
-    if (parts.length > 0 && parts[0]) {
-        return parts[0];
+    if (parts.length > 1) {
+        return parts[parts.length - 1];
     }
     return courseName;
 }
@@ -70,21 +64,14 @@ export function CalendarEventCard({ lesson, onClick }: CalendarEventCardProps) {
 
     const styles = getEventStyles();
 
-    // For exams: show the subject name, for others: show full course code
-    const displayCode = lesson.isExam
-        ? getExamDisplayName(lesson.courseName)
-        : lesson.courseCode;
+    // For exams: show the course code (e.g. EBC-ALG)
+    const displayCode = lesson.courseCode;
 
-    // Clean the course name for exams
+    // For exams: show the section name (e.g. "Průběžný test 2")
+    // For others: show the full course name
     const courseTitle = lesson.isExam
-        ? cleanExamTitle(lesson.courseName)
+        ? getExamSectionName(lesson.courseName)
         : lesson.courseName;
-
-    // Check if it's a test (not a full exam)
-    const isTest = lesson.isExam && (
-        courseTitle.toLowerCase().includes('test') ||
-        courseTitle.toLowerCase().includes('zápočtový')
-    );
 
     return (
         <div
@@ -101,15 +88,8 @@ export function CalendarEventCard({ lesson, onClick }: CalendarEventCardProps) {
 
                 {/* Course title - only for longer events */}
                 {isLongEnough && courseTitle && (
-                    <div className={`${styles.text} break-words line-clamp-2 flex-shrink-0`}>
+                    <div className={`${lesson.isExam ? 'text-exam-text font-bold' : styles.text} break-words line-clamp-2 flex-shrink-0`}>
                         {courseTitle}
-                    </div>
-                )}
-
-                {/* Test/Exam indicator - without emoji for cleaner look */}
-                {lesson.isExam && (
-                    <div className="mt-1 text-xs font-bold text-exam-text uppercase tracking-wide flex-shrink-0">
-                        {isTest ? 'TEST' : 'ZKOUŠKA'}
                     </div>
                 )}
 

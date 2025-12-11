@@ -128,12 +128,13 @@ export function WeeklyCalendar({ initialDate = new Date() }: WeeklyCalendarProps
     const examLessons = useMemo((): BlockLesson[] => {
         if (!storedExams || storedExams.length === 0) return [];
 
-        const allExams: { id: string; title: string; start: Date; location: string; meta: { teacher: string } }[] = [];
+        const allExams: { id: string; subjectCode: string; title: string; start: Date; location: string; meta: { teacher: string } }[] = [];
         storedExams.forEach(subject => {
             subject.sections.forEach((section: { id: string; status: string; name: string; registeredTerm?: { date: string; time: string; room?: string; teacher?: string } }) => {
                 if (section.status === 'registered' && section.registeredTerm) {
                     allExams.push({
                         id: section.id,
+                        subjectCode: subject.code, // Pass the real subject code (EBC-ALG)
                         title: `${subject.name} - ${section.name}`,
                         start: parseDate(section.registeredTerm.date, section.registeredTerm.time),
                         location: section.registeredTerm.room || 'Unknown',
@@ -155,7 +156,7 @@ export function WeeklyCalendar({ initialDate = new Date() }: WeeklyCalendarProps
                 date: dateStr,
                 startTime,
                 endTime,
-                courseCode: exam.id,
+                courseCode: exam.subjectCode, // Use the real subject code here
                 courseName: exam.title,
                 room: exam.location,
                 roomStructured: { name: exam.location, id: '' },
@@ -362,7 +363,7 @@ export function WeeklyCalendar({ initialDate = new Date() }: WeeklyCalendarProps
                                             ].map((pos, i) => (
                                                 <div 
                                                     key={i}
-                                                    className="absolute w-[94%] left-[3%] rounded-lg bg-base-300/50 animate-pulse"
+                                                    className="absolute w-[94%] left-[3%] rounded-lg skeleton bg-base-300"
                                                     style={{ 
                                                         top: pos.top, 
                                                         height: pos.height 

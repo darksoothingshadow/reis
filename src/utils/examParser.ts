@@ -76,8 +76,11 @@ export function parseExamData(html: string): ExamSubject[] {
                 return;
             }
 
-            const code = cols[2].textContent?.trim() || '';
-            const name = cols[3].textContent?.trim() || '';
+            // Indices shifted by -1 (assuming no hidden column 0, or previous assumption was off)
+            // Was: Code=2, Name=3
+            // Now: Code=1, Name=2
+            const code = cols[1].textContent?.trim() || '';
+            const name = cols[2].textContent?.trim() || '';
 
             const dateStr = cols[dateIndex].textContent?.trim() || '';
             const room = cols[dateIndex + 1]?.textContent?.trim() || '';
@@ -101,6 +104,9 @@ export function parseExamData(html: string): ExamSubject[] {
                 const match = href.match(/termin=(\d+)/);
                 if (match) termId = match[1];
             }
+            
+            // Log for debugging Sidebar Title Issue
+            console.debug(`[parseExamData] T1 Row ${rowIndex}: Code='${code}', Name='${name}'`);
 
             const subject = getOrCreateSubject(code, name);
             const section = getOrCreateSection(subject, sectionName);
@@ -150,8 +156,14 @@ export function parseExamData(html: string): ExamSubject[] {
                 return;
             }
 
-            const code = cols[3].textContent?.trim() || '';
-            const name = cols[4].textContent?.trim() || '';
+            // Indices shifted by -1
+            // Was: Code=3, Name=4
+            // Now: Code=2, Name=3
+            const code = cols[2].textContent?.trim() || '';
+            const name = cols[3].textContent?.trim() || '';
+            
+            // Log for debugging Sidebar Title Issue
+            console.debug(`[parseExamData] T2 Row ${rowIndex}: Code='${code}', Name='${name}'`);
 
             const dateStr = cols[dateIndex].textContent?.trim() || '';
             const room = cols[dateIndex + 1]?.textContent?.trim() || '';

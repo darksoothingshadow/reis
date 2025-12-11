@@ -157,7 +157,7 @@ function injectIframe() {
   // Security sandbox - allow scripts, same-origin for postMessage, and popups for links
   iframeElement.setAttribute(
     "sandbox",
-    "allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
+    "allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-downloads"
   );
 
   // Allow all features the app might need

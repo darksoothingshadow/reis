@@ -333,9 +333,30 @@ export function SubjectFileDrawer({ lesson, isOpen, onClose }: SubjectFileDrawer
                                 />
                             )}
 
-                            {loading ? (
-                                <div className="flex items-center justify-center p-12 text-slate-400">
-                                    <Loader2 size={24} className="animate-spin mb-2" />
+                            {loading || !subjectsLoaded || !files ? (
+                                <div className="p-6 space-y-8">
+                                    {[1, 2].map((i) => (
+                                        <div key={i} className="space-y-3">
+                                            {/* Folder Header Skeleton */}
+                                            <div className="flex items-center gap-2 px-2">
+                                                <div className="skeleton w-4 h-4 rounded-full bg-slate-200"></div>
+                                                <div className="skeleton h-4 w-32 rounded bg-slate-200"></div>
+                                            </div>
+                                            {/* Files Grid Skeleton */}
+                                            <div className="grid grid-cols-1 gap-1">
+                                                {[1, 2, 3].map((j) => (
+                                                    <div key={j} className="flex items-center gap-3 p-3 rounded-lg border border-transparent bg-white">
+                                                        <div className="skeleton w-5 h-5 rounded bg-slate-200"></div>
+                                                        <div className="flex-1 space-y-2">
+                                                            <div className="skeleton h-4 w-3/4 rounded bg-slate-200"></div>
+                                                            <div className="skeleton h-3 w-1/2 rounded bg-slate-200"></div>
+                                                        </div>
+                                                        <div className="skeleton w-4 h-4 rounded bg-slate-200"></div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
                             ) : (
                                 <div className="p-6 space-y-6">
