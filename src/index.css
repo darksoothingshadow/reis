@@ -1,10 +1,13 @@
 @import "tailwindcss";
-@plugin "daisyui";
+/* Enable both light and dark Mendelu themes */
+@plugin "daisyui" {
+  themes: mendelu, mendelu-dark --default;
+}
 
 /* Safelist DaisyUI toggle component (not auto-detected by JIT scanner) */
 @source inline("toggle toggle-xs toggle-sm toggle-md toggle-lg toggle-primary toggle-secondary toggle-accent toggle-success toggle-warning toggle-error toggle-info");
 
-/* Custom Mendelu theme for REIS extension */
+/* Custom Mendelu light theme for REIS extension */
 @plugin "daisyui/theme" {
   name: "mendelu";
   default: true;
@@ -25,6 +28,47 @@
   --color-accent-content: #ffffff;
   --color-neutral: #444444;
   --color-neutral-content: #ffffff;
+
+  /* Semantic colors */
+  --color-info: #3b82f6;
+  --color-info-content: #ffffff;
+  --color-success: #22c55e;
+  --color-success-content: #ffffff;
+  --color-warning: #f59e0b;
+  --color-warning-content: #ffffff;
+  --color-error: #ef4444;
+  --color-error-content: #ffffff;
+
+  /* Border radius (px values for Shadow DOM consistency) */
+  --radius-selector: 8px;
+  --radius-field: 6px;
+  --radius-box: 12px;
+
+  /* Border size */
+  --border: 1px;
+}
+
+/* Custom Mendelu dark theme for REIS extension */
+@plugin "daisyui/theme" {
+  name: "mendelu-dark";
+  default: false;
+  color-scheme: dark;
+
+  /* Base colors - dark */
+  --color-base-100: #1f2937;
+  --color-base-200: #111827;
+  --color-base-300: #0f172a;
+  --color-base-content: #f3f4f6;
+
+  /* Brand colors - preserved */
+  --color-primary: #79be15;
+  --color-primary-content: #ffffff;
+  --color-secondary: #8DC843;
+  --color-secondary-content: #ffffff;
+  --color-accent: #3b82f6;
+  --color-accent-content: #ffffff;
+  --color-neutral: #374151;
+  --color-neutral-content: #d1d5db;
 
   /* Semantic colors */
   --color-info: #3b82f6;
@@ -76,5 +120,5 @@
   --shadow-drawer: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
 
   /* Typography */
-  --font-dm: "DM Sans", sans-serif;
+  --font-inter: "Inter", sans-serif;
 }

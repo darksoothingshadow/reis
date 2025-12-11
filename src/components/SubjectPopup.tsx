@@ -17,7 +17,7 @@ export function RenderSubFiles(props: { status: number | null }) {
         case null:
             return (
                 <div className="w-full h-80 xl:h-150 flex justify-center items-center">
-                    <span className="text-base xl:text-xl font-dm font-semibold text-gray-700">Chyba při načítání souborů</span>
+                    <span className="text-base xl:text-xl font-inter font-semibold text-gray-700">Chyba při načítání souborů</span>
                 </div>
             )
         case 0:
@@ -33,11 +33,11 @@ export function RenderSubFiles(props: { status: number | null }) {
 
 export function RenderEmptySubject(props: { code: string, setter: () => void }) {
     return (
-        <div className="p-1 pl-4 pr-4 relative h-full w-100 xl:w-180 rounded-xl bg-gray-50 shadow-xl flex flex-col items-center justify-center font-dm">
+        <div className="p-1 pl-4 pr-4 relative h-full w-100 xl:w-180 rounded-xl bg-gray-50 shadow-xl flex flex-col items-center justify-center font-inter">
             <span className="absolute right-2 top-2 w-6 h-6 xl:w-8 xl:h-8 flex justify-center items-center text-gray-500 cursor-pointer hover:scale-90 transition-all" onClick={() => { props.setter() }}>
                 <X size={"2rem"}></X>
             </span>
-            <span className="w-full h-8 xl:h-16 text-gray-800 flex flex-col justify-center items-center font-dm text-base xl:text-2xl">{`Předmět ${props.code} nenalezen v lokálním uložišti`}</span>
+            <span className="w-full h-8 xl:h-16 text-gray-800 flex flex-col justify-center items-center font-inter text-base xl:text-2xl">{`Předmět ${props.code} nenalezen v lokálním uložišti`}</span>
         </div>
     )
 }
@@ -729,8 +729,8 @@ export function SubjectPopup(props: SubjectPopupPropsV2) {
     // Show loading state while fetching subject
     if (loadingSubject) {
         return (
-            <div className="fixed z-[999] top-0 left-0 w-screen h-screen flex justify-center items-center bg-black/50 backdrop-grayscale font-dm p-8" onClick={handleBackdropClick}>
-                <div className="p-8 relative h-fit w-100 xl:w-180 rounded-xl bg-white shadow-xl flex flex-col items-center justify-center font-dm">
+            <div className="fixed z-[999] top-0 left-0 w-screen h-screen flex justify-center items-center bg-black/50 backdrop-grayscale font-inter p-8" onClick={handleBackdropClick}>
+                <div className="p-8 relative h-fit w-100 xl:w-180 rounded-xl bg-white shadow-xl flex flex-col items-center justify-center font-inter">
                     <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-brand-accent mb-4"></div>
                     <span className="text-base xl:text-lg text-gray-600">Načítání předmětu...</span>
                 </div>
@@ -741,8 +741,8 @@ export function SubjectPopup(props: SubjectPopupPropsV2) {
     // Show empty state if no subject data (ONLY after loading is complete)
     if (subject_data === null && !loadingSubject) {
         return (
-            <div className="fixed z-[999] top-0 left-0 w-screen h-screen flex justify-center items-center bg-black/50 backdrop-grayscale font-dm p-8" onClick={handleBackdropClick}>
-                <div className="p-4 relative h-fit w-100 xl:w-180 rounded-xl bg-gray-50 shadow-xl flex flex-col items-center justify-center font-dm">
+            <div className="fixed z-[999] top-0 left-0 w-screen h-screen flex justify-center items-center bg-black/50 backdrop-grayscale font-inter p-8" onClick={handleBackdropClick}>
+                <div className="p-4 relative h-fit w-100 xl:w-180 rounded-xl bg-gray-50 shadow-xl flex flex-col items-center justify-center font-inter">
                     <span className="absolute right-2 top-2 w-6 h-6 xl:w-8 xl:h-8 flex justify-center items-center text-gray-500 cursor-pointer hover:scale-90 transition-all" onClick={props.onClose}>
                         <X size={"2rem"}></X>
                     </span>
@@ -804,16 +804,16 @@ export function SubjectPopup(props: SubjectPopupPropsV2) {
     };
 
     return (
-        <div className="fixed z-[999] top-0 left-0 w-screen h-screen flex justify-center items-center bg-black/50 backdrop-grayscale font-dm p-8" onClick={handleBackdropClick}>
+        <div className="fixed z-[999] top-0 left-0 w-screen h-screen flex justify-center items-center bg-black/50 backdrop-grayscale font-inter p-8" onClick={handleBackdropClick}>
             {/*Window*/}
             {subject_data ?
                 <div
-                    className="p-1 pl-4 pr-4 relative h-full w-100 xl:w-180 rounded-xl bg-gray-50 shadow-xl flex flex-col items-center font-dm bg-white select-none"
+                    className="p-1 pl-4 pr-4 relative h-full w-100 xl:w-180 rounded-xl bg-gray-50 shadow-xl flex flex-col items-center font-inter bg-white select-none"
                 >
                     <span className="absolute right-2 top-2 w-6 h-6 xl:w-8 xl:h-8 flex justify-center items-center text-gray-500 cursor-pointer hover:scale-90 transition-all close-icon" onClick={() => { props.onClose() }}>
                         <X size={"2rem"}></X>
                     </span>
-                    <span className="w-full h-8 xl:h-16 text-gray-800 flex flex-col justify-center items-center font-dm text-base xl:text-2xl">{subject_data.fullName}</span>
+                    <span className="w-full h-8 xl:h-16 text-gray-800 flex flex-col justify-center items-center font-inter text-base xl:text-2xl">{subject_data.fullName}</span>
                     <span className="w-full h-0.25 bg-gray-200 mb-2"></span>
                     <div className="text-base text-gray-700 w-full flex flex-col mt-4">
                         <span className="text-base xl:text-xl text-gray-700 font-medium">Vyučující události</span>

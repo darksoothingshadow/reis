@@ -4,7 +4,7 @@
   "version": "3.1.0",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtytAvPVCM6Wda+YVWJkHJ6hvl4EnrVoEOhiGi4mSRL+UBs22GpodIgtveT7x6ARVQyEQSsJdLCwuhFMo0LPNcQ4ylWLnue2ZiilhB2Jang10jMfFO2r2E+5raBMQauCaX4M01zSGxDX93Ui9pLZwfLY8R9cq8CB5uElJlrxf9jIBkUx3IoYkcGtiFnVEhiKIWAwhbPTzB6GTmr/eadU2fimDs3QECuRMIlPA7Z6J+EKBdgw9scZ7tdHFuXQdYkk1ZUs5M57VueLvEjDHyXfWxfKlkVhmfcM4MDItbQkKJfAkxP6RQWQR9kqcNiN48R9HXVFrTMIoOLLl2l7pZRGqnwIDAQAB",
   "description": "Modernized reIS extension for IS Mendelu with Google Drive sync",
-  "permissions": ["storage", "identity", "alarms", "offscreen"],
+  "permissions": ["storage", "identity", "alarms"],
   "background": {
     "service_worker": "background.js",
     "type": "module"

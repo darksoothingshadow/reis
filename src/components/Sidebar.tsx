@@ -6,13 +6,14 @@ import {
   Settings,
   ExternalLink,
   Calendar,
-  HardDrive
+  Moon
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { MENDELU_LOGO_PATH } from '../constants/icons';
 import { useUserParams } from '../hooks/useUserParams';
 import { getMainMenuItems, type MenuItem } from './menuConfig';
-import { useOutlookSync, useDriveSync } from '../hooks/data';
+import { useOutlookSync } from '../hooks/data';
+import { useTheme } from '../hooks/useTheme';
 
 
 interface SidebarProps {
@@ -29,8 +30,11 @@ export const Sidebar = ({ onOpenExamDrawer }: SidebarProps) => {
   // Outlook sync hook
   const { isEnabled: outlookSyncEnabled, isLoading: outlookSyncLoading, toggle: toggleOutlookSync } = useOutlookSync();
 
-  // Google Drive sync
-  const { isEnabled: driveSyncEnabled, isLoading: driveSyncLoading, toggle: toggleDriveSync } = useDriveSync();
+  // Google Drive sync - DORMANT (code preserved for future use)
+  // const { isEnabled: driveSyncEnabled, isLoading: driveSyncLoading, toggle: toggleDriveSync } = useDriveSync();
+
+  // Theme toggle
+  const { isDark, isLoading: themeLoading, toggle: toggleTheme } = useTheme();
 
 
   const { params } = useUserParams();
@@ -190,7 +194,22 @@ export const Sidebar = ({ onOpenExamDrawer }: SidebarProps) => {
                     />
                   </label>
 
-                  {/* Google Drive Sync Toggle */}
+                  {/* Dark Theme Toggle */}
+                  <label className="flex items-center justify-between gap-3 px-1 py-2 cursor-pointer hover:bg-base-200 rounded-lg transition-colors">
+                    <div className="flex items-center gap-2 flex-1">
+                      <Moon className="w-4 h-4 text-base-content/50 shrink-0" />
+                      <span className="text-xs text-base-content/70">Tmavý režim</span>
+                    </div>
+                    <input
+                      type="checkbox"
+                      className="toggle toggle-primary toggle-sm"
+                      checked={isDark}
+                      disabled={themeLoading}
+                      onChange={() => toggleTheme()}
+                    />
+                  </label>
+
+                  {/* Google Drive Sync Toggle - DORMANT (code preserved for future use)
                   <label className="flex items-center justify-between gap-3 px-1 py-2 cursor-pointer hover:bg-base-200 rounded-lg transition-colors">
                     <div className="flex items-center gap-2 flex-1">
                       <HardDrive className="w-4 h-4 text-base-content/50 shrink-0" />
@@ -204,6 +223,7 @@ export const Sidebar = ({ onOpenExamDrawer }: SidebarProps) => {
                       onChange={() => toggleDriveSync()}
                     />
                   </label>
+                  */}
                 </motion.div>
               )}
             </AnimatePresence>

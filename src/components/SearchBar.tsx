@@ -242,11 +242,11 @@ export function SearchBar({ placeholder = "Prohledej reIS", onSearch, onOpenExam
           aria-haspopup="listbox"
         >
           {/* THE "SHAPE SHIFTER" */}
-          <div className={`relative flex items-center w-full max-w-2xl bg-white rounded-xl border border-gray-200 shadow-sm transition-all duration-200 ${isOpen ? 'ring-2 ring-mendelu-green/20 border-mendelu-green' : 'hover:border-gray-300'}`}>
+          <div className={`relative flex items-center w-full max-w-2xl bg-base-100 rounded-xl border border-base-300 shadow-sm transition-all duration-200 ${isOpen ? 'ring-2 ring-primary/20 border-primary' : 'hover:border-base-content/30'}`}>
 
             {/* Input Area */}
-            <div className="flex-1 flex items-center h-10 px-3 border border-gray-300 border-solid rounded-md">
-              <Search className={`w-4 h-4 mr-3 transition-colors ${isOpen ? 'text-gray-800' : 'text-gray-500'}`} />
+            <div className="flex-1 flex items-center h-10 px-3 border border-base-300 border-solid rounded-md">
+              <Search className={`w-4 h-4 mr-3 transition-colors ${isOpen ? 'text-base-content' : 'text-base-content/50'}`} />
 
               <input
                 ref={inputRef}
@@ -259,7 +259,7 @@ export function SearchBar({ placeholder = "Prohledej reIS", onSearch, onOpenExam
                 onFocus={handleFocus}
                 onKeyDown={handleKeyDown}
                 placeholder={placeholder}
-                className="w-full bg-transparent text-sm text-gray-800 placeholder-gray-500 focus:outline-none"
+                className="w-full bg-transparent text-sm text-base-content placeholder-base-content/50 focus:outline-none"
                 aria-label="Vyhledávání"
                 aria-autocomplete="list"
                 aria-controls="search-results"
@@ -272,14 +272,14 @@ export function SearchBar({ placeholder = "Prohledej reIS", onSearch, onOpenExam
                     setQuery('');
                     inputRef.current?.focus();
                   }}
-                  className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+                  className="p-1 hover:bg-base-200 rounded-full transition-colors"
                   aria-label="Vymazat"
                 >
-                  <X className="w-4 h-4 text-gray-500" />
+                  <X className="w-4 h-4 text-base-content/50" />
                 </button>
               ) : (
                 !isOpen && (
-                  <kbd className="hidden sm:inline-flex items-center gap-0.5 text-xs text-gray-500 bg-gray-100 border border-gray-200 rounded px-1.5 py-0.5 font-sans">
+                  <kbd className="hidden sm:inline-flex items-center gap-0.5 text-xs text-base-content/50 bg-base-200 border border-base-300 rounded px-1.5 py-0.5 font-sans">
                     <span className="text-[10px]">⌃</span>K
                   </kbd>
                 )
@@ -292,16 +292,16 @@ export function SearchBar({ placeholder = "Prohledej reIS", onSearch, onOpenExam
             <div
               id="search-results"
               role="listbox"
-              className="absolute top-full left-0 right-0 bg-white border border-t-0 border-gray-300 rounded-b-lg shadow-lg overflow-hidden flex flex-col animate-in fade-in slide-in-from-top-2 duration-200"
+              className="absolute top-full left-0 right-0 bg-base-100 border border-t-0 border-base-300 rounded-b-lg shadow-lg overflow-hidden flex flex-col animate-in fade-in slide-in-from-top-2 duration-200"
             >
 
               {/* Thin Line Separator */}
-              <div className="h-px w-full bg-gray-200" />
+              <div className="h-px w-full bg-base-300" />
 
               {/* Section Title */}
-              <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider mt-1 flex justify-between items-center">
+              <div className="px-4 py-2 text-xs font-semibold text-base-content/50 uppercase tracking-wider mt-1 flex justify-between items-center">
                 <span>{query ? 'Výsledky' : 'Nedávná vyhledávání'}</span>
-                {isLoading && <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-gray-500"></div>}
+                {isLoading && <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-base-content/50"></div>}
               </div>
 
               {/* Results List */}
@@ -324,13 +324,13 @@ export function SearchBar({ placeholder = "Prohledej reIS", onSearch, onOpenExam
                       // Remove the old onClick handler entirely
                       // CHANGE ENDS HERE
 
-                      className={`w-full px-4 py-2.5 flex items-center gap-3 cursor-pointer transition-colors text-left ${selectedIndex === index ? 'bg-brand-accent/10' : 'hover:bg-gray-50'
+                      className={`w-full px-4 py-2.5 flex items-center gap-3 cursor-pointer transition-colors text-left ${selectedIndex === index ? 'bg-primary/10' : 'hover:bg-base-200'
                         }`}
                     >
                       {/* Left Icon Container */}
                       <div className="flex-shrink-0">
                         {query === '' ? (
-                          <Clock className="w-4 h-4 text-gray-400" />
+                          <Clock className="w-4 h-4 text-base-content/40" />
                         ) : result.type === 'page' ? (
                           <div className="w-6 h-6 rounded bg-success/20 flex items-center justify-center">
                             <FileText className="w-3.5 h-3.5 text-success" />
@@ -344,12 +344,12 @@ export function SearchBar({ placeholder = "Prohledej reIS", onSearch, onOpenExam
                             <Briefcase className="w-3.5 h-3.5 text-secondary" />
                           </div>
                         ) : result.personType === 'staff' ? (
-                          <div className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center">
-                            <Briefcase className="w-3.5 h-3.5 text-gray-600" />
+                          <div className="w-6 h-6 rounded-full bg-base-200 flex items-center justify-center">
+                            <Briefcase className="w-3.5 h-3.5 text-base-content/60" />
                           </div>
                         ) : (
-                          <div className="w-6 h-6 rounded bg-gray-100 flex items-center justify-center">
-                            <FileText className="w-3.5 h-3.5 text-gray-600" />
+                          <div className="w-6 h-6 rounded bg-base-200 flex items-center justify-center">
+                            <FileText className="w-3.5 h-3.5 text-base-content/60" />
                           </div>
                         )}
                       </div>
@@ -357,13 +357,13 @@ export function SearchBar({ placeholder = "Prohledej reIS", onSearch, onOpenExam
                       {/* Content */}
                       <div className="flex flex-col min-w-0 flex-1">
                         <div className="flex items-center gap-1.5 min-w-0">
-                          <span className="text-sm text-gray-800 truncate">
+                          <span className="text-sm text-base-content truncate">
                             {result.title}
                           </span>
                           {query !== '' && (
                             <>
-                              <span className="text-gray-400 flex-shrink-0">•</span>
-                              <span className="text-xs text-gray-500 flex-shrink-0">
+                              <span className="text-base-content/40 flex-shrink-0">•</span>
+                              <span className="text-xs text-base-content/50 flex-shrink-0">
                                 {result.detail}
                               </span>
                             </>
@@ -380,10 +380,10 @@ export function SearchBar({ placeholder = "Prohledej reIS", onSearch, onOpenExam
                     </div>
                   ))
                 ) : (
-                  <div className="px-4 py-8 text-center text-sm text-gray-500">
+                  <div className="px-4 py-8 text-center text-sm text-base-content/50">
                     {isLoading ? (
                       <div className="flex flex-col items-center gap-2">
-                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-500"></div>
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-base-content/50"></div>
                         <span>Načítání výsledků...</span>
                       </div>
                     ) : query.trim() === '' ? (
@@ -396,25 +396,25 @@ export function SearchBar({ placeholder = "Prohledej reIS", onSearch, onOpenExam
               </div>
 
               {/* Footer */}
-              <div className="border-t border-gray-200 bg-gray-50 px-4 py-2">
-                <div className="flex items-center gap-3 text-xs text-gray-500">
+              <div className="border-t border-base-300 bg-base-200 px-4 py-2">
+                <div className="flex items-center gap-3 text-xs text-base-content/50">
                   <div className="flex items-center gap-1">
-                    <kbd className="w-5 h-5 border border-gray-300 rounded flex items-center justify-center bg-white text-[10px]">
+                    <kbd className="w-5 h-5 border border-base-300 rounded flex items-center justify-center bg-base-100 text-[10px]">
                       <ChevronUp className="w-3 h-3" />
                     </kbd>
-                    <kbd className="w-5 h-5 border border-gray-300 rounded flex items-center justify-center bg-white text-[10px]">
+                    <kbd className="w-5 h-5 border border-base-300 rounded flex items-center justify-center bg-base-100 text-[10px]">
                       <ChevronDown className="w-3 h-3" />
                     </kbd>
                     <span className="ml-1">Vybrat</span>
                   </div>
                   <div className="flex items-center gap-1">
-                    <kbd className="h-5 px-1.5 border border-gray-300 rounded flex items-center justify-center bg-white min-w-[20px] text-[10px]">
+                    <kbd className="h-5 px-1.5 border border-base-300 rounded flex items-center justify-center bg-base-100 min-w-[20px] text-[10px]">
                       ↵
                     </kbd>
                     <span className="ml-1">Otevřít</span>
                   </div>
                   <div className="flex items-center gap-1">
-                    <kbd className="h-5 px-1.5 border border-gray-300 rounded flex items-center justify-center bg-white text-[10px]">
+                    <kbd className="h-5 px-1.5 border border-base-300 rounded flex items-center justify-center bg-base-100 text-[10px]">
                       Esc
                     </kbd>
                     <span className="ml-1">Zavřít</span>

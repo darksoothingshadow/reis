@@ -332,18 +332,28 @@ async function getFileDataFromContentScript(): Promise<SyncData | null> {
 }
 
 // ============================================================================
+// Feature Flag for Google Drive Sync (set to false to make dormant)
+// ============================================================================
+
+const DRIVE_SYNC_ENABLED = false;
+
+// ============================================================================
 // Auto-Sync Alarm
 // ============================================================================
 
-// Set up auto-sync alarm on install
+// Set up auto-sync alarm on install (only if Drive sync is enabled)
 chrome.runtime.onInstalled.addListener(() => {
   console.log("[Background] Extension installed/updated");
-  chrome.alarms.create("drive-auto-sync", {
-    periodInMinutes: DRIVE_CONSTANTS.SYNC_INTERVAL_MINUTES,
-  });
-  console.log(
-    `[Background] Auto-sync alarm created (every ${DRIVE_CONSTANTS.SYNC_INTERVAL_MINUTES} minutes)`
-  );
+  if (DRIVE_SYNC_ENABLED) {
+    chrome.alarms.create("drive-auto-sync", {
+      periodInMinutes: DRIVE_CONSTANTS.SYNC_INTERVAL_MINUTES,
+    });
+    console.log(
+      `[Background] Auto-sync alarm created (every ${DRIVE_CONSTANTS.SYNC_INTERVAL_MINUTES} minutes)`
+    );
+  } else {
+    console.log("[Background] Drive sync is dormant, skipping alarm creation");
+  }
 });
 
 // Handle auto-sync alarm

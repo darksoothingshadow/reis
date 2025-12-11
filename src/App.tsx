@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import './App.css'
 import { Sidebar } from './components/Sidebar'
 import { SearchBar } from './components/SearchBar'
-import { NewCalendarView } from './components/NewCalendarView'
+import { WeeklyCalendar } from './components/WeeklyCalendar'
 
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react'
 import { getSmartWeekRange } from './utils/calendarUtils'
@@ -137,10 +137,10 @@ function App() {
   // Show loading spinner while waiting for data from content script
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+      <div className="flex min-h-screen items-center justify-center bg-base-200">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="h-12 w-12 animate-spin text-primary" />
-          <p className="text-lg text-gray-600">Načítání dat...</p>
+          <p className="text-lg text-base-content/70">Načítání dat...</p>
         </div>
       </div>
     );
@@ -157,18 +157,18 @@ function App() {
   }
 
   return (
-    <div className="flex min-h-screen bg-slate-50 font-sans text-gray-900">
+    <div className="flex min-h-screen bg-base-200 font-sans text-base-content">
       <Sidebar onOpenExamDrawer={() => setIsExamDrawerOpen(true)} />
       <main className="flex-1 ml-0 md:ml-20 transition-all duration-300">
-        <div className="sticky top-0 z-30 bg-slate-50/90 backdrop-blur-md border-b border-gray-200 px-8 py-4">
+        <div className="sticky top-0 z-30 bg-base-200/90 backdrop-blur-md border-b border-base-300 px-8 py-4">
           <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
             {/* Navigation Controls */}
             <div className="flex items-center gap-4">
-              <div className="flex items-center bg-gray-100 rounded-lg p-1">
-                <button onClick={handlePrevWeek} className="p-1 hover:bg-white rounded-md shadow-sm transition-all text-gray-600 hover:text-primary">
+              <div className="flex items-center bg-base-300 rounded-lg p-1">
+                <button onClick={handlePrevWeek} className="p-1 hover:bg-base-100 rounded-md shadow-sm transition-all text-base-content/70 hover:text-primary">
                   <ChevronLeft size={20} />
                 </button>
-                <button onClick={handleNextWeek} className="p-1 hover:bg-white rounded-md shadow-sm transition-all text-gray-600 hover:text-primary">
+                <button onClick={handleNextWeek} className="p-1 hover:bg-base-100 rounded-md shadow-sm transition-all text-base-content/70 hover:text-primary">
                   <ChevronRight size={20} />
                 </button>
               </div>
@@ -178,7 +178,7 @@ function App() {
               >
                 Dnes
               </button>
-              <span className="text-lg font-semibold text-gray-800 min-w-[150px]">{getDateRangeLabel()}</span>
+              <span className="text-lg font-semibold text-base-content min-w-[150px]">{getDateRangeLabel()}</span>
             </div>
 
             <div className="flex-1 max-w-2xl">
@@ -189,8 +189,8 @@ function App() {
 
         <div className="p-4 max-w-8xl mx-auto">
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <NewCalendarView
+          <div className="bg-base-100 rounded-xl shadow-sm border border-base-300 overflow-hidden">
+            <WeeklyCalendar
               key={currentDate.toISOString()}
               initialDate={currentDate}
               onEmptyWeek={(direction) => {

@@ -175,7 +175,7 @@ export default {
 
             // === Typography ===
             fontFamily: {
-                dm: ['DM Sans', 'sans-serif'],
+                inter: ['Inter', 'sans-serif'],
             },
 
             // === Transitions ===
@@ -201,6 +201,30 @@ export default {
                     "base-200": "#f9fafb",
                     "base-300": "#f3f4f6",
                     "base-content": "#111827",
+                    "info": "#3b82f6",
+                    "info-content": "#ffffff",
+                    "success": "#22c55e",
+                    "success-content": "#ffffff",
+                    "warning": "#f59e0b",
+                    "warning-content": "#ffffff",
+                    "error": "#ef4444",
+                    "error-content": "#ffffff",
+                },
+            },
+            {
+                "mendelu-dark": {
+                    "primary": "#79be15",
+                    "primary-content": "#ffffff",
+                    "secondary": "#8DC843",
+                    "secondary-content": "#ffffff",
+                    "accent": "#3b82f6",
+                    "accent-content": "#ffffff",
+                    "neutral": "#1f2937",
+                    "neutral-content": "#d1d5db",
+                    "base-100": "#1f2937",
+                    "base-200": "#111827",
+                    "base-300": "#0f172a",
+                    "base-content": "#f3f4f6",
                     "info": "#3b82f6",
                     "info-content": "#ffffff",
                     "success": "#22c55e",

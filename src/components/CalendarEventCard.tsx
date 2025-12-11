@@ -94,7 +94,7 @@ export function CalendarEventCard({ lesson, onClick }: CalendarEventCardProps) {
             onClick={onClick}
             title={`${courseTitle}\n${lesson.startTime} - ${lesson.endTime}\n${lesson.room}\n${lesson.teachers[0]?.shortName || ''}`}
         >
-            <div className="p-2 h-full flex flex-col text-sm overflow-hidden font-dm">
+            <div className="p-2 h-full flex flex-col text-sm overflow-hidden font-inter">
                 {/* Course code - always visible */}
                 <div className={`font-bold ${styles.text} flex-shrink-0`}>
                     {displayCode}
