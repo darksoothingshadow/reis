@@ -57,3 +57,14 @@ export async function getUserParams(): Promise<UserParams | null> {
 
     return null;
 }
+
+/**
+ * Synchronous getter for studium from storage.
+ * Returns null if not cached (caller should handle gracefully).
+ * Use this for URL injection where async isn't practical.
+ */
+export function getStudiumSync(): string | null {
+    const cached = StorageService.get<UserParams>(STORAGE_KEYS.USER_PARAMS);
+    return cached?.studium ?? null;
+}
+

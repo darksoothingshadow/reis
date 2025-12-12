@@ -93,11 +93,18 @@ export function CalendarEventCard({ lesson, onClick }: CalendarEventCardProps) {
                     </div>
                 )}
 
-                {/* Location - only for longer events, pushed to bottom */}
-                {isLongEnough && lesson.room && (
-                    <div className="text-gray-600 text-sm mt-auto flex-shrink-0 flex items-center gap-1">
-                        <MapPin size={12} className="flex-shrink-0" />
-                        {lesson.room}
+                {/* Bottom row - Location and Time, pushed to bottom */}
+                {isLongEnough && (
+                    <div className="text-gray-600 text-sm mt-auto flex-shrink-0 flex items-center justify-between gap-2">
+                        {lesson.room && (
+                            <div className="flex items-center gap-1 min-w-0 flex-1">
+                                <MapPin size={12} className="flex-shrink-0" />
+                                <span className="truncate">{lesson.room}</span>
+                            </div>
+                        )}
+                        <div className="text-gray-500 whitespace-nowrap flex-shrink-0">
+                            {lesson.startTime} - {lesson.endTime}
+                        </div>
                     </div>
                 )}
             </div>

@@ -114,6 +114,8 @@ export const Sidebar = ({ onOpenExamDrawer }: SidebarProps) => {
                         <a
                           key={child.id}
                           href={child.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
                           onClick={(e) => {
                             if (child.id === 'zapisy-zkousky') {
                               e.preventDefault();

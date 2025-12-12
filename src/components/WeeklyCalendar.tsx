@@ -306,20 +306,20 @@ export function WeeklyCalendar({ initialDate = new Date() }: WeeklyCalendarProps
                                     console.log('[CalendarGrid] Rendering grid:', {
                                         daysCount: DAYS.length,
                                         hoursCount: HOURS.length,
-                                        verticalBorder: 'border-r border-base-300',
-                                        horizontalBorder: 'border-b border-base-200',
+                                        verticalBorder: 'border-r border-gray-300',
+                                        horizontalBorder: 'border-b border-gray-200',
                                         hourHeightPercent: `${100 / TOTAL_HOURS}%`,
                                     });
                                 }
                                 return (
                                     <div
                                         key={dayIndex}
-                                        className="flex-1 border-r border-base-300 last:border-r-0"
+                                        className="flex-1 border-r border-gray-300 last:border-r-0"
                                     >
                                         {HOURS.map((_, hourIndex) => (
                                             <div
                                                 key={hourIndex}
-                                                className="border-b border-base-200"
+                                                className="border-b border-gray-200"
                                                 style={{ height: `${100 / TOTAL_HOURS}%` }}
                                             ></div>
                                         ))}

@@ -1,7 +1,7 @@
 import { Search, X, ChevronUp, ChevronDown, Clock, FileText, GraduationCap, Briefcase } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { searchPeople } from '../api/search';
-import { pagesData } from '../data/pagesData';
+import { pagesData, injectUserParams } from '../data/pagesData';
 import type { PageItem, PageCategory } from '../data/pagesData';
 import { fuzzyIncludes } from '../utils/searchUtils';
 
@@ -183,7 +183,7 @@ export function SearchBar({ placeholder = "Prohledej reIS", onSearch, onOpenExam
 
     // For keyboard navigation, open the link programmatically
     if (result.link) {
-      window.open(result.link, '_blank');
+      window.open(injectUserParams(result.link), '_blank');
     }
     if (onSearch) {
       onSearch(result.title);

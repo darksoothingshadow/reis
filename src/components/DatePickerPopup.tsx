@@ -39,15 +39,16 @@ export function DatePickerPopup({
     const [selectedTermId, setSelectedTermId] = useState<string | null>(null);
     const [position, setPosition] = useState({ top: 0, left: 0 });
 
-    // Calculate position - always below anchor
+    // Calculate position - prefer below anchor, flip above if needed
     useEffect(() => {
         if (isOpen && anchorRef.current) {
             const rect = anchorRef.current.getBoundingClientRect();
             const popupWidth = 260;
+            const popupHeight = 420; // Approximate max height
             const padding = 12;
 
             let left = rect.left;
-            const top = rect.bottom + 4; // Always below
+            let top = rect.bottom + 4; // Try below first
 
             // Check right boundary
             if (left + popupWidth > window.innerWidth - padding) {
@@ -55,6 +56,15 @@ export function DatePickerPopup({
             }
             if (left < padding) {
                 left = padding;
+            }
+
+            // Check bottom boundary - flip above if not enough space
+            if (top + popupHeight > window.innerHeight - padding) {
+                top = rect.top - popupHeight - 4; // Position above
+                // If still not enough space above, just position at top with scroll
+                if (top < padding) {
+                    top = padding;
+                }
             }
 
             setPosition({ top, left });
@@ -215,16 +225,8 @@ export function DatePickerPopup({
                                     return (
                                         <div
                                             key={day.toString()}
-                                            className="h-8 flex items-center justify-center relative"
+                                            className={`flex flex-col items-center justify-start relative ${otherExam ? 'h-12' : 'h-8'}`}
                                         >
-                                            {/* Small red dot */}
-                                            {otherExam && (
-                                                <div
-                                                    className="absolute top-0 right-0.5 w-1.5 h-1.5 rounded-full bg-error"
-                                                    title={otherExam.label}
-                                                />
-                                            )}
-
                                             <button
                                                 onClick={() => {
                                                     if (hasAvailableExam && dateInfo) {
@@ -234,15 +236,15 @@ export function DatePickerPopup({
                                                 }}
                                                 disabled={!hasAvailableExam}
                                                 className={`
-                                                    w-7 h-7 flex items-center justify-center rounded-full text-xs transition-all
+                                                    w-7 h-7 flex items-center justify-center rounded-full text-xs transition-all relative
                                                     ${isSelected
-                                                        ? 'bg-primary text-white font-bold'
+                                                        ? 'bg-primary text-white font-bold shadow-sm'
                                                         : hasAvailableExam
-                                                            ? 'bg-primary/20 text-primary font-bold hover:bg-primary/30 cursor-pointer ring-1 ring-primary/50'
+                                                            ? 'bg-primary text-white font-bold hover:bg-primary/80 cursor-pointer shadow-sm'
                                                             : isFull
-                                                                ? 'text-slate-300 cursor-default'
+                                                                ? 'text-slate-300 cursor-default line-through'
                                                                 : isTodayDate
-                                                                    ? 'ring-1 ring-slate-400 text-slate-700 font-medium cursor-default'
+                                                                    ? 'bg-slate-100 ring-2 ring-slate-400 text-slate-700 font-semibold cursor-default'
                                                                     : isCurrentMonth
                                                                         ? 'text-slate-400 cursor-default'
                                                                         : 'text-slate-200 cursor-default'
@@ -251,6 +253,21 @@ export function DatePickerPopup({
                                             >
                                                 {format(day, 'd')}
                                             </button>
+                                            
+                                            {/* Today label */}
+                                            {isTodayDate && !hasAvailableExam && (
+                                                <span className="text-[8px] font-medium text-slate-500 mt-0.5">Dnes</span>
+                                            )}
+                                            
+                                            {/* Mini event preview for other exams */}
+                                            {otherExam && (
+                                                <div 
+                                                    className="text-[7px] text-error font-medium mt-0.5 max-w-[32px] truncate text-center"
+                                                    title={otherExam.label}
+                                                >
+                                                    {otherExam.label.split(' - ')[0]}
+                                                </div>
+                                            )}
                                         </div>
                                     );
                                 })}
@@ -259,13 +276,18 @@ export function DatePickerPopup({
                     </div>
 
                     {/* Legend */}
-                    <div className="flex items-center gap-3 mt-2 pt-2 border-t border-slate-200 text-[10px] text-slate-500">
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 pt-2 border-t border-slate-200 text-[10px] text-slate-500">
                         <span className="flex items-center gap-1">
-                            <span className="w-4 h-4 rounded-full bg-primary/20 ring-1 ring-primary/50 flex items-center justify-center text-primary font-bold text-[8px]">15</span>
-                            Volný
+                            <span className="w-4 h-4 rounded-full bg-primary flex items-center justify-center text-white font-bold text-[8px] shadow-sm">15</span>
+                            Volný termín
                         </span>
                         <span className="flex items-center gap-1">
-                            <span className="w-1.5 h-1.5 rounded-full bg-error"></span> Jiná
+                            <span className="w-4 h-4 rounded-full bg-slate-100 ring-2 ring-slate-400 flex items-center justify-center text-slate-700 font-semibold text-[8px]">12</span>
+                            Dnes
+                        </span>
+                        <span className="flex items-center gap-1">
+                            <span className="text-[7px] text-error font-medium">ALG</span>
+                            Jiná zkouška
                         </span>
                     </div>
                 </div>

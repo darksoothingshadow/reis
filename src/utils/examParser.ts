@@ -96,7 +96,6 @@ export function parseExamData(html: string): ExamSubject[] {
             const time = timePart;
 
             // Extract Term ID from unregister link
-            // Link looks like: terminy_seznam.pl?termin=327145;studium=149707;obdobi=801;odhlasit_ihned=1;lang=cz
             const unregisterLink = row.querySelector('a[href*="odhlasit_ihned=1"]');
             let termId = '';
             if (unregisterLink) {
@@ -179,7 +178,6 @@ export function parseExamData(html: string): ExamSubject[] {
             const isFull = occupied >= total;
 
             // Extract Term ID from register link
-            // Link looks like: terminy_seznam.pl?termin=327621;studium=149707;obdobi=801;prihlasit_ihned=1;lang=cz
             const registerLink = row.querySelector('a[href*="prihlasit_ihned=1"]');
             let termId = '';
             if (registerLink) {
