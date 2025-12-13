@@ -149,3 +149,14 @@ html, body, #root {
 .text-current-day {
   color: var(--color-accent);
 }
+
+/* Clickable link styles - explicit hover effects */
+.clickable-link {
+  cursor: pointer;
+  transition: color 0.2s ease, text-decoration 0.2s ease;
+}
+
+.clickable-link:hover {
+  color: #059669; /* emerald-600 */
+  text-decoration: underline;
+}

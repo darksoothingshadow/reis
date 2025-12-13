@@ -65,7 +65,7 @@ export function Sidebar() {
       children: [
         { id: 'hodnoceni-uspesnosti', label: 'Hodnocení úspěšnosti předmětů', icon: <Award className="w-4 h-4" /> },
         { id: 'studijni-plany', label: 'Studijní plány', icon: <BookMarked className="w-4 h-4" /> },
-        { id: 'zadosti-formular', label: 'Žádosti a formuláře', icon: <ClipboardList className="w-4 h-4" /> },
+        { id: 'zadosti-formular', label: 'Kontaktní centrum', icon: <ClipboardList className="w-4 h-4" /> },
         { id: 'wifi', label: 'Nastavení WiFi', icon: <Wifi className="w-4 h-4" /> }
       ]
     }

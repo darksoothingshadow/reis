@@ -127,7 +127,7 @@ export const getMainMenuItems = (studiumId: string = '', obdobiId: string = ''):
             },
             {
                 id: 'zadosti-formular',
-                label: 'Žádosti a formuláře',
+                label: 'Kontaktní centrum',
                 icon: <ClipboardList className="w-4 h-4" />,
                 href: 'https://is.mendelu.cz/auth/kc/kc.pl?_m=17022'
             }

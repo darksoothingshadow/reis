@@ -4,7 +4,7 @@ description: Build the Chrome extension after making code changes
 
 # Build Workflow
 
-After making code changes to the extension, ALWAYS run the full build:
+After making code changes to the extension, run this build process:
 
 // turbo
 1. Run the complete build command:
@@ -12,17 +12,33 @@ After making code changes to the extension, ALWAYS run the full build:
 cd /root/reis && npm run build
 ```
 
-2. Verify the dist folder contains all required files:
-   - `dist/content.js` - Content script
-   - `dist/background.js` - Service worker
-   - `dist/index.html` - Main app entry
-   - `dist/manifest.json` - Extension manifest
-   - `dist/offscreen.js` - Offscreen document script
+// turbo
+2. Copy build output to the extension directory:
+```bash
+rm -rf ~/reis-dist && cp -r /root/reis/dist ~/reis-dist
+```
 
-3. If any of these files are missing, the build failed and needs investigation.
+// turbo
+3. Verify all required files exist:
+```bash
+ls ~/reis-dist/content.js ~/reis-dist/background.js ~/reis-dist/index.html ~/reis-dist/manifest.json ~/reis-dist/offscreen.js 2>&1
+```
 
-## Important Notes
+## Required Files Checklist
 
-- The build command runs tests first, then builds app, content script, and background script
-- A partial build (only `npm run build:app`) will NOT produce all required files
-- Always wait for the full build to complete before telling the user to reload the extension
+These files MUST exist in `~/reis-dist/` for the extension to load:
+- `content.js` - Content script (injected into pages)
+- `background.js` - Service worker 
+- `index.html` - Main app entry
+- `manifest.json` - Extension manifest
+- `offscreen.js` - Offscreen document script
+
+## Troubleshooting
+
+If the verification step shows "No such file or directory":
+- The build failed or was incomplete
+- Check the build output for errors
+- Run `npm run build` again and wait for full completion
+
+> **CRITICAL**: The extension is loaded from `~/reis-dist`, NOT `/root/reis/dist`. Always run step 2 to copy files!
+

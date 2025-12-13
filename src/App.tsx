@@ -1,8 +1,10 @@
-import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import './App.css'
 import { Sidebar } from './components/Sidebar'
 import { SearchBar } from './components/SearchBar'
 import { WeeklyCalendar } from './components/WeeklyCalendar'
+import { OutlookSyncHint } from './components/OutlookSyncHint'
+import { Toaster } from './components/ui/sonner'
 
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { getSmartWeekRange } from './utils/calendarUtils'
@@ -11,7 +13,7 @@ import { signalReady, requestData, isInIframe } from './api/proxyClient'
 import type { SyncedData } from './types/messages'
 import { StorageService, STORAGE_KEYS } from './services/storage'
 import { syncService, outlookSyncService } from './services/sync'
-import { useSchedule, useExams } from './hooks/data'
+import { useSchedule, useExams, useOutlookSync } from './hooks/data'
 import { parseDate } from './utils/dateHelpers'
 
 // Helper: Get week date strings (YYYYMMDD format) for a given week start date
@@ -98,6 +100,15 @@ function App() {
   });
 
   const [isExamDrawerOpen, setIsExamDrawerOpen] = useState(false);
+  
+  // Navigation count for Outlook sync hint trigger
+  const [weekNavCount, setWeekNavCount] = useState(0);
+  
+  // Outlook sync state
+  const { isEnabled: outlookSyncEnabled } = useOutlookSync();
+  
+  // Ref to trigger opening settings popup in Sidebar
+  const openSettingsRef = useRef<(() => void) | null>(null);
 
   const [syncData, setSyncData] = useState<SyncedData | null>(null);
 
@@ -176,12 +187,14 @@ function App() {
     // Skip to previous week with content
     const newDate = findNextWeekWithContent(currentDate, 'prev');
     setCurrentDate(newDate);
+    setWeekNavCount(prev => prev + 1);
   };
 
   const handleNextWeek = () => {
     // Skip to next week with content
     const newDate = findNextWeekWithContent(currentDate, 'next');
     setCurrentDate(newDate);
+    setWeekNavCount(prev => prev + 1);
   };
 
   const handleToday = () => {
@@ -221,12 +234,16 @@ function App() {
 
   return (
     <div className="flex h-screen overflow-hidden bg-base-200 font-sans text-base-content">
-      <Sidebar onOpenExamDrawer={() => setIsExamDrawerOpen(true)} />
+      <Toaster position="top-center" />
+      <Sidebar 
+        onOpenExamDrawer={() => setIsExamDrawerOpen(true)} 
+        onOpenSettingsRef={openSettingsRef}
+      />
       <main className="flex-1 flex flex-col ml-0 md:ml-20 transition-all duration-300 overflow-hidden">
-        <div className="flex-shrink-0 z-30 bg-base-200/90 backdrop-blur-md border-b border-base-300 px-8 py-2">
-          <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
-            {/* Navigation Controls */}
-            <div className="flex items-center gap-4">
+        <div className="flex-shrink-0 z-30 bg-base-200/90 backdrop-blur-md border-b border-base-300 px-4 py-2">
+          <div className="flex items-center justify-between gap-4 w-full">
+            {/* Navigation Controls - flush left */}
+            <div className="flex items-center gap-4 flex-shrink-0">
               <div className="flex items-center bg-base-300 rounded-lg p-1">
                 <button onClick={handlePrevWeek} className="p-1 hover:bg-base-100 rounded-md shadow-sm transition-all text-base-content/70 hover:text-primary">
                   <ChevronLeft size={20} />
@@ -241,10 +258,11 @@ function App() {
               >
                 Dnes
               </button>
-              <span className="text-lg font-semibold text-base-content min-w-[150px]">{getDateRangeLabel()}</span>
+              <span className="text-lg font-semibold text-base-content whitespace-nowrap">{getDateRangeLabel()}</span>
             </div>
 
-            <div className="flex-1 max-w-2xl">
+            {/* SearchBar - always far right */}
+            <div className="flex-shrink-0 w-[480px] mr-2">
               <SearchBar onOpenExamDrawer={() => setIsExamDrawerOpen(true)} />
             </div>
           </div>
@@ -261,6 +279,13 @@ function App() {
       </main>
 
       <ExamDrawer isOpen={isExamDrawerOpen} onClose={() => setIsExamDrawerOpen(false)} />
+      
+      {/* Outlook Sync Tutorial Hint */}
+      <OutlookSyncHint
+        navigationCount={weekNavCount}
+        isSyncEnabled={outlookSyncEnabled}
+        onSetup={() => openSettingsRef.current?.()}
+      />
     </div>
   )
 }

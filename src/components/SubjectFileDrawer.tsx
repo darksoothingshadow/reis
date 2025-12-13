@@ -1,11 +1,32 @@
-import { X, Loader2, Download, Check, FileText, Folder } from 'lucide-react';
+import { X, Loader2, Download, Check, FileText, Folder, Map as MapIcon, ExternalLink, User, MousePointer2, Clock } from 'lucide-react';
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { useSubjects } from '../hooks/data';
+import { useSubjects, useSchedule } from '../hooks/data';
 import { getFilesForSubject } from '../utils/apiUtils';
 import { cleanFolderName } from '../utils/fileUrl';
 import { useFileActions } from '../hooks/ui/useFileActions';
 import type { BlockLesson } from '../types/calendarTypes';
 import type { ParsedFile } from '../types/documents';
+
+const DRAG_HINT_STORAGE_KEY = 'reis_drag_hint_shown';
+
+// Helper: Format date string (YYYYMMDD) to readable format
+function formatDate(dateStr: string): string {
+    if (!dateStr || dateStr.length !== 8) return '';
+    const year = parseInt(dateStr.substring(0, 4));
+    const month = parseInt(dateStr.substring(4, 6)) - 1;
+    const day = parseInt(dateStr.substring(6, 8));
+    const date = new Date(year, month, day);
+    const weekdays = ['Neděle', 'Pondělí', 'Úterý', 'Středa', 'Čtvrtek', 'Pátek', 'Sobota'];
+    return `${weekdays[date.getDay()]} ${day}.${month + 1}.`;
+}
+
+// Helper: Get event type label and color
+function getEventType(lesson: { isExam?: boolean; isSeminar?: string } | null): { label: string; bgColor: string; textColor: string } {
+    if (!lesson) return { label: '', bgColor: '', textColor: '' };
+    if (lesson.isExam) return { label: 'Zkouška', bgColor: 'bg-red-100', textColor: 'text-red-700' };
+    if (lesson.isSeminar === 'true') return { label: 'Cvičení', bgColor: 'bg-emerald-100', textColor: 'text-emerald-700' };
+    return { label: 'Přednáška', bgColor: 'bg-blue-100', textColor: 'text-blue-700' };
+}
 
 interface SubjectFileDrawerProps {
     lesson: BlockLesson | null;
@@ -15,6 +36,7 @@ interface SubjectFileDrawerProps {
 
 export function SubjectFileDrawer({ lesson, isOpen, onClose }: SubjectFileDrawerProps) {
     const { isLoaded: subjectsLoaded } = useSubjects();
+    const { schedule } = useSchedule();
     const { isDownloading, openFile, downloadZip } = useFileActions();
 
     console.log('[SubjectFileDrawer] Rendering. Open:', isOpen, 'Lesson:', lesson?.courseCode);
@@ -27,6 +49,9 @@ export function SubjectFileDrawer({ lesson, isOpen, onClose }: SubjectFileDrawer
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [isDragging, setIsDragging] = useState(false);
     const [selectionStart, setSelectionStart] = useState<{ x: number, y: number } | null>(null);
+    
+    // Drag hint state
+    const [showDragHint, setShowDragHint] = useState(false);
     const [selectionEnd, setSelectionEnd] = useState<{ x: number, y: number } | null>(null);
 
     // Refs
@@ -56,10 +81,47 @@ export function SubjectFileDrawer({ lesson, isOpen, onClose }: SubjectFileDrawer
             setSelectionStart(null);
             setSelectionEnd(null);
             isDraggingRef.current = false;
+            setShowDragHint(false);
         }
     }, [isOpen]);
 
+    // Show drag hint on first use
+    useEffect(() => {
+        if (!isOpen || loading || !files || files.length === 0) return;
+        
+        const hasSeenHint = localStorage.getItem(DRAG_HINT_STORAGE_KEY);
+        if (hasSeenHint) return;
+        
+        // Mark as seen immediately so it won't show again even if drawer is closed
+        localStorage.setItem(DRAG_HINT_STORAGE_KEY, 'true');
+        
+        // Delay to let content render first
+        const showTimer = setTimeout(() => {
+            setShowDragHint(true);
+        }, 800);
+        
+        // Auto-hide after 4 seconds
+        const hideTimer = setTimeout(() => {
+            setShowDragHint(false);
+        }, 4800);
+        
+        return () => {
+            clearTimeout(showTimer);
+            clearTimeout(hideTimer);
+        };
+    }, [isOpen, loading, files]);
+
     // Group files logic
+    // Lookup courseId from schedule if not present in lesson (e.g., exams)
+    const resolvedCourseId = useMemo(() => {
+        if (lesson?.courseId) return lesson.courseId;
+        if (!lesson?.courseCode || !schedule?.length) return '';
+        
+        // Find a regular lesson with matching courseCode to get its courseId
+        const matchingLesson = schedule.find(s => s.courseCode === lesson.courseCode && s.courseId);
+        return matchingLesson?.courseId || '';
+    }, [lesson?.courseId, lesson?.courseCode, schedule]);
+
     const groupedFiles = useMemo(() => {
         if (!files) return [];
         const groups = new Map<string, ParsedFile[]>();
@@ -77,10 +139,34 @@ export function SubjectFileDrawer({ lesson, isOpen, onClose }: SubjectFileDrawer
             return a.localeCompare(b, 'cs');
         });
 
+        // Natural sort function: handles "Přednáška 2" before "Přednáška 10"
+        const naturalCompare = (s1: string, s2: string) =>
+            s1.localeCompare(s2, 'cs', { numeric: true, sensitivity: 'base' });
+
+        // Sort files within each group
+        const sortFiles = (groupFiles: ParsedFile[]): ParsedFile[] => {
+            return [...groupFiles].sort((a, b) => {
+                // Priority 1: Both have comments → sort by comment
+                const commentA = a.file_comment?.trim();
+                const commentB = b.file_comment?.trim();
+                
+                if (commentA && commentB) {
+                    return naturalCompare(commentA, commentB);
+                }
+                
+                // Priority 2: Only one has comment → comment wins (comes first)
+                if (commentA && !commentB) return -1;
+                if (!commentA && commentB) return 1;
+                
+                // Priority 3: Neither has comment → sort by file_name
+                return naturalCompare(a.file_name, b.file_name);
+            });
+        };
+
         return sortedKeys.map(key => ({
             name: key,
             displayName: key === 'Ostatní' ? 'Ostatní' : cleanFolderName(key, lesson?.courseCode),
-            files: groups.get(key) || []
+            files: sortFiles(groups.get(key) || [])
         }));
     }, [files, lesson?.courseCode]);
 
@@ -286,40 +372,125 @@ export function SubjectFileDrawer({ lesson, isOpen, onClose }: SubjectFileDrawer
                 <div className="w-[600px] bg-white shadow-2xl rounded-2xl flex flex-col overflow-hidden border border-gray-100 font-inter h-full animate-in slide-in-from-right duration-300 pointer-events-auto">
                     
                     {/* Header */}
-                    <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 bg-white z-20">
-                        <div>
-                            <h2 className="text-xl font-bold text-slate-800">{lesson?.courseCode}</h2>
-                            <p className="text-sm text-slate-500 truncate max-w-[400px]">{lesson?.courseName}</p>
+                    <div className="px-6 py-4 border-b border-gray-100 bg-white z-20">
+                        {/* Top row: Badge + Date + Actions */}
+                        <div className="flex items-center justify-between mb-3">
+                            <div className="flex items-center gap-3">
+                                {/* Event Type Badge */}
+                                {(() => {
+                                    const eventType = getEventType(lesson);
+                                    return eventType.label && (
+                                        <span className={`px-2 py-0.5 rounded text-xs font-medium ${eventType.bgColor} ${eventType.textColor}`}>
+                                            {eventType.label}
+                                        </span>
+                                    );
+                                })()}
+                                {/* Date */}
+                                {lesson?.date && (
+                                    <span className="text-sm text-slate-500">
+                                        {formatDate(lesson.date)}
+                                    </span>
+                                )}
+                            </div>
+                            <div className="flex items-center gap-2">
+                                {selectedIds.length > 0 && (
+                                    <button 
+                                        onClick={() => downloadZip(selectedIds, `${lesson?.courseCode}_files.zip`)}
+                                        disabled={isDownloading}
+                                        className="btn btn-sm btn-primary gap-2 interactive disabled:opacity-75 disabled:cursor-not-allowed bg-emerald-600 hover:bg-emerald-700 border-emerald-600 hover:border-emerald-700 text-white"
+                                    >
+                                        {isDownloading ? (
+                                            <Loader2 size={16} className="animate-spin" />
+                                        ) : (
+                                            <Download size={16} />
+                                        )}
+                                        {isDownloading ? 'Stahování...' : `Stáhnout (${selectedIds.length})`}
+                                    </button>
+                                )}
+                                <button onClick={onClose} className="btn btn-ghost btn-circle btn-sm interactive">
+                                    <X size={20} className="text-slate-400" />
+                                </button>
+                            </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                             {selectedIds.length > 0 && (
-                                <button 
-                                    onClick={() => downloadZip(selectedIds, `${lesson?.courseCode}_files.zip`)}
-                                    disabled={isDownloading}
-                                    className="btn btn-sm btn-primary gap-2 interactive disabled:opacity-75 disabled:cursor-not-allowed bg-emerald-600 hover:bg-emerald-700 border-emerald-600 hover:border-emerald-700 text-white"
+                        
+                        {/* Course Code */}
+                        {lesson?.courseCode && (
+                            <div className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">
+                                {lesson.courseCode}
+                            </div>
+                        )}
+                        
+                        {/* Course Name */}
+                        <div className="mb-2">
+                            {resolvedCourseId ? (
+                                <a 
+                                    href={`https://is.mendelu.cz/auth/katalog/syllabus.pl?predmet=${resolvedCourseId};lang=cz`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="clickable-link text-xl font-bold text-slate-800 flex items-center gap-1"
                                 >
-                                    {isDownloading ? (
-                                        <Loader2 size={16} className="animate-spin" />
-                                    ) : (
-                                        <Download size={16} />
-                                    )}
-                                    {isDownloading ? 'Stahování...' : `Stáhnout (${selectedIds.length})`}
+                                    <span>{lesson?.courseName}</span>
+                                    <ExternalLink size={14} className="opacity-50 flex-shrink-0" />
+                                </a>
+                            ) : (
+                                <span className="text-xl font-bold text-slate-800">
+                                    {lesson?.courseName}
+                                </span>
+                            )}
+                        </div>
+                        
+                        {/* Meta row: Teacher + Room + Time */}
+                        <div className="flex items-center gap-4 text-sm text-slate-500 flex-wrap">
+                            {/* Teacher */}
+                            {lesson?.teachers && lesson.teachers.length > 0 && (
+                                lesson.teachers[0].id ? (
+                                    <a
+                                        href={`https://is.mendelu.cz/auth/lide/clovek.pl?;id=${lesson.teachers[0].id};lang=cz`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="clickable-link flex items-center gap-1"
+                                    >
+                                        <User size={14} className="flex-shrink-0" />
+                                        <span>{lesson.teachers[0].fullName}</span>
+                                    </a>
+                                ) : (
+                                    <span className="flex items-center gap-1">
+                                        <User size={14} className="flex-shrink-0" />
+                                        <span>{lesson.teachers.map(t => t.fullName).join(', ')}</span>
+                                    </span>
+                                )
+                            )}
+                            
+                            {/* Room (Q-buildings only, with map) */}
+                            {lesson?.room?.startsWith('Q') && (
+                                <button
+                                    onClick={() => window.open(`https://mm.mendelu.cz/mapwidget/embed?placeName=${lesson.room}`, '_blank')}
+                                    className="flex items-center gap-1 hover:text-emerald-600 transition-colors"
+                                    title="Zobrazit na mapě"
+                                >
+                                    <MapIcon size={14} />
+                                    <span>{lesson.room}</span>
                                 </button>
                             )}
-                            <button onClick={onClose} className="btn btn-ghost btn-circle btn-sm interactive">
-                                <X size={20} className="text-slate-400" />
-                            </button>
+                            
+                            {/* Time */}
+                            {lesson?.startTime && lesson?.endTime && (
+                                <span className="flex items-center gap-1">
+                                    <Clock size={14} />
+                                    <span>{lesson.startTime} - {lesson.endTime}</span>
+                                </span>
+                            )}
                         </div>
                     </div>
 
-                    {/* Content Area (Scrollable & Drappable) */}
+                    {/* Content Area (Scrollable & Draggable) */}
                     <div 
                         ref={containerRef}
                         className="flex-1 overflow-y-auto relative select-none"
                         onMouseDown={handleMouseDown}
-                        style={{ cursor: 'default' }}
+                        style={{ cursor: 'crosshair' }}
                     >
-                        <div ref={contentRef} className="min-h-full pb-20">
+                        <div ref={contentRef} className="min-h-full pb-20 relative">
                              {/* Selection Box Overlay */}
                             {isDragging && selectionBoxStyle && (
                                 <div 
@@ -332,6 +503,52 @@ export function SubjectFileDrawer({ lesson, isOpen, onClose }: SubjectFileDrawer
                                     }}
                                 />
                             )}
+
+                            {/* First-use Drag Hint Animation */}
+                            {showDragHint && (
+                                <div className="absolute inset-0 pointer-events-none z-40 overflow-hidden">
+                                    {/* Animated lasso selection */}
+                                    <div 
+                                        className="absolute border-2 border-emerald-500 bg-emerald-500/15 rounded-sm"
+                                        style={{
+                                            animation: 'dragHintLasso 2s ease-in-out infinite',
+                                            top: '80px',
+                                            left: '40px',
+                                            width: '0px',
+                                            height: '0px',
+                                        }}
+                                    />
+                                    {/* Tooltip */}
+                                    <div 
+                                        className="absolute bg-slate-800 text-white text-sm px-3 py-2 rounded-lg shadow-lg flex items-center gap-2"
+                                        style={{
+                                            animation: 'dragHintFade 4s ease-in-out forwards',
+                                            top: '200px',
+                                            left: '50%',
+                                            transform: 'translateX(-50%)',
+                                        }}
+                                    >
+                                        <MousePointer2 size={16} className="text-emerald-400" />
+                                        Tažením vyberete více souborů
+                                    </div>
+                                </div>
+                            )}
+
+                            <style>{`
+                                @keyframes dragHintLasso {
+                                    0% { width: 0; height: 0; opacity: 0; }
+                                    10% { opacity: 1; }
+                                    50% { width: 200px; height: 120px; opacity: 1; }
+                                    80% { width: 200px; height: 120px; opacity: 0.5; }
+                                    100% { width: 200px; height: 120px; opacity: 0; }
+                                }
+                                @keyframes dragHintFade {
+                                    0% { opacity: 0; transform: translateX(-50%) translateY(10px); }
+                                    15% { opacity: 1; transform: translateX(-50%) translateY(0); }
+                                    85% { opacity: 1; transform: translateX(-50%) translateY(0); }
+                                    100% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+                                }
+                            `}</style>
 
                             {loading || !subjectsLoaded || !files ? (
                                 <div className="p-6 space-y-8">

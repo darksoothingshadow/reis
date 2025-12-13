@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import {
   ChevronRight,
   LayoutGrid,
@@ -18,14 +18,30 @@ import { useTheme } from '../hooks/useTheme';
 
 interface SidebarProps {
   onOpenExamDrawer?: () => void;
+  /** Ref that will be populated with a function to open settings popup */
+  onOpenSettingsRef?: React.MutableRefObject<(() => void) | null>;
 }
 
-export const Sidebar = ({ onOpenExamDrawer }: SidebarProps) => {
+export const Sidebar = ({ onOpenExamDrawer, onOpenSettingsRef }: SidebarProps) => {
   const [activeItem, setActiveItem] = useState<string>('dashboard');
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const [profilHovered, setProfilHovered] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const profilTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Expose function to open settings popup
+  useEffect(() => {
+    if (onOpenSettingsRef) {
+      onOpenSettingsRef.current = () => {
+        setProfilHovered(true);
+      };
+    }
+    return () => {
+      if (onOpenSettingsRef) {
+        onOpenSettingsRef.current = null;
+      }
+    };
+  }, [onOpenSettingsRef]);
 
   // Outlook sync hook
   const { isEnabled: outlookSyncEnabled, isLoading: outlookSyncLoading, toggle: toggleOutlookSync } = useOutlookSync();
