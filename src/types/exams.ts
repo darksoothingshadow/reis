@@ -18,7 +18,9 @@ export interface ExamTerm {
     teacher?: string;
     teacherId?: string;   // Teacher's MENDELU ID for linking
     registrationStart?: string;  // When registration opens
+    registrationEnd?: string;    // When registration closes
     attemptType?: 'regular' | 'retake1' | 'retake2' | 'retake3';  // Exam attempt type
+    canRegisterNow?: boolean;  // True if registration link is available now
 }
 
 export interface ExamSection {

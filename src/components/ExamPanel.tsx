@@ -51,16 +51,16 @@ function capacityToPercent(capacity?: string): number {
  */
 function formatRelativeTime(timestamp: number | null): string {
     if (!timestamp) return 'Neznámý čas';
-    
+
     const now = Date.now();
     const diffMs = now - timestamp;
     const diffMinutes = Math.floor(diffMs / (1000 * 60));
     const diffHours = Math.floor(diffMinutes / 60);
-    
+
     if (diffMinutes < 1) return 'Právě teď';
     if (diffMinutes < 60) return `Před ${diffMinutes} min`;
     if (diffHours < 24) return `Před ${diffHours} h`;
-    
+
     const date = new Date(timestamp);
     return date.toLocaleDateString('cs-CZ', { day: 'numeric', month: 'numeric' });
 }
@@ -68,11 +68,11 @@ function formatRelativeTime(timestamp: number | null): string {
 export function ExamPanel({ onClose }: ExamPanelProps) {
     // Get stored exam data from hook
     const { exams: storedExams, isLoaded, lastSync } = useExams();
-    
+
     // Local state for exams (allows updates after registration)
     const [exams, setExams] = useState<ExamSubject[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    
+
     // Sync stored exams to local state
     useEffect(() => {
         console.debug('[ExamPanel] Data sync effect. storedExams:', storedExams?.length, 'isLoaded:', isLoaded);
@@ -93,7 +93,7 @@ export function ExamPanel({ onClose }: ExamPanelProps) {
             setIsLoading(false);
         }
     }, [storedExams, isLoaded]);
-    
+
     // Filter state with localStorage persistence
     const [statusFilter, setStatusFilter] = useState<'registered' | 'available' | 'opening'>(() => {
         const stored = StorageService.get<ExamFilterState>(FILTER_STORAGE_KEY);
@@ -103,20 +103,20 @@ export function ExamPanel({ onClose }: ExamPanelProps) {
         const stored = StorageService.get<ExamFilterState>(FILTER_STORAGE_KEY);
         return stored?.selectedSubjects ?? [];
     });
-    
+
     // Persist filter state
     useEffect(() => {
         StorageService.set(FILTER_STORAGE_KEY, { statusFilter, selectedSubjects });
     }, [statusFilter, selectedSubjects]);
-    
+
     // Expandable section state (replaces popup)
     const [expandedSectionId, setExpandedSectionId] = useState<string | null>(null);
-    
+
     const [processingSectionId, setProcessingSectionId] = useState<string | null>(null);
-    
+
     // Auto-booking state
     const [autoBookingTermId, setAutoBookingTermId] = useState<string | null>(null);
-    
+
     // Escape key handler
     useEffect(() => {
         const handleEscape = (e: KeyboardEvent) => {
@@ -131,79 +131,59 @@ export function ExamPanel({ onClose }: ExamPanelProps) {
         document.addEventListener('keydown', handleEscape);
         return () => document.removeEventListener('keydown', handleEscape);
     }, [onClose, expandedSectionId]);
-    
-    // Compute filter counts for each status (without subject filter applied)
+
     const filterCounts = useMemo(() => {
         const counts = { registered: 0, available: 0, opening: 0 };
-        
+
         exams.forEach(subject => {
             subject.sections.forEach(section => {
                 if (section.status === 'registered') {
                     counts.registered++;
                 } else {
-                    // Check for future opening
-                    const hasFutureOpening = section.terms.some(term => {
-                        if (!term.registrationStart) return false;
-                        try {
-                            const [datePart, timePart] = term.registrationStart.split(' ');
-                            const [day, month, year] = datePart.split('.').map(Number);
-                            const [hours, minutes] = (timePart || '00:00').split(':').map(Number);
-                            const regStart = new Date(year, month - 1, day, hours, minutes);
-                            return regStart > new Date();
-                        } catch {
-                            return false;
-                        }
-                    });
-                    
-                    if (hasFutureOpening) {
-                        counts.opening++;
-                    }
-                    
-                    // Check for currently available
-                    const hasAvailableTerms = section.terms.some(term => {
-                        if (!term.registrationStart) return true;
-                        try {
-                            const [datePart, timePart] = term.registrationStart.split(' ');
-                            const [day, month, year] = datePart.split('.').map(Number);
-                            const [hours, minutes] = (timePart || '00:00').split(':').map(Number);
-                            const regStart = new Date(year, month - 1, day, hours, minutes);
-                            return regStart <= new Date();
-                        } catch {
-                            return true;
-                        }
-                    });
-                    
-                    if (hasAvailableTerms) {
+                    // Simple logic:
+                    // "Volné" = has terms where canRegisterNow === true
+                    // "Otevírá se" = has terms where canRegisterNow !== true (false or undefined)
+                    const hasAvailable = section.terms.some(term =>
+                        !term.full && term.canRegisterNow === true
+                    );
+                    const hasOpeningSoon = section.terms.some(term =>
+                        !term.full && term.canRegisterNow !== true
+                    );
+
+                    if (hasAvailable) {
                         counts.available++;
+                    }
+                    if (hasOpeningSoon) {
+                        counts.opening++;
                     }
                 }
             });
         });
-        
+
         return counts;
     }, [exams]);
-    
+
     // Get unique subjects for chip filters (code for filtering, name for display)
-    const subjectOptions = useMemo(() => 
+    const subjectOptions = useMemo(() =>
         exams.map(e => ({ code: e.code, name: e.name }))
             .filter((v, i, a) => a.findIndex(t => t.code === v.code) === i)
             .sort((a, b) => a.name.localeCompare(b.name)),
-    [exams]);
-    
+        [exams]);
+
     // Filter exams based on current filters
     const filteredSections = useMemo(() => {
         console.debug('[ExamPanel] Filtering exams. statusFilter:', statusFilter, 'selectedSubjects:', selectedSubjects);
         console.debug('[ExamPanel] Total subjects:', exams.length);
-        
+
         const results: Array<{ subject: ExamSubject; section: ExamSection }> = [];
-        
+
         exams.forEach(subject => {
             // Subject filter
             if (selectedSubjects.length > 0 && !selectedSubjects.includes(subject.code)) {
                 console.debug('[ExamPanel] Skipping subject (not in filter):', subject.code);
                 return;
             }
-            
+
             subject.sections.forEach(section => {
                 console.debug('[ExamPanel] Processing section:', {
                     subject: subject.code,
@@ -212,76 +192,66 @@ export function ExamPanel({ onClose }: ExamPanelProps) {
                     hasRegisteredTerm: !!section.registeredTerm,
                     termsCount: section.terms.length
                 });
-                
-                // Check if any term has future registration start
-                const hasFutureOpening = section.terms.some(term => {
-                    if (!term.registrationStart) return false;
-                    try {
-                        const [datePart, timePart] = term.registrationStart.split(' ');
-                        const [day, month, year] = datePart.split('.').map(Number);
-                        const [hours, minutes] = (timePart || '00:00').split(':').map(Number);
-                        const regStart = new Date(year, month - 1, day, hours, minutes);
-                        return regStart > new Date();
-                    } catch {
-                        return false;
-                    }
-                });
-                
-                // Status filter logic
+
+                // Status filter logic - determine which terms to include
                 if (statusFilter === 'registered') {
                     // Only show sections where user is already registered
                     if (section.status !== 'registered') {
                         console.debug('[ExamPanel] Filtered out (not registered):', section.name);
                         return;
                     }
+                    // Show all terms for registered sections
+                    results.push({ subject, section });
                 } else if (statusFilter === 'available') {
-                    // Show non-registered sections with terms that are open NOW (not future)
+                    // Show only canRegisterNow === true terms
                     if (section.status === 'registered') {
                         console.debug('[ExamPanel] Filtered out (already registered):', section.name);
                         return;
                     }
-                    // Only show if has terms that can be registered now
-                    const hasAvailableTerms = section.terms.some(term => {
-                        if (!term.registrationStart) return true; // No start date = available
-                        try {
-                            const [datePart, timePart] = term.registrationStart.split(' ');
-                            const [day, month, year] = datePart.split('.').map(Number);
-                            const [hours, minutes] = (timePart || '00:00').split(':').map(Number);
-                            const regStart = new Date(year, month - 1, day, hours, minutes);
-                            return regStart <= new Date(); // Already open
-                        } catch {
-                            return true;
-                        }
-                    });
-                    if (!hasAvailableTerms) {
-                        console.debug('[ExamPanel] Filtered out (no available terms now):', section.name);
+                    const availableTerms = section.terms.filter(term =>
+                        !term.full && term.canRegisterNow === true
+                    );
+                    if (availableTerms.length === 0) {
+                        console.debug('[ExamPanel] Filtered out (no available terms):', section.name);
                         return;
                     }
+                    // Create a modified section with only the filtered terms
+                    const filteredSection = { ...section, terms: availableTerms };
+                    console.debug('[ExamPanel] ✓ Section passed filter (available):', section.name, 'terms:', availableTerms.length);
+                    results.push({ subject, section: filteredSection });
                 } else if (statusFilter === 'opening') {
-                    // Only show sections with terms that open in the FUTURE
+                    // Show only canRegisterNow !== true terms
                     if (section.status === 'registered') {
                         console.debug('[ExamPanel] Filtered out (already registered):', section.name);
                         return;
                     }
-                    if (!hasFutureOpening) {
-                        console.debug('[ExamPanel] Filtered out (no future opening):', section.name);
+                    const openingTerms = section.terms.filter(term =>
+                        !term.full && term.canRegisterNow !== true
+                    );
+                    if (openingTerms.length === 0) {
+                        console.debug('[ExamPanel] Filtered out (no opening soon terms):', section.name);
                         return;
                     }
+                    // Create a modified section with only the filtered terms
+                    const filteredSection = { ...section, terms: openingTerms };
+                    console.debug('[ExamPanel] ✓ Section passed filter (opening):', section.name, 'terms:', openingTerms.length);
+                    results.push({ subject, section: filteredSection });
+                } else {
+                    // No status filter - show all terms
+                    console.debug('[ExamPanel] ✓ Section passed filter (no filter):', section.name);
+                    results.push({ subject, section });
                 }
-                
-                console.debug('[ExamPanel] ✓ Section passed filter:', section.name);
-                results.push({ subject, section });
             });
         });
-        
+
         console.debug('[ExamPanel] Filter result:', results.length, 'sections');
         return results;
     }, [exams, statusFilter, selectedSubjects]);
-    
+
     // Registration handler
     const handleRegister = async (section: ExamSection, termId: string) => {
         setProcessingSectionId(section.id);
-        
+
         try {
             // If already registered, unregister first
             if (section.status === 'registered' && section.registeredTerm?.id) {
@@ -292,7 +262,7 @@ export function ExamPanel({ onClose }: ExamPanelProps) {
                     return;
                 }
             }
-            
+
             // Register for new term
             const regResult = await registerExam(termId);
             if (regResult.success) {
@@ -311,16 +281,16 @@ export function ExamPanel({ onClose }: ExamPanelProps) {
             setProcessingSectionId(null);
         }
     };
-    
+
     // Unregister handler
     const handleUnregister = async (section: ExamSection) => {
         if (!section.registeredTerm?.id) {
             toast.error('Chybí ID termínu.');
             return;
         }
-        
+
         setProcessingSectionId(section.id);
-        
+
         try {
             const result = await unregisterExam(section.registeredTerm.id);
             if (result.success) {
@@ -337,20 +307,20 @@ export function ExamPanel({ onClose }: ExamPanelProps) {
             setProcessingSectionId(null);
         }
     };
-    
+
     const toggleExpand = (sectionId: string) => {
         console.debug('[ExamPanel] Toggle expand:', sectionId);
         setExpandedSectionId(prev => prev === sectionId ? null : sectionId);
     };
-    
+
     const toggleSubjectFilter = (code: string) => {
-        setSelectedSubjects(prev => 
-            prev.includes(code) 
+        setSelectedSubjects(prev =>
+            prev.includes(code)
                 ? prev.filter(c => c !== code)
                 : [...prev, code]
         );
     };
-    
+
     const clearAllFilters = () => {
         setSelectedSubjects([]);
     };
@@ -381,7 +351,7 @@ export function ExamPanel({ onClose }: ExamPanelProps) {
                         </button>
                     </div>
                 </div>
-                
+
                 {/* Auto-booking Banner */}
                 {autoBookingTermId && (
                     <div className="flex items-center gap-3 px-6 py-2 bg-warning/10 border-b border-warning/20">
@@ -397,23 +367,22 @@ export function ExamPanel({ onClose }: ExamPanelProps) {
                         </button>
                     </div>
                 )}
-                
+
                 {/* Timeline Header */}
                 <div className="px-6 py-3 border-b border-base-200">
                     <ExamTimeline exams={exams} />
                 </div>
-                
+
                 {/* Filter Bar - Redesigned for clarity */}
                 <div className="px-6 py-4 border-b border-base-200 space-y-4">
                     {/* Status Segmented Control */}
                     <div className="flex gap-2">
                         <button
                             onClick={() => setStatusFilter('registered')}
-                            className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-medium transition-all ${
-                                statusFilter === 'registered'
-                                    ? 'bg-success/15 text-success border-2 border-success'
-                                    : 'bg-base-200 text-base-content/70 border-2 border-transparent hover:bg-base-300'
-                            }`}
+                            className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-medium transition-all ${statusFilter === 'registered'
+                                ? 'bg-success/15 text-success border-2 border-success'
+                                : 'bg-base-200 text-base-content/70 border-2 border-transparent hover:bg-base-300'
+                                }`}
                         >
                             <CheckCircle2 size={18} />
                             <span>Přihlášen</span>
@@ -423,11 +392,10 @@ export function ExamPanel({ onClose }: ExamPanelProps) {
                         </button>
                         <button
                             onClick={() => setStatusFilter('available')}
-                            className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-medium transition-all ${
-                                statusFilter === 'available'
-                                    ? 'bg-primary/15 text-primary border-2 border-primary'
-                                    : 'bg-base-200 text-base-content/70 border-2 border-transparent hover:bg-base-300'
-                            }`}
+                            className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-medium transition-all ${statusFilter === 'available'
+                                ? 'bg-primary/15 text-primary border-2 border-primary'
+                                : 'bg-base-200 text-base-content/70 border-2 border-transparent hover:bg-base-300'
+                                }`}
                         >
                             <CalendarDays size={18} />
                             <span>Volné</span>
@@ -437,11 +405,10 @@ export function ExamPanel({ onClose }: ExamPanelProps) {
                         </button>
                         <button
                             onClick={() => setStatusFilter('opening')}
-                            className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-medium transition-all ${
-                                statusFilter === 'opening'
-                                    ? 'bg-warning/15 text-warning border-2 border-warning'
-                                    : 'bg-base-200 text-base-content/70 border-2 border-transparent hover:bg-base-300'
-                            }`}
+                            className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-medium transition-all ${statusFilter === 'opening'
+                                ? 'bg-warning/15 text-warning border-2 border-warning'
+                                : 'bg-base-200 text-base-content/70 border-2 border-transparent hover:bg-base-300'
+                                }`}
                         >
                             <Timer size={18} />
                             <span>Otevírá se</span>
@@ -450,7 +417,7 @@ export function ExamPanel({ onClose }: ExamPanelProps) {
                             </span>
                         </button>
                     </div>
-                    
+
                     {/* Subject Chips - Larger touch targets */}
                     <div className="flex flex-wrap items-center gap-2">
                         <span className="text-sm text-base-content/60 mr-1">Předmět:</span>
@@ -460,11 +427,10 @@ export function ExamPanel({ onClose }: ExamPanelProps) {
                                 <button
                                     key={code}
                                     onClick={() => toggleSubjectFilter(code)}
-                                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
-                                        isSelected
-                                            ? 'bg-primary text-primary-content'
-                                            : 'bg-base-200 text-base-content/70 hover:bg-base-300'
-                                    }`}
+                                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${isSelected
+                                        ? 'bg-primary text-primary-content'
+                                        : 'bg-base-200 text-base-content/70 hover:bg-base-300'
+                                        }`}
                                 >
                                     {isSelected && <Check size={14} />}
                                     {name}
@@ -482,7 +448,7 @@ export function ExamPanel({ onClose }: ExamPanelProps) {
                         )}
                     </div>
                 </div>
-                
+
                 {/* Content - Exam List */}
                 <div className="flex-1 overflow-y-auto p-4 space-y-2">
                     {isLoading ? (
@@ -499,7 +465,7 @@ export function ExamPanel({ onClose }: ExamPanelProps) {
                         filteredSections.map(({ subject, section }) => {
                             const isProcessing = processingSectionId === section.id;
                             const isRegistered = section.status === 'registered';
-                            
+
                             return (
                                 <div
                                     key={section.id}
@@ -511,7 +477,7 @@ export function ExamPanel({ onClose }: ExamPanelProps) {
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-center gap-2 mb-1">
                                                     <span className="badge badge-primary badge-sm font-semibold">
-                                                        {subject.code}
+                                                        {subject.name}
                                                     </span>
                                                     <span className="text-sm font-medium text-base-content truncate">
                                                         {section.name}
@@ -520,7 +486,7 @@ export function ExamPanel({ onClose }: ExamPanelProps) {
                                                         <span className="badge badge-success badge-sm">Přihlášen</span>
                                                     )}
                                                 </div>
-                                                
+
                                                 {/* Registered Term Details */}
                                                 {isRegistered && section.registeredTerm && (
                                                     <div className="text-sm text-base-content/70 flex flex-col gap-1">
@@ -535,7 +501,7 @@ export function ExamPanel({ onClose }: ExamPanelProps) {
                                                                 </>
                                                             )}
                                                         </div>
-                                                        
+
                                                         {section.registeredTerm.deregistrationDeadline && (
                                                             <div className="flex items-center gap-1.5 text-xs text-warning mt-1">
                                                                 <AlertCircle size={12} />
@@ -544,7 +510,7 @@ export function ExamPanel({ onClose }: ExamPanelProps) {
                                                         )}
                                                     </div>
                                                 )}
-                                                
+
                                                 {/* Available Terms Summary - only when collapsed */}
                                                 {!isRegistered && section.terms.length > 0 && expandedSectionId !== section.id && (
                                                     <div className="flex items-center gap-3 mt-2">
@@ -558,9 +524,8 @@ export function ExamPanel({ onClose }: ExamPanelProps) {
                                                                 </span>
                                                                 {term.capacity && (
                                                                     <progress
-                                                                        className={`progress w-12 h-1.5 ${
-                                                                            term.full ? 'progress-error' : 'progress-primary'
-                                                                        }`}
+                                                                        className={`progress w-12 h-1.5 ${term.full ? 'progress-error' : 'progress-primary'
+                                                                            }`}
                                                                         value={capacityToPercent(term.capacity)}
                                                                         max="100"
                                                                     />
@@ -570,7 +535,7 @@ export function ExamPanel({ onClose }: ExamPanelProps) {
                                                     </div>
                                                 )}
                                             </div>
-                                            
+
                                             {/* Right: Action Buttons */}
                                             <div className="flex items-center gap-2 shrink-0">
                                                 {/* Unregister button for registered exams */}
@@ -587,7 +552,7 @@ export function ExamPanel({ onClose }: ExamPanelProps) {
                                                         )}
                                                     </button>
                                                 )}
-                                                
+
                                                 {/* Expand button to show other terms */}
                                                 {section.terms.length > 0 && (
                                                     <button
@@ -604,7 +569,7 @@ export function ExamPanel({ onClose }: ExamPanelProps) {
                                                 )}
                                             </div>
                                         </div>
-                                        
+
                                         {/* Expanded: Inline Term Tiles */}
                                         {expandedSectionId === section.id && section.terms.length > 0 && (
                                             <div className="mt-4 pt-3 border-t border-base-200">

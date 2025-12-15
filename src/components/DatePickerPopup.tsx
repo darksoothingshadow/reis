@@ -131,7 +131,7 @@ export function DatePickerPopup({
                     const [day, month, year] = section.registeredTerm.date.split('.').map(Number);
                     dates.push({
                         date: new Date(year, month - 1, day),
-                        label: `${subject.code} - ${section.name}`
+                        label: subject.name
                     });
                 }
             });
@@ -253,15 +253,15 @@ export function DatePickerPopup({
                                             >
                                                 {format(day, 'd')}
                                             </button>
-                                            
+
                                             {/* Today label */}
                                             {isTodayDate && !hasAvailableExam && (
                                                 <span className="text-[8px] font-medium text-slate-500 mt-0.5">Dnes</span>
                                             )}
-                                            
+
                                             {/* Mini event preview for other exams */}
                                             {otherExam && (
-                                                <div 
+                                                <div
                                                     className="text-[7px] text-error font-medium mt-0.5 max-w-[32px] truncate text-center"
                                                     title={otherExam.label}
                                                 >

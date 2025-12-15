@@ -228,8 +228,8 @@ export function ExamDrawer({ isOpen, onClose }: ExamDrawerProps) {
                                                 <AccordionHeader className="flex">
                                                     <AccordionTrigger className="flex flex-1 items-center justify-between px-6 py-4 bg-white hover:bg-slate-50 transition-all group data-[state=open]:bg-slate-50/50">
                                                         <div className="flex flex-col items-start gap-0.5">
-                                                            <span className="font-semibold text-slate-900 text-base truncate max-w-[350px]">{subject.code}</span>
-                                                            <span className="text-sm text-slate-500 font-medium">{subject.name.replace(/ZS\s+\d{4}\/\d{4}\s+-\s+\w+/, '').trim()}</span>
+                                                            <span className="font-semibold text-slate-900 text-base truncate max-w-[350px]">{subject.name}</span>
+                                                            <span className="text-xs text-slate-500 font-medium">{subject.code}</span>
                                                         </div>
                                                         <div className="flex items-center gap-3">
                                                             {!isRegistered && (

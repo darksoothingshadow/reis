@@ -6,30 +6,30 @@ import type { ExamSubject } from '../types/exams';
  */
 function validateHtmlStructure(doc: Document): void {
     const warnings: string[] = [];
-    
+
     // Check for expected tables
     const table1 = doc.querySelector('#table_1');
     const table2 = doc.querySelector('#table_2');
-    
+
     if (!table1 && !table2) {
         warnings.push('Neither #table_1 nor #table_2 found - page structure may have changed');
     }
-    
+
     // Check for expected column headers in available terms table
     if (table2) {
         const headers = table2.querySelectorAll('thead th');
         const headerTexts = Array.from(headers).map(h => h.textContent?.trim() || '');
-        
+
         const expectedHeaders = ['Datum', 'Místnost', 'Zkouška'];
-        const missingHeaders = expectedHeaders.filter(eh => 
+        const missingHeaders = expectedHeaders.filter(eh =>
             !headerTexts.some(ht => ht.toLowerCase().includes(eh.toLowerCase()))
         );
-        
+
         if (missingHeaders.length > 0) {
             warnings.push(`Missing expected headers: ${missingHeaders.join(', ')}`);
         }
     }
-    
+
     // Log all warnings
     if (warnings.length > 0) {
         console.warn('[parseExamData] ⚠️ HTML structure validation warnings:');
@@ -43,10 +43,10 @@ export function parseExamData(html: string): ExamSubject[] {
 
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
-    
+
     // Validate structure before parsing
     validateHtmlStructure(doc);
-    
+
     const subjectsMap = new Map<string, ExamSubject>();
 
     // Helper to get or create subject
@@ -128,7 +128,7 @@ export function parseExamData(html: string): ExamSubject[] {
             const room = cols[dateIndex + 1]?.textContent?.trim() || '';
             const sectionNameRaw = cols[dateIndex + 2]?.textContent?.trim() || '';
             const teacher = cols[dateIndex + 3]?.textContent?.trim() || '';
-            
+
             // Extract teacher ID from link
             const teacherLink = cols[dateIndex + 3]?.querySelector('a[href*="clovek.pl"]');
             let teacherId = '';
@@ -154,10 +154,10 @@ export function parseExamData(html: string): ExamSubject[] {
                 const match = href.match(/termin=(\d+)/);
                 if (match) termId = match[1];
             }
-            
+
             // Log for debugging Sidebar Title Issue
             console.debug(`[parseExamData] T1 Row ${rowIndex}: Code='${code}', Name='${name}'`);
-            
+
             // DEBUG: Log all columns to see what we are working with
             console.debug(`[parseExamData DEBUG] Row ${rowIndex} All Cols HTML:`, Array.from(cols).map(c => c.innerHTML));
 
@@ -169,18 +169,18 @@ export function parseExamData(html: string): ExamSubject[] {
                 if (cols[i].innerHTML.match(/<br\s*\/?>/i)) { // Check for any br tag
                     const cellHtml = cols[i].innerHTML;
                     const parts = cellHtml.split(/<br\s*\/?>/i);
-                    
+
                     console.debug(`[parseExamData DEBUG] Row ${rowIndex} DateCol Candidates:`, parts.length, parts);
-                    
+
                     if (parts.length >= 3) {
                         const deadlineRaw = parts[2].replace(/<[^>]*>/g, '').trim();
                         console.debug(`[parseExamData DEBUG] Row ${rowIndex} Raw Deadline: '${deadlineRaw}'`);
-                        
+
                         if (deadlineRaw !== '--' && deadlineRaw.match(/\d{2}\.\d{2}\.\d{4}/)) {
                             deregistrationDeadline = deadlineRaw;
                             console.debug(`[parseExamData DEBUG] Row ${rowIndex} Valid Deadline Found: '${deregistrationDeadline}'`);
                         } else {
-                             console.debug(`[parseExamData DEBUG] Row ${rowIndex} Deadline rejected (format/empty)`);
+                            console.debug(`[parseExamData DEBUG] Row ${rowIndex} Deadline rejected (format/empty)`);
                         }
                     } else {
                         console.debug(`[parseExamData DEBUG] Row ${rowIndex} < 3 parts found`);
@@ -244,7 +244,7 @@ export function parseExamData(html: string): ExamSubject[] {
             // Now: Code=2, Name=3
             const code = cols[2].textContent?.trim() || '';
             const name = cols[3].textContent?.trim() || '';
-            
+
             // Log for debugging Sidebar Title Issue
             console.debug(`[parseExamData] T2 Row ${rowIndex}: Code='${code}', Name='${name}'`);
 
@@ -253,7 +253,7 @@ export function parseExamData(html: string): ExamSubject[] {
             const sectionNameRaw = cols[dateIndex + 2]?.textContent?.trim() || '';
             const teacher = cols[dateIndex + 3]?.textContent?.trim() || '';
             const capacityStr = cols[dateIndex + 4]?.textContent?.trim() || '';
-            
+
             // Extract teacher ID from link
             const teacherLink = cols[dateIndex + 3]?.querySelector('a[href*="clovek.pl"]');
             let teacherId = '';
@@ -295,10 +295,12 @@ export function parseExamData(html: string): ExamSubject[] {
             const finalId = termId || Math.random().toString(36).substr(2, 9);
 
             // Find registration info column (contains <br>)
+            // Format: parts[0] = Přihlašování od, parts[1] = Přihlašování do
             // DEFENSIVE: Wrap in try/catch to detect IS MENDELU HTML structure changes
             let registrationStart: string | null = null;
+            let registrationEnd: string | null = null;
             let foundBrColumn = false;
-            
+
             try {
                 for (let i = 0; i < cols.length; i++) {
                     if (cols[i].innerHTML.includes('<br>')) {
@@ -307,22 +309,30 @@ export function parseExamData(html: string): ExamSubject[] {
                         // Only access innerHTML once
                         const cellHtml = cols[i].innerHTML;
                         const parts = cellHtml.split(/<br\s*\/?>/i);
-                        
-                        if (parts.length >= 1) { // Original logic was parts.length >= 1 for registrationStart
-                            const startRaw = parts[0].replace(/<[^>]*>/g, '').trim(); // Remove tags and trim
+
+                        // parts[0] = Přihlašování od (registration start)
+                        if (parts.length >= 1) {
+                            const startRaw = parts[0].replace(/<[^>]*>/g, '').trim();
                             if (startRaw !== '--' && startRaw.match(/\d{2}\.\d{2}\.\d{4}/)) {
                                 registrationStart = startRaw;
-                                // Validate time format if present
                                 const timePart = startRaw.split(' ')[1];
                                 if (timePart && !timePart.match(/^\d{2}:\d{2}$/)) {
                                     console.warn('[parseExamData] Registration time format unexpected:', timePart, 'in row', rowIndex);
                                 }
                             }
                         }
+
+                        // parts[1] = Přihlašování do (registration end)
+                        if (parts.length >= 2) {
+                            const endRaw = parts[1].replace(/<[^>]*>/g, '').trim();
+                            if (endRaw !== '--' && endRaw.match(/\d{2}\.\d{2}\.\d{4}/)) {
+                                registrationEnd = endRaw;
+                            }
+                        }
                         break;
                     }
                 }
-                
+
                 // DEFENSIVE: Warn if expected structure not found
                 if (!foundBrColumn && cols.length > 0) {
                     console.warn('[parseExamData] No <br> column found for registration dates. IS MENDELU HTML structure may have changed. Row:', rowIndex);
@@ -330,7 +340,7 @@ export function parseExamData(html: string): ExamSubject[] {
             } catch (parseError) {
                 console.error('[parseExamData] Failed to parse registration date for row', rowIndex, ':', parseError);
             }
-            
+
             // Parse attempt type from "Typ termínu" column
             // Looking for icons with alt/title text like "řádný", "opravný 1", etc.
             let attemptType: 'regular' | 'retake1' | 'retake2' | 'retake3' | undefined;
@@ -340,7 +350,7 @@ export function parseExamData(html: string): ExamSubject[] {
                 const imgAlt = img?.getAttribute('alt')?.toLowerCase() || '';
                 const imgTitle = img?.getAttribute('title')?.toLowerCase() || '';
                 const combinedText = colHtml + imgAlt + imgTitle;
-                
+
                 if (combinedText.includes('opravný 3') || combinedText.includes('opravny 3')) {
                     attemptType = 'retake3';
                     break;
@@ -359,6 +369,9 @@ export function parseExamData(html: string): ExamSubject[] {
             const subject = getOrCreateSubject(code, name);
             const section = getOrCreateSection(subject, sectionName);
 
+            // canRegisterNow = register link exists AND not full
+            const canRegisterNow = !!registerLink && !isFull;
+
             section.terms.push({
                 id: finalId,
                 date: datePart,
@@ -369,10 +382,12 @@ export function parseExamData(html: string): ExamSubject[] {
                 teacher,
                 teacherId,
                 registrationStart: registrationStart || undefined,
-                attemptType
+                registrationEnd: registrationEnd || undefined,
+                attemptType,
+                canRegisterNow
             });
 
-            console.debug('[parseExamData] table_2 parsed available term:', code, sectionName, datePart, timePart, 'full:', isFull, 'attemptType:', attemptType);
+            console.debug('[parseExamData] table_2 parsed available term:', code, sectionName, datePart, timePart, 'full:', isFull, 'canRegisterNow:', canRegisterNow, 'regEnd:', registrationEnd, 'attemptType:', attemptType);
         });
     }
 
