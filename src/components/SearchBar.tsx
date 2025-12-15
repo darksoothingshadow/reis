@@ -1,6 +1,6 @@
-import { Search, X, ChevronUp, ChevronDown, Clock, FileText, GraduationCap, Briefcase } from 'lucide-react';
+import { Search, X, ChevronUp, ChevronDown, Clock, FileText, GraduationCap, Briefcase, BookOpen } from 'lucide-react';
 import { useState, useRef, useEffect, useMemo } from 'react';
-import { searchPeople } from '../api/search';
+import { searchGlobal } from '../api/search';
 import { pagesData, injectUserParams } from '../data/pagesData';
 import type { PageItem, PageCategory } from '../data/pagesData';
 import { fuzzyIncludes } from '../utils/searchUtils';
@@ -14,11 +14,12 @@ interface SearchBarProps {
 interface SearchResult {
   id: string;
   title: string;
-  type: 'person' | 'page';
+  type: 'person' | 'page' | 'subject';
   detail?: string;
   link?: string;
   personType?: 'student' | 'teacher' | 'staff' | 'unknown';
   category?: string;
+  subjectCode?: string;
 }
 
 // Removed mock data
@@ -85,8 +86,9 @@ export function SearchBar({ placeholder = "Prohledej reIS", onSearch, onOpenExam
       try {
         const searchQuery = query.toLowerCase();
 
-        // Search people
-        const people = await searchPeople(query);
+        // Search people and subjects using global search
+        const { people, subjects } = await searchGlobal(query);
+        
         const personResults: SearchResult[] = people.map((p, index) => ({
           id: p.id || `unknown-${index}`,
           title: p.name,
@@ -95,6 +97,22 @@ export function SearchBar({ placeholder = "Prohledej reIS", onSearch, onOpenExam
           link: p.link,
           personType: p.type
         }));
+
+        const subjectResults: SearchResult[] = subjects.map((s) => {
+          // Build detail string: code · semester · faculty
+          const parts = [s.code];
+          if (s.semester) parts.push(s.semester);
+          if (s.faculty !== 'N/A') parts.push(s.faculty);
+          
+          return {
+            id: `subject-${s.id}`,
+            title: s.name,
+            type: 'subject' as const,
+            detail: parts.join(' · '),
+            link: s.link,
+            subjectCode: s.code
+          };
+        });
 
         // Search pages
         const pageResults: SearchResult[] = [];
@@ -116,6 +134,27 @@ export function SearchBar({ placeholder = "Prohledej reIS", onSearch, onOpenExam
           });
         });
 
+        // Relevance scoring - higher is better
+        const getRelevanceScore = (result: SearchResult): number => {
+          const title = result.title.toLowerCase();
+          const code = result.subjectCode?.toLowerCase() ?? '';
+          
+          // Type-based base score (subjects > pages > people)
+          let baseScore = 0;
+          if (result.type === 'subject') baseScore = 1000;
+          else if (result.type === 'page') baseScore = 500;
+          else baseScore = 100; // person
+          
+          // Bonus for match quality
+          if (title === searchQuery) return baseScore + 100; // Exact match
+          if (title.startsWith(searchQuery)) return baseScore + 90; // Prefix match on title
+          if (code === searchQuery) return baseScore + 85; // Exact code match
+          if (code.startsWith(searchQuery)) return baseScore + 80; // Prefix match on code
+          if (title.includes(` ${searchQuery}`)) return baseScore + 60; // Word boundary
+          if (title.includes(searchQuery) || code.includes(searchQuery)) return baseScore + 40; // Contains
+          return baseScore + 10; // Fuzzy/partial
+        };
+
         // Sort person results: Teachers first, then Students, then Staff
         personResults.sort((a, b) => {
           const getPriority = (type?: string) => {
@@ -127,9 +166,16 @@ export function SearchBar({ placeholder = "Prohledej reIS", onSearch, onOpenExam
           return getPriority(a.personType) - getPriority(b.personType);
         });
 
-        // Combine results: pages first, then people
-        const combinedResults = [...pageResults, ...personResults];
-        setFilteredResults(combinedResults);
+        // Combine all results and sort by relevance, with title as tiebreaker
+        const allResults = [...subjectResults, ...pageResults, ...personResults];
+        allResults.sort((a, b) => {
+          const scoreA = getRelevanceScore(a);
+          const scoreB = getRelevanceScore(b);
+          if (scoreB !== scoreA) return scoreB - scoreA;
+          return a.title.localeCompare(b.title); // Alphabetical tiebreaker
+        });
+
+        setFilteredResults(allResults);
       } catch (error) {
         console.error("Search failed", error);
         setFilteredResults([]);
@@ -343,6 +389,10 @@ export function SearchBar({ placeholder = "Prohledej reIS", onSearch, onOpenExam
                         ) : result.type === 'page' ? (
                           <div className="w-6 h-6 rounded bg-success/20 flex items-center justify-center">
                             <FileText className="w-3.5 h-3.5 text-success" />
+                          </div>
+                        ) : result.type === 'subject' ? (
+                          <div className="w-6 h-6 rounded bg-violet-500/20 flex items-center justify-center">
+                            <BookOpen className="w-3.5 h-3.5 text-violet-600" />
                           </div>
                         ) : result.personType === 'student' ? (
                           <div className="w-6 h-6 rounded-full bg-info/20 flex items-center justify-center">

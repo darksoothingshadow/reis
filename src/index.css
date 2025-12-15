@@ -21,6 +21,9 @@ html, body, #root {
 /* Safelist for calendar day highlight (dynamically constructed classes) */
 @source inline("bg-accent/5 bg-accent/10 text-accent");
 
+/* Safelist for timeline temporal urgency colors (dynamic class construction) */
+@source inline("text-error text-warning text-success text-primary animate-pulse");
+
 /* Custom Mendelu light theme for REIS extension */
 @plugin "daisyui/theme" {
   name: "mendelu";

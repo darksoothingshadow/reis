@@ -1,3 +1,14 @@
+# Environment variables (NEVER commit credentials!)
+.env
+.env.local
+.env.*.local
+
+# Playwright
+storageState.json
+playwright-report/
+test-results/
+.playwright-user-data/
+
 # Logs
 logs
 *.log

@@ -67,6 +67,28 @@ function getScoreMessage(score: number): { text: string; Icon: typeof Frown } {
     return { text: 'Riziko přetížení', Icon: Frown };
 }
 
+/**
+ * Get exam urgency color based on days until exam.
+ * Temporal differentiation: closer exams = warmer colors.
+ */
+function getExamUrgency(dateStr: string): { colorClass: string; pulse: boolean } {
+    const examDate = parseDate(dateStr);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const daysUntil = Math.ceil(
+        (examDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+    );
+    
+    let result: { colorClass: string; pulse: boolean };
+    if (daysUntil <= 1) result = { colorClass: 'text-error', pulse: true };
+    else if (daysUntil <= 4) result = { colorClass: 'text-warning', pulse: false };
+    else if (daysUntil <= 7) result = { colorClass: 'text-success', pulse: false };
+    else result = { colorClass: 'text-primary', pulse: false };
+    
+    console.debug('[ExamTimeline] getExamUrgency:', { dateStr, examDate: examDate.toISOString(), daysUntil, result });
+    return result;
+}
+
 export function ExamTimeline({ exams }: ExamTimelineProps) {
     // Extract registered exams from all subjects
     const registeredExams = useMemo<RegisteredExam[]>(() => {
@@ -166,7 +188,7 @@ export function ExamTimeline({ exams }: ExamTimelineProps) {
                 </div>
             )}
 
-            <ul className="timeline timeline-horizontal">
+            <ul className="timeline timeline-horizontal w-full">
                 {timelineItems.map((item, index) => {
                     if (item.type === 'gap') {
                         const { Icon: GapIcon, color, tooltip } = getGapIcon(item.days);
@@ -176,9 +198,9 @@ export function ExamTimeline({ exams }: ExamTimelineProps) {
                             <li key={`gap-${index}`}>
                                 <hr className={item.isWarning ? 'bg-error' : 'bg-base-300'} />
                                 <div className="timeline-middle tooltip tooltip-bottom" data-tip={tooltip}>
-                                    <div className="flex flex-col items-center gap-0.5">
-                                        <GapIcon size={14} className={color} />
-                                        <span className={`text-xs ${item.isWarning ? 'text-error font-medium' : 'text-base-content/50'}`}>
+                                    <div className="flex flex-col items-center">
+                                        {item.isWarning && <GapIcon size={12} className={color} />}
+                                        <span className={`text-[10px] ${item.isWarning ? 'text-error font-medium' : 'text-base-content/30'}`}>
                                             {item.days}d
                                         </span>
                                     </div>
@@ -188,19 +210,29 @@ export function ExamTimeline({ exams }: ExamTimelineProps) {
                         );
                     }
                     
-                    // Exam item
+                    // Exam item with temporal urgency coloring
                     const exam = item.exam;
                     const isFirst = index === 0;
                     const isLast = index === timelineItems.length - 1;
+                    const urgency = getExamUrgency(exam.date);
+                    
+                    // Use explicit class mapping for Tailwind JIT detection
+                    const colorClasses = {
+                        'text-error': urgency.colorClass === 'text-error',
+                        'text-warning': urgency.colorClass === 'text-warning', 
+                        'text-success': urgency.colorClass === 'text-success',
+                        'text-primary': urgency.colorClass === 'text-primary',
+                    };
+                    const activeColorClass = Object.entries(colorClasses).find(([, v]) => v)?.[0] || 'text-success';
                     
                     return (
                         <li key={`exam-${exam.code}-${exam.date}`}>
                             {!isFirst && <hr className="bg-primary" />}
-                            <div className="timeline-start timeline-box bg-base-100 shadow-sm">
-                                <div className="font-semibold text-sm text-primary">{exam.code}</div>
-                                <div className="text-xs text-base-content/70">{formatShortDate(exam.date)}</div>
+                            <div className="timeline-start timeline-box bg-base-100 shadow-md border-l-2 border-current" style={{ borderColor: 'currentColor' }}>
+                                <div className={`font-bold text-sm ${activeColorClass}`}>{exam.code}</div>
+                                <div className="text-xs text-base-content/60">{formatShortDate(exam.date)}</div>
                             </div>
-                            <div className="timeline-middle text-success">
+                            <div className={`timeline-middle ${activeColorClass} ${urgency.pulse ? 'animate-pulse' : ''}`}>
                                 <CheckCircle size={16} />
                             </div>
                             {!isLast && <hr className="bg-primary" />}

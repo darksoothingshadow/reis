@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run test:run && npm run build:app && npm run build:content && npm run build:bg",
+    "build": "npm run test:run && npm run build:app && npm run build:content && npm run build:bg && npm run test:e2e",
+    "build:quick": "npm run build:app && npm run build:content && npm run build:bg",
     "build:app": "vite build",
     "build:content": "BUILD_TARGET=content vite build",
     "build:bg": "vite build -c vite.config.bg.ts",
@@ -15,6 +16,9 @@
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
+    "test:e2e": "xvfb-run playwright test",
+    "test:e2e:headed": "xvfb-run playwright test --headed",
+    "test:e2e:setup": "playwright install chromium",
     "typecheck": "tsc -b"
   },
   "dependencies": {
@@ -44,6 +48,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
+    "@playwright/test": "^1.57.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
@@ -53,6 +58,7 @@
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
+    "dotenv": "^17.2.3",
     "eslint": "^9.39.1",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
