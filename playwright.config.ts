@@ -11,7 +11,16 @@ export default defineConfig({
   timeout: 60000,
   expect: {
     timeout: 10000,
+    // Visual comparison settings
+    toHaveScreenshot: {
+      maxDiffPixels: 100,           // Allow minor anti-aliasing differences
+      threshold: 0.2,               // Per-pixel color tolerance
+      animations: 'disabled',       // Disable animations for consistency
+    },
   },
+  // Snapshot storage organization
+  snapshotDir: './e2e/screenshots',
+  snapshotPathTemplate: '{snapshotDir}/{testFileDir}/{testFileName}-snapshots/{arg}{ext}',
   fullyParallel: false, // Run tests sequentially for extension stability
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
@@ -22,4 +31,7 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     storageState: path.join(__dirname, 'storageState.json'),
   },
+  // Output directories for test artifacts
+  outputDir: './e2e/test-results',
 });
+

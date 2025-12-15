@@ -60,6 +60,34 @@ Rozšíření pracuje výhradně lokálně ve vašem prohlížeči. Žádná dat
 
 ---
 
+## 🧪 Testing
+
+This project uses **Vitest** for unit tests and **Playwright** for E2E testing of the Chrome extension.
+
+```bash
+# Unit tests
+npm run test              # Watch mode
+npm run test:run          # Single run
+
+# E2E tests (requires Xvfb on Linux)
+npm run build:quick       # Build extension first
+npm run test:e2e          # Run all E2E tests
+
+# Visual proof screenshots
+xvfb-run playwright test visual-proof.spec.ts
+```
+
+### Visual Feedback Loop
+
+The `/screenshot` workflow captures the extension UI state:
+- `proof-calendar.png` — Calendar view
+- `proof-exams.png` — Exam timeline
+- `proof-search.png` — Search results
+
+See [`e2e/README.md`](e2e/README.md) for detailed E2E documentation.
+
+---
+
 ## 🛠️ Pro vývojáře
 
 ```bash
