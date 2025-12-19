@@ -16,6 +16,7 @@ import { StorageService, STORAGE_KEYS } from './services/storage'
 import { syncService, outlookSyncService } from './services/sync'
 import { useSchedule, useExams, useOutlookSync } from './hooks/data'
 import { parseDate } from './utils/dateHelpers'
+import { NotificationFeed } from './components/NotificationFeed'
 
 // Helper: Get week date strings (YYYYMMDD format) for a given week start date
 function getWeekDateStrings(weekStart: Date): string[] {
@@ -277,9 +278,12 @@ function App() {
               </div>
             )}
 
-            {/* SearchBar - always far right */}
-            <div className="flex-shrink-0 w-[480px] mr-2 ml-auto">
-              <SearchBar onOpenExamDrawer={() => setCurrentView('exams')} />
+            {/* Notification Bell and SearchBar - always far right */}
+            <div className="flex items-center gap-2 flex-shrink-0 ml-auto">
+              <NotificationFeed />
+              <div className="w-[480px] mr-2">
+                <SearchBar onOpenExamDrawer={() => setCurrentView('exams')} />
+              </div>
             </div>
           </div>
         </div>

@@ -7,7 +7,8 @@ import {
   ExternalLink,
   Calendar,
   Moon,
-  CalendarCheck
+  CalendarCheck,
+  Users
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { MENDELU_LOGO_PATH } from '../constants/icons';
@@ -15,6 +16,7 @@ import { useUserParams } from '../hooks/useUserParams';
 import { getMainMenuItems, type MenuItem } from './menuConfig';
 import { useOutlookSync } from '../hooks/data';
 import { useTheme } from '../hooks/useTheme';
+import { getUserAssociation } from '../services/spolky';
 
 
 export type AppView = 'calendar' | 'exams';
@@ -216,6 +218,30 @@ export const Sidebar = ({ currentView: _currentView, onViewChange, onOpenSetting
 
         {/* Bottom Actions */}
         <div className="flex flex-col gap-2 px-2 w-full mt-auto">
+          {/* Spolek Button - Dynamic based on faculty */}
+          {(() => {
+            // For MVP, hardcode PEF as placeholder
+            // TODO: Get from user data when available
+            const association = getUserAssociation('PEF');
+            if (!association) return null;
+            
+            return (
+              <a 
+                href={association.websiteUrl} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="w-12 h-12 rounded-xl flex flex-col items-center justify-center text-base-content/50 hover:bg-base-100 hover:text-primary hover:shadow-sm transition-all mx-auto group"
+                title={association.name}
+              >
+                <Users className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                <span className="text-[10px] mt-1 font-medium">Spolek</span>
+              </a>
+            );
+          })()}
+          
+          {/* Divider */}
+          <div className="h-px bg-base-300 mx-2 my-1" />
+          
           <a href="https://teams.microsoft.com" target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-xl flex flex-col items-center justify-center text-base-content/50 hover:bg-base-100 hover:text-info hover:shadow-sm transition-all mx-auto group">
             <LayoutGrid className="w-5 h-5 group-hover:scale-110 transition-transform" />
             <span className="text-[10px] mt-1 font-medium">Teams</span>

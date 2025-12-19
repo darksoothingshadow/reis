@@ -31,6 +31,7 @@ import { fetchWeekSchedule } from "./api/schedule";
 import { fetchExamData } from "./api/exams";
 import { fetchSubjects } from "./api/subjects";
 import { fetchFilesFromFolder } from "./api/documents";
+import { fetchSubjectSuccessRates } from "./api/successRate";
 import { registerExam, unregisterExam } from "./api/exams";
 import type { SubjectsData } from "./types/documents";
 import type { ParsedFile } from "./types/documents";
@@ -349,6 +350,52 @@ async function syncAllData() {
             cachedData.files = files;
             cachedData.lastSync = Date.now();
             sendToIframe(Messages.syncUpdate(cachedData));
+
+            const totalDuration = Date.now() - startTime;
+            console.log(
+                `[REIS Content] Full sync with files complete in ${totalDuration}ms`
+            );
+
+            // --- Success Rate Sync (Throttled 24h) ---
+            try {
+                const LAST_SYNC_KEY = 'reis_last_stats_sync';
+                const lastStatsSyncStr = localStorage.getItem(LAST_SYNC_KEY);
+                const lastStatsSync = parseInt(lastStatsSyncStr || '0', 10);
+                const now = Date.now();
+                const ONE_DAY = 24 * 60 * 60 * 1000;
+                
+                console.log(`[REIS Content] Checking success rate sync. Last: ${lastStatsSyncStr} (${lastStatsSync}), Now: ${now}, Diff: ${now - lastStatsSync}`);
+
+                if (now - lastStatsSync > ONE_DAY) {
+                    console.log('[REIS Content] Syncing success rates (throttled check passed)...');
+                    const codes = Object.keys(subjectsData.data);
+                    console.log(`[REIS Content] Target subjects: ${codes.join(', ')}`);
+                    
+                    if (codes.length > 0) {
+                        const stats = await fetchSubjectSuccessRates(codes);
+                        cachedData.successRates = stats;
+                        localStorage.setItem(LAST_SYNC_KEY, now.toString());
+                        localStorage.setItem('reis_success_rates', JSON.stringify(stats));
+                        
+                        sendToIframe(Messages.syncUpdate(cachedData));
+                        console.log(`[REIS Content] Success rates synced for ${codes.length} subjects`);
+                    } else {
+                        console.log('[REIS Content] No subjects found to sync success rates for.');
+                    }
+                } else {
+                    console.log('[REIS Content] Success rate sync throttled. Loading from cache...');
+                    const storedStats = localStorage.getItem('reis_success_rates');
+                    if (storedStats) {
+                        cachedData.successRates = JSON.parse(storedStats);
+                        sendToIframe(Messages.syncUpdate(cachedData));
+                        console.log('[REIS Content] Loaded success rates from local cache');
+                    } else {
+                        console.log('[REIS Content] No success rates in cache.');
+                    }
+                }
+            } catch (statsError) {
+                console.warn('[REIS Content] Success rate sync failed:', statsError);
+            }
         }
     } catch (error) {
         console.error("[REIS Content] Sync failed:", error);
