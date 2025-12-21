@@ -11,6 +11,7 @@
 
 import type { FetchResultMessage, ActionResultMessage, ActionType } from '../types/messages';
 import { Messages } from '../types/messages';
+import { loggers } from '../utils/logger';
 
 // =============================================================================
 // Pending Request Tracking
@@ -56,7 +57,7 @@ function initMessageListener() {
                 if (msg.success && msg.data !== undefined) {
                     pending.resolve(msg.data);
                 } else {
-                    console.error('[ProxyClient] Fetch failed:', msg.error);
+                    loggers.api.error('[ProxyClient] Fetch failed:', msg.error);
                     pending.reject(new Error(msg.error || 'Fetch failed'));
                 }
             }
@@ -74,14 +75,14 @@ function initMessageListener() {
                 if (msg.success) {
                     pending.resolve(msg.data);
                 } else {
-                    console.error('[ProxyClient] Action failed:', msg.error);
+                    loggers.api.error('[ProxyClient] Action failed:', msg.error);
                     pending.reject(new Error(msg.error || 'Action failed'));
                 }
             }
         }
     });
 
-    console.log('[ProxyClient] Message listener initialized');
+    loggers.api.info('[ProxyClient] Message listener initialized');
 }
 
 // =============================================================================
@@ -107,7 +108,7 @@ export async function fetchViaProxy(
     return new Promise((resolve, reject) => {
         const timeout = setTimeout(() => {
             pendingFetches.delete(message.id);
-            console.error('[ProxyClient] Request timeout:', url);
+            loggers.api.error('[ProxyClient] Request timeout:', url);
             reject(new Error(`Request timeout: ${url}`));
         }, REQUEST_TIMEOUT);
 
@@ -116,7 +117,7 @@ export async function fetchViaProxy(
         // Send to Content Script
         window.parent.postMessage(message, '*');
 
-        console.debug('[ProxyClient] Fetch request sent:', message.id, url);
+        loggers.api.debug('[ProxyClient] Fetch request sent:', message.id, url);
     });
 }
 
@@ -135,7 +136,7 @@ export async function fetchJsonViaProxy<T>(
     try {
         return JSON.parse(text) as T;
     } catch (e) {
-        console.error('[ProxyClient] JSON parse error:', e);
+        loggers.api.error('[ProxyClient] JSON parse error:', e);
         throw new Error('Invalid JSON response');
     }
 }
@@ -154,7 +155,7 @@ export async function executeAction<T = unknown>(
     return new Promise((resolve, reject) => {
         const timeout = setTimeout(() => {
             pendingActions.delete(message.id);
-            console.error('[ProxyClient] Action timeout:', action);
+            loggers.api.error('[ProxyClient] Action timeout:', action);
             reject(new Error(`Action timeout: ${action}`));
         }, REQUEST_TIMEOUT);
 
@@ -167,7 +168,7 @@ export async function executeAction<T = unknown>(
         // Send to Content Script
         window.parent.postMessage(message, '*');
 
-        console.debug('[ProxyClient] Action request sent:', message.id, action);
+        loggers.api.debug('[ProxyClient] Action request sent:', message.id, action);
     });
 }
 
@@ -177,7 +178,7 @@ export async function executeAction<T = unknown>(
 export function requestData(dataType: 'schedule' | 'exams' | 'subjects' | 'files' | 'all'): void {
     const message = Messages.requestData(dataType);
     window.parent.postMessage(message, '*');
-    console.debug('[ProxyClient] Data request sent:', dataType);
+    loggers.api.debug('[ProxyClient] Data request sent:', dataType);
 }
 
 /**
@@ -186,7 +187,7 @@ export function requestData(dataType: 'schedule' | 'exams' | 'subjects' | 'files
 export function signalReady(): void {
     const message = Messages.ready();
     window.parent.postMessage(message, '*');
-    console.log('[ProxyClient] Ready signal sent');
+    loggers.api.info('[ProxyClient] Ready signal sent');
 }
 
 // =============================================================================

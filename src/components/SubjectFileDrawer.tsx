@@ -1,9 +1,11 @@
 import { X, Loader2, Download, Check, FileText, Folder, Map as MapIcon, ExternalLink, User, MousePointer2, Clock } from 'lucide-react';
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { loggers } from '../utils/logger';
 import { useSubjects, useSchedule } from '../hooks/data';
 import { getFilesForSubject } from '../utils/apiUtils';
 import { cleanFolderName } from '../utils/fileUrl';
 import { useFileActions } from '../hooks/ui/useFileActions';
+import { SuccessRateTab } from './SuccessRateTab';
 import type { BlockLesson } from '../types/calendarTypes';
 import type { ParsedFile } from '../types/documents';
 
@@ -39,9 +41,10 @@ export function SubjectFileDrawer({ lesson, isOpen, onClose }: SubjectFileDrawer
     const { schedule } = useSchedule();
     const { isDownloading, openFile, downloadZip } = useFileActions();
 
-    console.log('[SubjectFileDrawer] Rendering. Open:', isOpen, 'Lesson:', lesson?.courseCode);
+    loggers.ui.info('[SubjectFileDrawer] Rendering. Open:', isOpen, 'Lesson:', lesson?.courseCode);
 
     // State
+    const [activeTab, setActiveTab] = useState<'files' | 'stats'>('files');
     const [files, setFiles] = useState<ParsedFile[] | null>(null);
     const [loading, setLoading] = useState(false);
     
@@ -74,7 +77,7 @@ export function SubjectFileDrawer({ lesson, isOpen, onClose }: SubjectFileDrawer
         setLoading(false);
     }, [isOpen, lesson, subjectsLoaded]);
 
-    // Reset selection on close
+    // Reset selection and tab on close
     useEffect(() => {
         if (!isOpen) {
             setSelectedIds([]);
@@ -82,6 +85,7 @@ export function SubjectFileDrawer({ lesson, isOpen, onClose }: SubjectFileDrawer
             setSelectionEnd(null);
             isDraggingRef.current = false;
             setShowDragHint(false);
+            setActiveTab('files');
         }
     }, [isOpen]);
 
@@ -474,6 +478,22 @@ export function SubjectFileDrawer({ lesson, isOpen, onClose }: SubjectFileDrawer
                                 </span>
                             )}
                         </div>
+
+                        {/* Tabs */}
+                        <div className="flex items-center gap-8 mt-6">
+                            <button 
+                                onClick={() => setActiveTab('files')}
+                                className={`text-sm font-bold pb-2 border-b-2 transition-all px-1 ${activeTab === 'files' ? 'border-primary text-primary' : 'border-transparent text-base-content/40 hover:text-base-content/60'}`}
+                            >
+                                Soubory
+                            </button>
+                            <button 
+                                onClick={() => setActiveTab('stats')}
+                                className={`text-sm font-bold pb-2 border-b-2 transition-all px-1 ${activeTab === 'stats' ? 'border-primary text-primary' : 'border-transparent text-base-content/40 hover:text-base-content/60'}`}
+                            >
+                                Úspěšnost
+                            </button>
+                        </div>
                     </div>
 
                     {/* Content Area (Scrollable & Draggable) */}
@@ -497,8 +517,8 @@ export function SubjectFileDrawer({ lesson, isOpen, onClose }: SubjectFileDrawer
                                 />
                             )}
 
-                            {/* First-use Drag Hint Animation */}
-                            {showDragHint && (
+                            {/* First-use Drag Hint Animation - only on Files tab */}
+                            {activeTab === 'files' && showDragHint && (
                                 <div className="absolute inset-0 pointer-events-none z-40 overflow-hidden">
                                     {/* Animated lasso selection */}
                                     <div 
@@ -543,7 +563,8 @@ export function SubjectFileDrawer({ lesson, isOpen, onClose }: SubjectFileDrawer
                                 }
                             `}</style>
 
-                            {loading || !subjectsLoaded || !files ? (
+                            {activeTab === 'files' ? (
+                                loading || !subjectsLoaded || !files ? (
                                 <div className="p-6 space-y-8">
                                     {[1, 2].map((i) => (
                                         <div key={i} className="space-y-3">
@@ -635,6 +656,8 @@ export function SubjectFileDrawer({ lesson, isOpen, onClose }: SubjectFileDrawer
                                         </div>
                                     )}
                                 </div>
+                            )) : (
+                                <SuccessRateTab courseCode={lesson?.courseCode || ''} />
                             )}
                         </div>
                     </div>

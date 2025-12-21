@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>reIS Admin - Schvalování</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <nav class="nav">
+      <div class="logo">
+        <h1 style="font-size: 1.5rem;">reIS Admin</h1>
+      </div>
+      <div class="nav-user">
+        <span id="username-display"></span>
+        <button class="btn btn-outline" id="logout-btn">Odhlásit</button>
+      </div>
+    </nav>
+
+    <div id="success-alert" class="alert alert-success hidden"></div>
+    <div id="error-alert" class="alert alert-error hidden"></div>
+
+    <!-- Pending notifications -->
+    <div class="card">
+      <div class="card-header">
+        <h2><i data-lucide="bell" class="icon"></i> Čekající na schválení</h2>
+        <p>Notifikace od studentských spolků</p>
+      </div>
+
+      <div id="pending-list" class="notification-list">
+        <p style="color: var(--text-muted); text-align: center;">Načítání...</p>
+      </div>
+    </div>
+
+    <!-- All approved -->
+    <div class="card" style="margin-top: 1.5rem;">
+      <div class="card-header">
+        <h2><i data-lucide="check-circle" class="icon"></i> Schválené notifikace</h2>
+        <p>Aktivní notifikace viditelné studentům</p>
+      </div>
+
+      <div id="approved-list" class="notification-list">
+        <p style="color: var(--text-muted); text-align: center;">Načítání...</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = '/api';
+    let admin = null;
+    let token = null;
+
+    // Auth check
+    token = localStorage.getItem('token');
+    admin = JSON.parse(localStorage.getItem('admin') || 'null');
+
+    if (!token || !admin) {
+      window.location.href = 'index.html';
+    }
+
+    // Only superadmin can access this page
+    if (!admin.isSuperadmin) {
+      window.location.href = 'dashboard.html';
+    }
+
+    document.getElementById('username-display').textContent = admin.username + ' (Superadmin)';
+
+    // Logout
+    document.getElementById('logout-btn').addEventListener('click', () => {
+      localStorage.removeItem('token');
+      localStorage.removeItem('admin');
+      window.location.href = 'index.html';
+    });
+
+    // Association name mapping
+    const ASSOCIATION_NAMES = {
+      'supef': 'SUPEF (PEF)',
+      'au_frrms': 'AU FRRMS',
+      'af': 'AF Spolek',
+      'zf': 'ZF Spolek',
+      'ldf': 'LDF Spolek',
+      'icv': 'ICV'
+    };
+
+    // Load pending notifications
+    async function loadPending() {
+      const listEl = document.getElementById('pending-list');
+      
+      try {
+        const response = await fetch(`${API_BASE}/notifications/pending`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to load');
+        }
+        
+        const notifications = await response.json();
+        
+        if (notifications.length === 0) {
+          listEl.innerHTML = '<p style="color: var(--text-muted); text-align: center;">🎉 Žádné čekající notifikace</p>';
+          return;
+        }
+
+        listEl.innerHTML = notifications.map(n => `
+          <div class="notification-item" id="notif-${n.id}">
+            <div class="header">
+              <span class="title">${escapeHtml(n.title)}</span>
+              <span class="badge badge-pending">${ASSOCIATION_NAMES[n.associationId] || n.associationId}</span>
+            </div>
+            <div class="body">${escapeHtml(n.body)}</div>
+            <div class="meta">
+              <span><i data-lucide="calendar" class="icon-sm"></i> Vytvořeno: ${formatDate(n.createdAt)}</span>
+              <span><i data-lucide="clock" class="icon-sm"></i> Vyprší: ${formatDate(n.expiresAt)}</span>
+              ${n.link ? `<span><i data-lucide="link" class="icon-sm"></i> <a href="${escapeHtml(n.link)}" target="_blank">Odkaz</a></span>` : ''}
+              <span><i data-lucide="bar-chart-2" class="icon-sm"></i> ${n.priority === 'high' ? 'Vysoká' : 'Normální'}</span>
+            </div>
+            <div class="approval-actions">
+              <button class="btn btn-success" onclick="approveNotification('${n.id}')">
+                <i data-lucide="check"></i> Schválit
+              </button>
+              <button class="btn btn-error" onclick="rejectNotification('${n.id}')">
+                <i data-lucide="x"></i> Zamítnout
+              </button>
+              <button class="btn btn-outline" onclick="deleteNotification('${n.id}')" style="flex: 0.5;">
+                <i data-lucide="trash-2"></i>
+              </button>
+            </div>
+          </div>
+        `).join('');
+        lucide.createIcons();
+      } catch (error) {
+        console.error('Failed to load pending:', error);
+        listEl.innerHTML = '<p style="color: var(--error);">Nepodařilo se načíst notifikace</p>';
+      }
+    }
+
+    // Load approved notifications
+    async function loadApproved() {
+      const listEl = document.getElementById('approved-list');
+      
+      try {
+        const response = await fetch(`${API_BASE}/notifications`);
+        const notifications = await response.json();
+        
+        if (notifications.length === 0) {
+          listEl.innerHTML = '<p style="color: var(--text-muted); text-align: center;">Žádné aktivní notifikace</p>';
+          return;
+        }
+
+        listEl.innerHTML = notifications.map(n => `
+          <div class="notification-item" id="approved-${n.id}">
+            <div class="header">
+              <span class="title">${escapeHtml(n.title)}</span>
+              <span class="badge badge-approved">${ASSOCIATION_NAMES[n.associationId] || n.associationId}</span>
+            </div>
+            <div class="body">${escapeHtml(n.body)}</div>
+            <div class="meta-row">
+              <div class="meta">
+                <span><i data-lucide="calendar" class="icon-sm"></i> ${formatDate(n.createdAt)}</span>
+                <span><i data-lucide="clock" class="icon-sm"></i> ${formatDate(n.expiresAt)}</span>
+              </div>
+              <button class="btn btn-outline btn-sm" onclick="deleteNotification('${n.id}')">
+                <i data-lucide="trash-2"></i> Smazat
+              </button>
+            </div>
+          </div>
+        `).join('');
+        lucide.createIcons();
+      } catch (error) {
+        console.error('Failed to load approved:', error);
+        listEl.innerHTML = '<p style="color: var(--error);">Nepodařilo se načíst notifikace</p>';
+      }
+    }
+
+    // Approve notification
+    async function approveNotification(id) {
+      const successAlert = document.getElementById('success-alert');
+      const errorAlert = document.getElementById('error-alert');
+      
+      try {
+        const response = await fetch(`${API_BASE}/notifications/${id}/approve`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!response.ok) {
+          const data = await response.json();
+          throw new Error(data.error || 'Schválení selhalo');
+        }
+
+        successAlert.textContent = '✅ Notifikace byla schválena!';
+        successAlert.classList.remove('hidden');
+        errorAlert.classList.add('hidden');
+        
+        // Reload lists
+        loadPending();
+        loadApproved();
+        
+        // Hide alert after 3s
+        setTimeout(() => successAlert.classList.add('hidden'), 3000);
+      } catch (error) {
+        errorAlert.textContent = error.message;
+        errorAlert.classList.remove('hidden');
+        successAlert.classList.add('hidden');
+      }
+    }
+
+    // Reject notification
+    async function rejectNotification(id) {
+      if (!confirm('Opravdu chcete zamítnout tuto notifikaci?')) {
+        return;
+      }
+      
+      const successAlert = document.getElementById('success-alert');
+      const errorAlert = document.getElementById('error-alert');
+      
+      try {
+        const response = await fetch(`${API_BASE}/notifications/${id}/reject`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!response.ok) {
+          const data = await response.json();
+          throw new Error(data.error || 'Zamítnutí selhalo');
+        }
+
+        successAlert.textContent = '❌ Notifikace byla zamítnuta';
+        successAlert.classList.remove('hidden');
+        errorAlert.classList.add('hidden');
+        
+        // Reload list
+        loadPending();
+        
+        // Hide alert after 3s
+        setTimeout(() => successAlert.classList.add('hidden'), 3000);
+      } catch (error) {
+        errorAlert.textContent = error.message;
+        errorAlert.classList.remove('hidden');
+        successAlert.classList.add('hidden');
+      }
+    }
+
+    // Delete notification
+    async function deleteNotification(id) {
+      if (!confirm('Opravdu chcete smazat tuto notifikaci? Tato akce je nevratná.')) {
+        return;
+      }
+      
+      const successAlert = document.getElementById('success-alert');
+      const errorAlert = document.getElementById('error-alert');
+      
+      try {
+        const response = await fetch(`${API_BASE}/notifications/${id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!response.ok) {
+          const data = await response.json();
+          throw new Error(data.error || 'Smazání selhalo');
+        }
+
+        successAlert.textContent = '🗑 Notifikace byla smazána';
+        successAlert.classList.remove('hidden');
+        errorAlert.classList.add('hidden');
+        
+        // Reload lists
+        loadPending();
+        loadApproved();
+        
+        setTimeout(() => successAlert.classList.add('hidden'), 3000);
+      } catch (error) {
+        errorAlert.textContent = error.message;
+        errorAlert.classList.remove('hidden');
+        successAlert.classList.add('hidden');
+      }
+    }
+
+    // Helpers
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function formatDate(isoString) {
+      const date = new Date(isoString);
+      return `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`;
+    }
+
+    // Init
+    loadPending().then(() => lucide.createIcons());
+    loadApproved().then(() => lucide.createIcons());
+    lucide.createIcons();
+  </script>
+</body>
+</html>

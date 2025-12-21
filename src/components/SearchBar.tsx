@@ -2,16 +2,16 @@ import { Search, X, ChevronUp, ChevronDown, Clock, FileText, GraduationCap, Brie
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { searchGlobal } from '../api/search';
 import { pagesData, injectUserParams } from '../data/pagesData';
-import type { PageItem, PageCategory } from '../data/pagesData';
 import { fuzzyIncludes } from '../utils/searchUtils';
 
 interface SearchBarProps {
   placeholder?: string;
   onSearch?: (query: string) => void;
   onOpenExamDrawer?: () => void;
+  onSelect?: (result: SearchResult) => void;
 }
 
-interface SearchResult {
+export interface SearchResult {
   id: string;
   title: string;
   type: 'person' | 'page' | 'subject';
@@ -22,11 +22,10 @@ interface SearchResult {
   subjectCode?: string;
 }
 
-// Removed mock data
 const MAX_RECENT_SEARCHES = 5;
 const STORAGE_KEY = 'reis_recent_searches';
 
-export function SearchBar({ placeholder = "Prohledej reIS", onSearch, onOpenExamDrawer }: SearchBarProps) {
+export function SearchBar({ placeholder = "Prohledej reIS", onSearch, onOpenExamDrawer, onSelect }: SearchBarProps) {
   const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
@@ -36,14 +35,12 @@ export function SearchBar({ placeholder = "Prohledej reIS", onSearch, onOpenExam
   const inputRef = useRef<HTMLInputElement>(null);
   const debounceTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Detect Mac vs Windows/Linux for keyboard shortcut display
   const isMac = useMemo(() => {
     return typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.platform);
   }, []);
 
   const [recentSearches, setRecentSearches] = useState<SearchResult[]>([]);
 
-  // Load recent searches on mount (from sessionStorage for better privacy)
   useEffect(() => {
     try {
       const stored = sessionStorage.getItem(STORAGE_KEY);
@@ -67,7 +64,6 @@ export function SearchBar({ placeholder = "Prohledej reIS", onSearch, onOpenExam
 
   const displayResults = query.trim() === '' ? recentSearches : filteredResults;
 
-  // Debounced search
   useEffect(() => {
     if (query.trim().length < 3) {
       setFilteredResults([]);
@@ -85,8 +81,6 @@ export function SearchBar({ placeholder = "Prohledej reIS", onSearch, onOpenExam
     debounceTimeout.current = setTimeout(async () => {
       try {
         const searchQuery = query.toLowerCase();
-
-        // Search people and subjects using global search
         const { people, subjects } = await searchGlobal(query);
         
         const personResults: SearchResult[] = people.map((p, index) => ({
@@ -99,7 +93,6 @@ export function SearchBar({ placeholder = "Prohledej reIS", onSearch, onOpenExam
         }));
 
         const subjectResults: SearchResult[] = subjects.map((s) => {
-          // Build detail string: code · semester · faculty
           const parts = [s.code];
           if (s.semester) parts.push(s.semester);
           if (s.faculty !== 'N/A') parts.push(s.faculty);
@@ -116,11 +109,9 @@ export function SearchBar({ placeholder = "Prohledej reIS", onSearch, onOpenExam
 
         // Search pages
         const pageResults: SearchResult[] = [];
-        pagesData.forEach((category: PageCategory) => {
-          category.children.forEach((page: PageItem) => {
-            // Match on label using fuzzy matching
+        pagesData.forEach((category: any) => {
+          category.children.forEach((page: any) => {
             const matchesLabel = fuzzyIncludes(page.label, searchQuery);
-
             if (matchesLabel) {
               pageResults.push({
                 id: page.id,
@@ -134,28 +125,23 @@ export function SearchBar({ placeholder = "Prohledej reIS", onSearch, onOpenExam
           });
         });
 
-        // Relevance scoring - higher is better
         const getRelevanceScore = (result: SearchResult): number => {
           const title = result.title.toLowerCase();
           const code = result.subjectCode?.toLowerCase() ?? '';
-          
-          // Type-based base score (subjects > pages > people)
           let baseScore = 0;
           if (result.type === 'subject') baseScore = 1000;
           else if (result.type === 'page') baseScore = 500;
-          else baseScore = 100; // person
+          else baseScore = 100;
           
-          // Bonus for match quality
-          if (title === searchQuery) return baseScore + 100; // Exact match
-          if (title.startsWith(searchQuery)) return baseScore + 90; // Prefix match on title
-          if (code === searchQuery) return baseScore + 85; // Exact code match
-          if (code.startsWith(searchQuery)) return baseScore + 80; // Prefix match on code
-          if (title.includes(` ${searchQuery}`)) return baseScore + 60; // Word boundary
-          if (title.includes(searchQuery) || code.includes(searchQuery)) return baseScore + 40; // Contains
-          return baseScore + 10; // Fuzzy/partial
+          if (title === searchQuery) return baseScore + 100;
+          if (title.startsWith(searchQuery)) return baseScore + 90;
+          if (code === searchQuery) return baseScore + 85;
+          if (code.startsWith(searchQuery)) return baseScore + 80;
+          if (title.includes(` ${searchQuery}`)) return baseScore + 60;
+          if (title.includes(searchQuery) || code.includes(searchQuery)) return baseScore + 40;
+          return baseScore + 10;
         };
 
-        // Sort person results: Teachers first, then Students, then Staff
         personResults.sort((a, b) => {
           const getPriority = (type?: string) => {
             if (type === 'teacher') return 0;
@@ -166,13 +152,12 @@ export function SearchBar({ placeholder = "Prohledej reIS", onSearch, onOpenExam
           return getPriority(a.personType) - getPriority(b.personType);
         });
 
-        // Combine all results and sort by relevance, with title as tiebreaker
         const allResults = [...subjectResults, ...pageResults, ...personResults];
         allResults.sort((a, b) => {
           const scoreA = getRelevanceScore(a);
           const scoreB = getRelevanceScore(b);
           if (scoreB !== scoreA) return scoreB - scoreA;
-          return a.title.localeCompare(b.title); // Alphabetical tiebreaker
+          return a.title.localeCompare(b.title);
         });
 
         setFilteredResults(allResults);
@@ -191,7 +176,6 @@ export function SearchBar({ placeholder = "Prohledej reIS", onSearch, onOpenExam
     };
   }, [query]);
 
-  // Click outside handler
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
@@ -202,7 +186,6 @@ export function SearchBar({ placeholder = "Prohledej reIS", onSearch, onOpenExam
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Global Ctrl+K handler
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
@@ -218,10 +201,8 @@ export function SearchBar({ placeholder = "Prohledej reIS", onSearch, onOpenExam
   const handleFocus = () => setIsOpen(true);
 
   const handleSelect = (result: SearchResult) => {
-    console.log('Selected:', result);
     saveToHistory(result);
 
-    // Check for exam registration pages
     if (['zapisy-zkousky', 'prihlasovani-zkouskam'].includes(result.id)) {
       if (onOpenExamDrawer) {
         onOpenExamDrawer();
@@ -232,7 +213,14 @@ export function SearchBar({ placeholder = "Prohledej reIS", onSearch, onOpenExam
       }
     }
 
-    // For keyboard navigation, open the link programmatically
+    if (result.type === 'subject' && onSelect) {
+      onSelect(result);
+      setQuery('');
+      setIsOpen(false);
+      setSelectedIndex(-1);
+      return;
+    }
+
     if (result.link) {
       window.open(injectUserParams(result.link), '_blank');
     }
@@ -282,9 +270,7 @@ export function SearchBar({ placeholder = "Prohledej reIS", onSearch, onOpenExam
 
   return (
     <div className="flex-1 flex items-center px-4">
-
       <div className="flex-1 max-w-3xl mx-auto flex items-center gap-2">
-        {/* MAIN CONTAINER */}
         <div
           ref={containerRef}
           className="relative flex-1 z-50"
@@ -292,13 +278,9 @@ export function SearchBar({ placeholder = "Prohledej reIS", onSearch, onOpenExam
           aria-expanded={isOpen}
           aria-haspopup="listbox"
         >
-          {/* THE "SHAPE SHIFTER" */}
           <div className={`relative flex items-center w-full max-w-3xl bg-base-100 rounded-xl border shadow-sm transition-all duration-200 ${isOpen ? 'border-primary shadow-[0_0_0_3px_rgba(121,190,21,0.15)]' : 'border-base-300 hover:border-base-content/30'}`}>
-
-            {/* Input Area - no border, parent owns visual boundary */}
             <div className="flex-1 flex items-center h-12 px-4">
               <Search className={`w-5 h-5 mr-3 transition-colors ${isOpen ? 'text-base-content' : 'text-base-content/50'}`} />
-
               <input
                 ref={inputRef}
                 type="text"
@@ -315,8 +297,6 @@ export function SearchBar({ placeholder = "Prohledej reIS", onSearch, onOpenExam
                 aria-autocomplete="list"
                 aria-controls="search-results"
               />
-
-              {/* Right side icons */}
               {query ? (
                 <button
                   onClick={() => {
@@ -342,24 +322,17 @@ export function SearchBar({ placeholder = "Prohledej reIS", onSearch, onOpenExam
             </div>
           </div>
 
-          {/* THE DROPDOWN */}
           {isOpen && (
             <div
               id="search-results"
               role="listbox"
               className="absolute top-full left-0 right-0 bg-base-100 border border-t-0 border-base-300 rounded-b-lg shadow-lg overflow-hidden flex flex-col animate-in fade-in slide-in-from-top-2 duration-200"
             >
-
-              {/* Thin Line Separator */}
               <div className="h-px w-full bg-base-300" />
-
-              {/* Section Title */}
               <div className="px-4 py-2 text-xs font-semibold text-base-content/50 uppercase tracking-wider mt-1 flex justify-between items-center">
                 <span>{query ? 'Výsledky' : 'Nedávná vyhledávání'}</span>
                 {isLoading && <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-base-content/50"></div>}
               </div>
-
-              {/* Results List */}
               <div className="max-h-[min(400px,50vh)] overflow-y-auto pb-2">
                 {displayResults.length > 0 ? (
                   displayResults.map((result, index) => (
@@ -368,21 +341,12 @@ export function SearchBar({ placeholder = "Prohledej reIS", onSearch, onOpenExam
                       role="option"
                       aria-selected={selectedIndex === index}
                       onMouseEnter={() => setSelectedIndex(index)}
-
-                      // CHANGE STARTS HERE
                       onMouseDown={(e) => {
-                        // 1. Prevent the input from losing focus
                         e.preventDefault();
-                        // 2. Use the shared handler so logic is identical to pressing 'Enter'
                         handleSelect(result);
                       }}
-                      // Remove the old onClick handler entirely
-                      // CHANGE ENDS HERE
-
-                      className={`w-full px-4 py-2.5 flex items-center gap-3 cursor-pointer transition-colors text-left ${selectedIndex === index ? 'bg-primary/10' : 'hover:bg-base-200'
-                        }`}
+                      className={`w-full px-4 py-2.5 flex items-center gap-3 cursor-pointer transition-colors text-left ${selectedIndex === index ? 'bg-primary/10' : 'hover:bg-base-200'}`}
                     >
-                      {/* Left Icon Container */}
                       <div className="flex-shrink-0">
                         {query === '' ? (
                           <Clock className="w-4 h-4 text-base-content/40" />
@@ -412,8 +376,6 @@ export function SearchBar({ placeholder = "Prohledej reIS", onSearch, onOpenExam
                           </div>
                         )}
                       </div>
-
-                      {/* Content */}
                       <div className="flex flex-col min-w-0 flex-1">
                         <div className="flex items-center gap-1.5 min-w-0">
                           <span className="text-sm text-base-content truncate">
@@ -429,13 +391,6 @@ export function SearchBar({ placeholder = "Prohledej reIS", onSearch, onOpenExam
                           )}
                         </div>
                       </div>
-
-                      {/* Right Icon - Type Indicator */}
-                      {query !== '' && (
-                        <div className="flex-shrink-0 ml-2">
-                          {/* Optional: Add arrow-up-right or similar to indicate external link */}
-                        </div>
-                      )}
                     </div>
                   ))
                 ) : (
@@ -453,8 +408,6 @@ export function SearchBar({ placeholder = "Prohledej reIS", onSearch, onOpenExam
                   </div>
                 )}
               </div>
-
-              {/* Footer */}
               <div className="border-t border-base-300 bg-base-200 px-4 py-2">
                 <div className="flex items-center gap-3 text-xs text-base-content/50">
                   <div className="flex items-center gap-1">
@@ -480,7 +433,6 @@ export function SearchBar({ placeholder = "Prohledej reIS", onSearch, onOpenExam
                   </div>
                 </div>
               </div>
-
             </div>
           )}
         </div>

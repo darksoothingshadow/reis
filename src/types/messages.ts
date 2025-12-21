@@ -27,6 +27,7 @@ export interface SyncedData {
     subjects?: unknown;
     files?: unknown;
     successRates?: unknown;
+    successRatesFetched?: boolean;
     lastSync: number;
     error?: string;
 }

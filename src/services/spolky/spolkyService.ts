@@ -1,4 +1,4 @@
-import type { SpolekNotification, AssociationProfile, FacultyId } from './types';
+import type { SpolekNotification, AssociationProfile } from './types';
 import { FACULTY_TO_ASSOCIATION, ASSOCIATION_PROFILES, API_BASE_URL } from './config';
 
 /**
@@ -26,10 +26,10 @@ export async function fetchNotifications(): Promise<SpolekNotification[]> {
  * @param facultyId - User's faculty ID (e.g., 'PEF')
  * @returns AssociationProfile or null if not found
  */
-export function getUserAssociation(facultyId: FacultyId | null): AssociationProfile | null {
+export function getUserAssociation(facultyId: string | null): AssociationProfile | null {
   if (!facultyId) return null;
   
-  const associationId = FACULTY_TO_ASSOCIATION[facultyId];
+  const associationId = FACULTY_TO_ASSOCIATION[facultyId as any];
   if (!associationId) return null;
   
   return ASSOCIATION_PROFILES[associationId] || null;
@@ -43,7 +43,7 @@ export function getUserAssociation(facultyId: FacultyId | null): AssociationProf
  */
 export function filterNotificationsByFaculty(
   notifications: SpolekNotification[],
-  facultyId: FacultyId | null
+  facultyId: string | null
 ): SpolekNotification[] {
   if (!facultyId) return [];
   
@@ -51,4 +51,32 @@ export function filterNotificationsByFaculty(
   if (!associationId) return [];
   
   return notifications.filter((n) => n.associationId === associationId);
+}
+
+/**
+ * Track that notifications were viewed (when bell icon opened)
+ * @param notificationIds - IDs of notifications that were viewed
+ */
+export async function trackNotificationsViewed(notificationIds: string[]): Promise<void> {
+  try {
+    await Promise.all(
+      notificationIds.map((id) =>
+        fetch(`${API_BASE_URL}/api/notifications/${id}/view`, { method: 'POST' })
+      )
+    );
+  } catch (error) {
+    console.error('[SpolkyService] Failed to track views:', error);
+  }
+}
+
+/**
+ * Track that a notification was clicked
+ * @param notificationId - ID of the notification that was clicked
+ */
+export async function trackNotificationClick(notificationId: string): Promise<void> {
+  try {
+    await fetch(`${API_BASE_URL}/api/notifications/${notificationId}/click`, { method: 'POST' });
+  } catch (error) {
+    console.error('[SpolkyService] Failed to track click:', error);
+  }
 }

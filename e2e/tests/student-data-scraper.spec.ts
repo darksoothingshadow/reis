@@ -8,9 +8,8 @@ const __dirname = path.dirname(__filename);
 
 test.describe('Student Subject Data Scraper', () => {
   // Configuration
-  const FACULTY_IDS = [2]; // Restricted to PEF as per user request
-  // Added legacy codes (ALG, ICT, TZI) to match older semesters
-  const TARGET_COURSES = ['EBC-ALG', 'EBC-ICT', 'EBC-TZI', 'ALG', 'ICT', 'TZI'];
+  const FACULTY_IDS = [2, 14, 23, 38, 60, 220, 631, 79]; 
+  const TARGET_COURSES = ['EBC-ALG', 'EBC-AP', 'EBC-KOM', 'PLA', 'KRED', 'EBC-TZI', 'EBC-UICT', 'EBC-ZOO', 'ALG', 'ICT', 'TZI'];
   const MAX_HISTORY_YEARS = 15;
   
   // State
@@ -23,17 +22,43 @@ test.describe('Student Subject Data Scraper', () => {
 
     console.log(`🚀 Starting scraper (Targeting last ${MAX_HISTORY_YEARS} years)...`);
 
-    for (const facultyId of FACULTY_IDS) {
-      console.log(`\n🏫 Processing Faculty ID: ${facultyId}`);
-      
       // Level 1: Faculty Selection
-      await page.goto(`https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=${facultyId};lang=cz`);
+      console.log(`\n🏫 Level 1: Investigating Faculty Selection Portal...`);
+      await page.goto(`https://is.mendelu.cz/auth/student/hodnoceni.pl?lang=cz`);
       
+      const pageContent = await page.content();
+      if (pageContent.includes('vyber-fakult')) {
+          console.log(`   [DEBUG] Found 'vyber-fakult' on landing page.`);
+      } else {
+          console.log(`   [DEBUG] No 'vyber-fakult' found on landing page.`);
+          // Maybe we are already on a faculty page?
+      }
+
+      for (const facultyId of FACULTY_IDS) {
+        console.log(`\n🏫 Processing Faculty ID: ${facultyId}`);
+        await page.goto(`https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=${facultyId};lang=cz`);
+      
+      // If we see a "Select Faculty" list, we might need to handle it
+      if (await page.locator('div.vyber-fakult').count() > 0) {
+          console.log(`   [DEBUG] Found faculty selection div for ID ${facultyId}`);
+          const facultyLink = page.locator(`a[href*="fakulta=${facultyId}"]`);
+          if (await facultyLink.count() > 0) {
+              await facultyLink.click();
+              await page.waitForLoadState('networkidle');
+          }
+      }
+
       // Level 2: Semester Selection
       // Locator: table#tmtab_1
       const semesterTable = page.locator('table#tmtab_1');
       if (await semesterTable.count() === 0) {
         console.log(`   ⚠️ No table found for faculty ${facultyId}`);
+        const currentUrl = page.url();
+        console.log(`   [DEBUG] Current URL: ${currentUrl}`);
+        if (facultyId === FACULTY_IDS[0]) { // Only dump first failure to avoid log bloat
+            const content = await page.content();
+            console.log(`   [DEBUG] Page Content Snippet: ${content.substring(0, 1000)}`);
+        }
         continue;
       }
 
@@ -53,32 +78,33 @@ test.describe('Student Subject Data Scraper', () => {
 
       for (let i = 0; i < semesterCount; i++) {
         const row = semesterRows.nth(i);
-        const nameCell = row.locator('td').nth(1); // Index 1 (2nd cell)
-        const linkCell = row.locator('td').nth(4); // Index 4 (5th cell)
-
-        const name = await nameCell.innerText();
+        const cells = row.locator('td');
+        const cellCount = await cells.count();
         
-        // Parse Year: "LS 2024/2025 - PEF" -> 2024
-        // Logic: Extract first 4-digit number
-        const yearMatch = name.match(/(\d{4})/);
-        if (yearMatch) {
-          const year = parseInt(yearMatch[1], 10);
-          console.log(`   [DEBUG] Year: ${year}`);
-          
-          if (year < (currentYear - MAX_HISTORY_YEARS)) {
-             console.log(`   🛑 Reached history limit (${year}), stopping semester list.`);
-             break; 
-          }
-        } else {
-             continue; 
+        let name = '';
+        let url = '';
+
+        for (let c = 0; c < cellCount; c++) {
+            const text = await cells.nth(c).innerText();
+            if (!name && text.match(/\d{4}\/\d{4}/)) {
+                name = text.trim();
+            }
+            const link = cells.nth(c).locator('a[href*="obdobi="]');
+            if (!url && await link.count() > 0) {
+                url = (await link.getAttribute('href')) || '';
+            }
         }
 
-        const linkElement = linkCell.locator('a');
-        if (await linkElement.count() > 0) {
-            const url = await linkElement.getAttribute('href');
-            if (url) {
+        if (name && url) {
+            const yearMatch = name.match(/(\d{4})/);
+            if (yearMatch) {
+                const year = parseInt(yearMatch[1], 10);
+                if (year < (currentYear - MAX_HISTORY_YEARS)) {
+                    console.log(`   🛑 Reached history limit (${year}), stopping.`);
+                    break;
+                }
                 const absUrl = new URL(url, page.url()).toString();
-                semesterLinks.push({ name: name.trim(), url: absUrl });
+                semesterLinks.push({ name, url: absUrl });
             }
         }
       }
@@ -88,43 +114,37 @@ test.describe('Student Subject Data Scraper', () => {
       // Process Semesters
       for (const semester of semesterLinks) {
         console.log(`   📅 Processing Semester: ${semester.name}`);
-        try {
-            await page.goto(semester.url);
-        } catch (e) {
-            console.log(`   ⚠️ Failed to navigate to semester: ${e}`);
-            continue;
-        }
+        await page.goto(semester.url);
 
-        // Level 3: Course Selection
         const courseTable = page.locator('table#tmtab_1');
-         if (await courseTable.count() === 0) continue;
-
-        // Validation: Header must contain "Kód"
-        const courseHeader = courseTable.locator('tr.zahlavi th').filter({ hasText: 'Kód' });
-        if (await courseHeader.count() === 0) continue;
+        if (await courseTable.count() === 0) continue;
 
         const courseRows = courseTable.locator('tr.uis-hl-table');
         const courseCount = await courseRows.count();
-        
         const courseLinks: { code: string, url: string }[] = [];
 
         for (let j = 0; j < courseCount; j++) {
             const row = courseRows.nth(j);
-            const codeCell = row.locator('td').nth(1); // User said td[1]
-            const linkCell = row.locator('td').nth(5); // User said td[5]
+            const cells = row.locator('td');
+            const cellCount = await cells.count();
+            
+            let code = '';
+            let url = '';
 
-            const codeText = await codeCell.innerText();
-            const normalizedCode = codeText.trim();
+            for (let c = 0; c < cellCount; c++) {
+                const text = (await cells.nth(c).innerText()).trim();
+                if (!code && TARGET_COURSES.includes(text)) {
+                    code = text;
+                }
+                const links = cells.nth(c).locator('a[href*="hodnoceni.pl"][href*="predmet="][href*="obdobi="]');
+                if (await links.count() > 0) {
+                    url = (await links.first().getAttribute('href')) || '';
+                }
+            }
 
-            if (TARGET_COURSES.includes(normalizedCode)) {
-                 const linkElement = linkCell.locator('a');
-                 if (await linkElement.count() > 0) {
-                    const url = await linkElement.getAttribute('href');
-                    if (url) {
-                        const absUrl = new URL(url, page.url()).toString();
-                        courseLinks.push({ code: normalizedCode, url: absUrl });
-                    }
-                 }
+            if (code && url) {
+                const absUrl = new URL(url, page.url()).toString();
+                courseLinks.push({ code, url: absUrl });
             }
         }
 
@@ -146,11 +166,15 @@ test.describe('Student Subject Data Scraper', () => {
 
              // Validation: Headers "A", "B", "F"
              const headerRow = statsTable.locator('tr.zahlavi');
-             const hasA = await headerRow.locator('th', { hasText: 'A' }).count() > 0;
-             const hasF = await headerRow.locator('th', { hasText: 'F' }).count() > 0;
+             const hasA = await headerRow.locator('th, td', { hasText: 'A' }).count() > 0;
+             const hasF = await headerRow.locator('th, td', { hasText: 'F' }).count() > 0;
              
              if (!hasA || !hasF) {
                  console.log('       ⚠️ Stats table validation failed (headers A/F missing).');
+                 try {
+                     const headerHtml = await headerRow.innerHTML();
+                     console.log(`       [DEBUG] Header HTML: ${headerHtml}`);
+                 } catch (e) {}
                  continue;
              }
 

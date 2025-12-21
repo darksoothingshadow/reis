@@ -1,0 +1,4 @@
+# Keep data directory but ignore database files
+*.db
+*.db-wal
+*.db-shm

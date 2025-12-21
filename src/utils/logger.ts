@@ -24,8 +24,8 @@ interface LoggerConfig {
 }
 
 const config: LoggerConfig = {
-    // In production, you might want WARN or ERROR only
-    level: LogLevel.DEBUG,
+    // Default to WARN: show errors/warnings only, hide debug/info
+    level: LogLevel.WARN,
     showTimestamp: true,
     enabledContexts: 'all', // or new Set(['API', 'Sync', 'Storage'])
 };
@@ -173,6 +173,8 @@ export const loggers = {
     files: createLogger('Files'),
     ui: createLogger('UI'),
     auth: createLogger('Auth'),
+    system: createLogger('System'),
+    parser: createLogger('Parser'),
 };
 
 /**

@@ -18,6 +18,7 @@ import type {
     SyncedData,
 } from "./types/messages";
 import { Messages, isIframeMessage } from "./types/messages";
+import { loggers } from "./utils/logger";
 
 // =============================================================================
 // Configuration
@@ -48,7 +49,7 @@ let cachedData: SyncedData = { lastSync: 0 };
 // DOM Sniper Pattern - Earliest Possible Iframe Injection
 // =============================================================================
 
-console.log("[REIS Content] Script loaded (document_start)");
+loggers.system.info("[REIS Content] Script loaded (document_start)");
 
 // Hide page immediately to prevent flash of university content
 if (document.documentElement) {
@@ -59,18 +60,18 @@ if (document.documentElement) {
 function injectAndInitialize() {
     // Avoid double injection
     if (document.getElementById(IFRAME_ID)) {
-        console.log("[REIS Content] Iframe already exists, skipping");
+        loggers.system.info("[REIS Content] Iframe already exists, skipping");
         return;
     }
 
     // Check for login page
     if (document.body?.innerHTML.includes("/system/login.pl")) {
-        console.log("[REIS Content] Login page detected, showing original page");
+        loggers.system.info("[REIS Content] Login page detected, showing original page");
         document.documentElement.style.visibility = "visible";
         return;
     }
 
-    console.log("[REIS Content] Injecting iframe...");
+    loggers.system.info("[REIS Content] Injecting iframe...");
 
     // Inject the iframe
     injectIframe();
@@ -85,13 +86,13 @@ function injectAndInitialize() {
 // DOM Sniper Logic - Watch for <body> to appear
 function startInjection() {
     if (document.body) {
-        console.log("[REIS Content] Body exists, injecting immediately");
+        loggers.system.info("[REIS Content] Body exists, injecting immediately");
         injectAndInitialize();
     } else {
-        console.log("[REIS Content] Waiting for body via MutationObserver...");
+        loggers.system.info("[REIS Content] Waiting for body via MutationObserver...");
         const observer = new MutationObserver((_mutations, obs) => {
             if (document.body) {
-                console.log("[REIS Content] Body appeared, injecting now");
+                loggers.system.info("[REIS Content] Body appeared, injecting now");
                 obs.disconnect();
                 injectAndInitialize();
             }
@@ -109,7 +110,7 @@ startInjection();
 // =============================================================================
 
 function injectIframe() {
-    console.log("[REIS Content] Injecting iframe...");
+    loggers.system.info("[REIS Content] Injecting iframe...");
 
     // Clear existing content
     document.body.replaceChildren();
@@ -161,7 +162,7 @@ function injectIframe() {
 
     document.documentElement.style.visibility = "visible";
 
-    console.log("[REIS Content] Iframe injected successfully");
+    loggers.system.info("[REIS Content] Iframe injected successfully");
 }
 
 // =============================================================================
@@ -179,7 +180,7 @@ async function handleMessage(event: MessageEvent) {
         return;
     }
 
-    console.debug("[REIS Content] Received message:", data.type);
+    loggers.system.debug("[REIS Content] Received message:", data.type);
 
     switch (data.type) {
         case "REIS_READY":
@@ -201,14 +202,14 @@ async function handleMessage(event: MessageEvent) {
 }
 
 function handleReady() {
-    console.log("[REIS Content] Iframe is ready");
+    loggers.system.info("[REIS Content] Iframe is ready");
     if (cachedData.lastSync > 0) {
         sendToIframe(Messages.syncUpdate(cachedData));
     }
 }
 
 async function handleDataRequest(dataType: DataRequestType) {
-    console.log("[REIS Content] Data request:", dataType);
+    loggers.system.info("[REIS Content] Data request:", dataType);
 
     try {
         if (dataType === "all") {
@@ -235,7 +236,7 @@ async function handleDataRequest(dataType: DataRequestType) {
             sendToIframe(Messages.data(dataType, data));
         }
     } catch (error) {
-        console.error("[REIS Content] Data request failed:", error);
+        loggers.system.error("[REIS Content] Data request failed:", error);
         sendToIframe(Messages.data(dataType, null, String(error)));
     }
 }
@@ -260,7 +261,7 @@ async function handleFetchRequest(
         const text = await response.text();
         sendToIframe(Messages.fetchResult(id, true, text));
     } catch (error) {
-        console.error("[REIS Content] Fetch proxy error:", error);
+        loggers.system.error("[REIS Content] Fetch proxy error:", error);
         sendToIframe(Messages.fetchResult(id, false, undefined, String(error)));
     }
 }
@@ -286,7 +287,7 @@ async function handleAction(id: string, action: string, payload: unknown) {
         }
         sendToIframe(Messages.actionResult(id, true, result));
     } catch (error) {
-        console.error("[REIS Content] Action error:", error);
+        loggers.system.error("[REIS Content] Action error:", error);
         sendToIframe(Messages.actionResult(id, false, undefined, String(error)));
     }
 }
@@ -303,7 +304,7 @@ function sendToIframe(message: ContentToIframeMessage) {
 // =============================================================================
 
 function startSyncService() {
-    console.log("[REIS Content] Starting sync service...");
+    loggers.system.info("[REIS Content] Starting sync service...");
     syncAllData();
     syncIntervalId = setInterval(() => {
         syncAllData();
@@ -311,7 +312,7 @@ function startSyncService() {
 }
 
 async function syncAllData() {
-    console.log("[REIS Content] Syncing all data...");
+    loggers.system.info("[REIS Content] Syncing all data...");
     const startTime = Date.now();
 
     try {
@@ -342,7 +343,7 @@ async function syncAllData() {
                         const subjectFiles = await fetchFilesFromFolder(subject.folderUrl);
                         files[courseCode] = subjectFiles;
                     } catch (e) {
-                        console.warn(`[REIS Content] Failed to fetch files for ${courseCode}:`, e);
+                        loggers.system.warn(`[REIS Content] Failed to fetch files for ${courseCode}:`, e);
                     }
                 }
             }
@@ -352,53 +353,60 @@ async function syncAllData() {
             sendToIframe(Messages.syncUpdate(cachedData));
 
             const totalDuration = Date.now() - startTime;
-            console.log(
-                `[REIS Content] Full sync with files complete in ${totalDuration}ms`
+            loggers.system.info(
+                `[REIS Content] Pre-stats sync complete in ${totalDuration}ms`
             );
 
-            // --- Success Rate Sync (Throttled 24h) ---
-            try {
-                const LAST_SYNC_KEY = 'reis_last_stats_sync';
-                const lastStatsSyncStr = localStorage.getItem(LAST_SYNC_KEY);
-                const lastStatsSync = parseInt(lastStatsSyncStr || '0', 10);
-                const now = Date.now();
-                const ONE_DAY = 24 * 60 * 60 * 1000;
-                
-                console.log(`[REIS Content] Checking success rate sync. Last: ${lastStatsSyncStr} (${lastStatsSync}), Now: ${now}, Diff: ${now - lastStatsSync}`);
-
-                if (now - lastStatsSync > ONE_DAY) {
-                    console.log('[REIS Content] Syncing success rates (throttled check passed)...');
-                    const codes = Object.keys(subjectsData.data);
-                    console.log(`[REIS Content] Target subjects: ${codes.join(', ')}`);
+            // --- Success Rate Sync (Throttled 30 days) ---
+            const syncSuccessRates = async () => {
+                try {
+                    const STATS_LAST_SYNC_KEY = 'reis_last_stats_sync';
+                    const lastStatsSyncStr = localStorage.getItem(STATS_LAST_SYNC_KEY);
+                    const lastStatsSync = parseInt(lastStatsSyncStr || '0', 10);
+                    const now = Date.now();
+                    const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
                     
-                    if (codes.length > 0) {
-                        const stats = await fetchSubjectSuccessRates(codes);
-                        cachedData.successRates = stats;
-                        localStorage.setItem(LAST_SYNC_KEY, now.toString());
-                        localStorage.setItem('reis_success_rates', JSON.stringify(stats));
+                    if (now - lastStatsSync > THIRTY_DAYS) {
+                        loggers.system.info('[REIS Content] Syncing success rates (throttled check passed)...');
+                        const codes = Object.keys(subjectsData.data);
                         
-                        sendToIframe(Messages.syncUpdate(cachedData));
-                        console.log(`[REIS Content] Success rates synced for ${codes.length} subjects`);
+                        if (codes.length > 0) {
+                            const stats = await fetchSubjectSuccessRates(codes);
+                            cachedData.successRates = stats;
+                            cachedData.successRatesFetched = true;
+                            localStorage.setItem(STATS_LAST_SYNC_KEY, now.toString());
+                            localStorage.setItem('reis_success_rates', JSON.stringify(stats));
+                            localStorage.setItem('reis_success_rates_fetched', 'true');
+                            
+                            sendToIframe(Messages.syncUpdate(cachedData));
+                            loggers.system.info(`[REIS Content] Success rates synced for ${codes.length} subjects`);
+                        }
                     } else {
-                        console.log('[REIS Content] No subjects found to sync success rates for.');
+                        loggers.system.info('[REIS Content] Success rate sync throttled. Loading from cache...');
+                        const storedStats = localStorage.getItem('reis_success_rates');
+                        const storedFetched = localStorage.getItem('reis_success_rates_fetched');
+                        
+                        if (storedStats) {
+                            cachedData.successRates = JSON.parse(storedStats);
+                            cachedData.successRatesFetched = storedFetched === 'true';
+                            sendToIframe(Messages.syncUpdate(cachedData));
+                            loggers.system.info('[REIS Content] Loaded success rates from local cache');
+                        }
                     }
-                } else {
-                    console.log('[REIS Content] Success rate sync throttled. Loading from cache...');
-                    const storedStats = localStorage.getItem('reis_success_rates');
-                    if (storedStats) {
-                        cachedData.successRates = JSON.parse(storedStats);
-                        sendToIframe(Messages.syncUpdate(cachedData));
-                        console.log('[REIS Content] Loaded success rates from local cache');
-                    } else {
-                        console.log('[REIS Content] No success rates in cache.');
-                    }
+                } catch (statsError) {
+                    loggers.system.warn('[REIS Content] Success rate sync failed:', statsError);
                 }
-            } catch (statsError) {
-                console.warn('[REIS Content] Success rate sync failed:', statsError);
-            }
+            };
+
+            // Start success rate sync in parallel
+            syncSuccessRates();
+
+            loggers.system.info(
+                `[REIS Content] Full sync including success rates triggered in ${Date.now() - startTime}ms`
+            );
         }
     } catch (error) {
-        console.error("[REIS Content] Sync failed:", error);
+        loggers.system.error("[REIS Content] Sync failed:", error);
         cachedData.error = String(error);
     }
 }

@@ -5,9 +5,9 @@
  * Integrates REIS logic: useSchedule, useExams, auto-skip, Czech holidays, EventPopover.
  */
 
-import { useState, useMemo } from 'react';
+import { useMemo } from 'react';
+import { loggers } from '../utils/logger';
 import { CalendarEventCard } from './CalendarEventCard';
-import { SubjectFileDrawer } from './SubjectFileDrawer';
 import { useSchedule, useExams } from '../hooks/data';
 import { getCzechHoliday } from '../utils/holidays';
 import { parseDate } from '../utils/dateHelpers';
@@ -86,14 +86,13 @@ function organizeLessons(lessons: BlockLesson[]): OrganizedLessons {
 
 interface WeeklyCalendarProps {
     initialDate?: Date;
+    onSelectLesson: (lesson: BlockLesson) => void;
 }
 
-export function WeeklyCalendar({ initialDate = new Date() }: WeeklyCalendarProps) {
+export function WeeklyCalendar({ initialDate = new Date(), onSelectLesson }: WeeklyCalendarProps) {
     // Get stored semester data from hooks
     const { schedule: storedSchedule, isLoaded: isScheduleLoaded } = useSchedule();
     const { exams: storedExams, isLoaded: _isExamsLoaded } = useExams();
-
-    const [selected, setSelected] = useState<BlockLesson | null>(null);
 
     // Calculate week dates (Mon-Fri)
     const weekDates = useMemo((): DateInfo[] => {
@@ -306,7 +305,7 @@ export function WeeklyCalendar({ initialDate = new Date() }: WeeklyCalendarProps
                             {DAYS.map((_, dayIndex) => {
                                 // Debug: Log grid structure on first render
                                 if (dayIndex === 0) {
-                                    console.log('[CalendarGrid] Rendering grid:', {
+                                    loggers.ui.info('[CalendarGrid] Rendering grid:', {
                                         daysCount: DAYS.length,
                                         hoursCount: HOURS.length,
                                         verticalBorder: 'border-r border-gray-300',
@@ -396,7 +395,7 @@ export function WeeklyCalendar({ initialDate = new Date() }: WeeklyCalendarProps
                                                     lesson={lesson}
                                                     onClick={() => {
                                                         console.log('[WeeklyCalendar] Event clicked:', lesson.courseCode);
-                                                        setSelected(lesson);
+                                                        onSelectLesson(lesson);
                                                     }}
                                                 />
                                             </div>
@@ -409,12 +408,6 @@ export function WeeklyCalendar({ initialDate = new Date() }: WeeklyCalendarProps
                 </div>
             </div>
 
-            {/* Subject File Sidebar (Drawer) */}
-            <SubjectFileDrawer
-                lesson={selected}
-                isOpen={!!selected}
-                onClose={() => setSelected(null)}
-            />
         </div>
     );
 }

@@ -1,34 +1,32 @@
-import { getStudiumSync } from '../utils/userParams';
+import { getStudiumSync, getFacultySync } from '../utils/userParams';
 
-// Pages data for search functionality
-export interface PageItem {
-    id: string;
-    label: string;
-    href: string;
-}
-
-export interface PageCategory {
-    id: string;
-    label: string;
-    icon?: string;
-    expandable?: boolean;
-    children: PageItem[];
-}
+// ... (PageItem and PageCategory interfaces unchanged)
 
 /**
- * Inject user's studium into a page URL.
- * Replaces the placeholder studium with the current user's actual ID.
+ * Inject user's studium and facultyId into a page URL.
+ * Replaces the placeholder studium/fakulta with the current user's actual IDs.
  */
 export function injectUserParams(url: string): string {
     const studium = getStudiumSync();
-    if (!studium) {
-        // Remove studium param entirely if we don't have one
-        return url
+    const facultyId = getFacultySync();
+    
+    let processedUrl = url;
+
+    // 1. Inject Studium
+    if (studium) {
+        processedUrl = processedUrl.replace(/studium=\d+/g, `studium=${studium}`);
+    } else {
+        processedUrl = processedUrl
             .replace(/studium=\d+[;,&]?/g, '')
             .replace(/[;,&]?studium=\d+/g, '');
     }
-    // Replace any existing studium with the user's value
-    return url.replace(/studium=\d+/g, `studium=${studium}`);
+
+    // 2. Inject Faculty ID (fakulta=)
+    if (facultyId) {
+        processedUrl = processedUrl.replace(/fakulta=\d+/g, `fakulta=${facultyId}`);
+    }
+
+    return processedUrl;
 }
 
 export const pagesData: PageCategory[] = [

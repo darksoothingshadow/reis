@@ -13,6 +13,12 @@ export const STORAGE_KEYS = {
     // Subject data (folder links, metadata)
     SUBJECTS_DATA: 'reis_subjects',
 
+    // Success rate data (stats, trends)
+    SUCCESS_RATES_DATA: 'reis_success_rates',
+    GLOBAL_SUCCESS_RATES_DATA: 'reis_global_success_rates',
+    SUCCESS_RATES_FETCHED: 'reis_success_rates_fetched', // Set of course codes already fetched
+    GLOBAL_STATS_LAST_SYNC: 'reis_global_stats_last_sync',
+
     // Subject files (keyed by course code)
     // Usage: SUBJECT_FILES_PREFIX + courseCode
     SUBJECT_FILES_PREFIX: 'reis_files_',

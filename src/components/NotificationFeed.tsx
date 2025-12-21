@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
-import { Bell, Users, Calendar, X } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Bell, Users, Calendar, X, FileText } from 'lucide-react';
 import type { SpolekNotification } from '../services/spolky';
-import { fetchNotifications } from '../services/spolky';
+import { fetchNotifications, trackNotificationsViewed, trackNotificationClick } from '../services/spolky';
 
 interface NotificationFeedProps {
   className?: string;
@@ -11,6 +11,7 @@ export function NotificationFeed({ className = '' }: NotificationFeedProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState<SpolekNotification[]>([]);
   const [loading, setLoading] = useState(false);
+  const hasTrackedViews = useRef(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -23,6 +24,16 @@ export function NotificationFeed({ className = '' }: NotificationFeedProps) {
     try {
       const data = await fetchNotifications();
       setNotifications(data);
+      
+      // Track views when notifications are loaded (only once per open)
+      if (data.length > 0 && !hasTrackedViews.current) {
+        hasTrackedViews.current = true;
+        // Filter to only track spolky notifications (not academic ones that start with 'academic_')
+        const spolkyNotifications = data.filter(n => !n.associationId.startsWith('academic_'));
+        if (spolkyNotifications.length > 0) {
+          trackNotificationsViewed(spolkyNotifications.map(n => n.id));
+        }
+      }
     } catch (error) {
       console.error('[NotificationFeed] Failed to load notifications:', error);
     } finally {
@@ -30,7 +41,26 @@ export function NotificationFeed({ className = '' }: NotificationFeedProps) {
     }
   };
 
-  const unreadCount = notifications.length; // For MVP, all are "unread"
+  const handleNotificationClick = (notification: SpolekNotification) => {
+    // Track click for spolky notifications
+    if (!notification.associationId.startsWith('academic_')) {
+      trackNotificationClick(notification.id);
+    }
+    
+    if (notification.link) {
+      window.open(notification.link, '_blank');
+    }
+    setIsOpen(false);
+  };
+
+  // Reset tracking flag when popover closes
+  useEffect(() => {
+    if (!isOpen) {
+      hasTrackedViews.current = false;
+    }
+  }, [isOpen]);
+
+  const unreadCount = notifications.length;
 
   return (
     <div className={`relative ${className}`}>
@@ -87,12 +117,7 @@ export function NotificationFeed({ className = '' }: NotificationFeedProps) {
                     <NotificationItem
                       key={notification.id}
                       notification={notification}
-                      onClick={() => {
-                        if (notification.link) {
-                          window.open(notification.link, '_blank');
-                        }
-                        setIsOpen(false);
-                      }}
+                      onClick={() => handleNotificationClick(notification)}
                     />
                   ))}
                 </div>
@@ -111,8 +136,20 @@ interface NotificationItemProps {
 }
 
 function NotificationItem({ notification, onClick }: NotificationItemProps) {
-  const isSpolek = true; // All notifications are from spolky for now
-  const Icon = isSpolek ? Users : Calendar;
+  // Use spolky icon for non-academic notifications
+  const isAcademic = notification.associationId.startsWith('academic_');
+  
+  let Icon = Users;
+  if (notification.associationId === 'academic_doc') {
+    Icon = FileText;
+  } else if (notification.associationId === 'academic_exam') {
+    Icon = Calendar;
+  }
+
+  // Get icon URL for spolky
+  const iconUrl = isAcademic 
+    ? null 
+    : `https://reismendelu.app/static/spolky/${notification.associationId}.jpg`;
 
   const formatDate = (isoString: string) => {
     const date = new Date(isoString);
@@ -134,7 +171,19 @@ function NotificationItem({ notification, onClick }: NotificationItemProps) {
       className="w-full p-4 hover:bg-base-200 transition-colors text-left flex gap-3"
     >
       <div className="flex-shrink-0 mt-1">
-        <Icon size={20} className="text-primary" />
+        {iconUrl ? (
+          <img 
+            src={iconUrl} 
+            alt={notification.associationId} 
+            className="w-10 h-10 rounded-full object-cover"
+            onError={(e) => {
+              // Fallback to Users icon if image fails
+              e.currentTarget.style.display = 'none';
+              e.currentTarget.nextElementSibling?.classList.remove('hidden');
+            }}
+          />
+        ) : null}
+        <Users size={24} className={`text-primary ${iconUrl ? 'hidden' : ''}`} />
       </div>
       <div className="flex-1 min-w-0">
         <div className="font-medium text-base-content line-clamp-1">
@@ -150,3 +199,4 @@ function NotificationItem({ notification, onClick }: NotificationItemProps) {
     </button>
   );
 }
+

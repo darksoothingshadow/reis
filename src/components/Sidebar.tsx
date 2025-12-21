@@ -13,6 +13,7 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { MENDELU_LOGO_PATH } from '../constants/icons';
 import { useUserParams } from '../hooks/useUserParams';
+import { getFacultySync } from '../utils/userParams';
 import { getMainMenuItems, type MenuItem } from './menuConfig';
 import { useOutlookSync } from '../hooks/data';
 import { useTheme } from '../hooks/useTheme';
@@ -220,9 +221,8 @@ export const Sidebar = ({ currentView: _currentView, onViewChange, onOpenSetting
         <div className="flex flex-col gap-2 px-2 w-full mt-auto">
           {/* Spolek Button - Dynamic based on faculty */}
           {(() => {
-            // For MVP, hardcode PEF as placeholder
-            // TODO: Get from user data when available
-            const association = getUserAssociation('PEF');
+            const facultyId = getFacultySync() || '2';
+            const association = getUserAssociation(facultyId);
             if (!association) return null;
             
             return (

@@ -5,6 +5,7 @@
  */
 
 import { useState, useEffect, useCallback } from "react";
+import { loggers } from "../utils/logger";
 
 export type Theme = "mendelu" | "mendelu-dark";
 
@@ -41,7 +42,7 @@ export function useTheme(): UseThemeResult {
           applyTheme(DEFAULT_THEME);
         }
       } catch (e) {
-        console.error("[useTheme] Failed to load theme:", e);
+        loggers.ui.error("[useTheme] Failed to load theme:", e);
         applyTheme(DEFAULT_THEME);
       } finally {
         setIsLoading(false);
@@ -72,7 +73,7 @@ export function useTheme(): UseThemeResult {
   const applyTheme = (newTheme: Theme) => {
     // Set data-theme on <html> element (works in iframe)
     document.documentElement.setAttribute("data-theme", newTheme);
-    console.log("[useTheme] Applied theme:", newTheme);
+    loggers.ui.info("[useTheme] Applied theme:", newTheme);
   };
 
   const setTheme = useCallback(async (newTheme: Theme) => {
@@ -81,7 +82,7 @@ export function useTheme(): UseThemeResult {
       setThemeState(newTheme);
       applyTheme(newTheme);
     } catch (e) {
-      console.error("[useTheme] Failed to save theme:", e);
+      loggers.ui.error("[useTheme] Failed to save theme:", e);
     }
   }, []);
 

@@ -1,51 +1,11 @@
+import { loggers } from './logger';
 import type { ExamSubject } from '../types/exams';
 
-/**
- * Validate that the HTML structure matches expected format.
- * Logs warnings if structure has changed, helping detect IS changes.
- */
-function validateHtmlStructure(doc: Document): void {
-    const warnings: string[] = [];
-
-    // Check for expected tables
-    const table1 = doc.querySelector('#table_1');
-    const table2 = doc.querySelector('#table_2');
-
-    if (!table1 && !table2) {
-        warnings.push('Neither #table_1 nor #table_2 found - page structure may have changed');
-    }
-
-    // Check for expected column headers in available terms table
-    if (table2) {
-        const headers = table2.querySelectorAll('thead th');
-        const headerTexts = Array.from(headers).map(h => h.textContent?.trim() || '');
-
-        const expectedHeaders = ['Datum', 'Místnost', 'Zkouška'];
-        const missingHeaders = expectedHeaders.filter(eh =>
-            !headerTexts.some(ht => ht.toLowerCase().includes(eh.toLowerCase()))
-        );
-
-        if (missingHeaders.length > 0) {
-            warnings.push(`Missing expected headers: ${missingHeaders.join(', ')}`);
-        }
-    }
-
-    // Log all warnings
-    if (warnings.length > 0) {
-        console.warn('[parseExamData] ⚠️ HTML structure validation warnings:');
-        warnings.forEach(w => console.warn(`  - ${w}`));
-        console.warn('[parseExamData] Parser may produce incorrect results. IS MENDELU may have updated their page.');
-    }
-}
-
 export function parseExamData(html: string): ExamSubject[] {
-    console.debug('[parseExamData] Starting parse, input length:', html.length);
+    loggers.parser.debug('[parseExamData] Starting parse, input length:', html.length);
 
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
-
-    // Validate structure before parsing
-    validateHtmlStructure(doc);
 
     const subjectsMap = new Map<string, ExamSubject>();
 
@@ -88,16 +48,16 @@ export function parseExamData(html: string): ExamSubject[] {
 
     // 1. Parse Registered Terms (Table 1)
     const table1 = doc.querySelector('#table_1');
-    console.debug('[parseExamData] table_1 (registered terms) found:', !!table1);
+    loggers.parser.debug('[parseExamData] table_1 (registered terms) found:', !!table1);
 
     if (table1) {
         const rows = table1.querySelectorAll('tbody tr');
-        console.debug('[parseExamData] table_1 rows found:', rows.length);
+        loggers.parser.debug('[parseExamData] table_1 rows found:', rows.length);
 
         rows.forEach((row, rowIndex) => {
             const cols = row.querySelectorAll('td');
             if (cols.length < 6) {
-                console.debug('[parseExamData] table_1 row', rowIndex, 'skipped: insufficient columns', cols.length);
+                loggers.parser.debug('[parseExamData] table_1 row', rowIndex, 'skipped: insufficient columns', cols.length);
                 return;
             }
 
@@ -114,7 +74,7 @@ export function parseExamData(html: string): ExamSubject[] {
             }
 
             if (dateIndex === -1) {
-                console.debug('[parseExamData] table_1 row', rowIndex, 'skipped: no date column found');
+                loggers.parser.debug('[parseExamData] table_1 row', rowIndex, 'skipped: no date column found');
                 return;
             }
 
@@ -156,7 +116,7 @@ export function parseExamData(html: string): ExamSubject[] {
             }
 
             // Log for debugging Sidebar Title Issue
-            console.debug(`[parseExamData] T1 Row ${rowIndex}: Code='${code}', Name='${name}'`);
+            loggers.parser.debug(`[parseExamData] T1 Row ${rowIndex}: Code='${code}', Name='${name}'`);
 
             // DEBUG: Log all columns to see what we are working with
             console.debug(`[parseExamData DEBUG] Row ${rowIndex} All Cols HTML:`, Array.from(cols).map(c => c.innerHTML));
@@ -206,22 +166,22 @@ export function parseExamData(html: string): ExamSubject[] {
                 deregistrationDeadline
             };
 
-            console.debug('[parseExamData] table_1 parsed registered term:', code, sectionName, date, time);
+            loggers.parser.debug('[parseExamData] table_1 parsed registered term:', code, sectionName, date, time);
         });
     }
 
     // 2. Parse Available Terms (Table 2)
     const table2 = doc.querySelector('#table_2');
-    console.debug('[parseExamData] table_2 (available terms) found:', !!table2);
+    loggers.parser.debug('[parseExamData] table_2 (available terms) found:', !!table2);
 
     if (table2) {
         const rows = table2.querySelectorAll('tbody tr');
-        console.debug('[parseExamData] table_2 rows found:', rows.length);
+        loggers.parser.debug('[parseExamData] table_2 rows found:', rows.length);
 
         rows.forEach((row, rowIndex) => {
             const cols = row.querySelectorAll('td');
             if (cols.length < 8) {
-                console.debug('[parseExamData] table_2 row', rowIndex, 'skipped: insufficient columns', cols.length);
+                loggers.parser.debug('[parseExamData] table_2 row', rowIndex, 'skipped: insufficient columns', cols.length);
                 return;
             }
 
@@ -238,7 +198,7 @@ export function parseExamData(html: string): ExamSubject[] {
             }
 
             if (dateIndex === -1) {
-                console.debug('[parseExamData] table_2 row', rowIndex, 'skipped: no date column found');
+                loggers.parser.debug('[parseExamData] table_2 row', rowIndex, 'skipped: no date column found');
                 return;
             }
 
@@ -249,7 +209,7 @@ export function parseExamData(html: string): ExamSubject[] {
             const name = cols[3].textContent?.trim() || '';
 
             // Log for debugging Sidebar Title Issue
-            console.debug(`[parseExamData] T2 Row ${rowIndex}: Code='${code}', Name='${name}'`);
+            loggers.parser.debug(`[parseExamData] T2 Row ${rowIndex}: Code='${code}', Name='${name}'`);
 
             const dateStr = cols[dateIndex].textContent?.trim() || '';
             const room = cols[dateIndex + 1]?.textContent?.trim() || '';
@@ -320,7 +280,7 @@ export function parseExamData(html: string): ExamSubject[] {
                                 registrationStart = startRaw;
                                 const timePart = startRaw.split(' ')[1];
                                 if (timePart && !timePart.match(/^\d{2}:\d{2}$/)) {
-                                    console.warn('[parseExamData] Registration time format unexpected:', timePart, 'in row', rowIndex);
+                                    loggers.parser.warn('[parseExamData] Registration time format unexpected:', timePart, 'in row', rowIndex);
                                 }
                             }
                         }
@@ -338,10 +298,10 @@ export function parseExamData(html: string): ExamSubject[] {
 
                 // DEFENSIVE: Warn if expected structure not found
                 if (!foundBrColumn && cols.length > 0) {
-                    console.warn('[parseExamData] No <br> column found for registration dates. IS MENDELU HTML structure may have changed. Row:', rowIndex);
+                    loggers.parser.warn('[parseExamData] No <br> column found for registration dates. IS MENDELU HTML structure may have changed. Row:', rowIndex);
                 }
             } catch (parseError) {
-                console.error('[parseExamData] Failed to parse registration date for row', rowIndex, ':', parseError);
+                loggers.parser.error('[parseExamData] Failed to parse registration date for row', rowIndex, ':', parseError);
             }
 
             // Parse attempt type from "Typ termínu" column
@@ -390,7 +350,7 @@ export function parseExamData(html: string): ExamSubject[] {
                 canRegisterNow
             });
 
-            console.debug('[parseExamData] table_2 parsed available term:', code, sectionName, datePart, timePart, 'full:', isFull, 'canRegisterNow:', canRegisterNow, 'regEnd:', registrationEnd, 'attemptType:', attemptType);
+            loggers.parser.debug('[parseExamData] table_2 parsed available term:', code, sectionName, datePart, timePart, 'full:', isFull, 'canRegisterNow:', canRegisterNow, 'regEnd:', registrationEnd, 'attemptType:', attemptType);
         });
     }
 

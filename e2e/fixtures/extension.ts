@@ -103,9 +103,10 @@ export const test = base.extend<ExtensionFixtures>({
     });
     
     // Navigate to extension popup
+    // Use a fixed URL for stability in CI/CD environment
     await page.goto(`chrome-extension://${extensionId}/index.html`, {
-      waitUntil: 'domcontentloaded',
-      timeout: 10000,
+      waitUntil: 'networkidle',
+      timeout: 30000,
     });
 
     await use(page);

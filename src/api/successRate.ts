@@ -1,10 +1,12 @@
-
 import { fetchWithAuth, BASE_URL } from "./client";
-import type { SubjectSuccessRate, SemesterStats, TermStats, GradeStats, SuccessRateData } from "../types/documents";
+import { StorageService, STORAGE_KEYS } from "../services/storage";
+import type { SubjectSuccessRate, TermStats, SuccessRateData } from "../types/documents";
+import { getUserParams } from "../utils/userParams";
 
 const STATS_URL = `${BASE_URL}/auth/student/hodnoceni.pl`;
-const FACULTY_ID = 2; // PEF - currently hardcoded as per scraper requirement, could be dynamic later
 const MAX_HISTORY_YEARS = 15;
+const GLOBAL_STATS_URL = "https://reismendelu.app/static/success-rates-global.json";
+const GLOBAL_STATS_EXPIRY = 30 * 24 * 60 * 60 * 1000; // 30 days
 
 /**
  * Mappable legacy codes.
@@ -25,83 +27,171 @@ function getLegacyCodes(currentCode: string): string[] {
 }
 
 /**
+ * Retrieves success rates from local storage.
+ */
+export function getStoredSuccessRates(): SuccessRateData | null {
+    return StorageService.get<SuccessRateData>(STORAGE_KEYS.SUCCESS_RATES_DATA);
+}
+
+/**
+ * Saves success rates to local storage.
+ */
+export function saveSuccessRates(data: SuccessRateData): void {
+    StorageService.set(STORAGE_KEYS.SUCCESS_RATES_DATA, data);
+}
+
+/**
  * Fetches success rates for the given list of target course codes.
- * Returns a SuccessRateData object.
+ * Returns a SuccessRateData object and saves it to storage.
  */
 export async function fetchSubjectSuccessRates(targetCodes: string[]): Promise<SuccessRateData> {
     console.log(`[SuccessRate] Starting fetch for ${targetCodes.length} courses...`);
     
+    // 1. Try to update global cache first
+    try {
+        await fetchGlobalSuccessRates();
+    } catch (e) {
+        console.warn('[SuccessRate] Global cache update failed, continuing with existing data:', e);
+    }
+
+    // 2. Get existing data (local + global)
+    const existing = getStoredSuccessRates();
+    const globalData = StorageService.get<SuccessRateData>(STORAGE_KEYS.GLOBAL_SUCCESS_RATES_DATA);
+    
+    // Resolve dynamic faculty ID
+    const params = await getUserParams();
+    const facultyId = params?.facultyId || '2'; 
+    console.log(`[SuccessRate] Using Faculty ID: ${facultyId}`);
+    
+    // Create a set of codes that still need fetching (not in local or global cache)
+    const missingCodes: string[] = [];
+    const results: Record<string, SubjectSuccessRate> = { ...(existing?.data || {}) };
+
+    targetCodes.forEach(code => {
+        const hasLocal = results[code] && results[code].stats.length > 0;
+        const hasGlobal = globalData?.data[code] && globalData.data[code].stats.length > 0;
+
+        if (!hasLocal) {
+            if (hasGlobal) {
+                console.log(`[SuccessRate] Found ${code} in global cache`);
+                results[code] = globalData!.data[code];
+            } else {
+                console.log(`[SuccessRate] ${code} missing from all caches, adding to local fetch list`);
+                missingCodes.push(code);
+            }
+        }
+    });
+
+    if (missingCodes.length === 0) {
+        console.log('[SuccessRate] All codes found in cache, skipping local scraping');
+        const finalResult: SuccessRateData = {
+            lastUpdated: new Date().toISOString(),
+            data: results
+        };
+        saveSuccessRates(finalResult);
+        return finalResult;
+    }
+
+    console.log(`[SuccessRate] Falling back to local scraping for ${missingCodes.length} codes: ${missingCodes.join(', ')}`);
+
     // Create a set of all codes to look for (including legacy)
     const searchSet = new Set<string>();
-    targetCodes.forEach(code => {
+    missingCodes.forEach(code => {
         searchSet.add(code);
         getLegacyCodes(code).forEach(l => searchSet.add(l));
     });
     
-    // Result map
-    const results: Record<string, SubjectSuccessRate> = {};
     const currentYear = new Date().getFullYear();
 
     try {
         // 1. Get main page to find semester links
-        // We visit the faculty page directly
-        const startUrl = `${STATS_URL}?fakulta=${FACULTY_ID};lang=cz`;
+        const startUrl = `${STATS_URL}?fakulta=${facultyId};lang=cz`;
         const doc = await fetchDocument(startUrl);
         
         if (!doc) throw new Error("Failed to load initial stats page");
 
-        // 2. Find semester links in the "obdobi" selector or links
-        // The MENDELU layout: The top menu usually has a dropdown or links for periods.
-        // Actually, the scraper used `page.locator('table#tmtab_1 tr.uis-hl-table')` on the initial page?
-        // No, the scraper iterated `fakulta` then `obdobi`.
-        // Let's assume the page contains links to periods.
-        // Based on scraper: "const semesterLinks = ... locator('tr.uis-hl-table')"
-        // Wait, the "Faculty" page lists semesters?
-        // Yes, the screenshot shows "Hodnocení úspěšnosti předmětů » PEF" and then a list could be there.
-        // Let's look for links with `obdobi=`
-        
         const validSemesters = parseSemesters(doc, currentYear);
-        console.log(`[SuccessRate] Found ${validSemesters.length} valid semesters`);
+        console.log(`[SuccessRate] Found ${validSemesters.length} valid semesters for local scraping`);
 
-        // 3. Process each semester (sequentially to match usage pattern, maybe parallelize slightly)
+        // 3. Process each semester (sequentially)
         for (const sem of validSemesters) {
-             console.log(`[SuccessRate] Processing ${sem.name} (${sem.url})`);
+             console.log(`[SuccessRate] Local Scrape: Processing ${sem.name} (${sem.url})`);
              try {
-                 await processSemester(sem, searchSet, results);
+                 await processSemester(sem, searchSet, results, facultyId, params?.studium);
              } catch (e) {
-                 console.error(`[SuccessRate] Failed to process ${sem.name}:`, e);
+                 console.error(`[SuccessRate] Local Scrape: Failed to process ${sem.name}:`, e);
              }
         }
 
         // 4. Transform results (re-link legacy stats to main codes)
-        const finalData: Record<string, SubjectSuccessRate> = {};
+        const finalData: Record<string, SubjectSuccessRate> = { ...results };
         
-        // Initialize entries for requested codes
+        // Ensure entries for requested codes even if no data found
         targetCodes.forEach(code => {
-            finalData[code] = {
-                courseCode: code,
-                stats: [],
-                lastUpdated: new Date().toISOString()
-            };
+            if (!finalData[code]) {
+                finalData[code] = {
+                    courseCode: code,
+                    stats: [],
+                    lastUpdated: new Date().toISOString()
+                };
+            }
         });
 
-        // Merge found stats
+        // Merge found stats for legacy codes back to main codes
         for (const [foundCode, rate] of Object.entries(results)) {
-            // Find which target code this belongs to
             const target = targetCodes.find(t => t === foundCode || getLegacyCodes(t).includes(foundCode));
-            if (target) {
-                finalData[target].stats.push(...rate.stats);
+            if (target && target !== foundCode) {
+                // If we found data for a legacy code, merge it and remove the legacy entry
+                finalData[target].stats = [...(finalData[target].stats || []), ...rate.stats];
+                delete finalData[foundCode];
             }
         }
 
-        return {
+        const finalResult: SuccessRateData = {
             lastUpdated: new Date().toISOString(),
             data: finalData
         };
 
+        // Save to storage
+        saveSuccessRates(finalResult);
+
+        return finalResult;
+
     } catch (error) {
-        console.error("[SuccessRate] Critical failure:", error);
+        console.error("[SuccessRate] Critical failure during local scrape fallback:", error);
         throw error;
+    }
+}
+
+/**
+ * Fetches the global success rate cache from the server.
+ */
+export async function fetchGlobalSuccessRates(): Promise<SuccessRateData | null> {
+    const lastSync = StorageService.get<number>(STORAGE_KEYS.GLOBAL_STATS_LAST_SYNC);
+    const now = Date.now();
+
+    if (lastSync && (now - lastSync < GLOBAL_STATS_EXPIRY)) {
+        console.log('[SuccessRate] Global cache is fresh, skipping fetch');
+        return StorageService.get<SuccessRateData>(STORAGE_KEYS.GLOBAL_SUCCESS_RATES_DATA);
+    }
+
+    console.log('[SuccessRate] Fetching global success rate cache...');
+    try {
+        const response = await fetch(GLOBAL_STATS_URL);
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const data = await response.json() as SuccessRateData;
+        
+        StorageService.set(STORAGE_KEYS.GLOBAL_SUCCESS_RATES_DATA, data);
+        StorageService.set(STORAGE_KEYS.GLOBAL_STATS_LAST_SYNC, now);
+        
+        console.log(`[SuccessRate] Global cache updated with statistics for ${Object.keys(data.data).length} courses`);
+        return data;
+    } catch (e) {
+        console.error('[SuccessRate] Failed to fetch global success rates:', e);
+        return null;
     }
 }
 
@@ -141,76 +231,62 @@ async function fetchDocument(url: string): Promise<Document | null> {
 
 function parseSemesters(doc: Document, currentYear: number): SemesterLink[] {
     const list: SemesterLink[] = [];
-    
-    // The Playwright test uses: table#tmtab_1 tr.uis-hl-table
-    // Name is in td.nth(1) (2nd cell, 0-indexed)
-    // Link is in td.nth(4) (5th cell, 0-indexed)
-    
     const table = doc.querySelector('table#tmtab_1');
     if (!table) {
-        console.warn('[SuccessRate DEBUG] No table#tmtab_1 found - checking for any tables');
-        const allTables = doc.querySelectorAll('table');
-        console.log(`[SuccessRate DEBUG] Found ${allTables.length} tables total`);
-        allTables.forEach((t, i) => {
-            console.log(`[SuccessRate DEBUG] Table ${i}: id="${t.id}" class="${t.className}"`);
-        });
+        console.warn('[SuccessRate] No table#tmtab_1 found');
         return list;
     }
     
     const rows = table.querySelectorAll('tr.uis-hl-table');
-    console.log(`[SuccessRate DEBUG] parseSemesters: found ${rows.length} rows in table#tmtab_1`);
-    
     rows.forEach((row, i) => {
         const cells = row.querySelectorAll('td');
-        console.log(`[SuccessRate DEBUG] Row ${i}: ${cells.length} cells`);
-        
-        // Name is in td.nth(1) = 2nd cell (index 1)
-        const nameCell = cells[1];
-        // Link is in td.nth(4) = 5th cell (index 4)
-        const linkCell = cells[4];
-        
-        if (!nameCell || !linkCell) {
-            console.log(`[SuccessRate DEBUG] Row ${i}: Missing nameCell or linkCell`);
-            return;
-        }
-        
-        const name = nameCell.textContent?.trim() || '';
-        const link = linkCell.querySelector('a');
-        
-        if (!link) {
-            console.log(`[SuccessRate DEBUG] Row ${i}: No link in cell 4, name="${name}"`);
-            return;
-        }
-        
-        const href = link.getAttribute('href');
-        console.log(`[SuccessRate DEBUG] Row ${i}: name="${name}" href="${href}"`);
-        
-        // Check for year in name
-        const yearMatch = name.match(/(\d{4})/);
-        if (yearMatch) {
-            const year = parseInt(yearMatch[1], 10);
-            const isRecent = year >= (currentYear - MAX_HISTORY_YEARS);
-            console.log(`[SuccessRate DEBUG]   -> Year: ${year}, Recent: ${isRecent}`);
-            
-            if (isRecent && href) {
-                const idMatch = href.match(/obdobi=(\d+)/);
-                list.push({
-                    name,
-                    url: new URL(href, BASE_URL + '/auth/student/').href,
-                    year,
-                    id: idMatch ? idMatch[1] : '0'
-                });
+        let name = '';
+        let href = '';
+
+        // Robust Search: Iterate all cells to find Name (with year) and Link
+        cells.forEach(cell => {
+            const text = cell.textContent?.trim() || '';
+            // 1. Look for year pattern (e.g. 2024/2025)
+            if (!name && text.match(/\d{4}\/\d{4}/)) {
+                name = text;
+            }
+            // 2. Look for link with 'obdobi='
+            const link = cell.querySelector('a[href*="obdobi="]');
+            if (!href && link) {
+                href = link.getAttribute('href') || '';
+            }
+        });
+
+        if (name && href) {
+            const yearMatch = name.match(/(\d{4})/);
+            if (yearMatch) {
+                const year = parseInt(yearMatch[1], 10);
+                const isRecent = year >= (currentYear - MAX_HISTORY_YEARS);
+                if (isRecent) {
+                    const idMatch = href.match(/obdobi=(\d+)/);
+                    list.push({
+                        name,
+                        url: new URL(href, BASE_URL + '/auth/student/').href,
+                        year,
+                        id: idMatch ? idMatch[1] : '0'
+                    });
+                }
             }
         } else {
-            console.log(`[SuccessRate DEBUG]   -> No year found in name "${name}"`);
+            console.log(`[SuccessRate DEBUG] Row ${i} incomplete: name="${name}", href="${!!href}"`);
         }
     });
-
 
     return list;
 }
 
-async function processSemester(sem: SemesterLink, searchSet: Set<string>, results: Record<string, SubjectSuccessRate>) {
+async function processSemester(
+    sem: SemesterLink, 
+    searchSet: Set<string>, 
+    results: Record<string, SubjectSuccessRate>,
+    facultyId: string,
+    studium?: string
+) {
     const doc = await fetchDocument(sem.url);
     if (!doc) return;
 
@@ -218,22 +294,37 @@ async function processSemester(sem: SemesterLink, searchSet: Set<string>, result
     const courseRows = doc.querySelectorAll('tr.uis-hl-table');
     const matchedCourses: { code: string, url: string }[] = [];
 
-    courseRows.forEach(row => {
-        // Code is usually in 1st cell
-        const codeCell = row.querySelector('td:nth-of-type(1)');
-        const link = row.querySelector('td:nth-of-type(5) a'); // "Zvolit" button -> 5th or last cell
-        
-        if (codeCell && link) {
-            const code = codeCell.textContent?.trim() || '';
-            if (searchSet.has(code)) {
-                const href = link.getAttribute('href');
-                if (href) {
-                    matchedCourses.push({
-                         code,
-                         url: new URL(href, BASE_URL + '/auth/').href
-                    });
+    courseRows.forEach((row) => {
+        const cells = row.querySelectorAll('td');
+        let foundCode = '';
+        let predmetId = '';
+
+        cells.forEach(cell => {
+            const text = cell.textContent?.trim() || '';
+            // 1. Check if cell text is one of our target codes
+            if (!foundCode && searchSet.has(text)) {
+                foundCode = text;
+            }
+            // 2. Look for ANY link with predmet= to extract the subject ID
+            const link = cell.querySelector('a[href*="predmet="]');
+            if (!predmetId && link) {
+                const href = link.getAttribute('href') || '';
+                const match = href.match(/predmet=(\d+)/);
+                if (match) {
+                    predmetId = match[1];
                 }
             }
+        });
+        
+        // Construct the correct hodnoceni.pl URL directly
+        if (foundCode && predmetId) {
+            let statsUrl = `${STATS_URL}?fakulta=${facultyId};obdobi=${sem.id};predmet=${predmetId};lang=cz`;
+            if (studium) statsUrl += `;studium=${studium}`;
+            
+            matchedCourses.push({
+                 code: foundCode,
+                 url: statsUrl
+            });
         }
     });
 
@@ -266,24 +357,48 @@ async function processSemester(sem: SemesterLink, searchSet: Set<string>, result
 }
 
 function parseStatsTable(doc: Document): { pass: number, fail: number, terms: TermStats[] } | null {
-    // Find table with stats
-    // The scraper looked for `table` with specific headers or just iterating rows
-    // We can look for row texts like "termín 1", "termín 2"
-    
-    // Usually the table doesn't have a unique ID reliable for "stats", but let's try `table`
-    // The scraper used `locator('table').filter({ hasText: 'Termín' })`
-    
     const tables = doc.querySelectorAll('table');
     let targetTable: HTMLTableElement | null = null;
     
     for (let i = 0; i < tables.length; i++) {
-        if (tables[i].textContent?.includes('Termín') && tables[i].textContent?.includes('zk-nedost')) {
-            targetTable = tables[i];
+        const text = tables[i].textContent || '';
+        if (text.includes('Termín') && text.includes('zk-nedost')) {
+            targetTable = tables[i] as HTMLTableElement;
             break;
         }
     }
 
-    if (!targetTable) return null;
+    if (!targetTable) {
+        console.log('[SuccessRate DEBUG] parseStatsTable: No table found containing "Termín" and "zk-nedost"');
+        return null;
+    }
+
+    console.log('[SuccessRate DEBUG] parseStatsTable: Target table found.');
+
+    // Header Mapping: Find indices of A, B, C, D, E, F, fail
+    const headers: Record<string, number> = {};
+    const headerRow = targetTable.querySelector('tr.zahlavi');
+    if (headerRow) {
+        const ths = headerRow.querySelectorAll('th, td');
+        ths.forEach((th, idx) => {
+            const text = th.textContent?.trim() || '';
+            if (['A', 'B', 'C', 'D', 'E', 'F'].includes(text)) headers[text] = idx;
+            if (text.includes('zk-nedost')) headers['fail'] = idx;
+            if (text.includes('Termín')) headers['term'] = idx;
+        });
+    }
+
+    // fallback if headers not found (keeping old logic indices as fallback)
+    const getIdx = (key: string, fallback: number) => headers[key] !== undefined ? headers[key] : fallback;
+    
+    const idxA = getIdx('A', 2);
+    const idxB = getIdx('B', 3);
+    const idxC = getIdx('C', 4);
+    const idxD = getIdx('D', 5);
+    const idxE = getIdx('E', 6);
+    const idxF = getIdx('F', 7);
+    const idxFail = getIdx('fail', 8);
+    const idxTerm = getIdx('term', 1);
 
     let totalPass = 0;
     let totalFail = 0;
@@ -292,7 +407,8 @@ function parseStatsTable(doc: Document): { pass: number, fail: number, terms: Te
     const rows = targetTable.querySelectorAll('tr.uis-hl-table');
     rows.forEach(row => {
         const cells = row.querySelectorAll('td');
-        if (cells.length < 9) return;
+        const maxIdx = Math.max(idxA, idxB, idxC, idxD, idxE, idxF, idxFail, idxTerm);
+        if (cells.length <= maxIdx) return;
 
         const getVal = (idx: number) => {
             const txt = cells[idx]?.textContent || '0';
@@ -300,14 +416,14 @@ function parseStatsTable(doc: Document): { pass: number, fail: number, terms: Te
             return isNaN(val) ? 0 : val;
         };
 
-        const termName = cells[1].textContent?.trim() || '';
-        const a = getVal(2);
-        const b = getVal(3);
-        const c = getVal(4);
-        const d = getVal(5);
-        const e = getVal(6);
-        const f = getVal(7);
-        const fail = getVal(8);
+        const termName = cells[idxTerm]?.textContent?.trim() || '';
+        const a = getVal(idxA);
+        const b = getVal(idxB);
+        const c = getVal(idxC);
+        const d = getVal(idxD);
+        const e = getVal(idxE);
+        const f = getVal(idxF);
+        const fail = getVal(idxFail);
 
         const rowPass = a + b + c + d + e;
         const rowFail = f + fail;

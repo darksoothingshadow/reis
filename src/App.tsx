@@ -1,8 +1,10 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
+import { loggers } from './utils/logger'
 import './App.css'
 import { Sidebar } from './components/Sidebar'
-import { SearchBar } from './components/SearchBar'
+import { SearchBar, type SearchResult } from './components/SearchBar'
 import { WeeklyCalendar } from './components/WeeklyCalendar'
+import { SubjectFileDrawer } from './components/SubjectFileDrawer'
 import { OutlookSyncHint } from './components/OutlookSyncHint'
 import { Toaster } from './components/ui/sonner'
 
@@ -12,6 +14,7 @@ import { ExamPanel } from './components/ExamPanel'
 import { type AppView } from './components/Sidebar'
 import { signalReady, requestData, isInIframe } from './api/proxyClient'
 import type { SyncedData } from './types/messages'
+import type { BlockLesson } from './types/calendarTypes'
 import { StorageService, STORAGE_KEYS } from './services/storage'
 import { syncService, outlookSyncService } from './services/sync'
 import { useSchedule, useExams, useOutlookSync } from './hooks/data'
@@ -105,13 +108,13 @@ function App() {
   const VIEW_STORAGE_KEY = 'reis_current_view';
   const [currentView, setCurrentView] = useState<AppView>(() => {
     const stored = localStorage.getItem(VIEW_STORAGE_KEY);
-    console.debug('[App] Initializing view from storage:', stored);
+    loggers.ui.debug('[App] Initializing view from storage:', stored);
     return (stored === 'exams' ? 'exams' : 'calendar') as AppView;
   });
   
   // Persist view changes
   useEffect(() => {
-    console.debug('[App] Persisting view to storage:', currentView);
+    loggers.ui.debug('[App] Persisting view to storage:', currentView);
     localStorage.setItem(VIEW_STORAGE_KEY, currentView);
   }, [currentView]);
   
@@ -124,13 +127,16 @@ function App() {
   // Ref to trigger opening settings popup in Sidebar
   const openSettingsRef = useRef<(() => void) | null>(null);
 
+  // Subject File Drawer state
+  const [selectedLesson, setSelectedLesson] = useState<BlockLesson | null>(null);
+
   const [syncData, setSyncData] = useState<SyncedData | null>(null);
 
   // Set up postMessage communication with Content Script
   useEffect(() => {
     // Only set up iframe communication if we're in an iframe
     if (isInIframe()) {
-      console.log('[App] Running in iframe, setting up postMessage listener');
+      loggers.ui.info('[App] Running in iframe, setting up postMessage listener');
 
       const handleMessage = (event: MessageEvent) => {
         // Accept messages from parent (content script)
@@ -139,7 +145,7 @@ function App() {
         const data = event.data;
         if (!data || typeof data !== 'object') return;
 
-        console.log('[App] Received message:', data.type);
+        loggers.ui.info('[App] Received message:', data.type);
 
         if (data.type === 'REIS_DATA' || data.type === 'REIS_SYNC_UPDATE') {
           const receivedData = data.data || data;
@@ -149,15 +155,15 @@ function App() {
           // This bridges the gap between postMessage and StorageService
           if (receivedData.schedule) {
             StorageService.set(STORAGE_KEYS.SCHEDULE_DATA, receivedData.schedule);
-            console.log('[App] Wrote schedule to localStorage:', Array.isArray(receivedData.schedule) ? receivedData.schedule.length : 'non-array');
+            loggers.ui.info('[App] Wrote schedule to localStorage:', Array.isArray(receivedData.schedule) ? receivedData.schedule.length : 'non-array');
           }
           if (receivedData.exams) {
             StorageService.set(STORAGE_KEYS.EXAMS_DATA, receivedData.exams);
-            console.log('[App] Wrote exams to localStorage:', Array.isArray(receivedData.exams) ? receivedData.exams.length : 'non-array');
+            loggers.ui.info('[App] Wrote exams to localStorage:', Array.isArray(receivedData.exams) ? receivedData.exams.length : 'non-array');
           }
           if (receivedData.subjects) {
             StorageService.set(STORAGE_KEYS.SUBJECTS_DATA, receivedData.subjects);
-            console.log('[App] Wrote subjects to localStorage');
+            loggers.ui.info('[App] Wrote subjects to localStorage');
           }
           if (receivedData.files && typeof receivedData.files === 'object') {
             // Write files for each subject with prefix key
@@ -167,7 +173,11 @@ function App() {
               const key = `${STORAGE_KEYS.SUBJECT_FILES_PREFIX}${courseCode}`;
               StorageService.set(key, files);
             }
-            console.log('[App] Wrote files for', subjectCount, 'subjects to localStorage');
+            loggers.ui.info('[App] Wrote files for', subjectCount, 'subjects to localStorage');
+          }
+          if (receivedData.successRatesFetched) {
+            StorageService.set(STORAGE_KEYS.SUCCESS_RATES_FETCHED, true);
+            loggers.ui.info('[App] Marked success rates as fetched in localStorage');
           }
           if (receivedData.lastSync) {
             StorageService.set(STORAGE_KEYS.LAST_SYNC, receivedData.lastSync);
@@ -176,7 +186,7 @@ function App() {
           // Trigger hooks to re-read from localStorage
           syncService.triggerRefresh();
 
-          console.log('[App] Data received, written to localStorage, loading complete');
+          loggers.ui.info('[App] Data received, written to localStorage, loading complete');
         }
       };
 
@@ -193,7 +203,7 @@ function App() {
       };
     } else {
       // Not in iframe (dev mode)
-      console.log('[App] Running standalone (dev mode)');
+      loggers.ui.info('[App] Running standalone (dev mode)');
     }
   }, []);
 
@@ -238,7 +248,7 @@ function App() {
 
   // Log sync data for debugging
   if (syncData) {
-    console.log('[App] Current sync data:', {
+    loggers.ui.info('[App] Current sync data:', {
       hasSchedule: !!syncData.schedule,
       hasExams: !!syncData.exams,
       hasSubjects: !!syncData.subjects,
@@ -282,7 +292,31 @@ function App() {
             <div className="flex items-center gap-2 flex-shrink-0 ml-auto">
               <NotificationFeed />
               <div className="w-[480px] mr-2">
-                <SearchBar onOpenExamDrawer={() => setCurrentView('exams')} />
+                <SearchBar 
+                  onOpenExamDrawer={() => setCurrentView('exams')} 
+                  onSelect={(result: SearchResult) => {
+                    loggers.ui.info('[App] Subject selected from SearchBar:', result.subjectCode || result.title);
+                    setSelectedLesson({
+                      id: `search-${result.id}`,
+                      courseCode: result.subjectCode || '',
+                      courseName: result.title,
+                      courseId: result.id.replace('subject-', ''),
+                      date: '',
+                      startTime: '',
+                      endTime: '',
+                      room: '',
+                      roomStructured: { name: '', id: '' },
+                      teachers: [],
+                      isSeminar: 'false',
+                      isConsultation: 'false',
+                      facultyCode: '',
+                      isDefaultCampus: 'true',
+                      campus: '',
+                      periodId: '',
+                      studyId: ''
+                    } as BlockLesson);
+                  }}
+                />
               </div>
             </div>
           </div>
@@ -294,6 +328,7 @@ function App() {
               <WeeklyCalendar
                 key={currentDate.toISOString()}
                 initialDate={currentDate}
+                onSelectLesson={setSelectedLesson}
               />
             ) : (
               <ExamPanel onClose={() => setCurrentView('calendar')} />
@@ -301,6 +336,12 @@ function App() {
           </div>
         </div>
       </main>
+
+      <SubjectFileDrawer
+        lesson={selectedLesson}
+        isOpen={!!selectedLesson}
+        onClose={() => setSelectedLesson(null)}
+      />
 
       {/* ExamDrawer removed - replaced by ExamPanel view */}
       

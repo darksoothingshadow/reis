@@ -1,15 +1,14 @@
-import type { AssociationProfile, FacultyId } from './types';
+import type { AssociationProfile } from './types';
 
 /**
  * Mapping of faculty IDs to their corresponding student associations
  */
-export const FACULTY_TO_ASSOCIATION: Record<FacultyId, string> = {
-  PEF: 'supef',
-  FRRMS: 'au_frrms',
-  AGRO: 'agro',
-  LDF: 'ldf',
-  AF: 'af',
-  ZF: 'zf',
+export const FACULTY_TO_ASSOCIATION: Record<string, string> = {
+  '2': 'supef',     // PEF
+  '3': 'au_frrms',  // FRRMS
+  '1': 'af',        // AF (Agronomická fakulta)
+  '4': 'zf',        // ZF (Zahradnická fakulta)
+  '5': 'ldf',       // LDF (Lesnická a dřevařská fakulta)
 };
 
 /**
@@ -28,33 +27,33 @@ export const ASSOCIATION_PROFILES: Record<string, AssociationProfile> = {
     websiteUrl: 'https://au.mendelu.cz',
     facultyIds: ['FRRMS'],
   },
-  agro: {
-    id: 'agro',
-    name: 'AGRO Spolek',
-    websiteUrl: 'https://agro.mendelu.cz', // Placeholder URL
-    facultyIds: ['AGRO'],
-  },
-  ldf: {
-    id: 'ldf',
-    name: 'LDF Spolek',
-    websiteUrl: 'https://ldf.mendelu.cz', // Placeholder URL
-    facultyIds: ['LDF'],
-  },
   af: {
     id: 'af',
     name: 'AF Spolek',
-    websiteUrl: 'https://af.mendelu.cz', // Placeholder URL
+    websiteUrl: 'https://af.mendelu.cz',
     facultyIds: ['AF'],
   },
   zf: {
     id: 'zf',
     name: 'ZF Spolek',
-    websiteUrl: 'https://zf.mendelu.cz', // Placeholder URL
+    websiteUrl: 'https://zf.mendelu.cz',
     facultyIds: ['ZF'],
+  },
+  ldf: {
+    id: 'ldf',
+    name: 'LDF Spolek',
+    websiteUrl: 'https://ldf.mendelu.cz',
+    facultyIds: ['LDF'],
+  },
+  icv: {
+    id: 'icv',
+    name: 'ICV',
+    websiteUrl: 'https://icv.mendelu.cz',
+    facultyIds: ['ICV'],
   },
 };
 
 /**
- * API endpoint (will be replaced with actual droplet URL)
+ * API endpoint for spolky notifications
  */
-export const API_BASE_URL = 'http://YOUR_DROPLET_IP:3001';
+export const API_BASE_URL = 'https://reismendelu.app';
