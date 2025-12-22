@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Bell, Users, Calendar, X, FileText } from 'lucide-react';
+import { Bell, Users, X } from 'lucide-react';
 import type { SpolekNotification } from '../services/spolky';
 import { fetchNotifications, trackNotificationsViewed, trackNotificationClick } from '../services/spolky';
 
@@ -138,13 +138,6 @@ interface NotificationItemProps {
 function NotificationItem({ notification, onClick }: NotificationItemProps) {
   // Use spolky icon for non-academic notifications
   const isAcademic = notification.associationId.startsWith('academic_');
-  
-  let Icon = Users;
-  if (notification.associationId === 'academic_doc') {
-    Icon = FileText;
-  } else if (notification.associationId === 'academic_exam') {
-    Icon = Calendar;
-  }
 
   // Get icon URL for spolky
   const iconUrl = isAcademic 

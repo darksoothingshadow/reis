@@ -11,7 +11,8 @@ import * as path from 'path';
 const HARDCODED_STUDIUM = '149707';
 const HARDCODED_OBDOBI = 'obdobi=801';
 
-// Files that should be checked for hardcoded values
+// Files that should be checked for hardcoded values (for reference)
+// @ts-expect-error - future use for dynamic file checking
 const API_FILES = [
     'src/api/exams.ts',
     'src/api/schedule.ts',

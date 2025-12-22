@@ -8,7 +8,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { generateCodeVerifier, generateCodeChallenge, base64UrlEncode } from './pkce';
 
-// Mock crypto for consistent testing
+// Mock crypto for consistent testing (available for future use)
+// @ts-expect-error - future use for deterministic testing
 const mockGetRandomValues = vi.fn((array: Uint8Array) => {
     // Fill with predictable values for testing
     for (let i = 0; i < array.length; i++) {

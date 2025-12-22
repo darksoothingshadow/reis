@@ -1,6 +1,20 @@
 import { getStudiumSync, getFacultySync } from '../utils/userParams';
 
-// ... (PageItem and PageCategory interfaces unchanged)
+// Page item represents a single link/page
+interface PageItem {
+    id: string;
+    label: string;
+    href: string;
+}
+
+// Page category represents a grouping of related pages
+interface PageCategory {
+    id: string;
+    label: string;
+    icon: string;
+    expandable: boolean;
+    children: PageItem[];
+}
 
 /**
  * Inject user's studium and facultyId into a page URL.

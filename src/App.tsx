@@ -176,8 +176,7 @@ function App() {
             loggers.ui.info('[App] Wrote files for', subjectCount, 'subjects to localStorage');
           }
           if (receivedData.successRatesFetched) {
-            StorageService.set(STORAGE_KEYS.SUCCESS_RATES_FETCHED, true);
-            loggers.ui.info('[App] Marked success rates as fetched in localStorage');
+            loggers.ui.info('[App] Success rates fetched flag received');
           }
           if (receivedData.lastSync) {
             StorageService.set(STORAGE_KEYS.LAST_SYNC, receivedData.lastSync);
