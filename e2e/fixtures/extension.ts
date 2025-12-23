@@ -102,10 +102,31 @@ export const test = base.extend<ExtensionFixtures>({
       pageErrors.push(err.message);
     });
     
+    // Mock the success rates API to return predictable test data
+    await page.route('**/api/success-rates*', async route => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          courseCode: 'TEST-COURSE',
+          stats: [{
+            semesterName: 'LS 2024/2025',
+            totalPass: 85,
+            totalFail: 15,
+            terms: [
+              { term: 'termín 1', grades: { A: 20, B: 30, C: 20, D: 10, E: 5, F: 10, FN: 5 }, pass: 85, fail: 15 }
+            ]
+          }],
+          lastUpdated: new Date().toISOString()
+        })
+      });
+    });
+    
     // Navigate to extension popup
+    // Use a fixed URL for stability in CI/CD environment
     await page.goto(`chrome-extension://${extensionId}/index.html`, {
-      waitUntil: 'domcontentloaded',
-      timeout: 10000,
+      waitUntil: 'networkidle',
+      timeout: 30000,
     });
 
     await use(page);

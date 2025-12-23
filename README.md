@@ -60,6 +60,34 @@ Rozšíření pracuje výhradně lokálně ve vašem prohlížeči. Žádná dat
 
 ---
 
+## 🏗️ Architektura a Principy
+
+Projekt REIS je postaven na moderních principech agentního vývoje a čisté architektury:
+
+- **Iframe Isolation**: Celé UI běží v izolovaném iframe, což zabraňuje konfliktům s CSS/JS samotného IS MENDELU.
+- **Trinity Protocol**: Vývoj probíhá pod dohledem tří rolí: `@arch-guardian` (struktura), `@seymour-cash` (data) a `@safety-officer` (bezpečnost).
+- **250-Line Rule**: Žádný komponent nesmí přesáhnout 250 řádků. Pokud se tak stane, musí být dekomponován na menší části nebo hooky.
+- **Stale-While-Revalidate**: Data jsou zobrazena okamžitě z cache a následně asynchronně synchronizována.
+
+Podrobnější informace najdete v [architecture.md](architecture.md).
+
+---
+
+## ⚡ Výkon (Bundle Optimization)
+
+Po optimalizaci v Phase 7 jsou velikosti balíčků následující:
+
+| Chunk | Velikost | Popis |
+|-------|----------|-------|
+| `index.js` | 486 kB | Hlavní kód aplikace |
+| `vendor-motion.js` | 57 kB | Animace (Framer Motion) |
+| `vendor-ui.js` | 55 kB | Lucide ikony a notifikace |
+| `vendor-react.js` | 12 kB | React Core |
+
+Celková velikost (gzipped) je přibližně **153 kB**.
+
+---
+
 ## 🧪 Testing
 
 This project uses **Vitest** for unit tests and **Playwright** for E2E testing of the Chrome extension.

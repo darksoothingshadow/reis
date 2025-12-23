@@ -76,6 +76,7 @@ export function CalendarEventCard({ lesson, onClick }: CalendarEventCardProps) {
                         ${styles.bg} border-l-4 ${styles.border}`}
             onClick={onClick}
             title={`${courseTitle}\n${lesson.startTime} - ${lesson.endTime}\n${lesson.room}\n${lesson.teachers[0]?.shortName || ''}`}
+            data-testid="calendar-event-card"
         >
             <div className="p-2 h-full flex flex-col text-sm overflow-hidden font-inter">
                 {/* Course title - always visible */}

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>reIS Admin - Dashboard</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <nav class="nav">
+      <div class="logo">
+        <h1 style="font-size: 1.5rem;">reIS Admin</h1>
+      </div>
+      <div class="nav-user">
+        <span id="username-display"></span>
+        <button class="btn btn-outline" id="logout-btn">Odhlásit</button>
+      </div>
+    </nav>
+
+    <div id="success-alert" class="alert alert-success hidden"></div>
+    <div id="error-alert" class="alert alert-error hidden"></div>
+
+    <!-- Stats -->
+    <div class="stats-grid" id="stats-grid">
+      <div class="stat-card">
+        <div class="value" id="stat-views">-</div>
+        <div class="label">Zobrazení</div>
+      </div>
+      <div class="stat-card">
+        <div class="value" id="stat-clicks">-</div>
+        <div class="label">Kliknutí</div>
+      </div>
+      <div class="stat-card">
+        <div class="value" id="stat-total">-</div>
+        <div class="label">Celkem notifikací</div>
+      </div>
+    </div>
+
+    <!-- Create notification form -->
+    <div class="card">
+      <div class="card-header">
+        <h2>Nová notifikace</h2>
+        <p>Vytvořte zprávu pro studenty (max 1x za 7 dní)</p>
+      </div>
+
+      <div id="rate-limit-warning" class="alert alert-warning hidden">
+        <strong>Rate limit:</strong> <span id="rate-limit-text"></span>
+      </div>
+
+      <!-- Preview Card -->
+      <div class="card" style="margin-bottom: 1rem; background: var(--bg);">
+        <div class="card-header" style="padding: 0.75rem 1rem;">
+          <h3 style="font-size: 0.875rem; margin: 0;">Náhled</h3>
+        </div>
+        <div style="padding: 1rem; display: flex; gap: 0.75rem; align-items: flex-start;">
+          <img id="preview-icon"
+               alt="Ikona spolku" 
+               style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;"
+               onerror="this.style.display='none'">
+          <div>
+            <div id="preview-title" style="font-weight: 500; color: var(--text);">Váš text...</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Dnes</div>
+          </div>
+        </div>
+      </div>
+
+      <form id="notification-form">
+        <div class="form-group">
+          <label for="title">Text notifikace *</label>
+          <input type="text" id="title" name="title" required maxlength="100">
+          <div class="char-count"><span id="title-count">0</span>/100</div>
+        </div>
+
+        <div class="form-group">
+          <label for="link">Odkaz (volitelné)</label>
+          <input type="url" id="link" name="link">
+          <div class="hint">URL, na kterou bude student přesměrován po kliknutí</div>
+        </div>
+
+        <div class="form-group">
+          <label for="expiresAt">Platnost do *</label>
+          <input type="date" id="expiresAt" name="expiresAt" required>
+          <div class="hint">Notifikace zmizí po tomto datu</div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="submit-btn">
+          Publikovat
+        </button>
+      </form>
+    </div>
+
+    <!-- My notifications -->
+    <div class="card" style="margin-top: 1.5rem;">
+      <div class="card-header">
+        <h2><i data-lucide="bell" class="icon"></i> Moje notifikace</h2>
+        <p>Historie vašich zpráv</p>
+      </div>
+
+      <div id="notifications-list" class="notification-list">
+        <p style="color: var(--text-muted); text-align: center;">Načítání...</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = '/api';
+    let admin = null;
+    let token = null;
+
+    // Auth check
+    token = localStorage.getItem('token');
+    admin = JSON.parse(localStorage.getItem('admin') || 'null');
+
+    if (!token || !admin) {
+      window.location.href = 'index.html';
+    }
+
+    // If superadmin, redirect to approval page
+    if (admin.isSuperadmin) {
+      window.location.href = 'approve.html';
+    }
+
+    document.getElementById('username-display').textContent = admin.username;
+
+    // Logout
+    document.getElementById('logout-btn').addEventListener('click', () => {
+      localStorage.removeItem('token');
+      localStorage.removeItem('admin');
+      window.location.href = 'index.html';
+    });
+
+    // Set minimum date to tomorrow
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    document.getElementById('expiresAt').min = tomorrow.toISOString().split('T')[0];
+    document.getElementById('expiresAt').value = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+    // Set preview icon
+    document.getElementById('preview-icon').src = `img/${admin.associationId}.jpg`;
+
+    // Character counter + live preview
+    document.getElementById('title').addEventListener('input', (e) => {
+      const count = e.target.value.length;
+      const countEl = document.getElementById('title-count');
+      countEl.textContent = count;
+      countEl.parentElement.className = 'char-count' + (count > 90 ? ' warning' : '') + (count >= 100 ? ' error' : '');
+      
+      // Update preview
+      document.getElementById('preview-title').textContent = e.target.value || 'Váš text...';
+    });
+
+    // Load stats
+    async function loadStats() {
+      try {
+        const response = await fetch(`${API_BASE}/notifications/stats/${admin.associationId}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const stats = await response.json();
+        
+        document.getElementById('stat-views').textContent = stats.totalViews || 0;
+        document.getElementById('stat-clicks').textContent = stats.totalClicks || 0;
+        document.getElementById('stat-total').textContent = stats.total || 0;
+      } catch (error) {
+        console.error('Failed to load stats:', error);
+      }
+    }
+
+    // Load notifications
+    async function loadNotifications() {
+      const listEl = document.getElementById('notifications-list');
+      
+      try {
+        // We need an endpoint to list own notifications - for now show all approved ones
+        const response = await fetch(`${API_BASE}/notifications`);
+        const notifications = await response.json();
+        
+        // Filter to own association
+        const myNotifications = notifications.filter(n => n.associationId === admin.associationId);
+        
+        if (myNotifications.length === 0) {
+          listEl.innerHTML = '<p style="color: var(--text-muted); text-align: center;">Zatím nemáte žádné notifikace</p>';
+          return;
+        }
+
+        listEl.innerHTML = myNotifications.map(n => `
+          <div class="notification-item" id="notif-${n.id}">
+            <div class="header">
+              <span class="title">${escapeHtml(n.title)}</span>
+              <span class="badge badge-approved">Schváleno</span>
+            </div>
+            <div class="body">${escapeHtml(n.body)}</div>
+            <div class="meta-row">
+              <div class="meta">
+                <span><i data-lucide="calendar" class="icon-sm"></i> ${formatDate(n.createdAt)}</span>
+                ${n.link ? `<span><i data-lucide="link" class="icon-sm"></i> <a href="${escapeHtml(n.link)}" target="_blank">Odkaz</a></span>` : ''}
+              </div>
+              <button class="btn btn-outline btn-sm" onclick="deleteNotification('${n.id}')">
+                <i data-lucide="trash-2"></i> Smazat
+              </button>
+            </div>
+          </div>
+        `).join('');
+        lucide.createIcons();
+      } catch (error) {
+        console.error('Failed to load notifications:', error);
+        listEl.innerHTML = '<p style="color: var(--error);">Nepodařilo se načíst notifikace</p>';
+      }
+    }
+
+    // Submit form
+    document.getElementById('notification-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const submitBtn = document.getElementById('submit-btn');
+      const successAlert = document.getElementById('success-alert');
+      const errorAlert = document.getElementById('error-alert');
+      
+      const formData = {
+        title: document.getElementById('title').value,
+        body: document.getElementById('title').value, // Use title as body since form simplified
+        link: document.getElementById('link').value || undefined,
+        priority: 'normal',
+        expiresAt: new Date(document.getElementById('expiresAt').value).toISOString()
+      };
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Odesílání...';
+      successAlert.classList.add('hidden');
+      errorAlert.classList.add('hidden');
+
+      try {
+        const response = await fetch(`${API_BASE}/notifications`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(formData)
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          if (response.status === 429) {
+            document.getElementById('rate-limit-text').textContent = data.error;
+            document.getElementById('rate-limit-warning').classList.remove('hidden');
+          }
+          throw new Error(data.error || 'Odeslání selhalo');
+        }
+
+        successAlert.textContent = '✅ Notifikace byla publikována!';
+        successAlert.classList.remove('hidden');
+        
+        // Reset form
+        document.getElementById('notification-form').reset();
+        document.getElementById('title-count').textContent = '0';
+        document.getElementById('body-count').textContent = '0';
+        
+        // Reload stats
+        loadStats();
+      } catch (error) {
+        errorAlert.textContent = error.message;
+        errorAlert.classList.remove('hidden');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Publikovat';
+      }
+    });
+
+    // Delete notification
+    async function deleteNotification(id) {
+      if (!confirm('Opravdu chcete smazat tuto notifikaci? Tato akce je nevratná.')) {
+        return;
+      }
+      
+      const successAlert = document.getElementById('success-alert');
+      const errorAlert = document.getElementById('error-alert');
+      
+      try {
+        const response = await fetch(`${API_BASE}/notifications/${id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!response.ok) {
+          const data = await response.json();
+          throw new Error(data.error || 'Smazání selhalo');
+        }
+
+        successAlert.textContent = '🗑 Notifikace byla smazána';
+        successAlert.classList.remove('hidden');
+        errorAlert.classList.add('hidden');
+        
+        loadStats();
+        loadNotifications();
+        
+        setTimeout(() => successAlert.classList.add('hidden'), 3000);
+      } catch (error) {
+        errorAlert.textContent = error.message;
+        errorAlert.classList.remove('hidden');
+        successAlert.classList.add('hidden');
+      }
+    }
+
+    // Helpers
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function formatDate(isoString) {
+      const date = new Date(isoString);
+      return `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`;
+    }
+
+    // Init
+    loadStats();
+    loadNotifications().then(() => lucide.createIcons());
+    lucide.createIcons();
+  </script>
+</body>
+</html>

@@ -13,6 +13,11 @@ export const STORAGE_KEYS = {
     // Subject data (folder links, metadata)
     SUBJECTS_DATA: 'reis_subjects',
 
+    // Success rate data (stats, trends)
+    SUCCESS_RATES_DATA: 'reis_success_rates',
+    GLOBAL_SUCCESS_RATES_DATA: 'reis_global_success_rates',
+    GLOBAL_STATS_LAST_SYNC: 'reis_global_stats_last_sync', // Per-course sync timestamps
+
     // Subject files (keyed by course code)
     // Usage: SUBJECT_FILES_PREFIX + courseCode
     SUBJECT_FILES_PREFIX: 'reis_files_',
@@ -22,6 +27,9 @@ export const STORAGE_KEYS = {
 
     // Outlook calendar sync
     OUTLOOK_SYNC: 'reis_outlook_sync',
+
+    // Preferences
+    THEME: 'reis_theme',
 
     // Sync metadata
     LAST_SYNC: 'reis_last_sync',

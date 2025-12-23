@@ -5,6 +5,8 @@
  */
 
 import { useState, useEffect, useCallback } from "react";
+import { loggers } from "../utils/logger";
+import { StorageService, STORAGE_KEYS } from "../services/storage";
 
 export type Theme = "mendelu" | "mendelu-dark";
 
@@ -21,7 +23,6 @@ export interface UseThemeResult {
   setTheme: (theme: Theme) => void;
 }
 
-const STORAGE_KEY = "reis_theme";
 const DEFAULT_THEME: Theme = "mendelu";
 
 export function useTheme(): UseThemeResult {
@@ -32,8 +33,7 @@ export function useTheme(): UseThemeResult {
   useEffect(() => {
     const loadTheme = async () => {
       try {
-        const result = await chrome.storage.local.get([STORAGE_KEY]);
-        const storedTheme = result[STORAGE_KEY] as Theme | undefined;
+        const storedTheme = await StorageService.getAsync<Theme>(STORAGE_KEYS.THEME);
         if (storedTheme && (storedTheme === "mendelu" || storedTheme === "mendelu-dark")) {
           setThemeState(storedTheme);
           applyTheme(storedTheme);
@@ -41,7 +41,7 @@ export function useTheme(): UseThemeResult {
           applyTheme(DEFAULT_THEME);
         }
       } catch (e) {
-        console.error("[useTheme] Failed to load theme:", e);
+        loggers.ui.error("[useTheme] Failed to load theme:", e);
         applyTheme(DEFAULT_THEME);
       } finally {
         setIsLoading(false);
@@ -53,9 +53,11 @@ export function useTheme(): UseThemeResult {
 
   // Listen for storage changes (sync across tabs)
   useEffect(() => {
+    if (typeof chrome === 'undefined' || !chrome.storage) return;
+
     const handleStorageChange = (changes: { [key: string]: chrome.storage.StorageChange }) => {
-      if (changes[STORAGE_KEY]) {
-        const newTheme = changes[STORAGE_KEY].newValue as Theme;
+      if (changes[STORAGE_KEYS.THEME]) {
+        const newTheme = changes[STORAGE_KEYS.THEME].newValue as Theme;
         if (newTheme) {
           setThemeState(newTheme);
           applyTheme(newTheme);
@@ -63,25 +65,22 @@ export function useTheme(): UseThemeResult {
       }
     };
 
-    chrome.storage.local.onChanged.addListener(handleStorageChange);
-    return () => {
-      chrome.storage.local.onChanged.removeListener(handleStorageChange);
-    };
+    return StorageService.onChanged(handleStorageChange);
   }, []);
 
   const applyTheme = (newTheme: Theme) => {
     // Set data-theme on <html> element (works in iframe)
     document.documentElement.setAttribute("data-theme", newTheme);
-    console.log("[useTheme] Applied theme:", newTheme);
+    loggers.ui.info("[useTheme] Applied theme:", newTheme);
   };
 
   const setTheme = useCallback(async (newTheme: Theme) => {
     try {
-      await chrome.storage.local.set({ [STORAGE_KEY]: newTheme });
+      await StorageService.setAsync(STORAGE_KEYS.THEME, newTheme);
       setThemeState(newTheme);
       applyTheme(newTheme);
     } catch (e) {
-      console.error("[useTheme] Failed to save theme:", e);
+      loggers.ui.error("[useTheme] Failed to save theme:", e);
     }
   }, []);
 

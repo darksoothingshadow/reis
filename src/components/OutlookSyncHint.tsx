@@ -54,6 +54,7 @@ export function OutlookSyncHint({ navigationCount, isSyncEnabled, onSetup }: Out
             }, 12000);
             return () => clearTimeout(timer);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isVisible]);
 
     // Hide if sync gets enabled
@@ -61,6 +62,7 @@ export function OutlookSyncHint({ navigationCount, isSyncEnabled, onSetup }: Out
         if (isSyncEnabled === true && isVisible) {
             setIsVisible(false);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isSyncEnabled, isVisible]);
 
     const handleDismiss = () => {

@@ -9,8 +9,9 @@
  */
 
 import { useMemo } from 'react';
-import { CheckCircle, AlertCircle, Frown, Meh, Smile, Laugh, TrendingUp, CalendarCheck } from 'lucide-react';
+import { CheckCircle, AlertCircle, Frown, Meh, Smile, Laugh, TrendingUp, CalendarCheck, TriangleAlert } from 'lucide-react';
 import type { ExamSubject, RegisteredExam } from '../types/exams';
+import { getStoredSuccessRates } from '../api/successRate';
 
 interface ExamTimelineProps {
     exams: ExamSubject[];
@@ -41,20 +42,34 @@ function formatShortDate(dateStr: string): string {
 }
 
 /**
- * Get gap icon component based on days between exams.
+ * Get gap icon component based on days between exams AND success rate risk.
  * Uses Lucide face icons for behavioral nudging.
  */
-function getGapIcon(days: number): { Icon: typeof Frown; color: string; tooltip: string } {
+function getGapInfo(days: number, nextExamSuccessRate?: number): { Icon: typeof Frown | typeof TriangleAlert; color: string; tooltip: string; isRisk: boolean } {
+    // Contextual Risk Intelligence:
+    // If gap is short AND the upcoming exam has a low success rate (< 60%), trigger High Risk Warning.
+    // DESIGN UPDATE: "Only one warning shines". We keep the gap distinct (temporal) and let the Card be the primary Risk Indicator.
+    // So we calculate isRisk for styling (red line), but we don't change the Gap Icon to TriangleAlert.
+    if (days <= 2 && nextExamSuccessRate !== undefined && nextExamSuccessRate < 0.6) {
+        const ratePercent = Math.round(nextExamSuccessRate * 100);
+        return { 
+            Icon: Frown, // Downgraded from TriangleAlert to avoid "double warning" icons
+            color: 'text-error', 
+            tooltip: `Vysoké riziko: Následující zkouška má úspěšnost jen ${ratePercent}%. ${days} den na přípravu je kriticky málo.`,
+            isRisk: true
+        };
+    }
+
     if (days <= 1) {
-        return { Icon: Frown, color: 'text-error', tooltip: 'Vysoké riziko - malý čas na přípravu' };
+        return { Icon: Frown, color: 'text-error', tooltip: 'Vysoké riziko - malý čas na přípravu', isRisk: false };
     }
     if (days <= 3) {
-        return { Icon: Meh, color: 'text-warning', tooltip: 'Těsné, ale zvládnutelné' };
+        return { Icon: Meh, color: 'text-warning', tooltip: 'Těsné, ale zvládnutelné', isRisk: false };
     }
     if (days <= 6) {
-        return { Icon: Smile, color: 'text-success', tooltip: 'Zdravé rozložení' };
+        return { Icon: Smile, color: 'text-success', tooltip: 'Zdravé rozložení', isRisk: false };
     }
-    return { Icon: Laugh, color: 'text-success', tooltip: 'Optimální pro zapamatování!' };
+    return { Icon: Laugh, color: 'text-success', tooltip: 'Optimální pro zapamatování!', isRisk: false };
 }
 
 /**
@@ -91,10 +106,27 @@ function getExamUrgency(dateStr: string): { colorClass: string; pulse: boolean }
 
 export function ExamTimeline({ exams }: ExamTimelineProps) {
     // Extract registered exams from all subjects
-    const registeredExams = useMemo<RegisteredExam[]>(() => {
-        const registered: RegisteredExam[] = [];
+    const registeredExams = useMemo<(RegisteredExam & { successRate?: number })[]>(() => {
+        const registered: (RegisteredExam & { successRate?: number })[] = [];
+        const ratesData = getStoredSuccessRates()?.data || {};
 
         exams.forEach(subject => {
+            const subjectStats = ratesData[subject.code]?.stats; 
+            let subjectRate: number | undefined;
+
+            if (subjectStats && subjectStats.length > 0) {
+                 // Calculate aggregated success rate across all semesters
+                 let totalPass = 0;
+                 let totalFail = 0;
+                 subjectStats.forEach(sem => {
+                     totalPass += sem.totalPass;
+                     totalFail += sem.totalFail;
+                 });
+                 if (totalPass + totalFail > 0) {
+                     subjectRate = totalPass / (totalPass + totalFail);
+                 }
+            }
+
             subject.sections.forEach(section => {
                 if (section.status === 'registered' && section.registeredTerm) {
                     registered.push({
@@ -103,7 +135,8 @@ export function ExamTimeline({ exams }: ExamTimelineProps) {
                         sectionName: section.name,
                         date: section.registeredTerm.date,
                         time: section.registeredTerm.time,
-                        room: section.registeredTerm.room
+                        room: section.registeredTerm.room,
+                        successRate: subjectRate
                     });
                 }
             });
@@ -142,20 +175,29 @@ export function ExamTimeline({ exams }: ExamTimelineProps) {
 
     // Build timeline items with gaps
     const timelineItems: Array<
-        | { type: 'exam'; exam: RegisteredExam }
-        | { type: 'gap'; days: number; isWarning: boolean }
+        | { type: 'exam'; exam: RegisteredExam & { successRate?: number }; isHighRisk: boolean }
+        | { type: 'gap'; days: number; isWarning: boolean; nextExamRate?: number }
     > = [];
 
     registeredExams.forEach((exam, index) => {
+        let isHighRisk = false;
+
         // Add gap indicator before this exam (except first)
         if (index > 0) {
             const prevExam = registeredExams[index - 1];
             const days = daysBetween(parseDate(prevExam.date), parseDate(exam.date));
             const isWarning = days < 2;
-            timelineItems.push({ type: 'gap', days, isWarning });
+            
+            // Check for High Risk Collision (Gap <= 2 days AND Success Rate < 60%)
+            if (days <= 2 && exam.successRate !== undefined && exam.successRate < 0.6) {
+                isHighRisk = true;
+            }
+
+            // Store the success rate of the UPCOMING exam (the one user is cramming for)
+            timelineItems.push({ type: 'gap', days, isWarning, nextExamRate: exam.successRate });
         }
 
-        timelineItems.push({ type: 'exam', exam });
+        timelineItems.push({ type: 'exam', exam, isHighRisk });
     });
 
     const scoreInfo = getScoreMessage(spacingScore);
@@ -195,21 +237,24 @@ export function ExamTimeline({ exams }: ExamTimelineProps) {
             <ul className="timeline timeline-horizontal w-full">
                 {timelineItems.map((item, index) => {
                     if (item.type === 'gap') {
-                        const { Icon: GapIcon, color, tooltip } = getGapIcon(item.days);
+                        const { Icon: GapIcon, color, tooltip, isRisk } = getGapInfo(item.days, item.nextExamRate);
 
                         // Gap indicator with behavioral nudge icon
                         return (
                             <li key={`gap-${index}`}>
-                                <hr className={item.isWarning ? 'bg-error' : 'bg-base-300'} />
+                                <hr className={item.isWarning || isRisk ? 'bg-error' : 'bg-base-300'} />
                                 <div className="timeline-middle tooltip tooltip-bottom" data-tip={tooltip}>
                                     <div className="flex flex-col items-center">
-                                        {item.isWarning && <GapIcon size={12} className={color} />}
-                                        <span className={`text-[10px] ${item.isWarning ? 'text-error font-medium' : 'text-base-content/30'}`}>
+                                        <GapIcon 
+                                            size={12} 
+                                            className={color} 
+                                        />
+                                        <span className={`text-2xs ${item.isWarning || isRisk ? 'text-error font-medium' : 'text-base-content/30'}`}>
                                             {item.days}d
                                         </span>
                                     </div>
                                 </div>
-                                <hr className={item.isWarning ? 'bg-error' : 'bg-base-300'} />
+                                <hr className={item.isWarning || isRisk ? 'bg-error' : 'bg-base-300'} />
                             </li>
                         );
                     }
@@ -219,6 +264,10 @@ export function ExamTimeline({ exams }: ExamTimelineProps) {
                     const isFirst = index === 0;
                     const isLast = index === timelineItems.length - 1;
                     const urgency = getExamUrgency(exam.date);
+                    
+                    // Risk Contamination Style
+                    const isRisk = item.isHighRisk;
+                    const riskRate = exam.successRate ? Math.round(exam.successRate * 100) : 0;
 
                     // Use explicit class mapping for Tailwind JIT detection
                     const colorClasses = {
@@ -228,18 +277,40 @@ export function ExamTimeline({ exams }: ExamTimelineProps) {
                         'text-primary': urgency.colorClass === 'text-primary',
                     };
                     const activeColorClass = Object.entries(colorClasses).find(([, v]) => v)?.[0] || 'text-success';
+                    
+                    // Card styling: red border if risk, else current color
+                    const cardBorderClass = isRisk ? 'border-error bg-error/5' : 'bg-base-100 border-current';
+                    const titleClass = isRisk ? 'text-error' : activeColorClass;
 
                     return (
                         <li key={`exam-${exam.code}-${exam.date}`}>
-                            {!isFirst && <hr className="bg-primary" />}
-                            <div className="timeline-start timeline-box bg-base-100 shadow-md border-l-2 border-current" style={{ borderColor: 'currentColor' }}>
-                                <div className={`font-bold text-sm ${activeColorClass} whitespace-nowrap`} title={exam.name}>{exam.name}</div>
-                                <div className="text-xs text-base-content/60">{formatShortDate(exam.date)}</div>
+                            {!isFirst && <hr className={isRisk ? 'bg-error' : 'bg-primary'} />}
+                            <div 
+                                className={`timeline-start timeline-box shadow-md border-l-[3px] ${cardBorderClass}`} 
+                                style={{ borderColor: isRisk ? undefined : 'currentColor' }}
+                            >
+                                <div className="flex flex-col gap-1">
+                                    <div className={`font-bold text-sm ${titleClass} whitespace-nowrap flex items-center gap-2`} title={exam.name}>
+                                        {exam.name}
+                                    </div>
+                                    <div className="flex items-center justify-between gap-4">
+                                        <div className="text-xs text-base-content/60">{formatShortDate(exam.date)}</div>
+                                        {isRisk && (
+                                            <div 
+                                                className="badge badge-error badge-xs gap-1 font-semibold text-white"
+                                                title="Průměrná úspěšnost předmětu"
+                                            >
+                                                <TriangleAlert size={8} />
+                                                Úsp. {riskRate}%
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
-                            <div className={`timeline-middle ${activeColorClass} ${urgency.pulse ? 'animate-pulse' : ''}`}>
-                                <CheckCircle size={16} />
+                            <div className={`timeline-middle ${isRisk ? 'text-error' : activeColorClass} ${urgency.pulse || isRisk ? 'animate-pulse' : ''}`}>
+                                {isRisk ? <TriangleAlert size={16} /> : <CheckCircle size={16} />}
                             </div>
-                            {!isLast && <hr className="bg-primary" />}
+                            {!isLast && <hr className={isRisk ? 'bg-error' : 'bg-primary'} />}
                         </li>
                     );
                 })}

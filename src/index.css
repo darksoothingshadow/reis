@@ -138,6 +138,22 @@ html, body, #root {
 
   /* Typography */
   --font-inter: "Inter", sans-serif;
+
+  /* Grade Colors */
+  --color-grade-a: #10b981;
+  --color-grade-b: #34d399;
+  --color-grade-c: #84cc16;
+  --color-grade-d: #facc15;
+  --color-grade-e: #fb923c;
+  --color-grade-f: #ef4444;
+  --color-grade-fn: #dc2626;
+}
+
+/* Glassmorphism for premium feel */
+.glass-card {
+  background: color-mix(in srgb, var(--color-base-100) 70%, transparent);
+  backdrop-filter: blur(8px);
+  border: 1px solid color-mix(in srgb, var(--color-base-content) 10%, transparent);
 }
 
 /* Custom current day highlight - bypassing Tailwind JIT issues */

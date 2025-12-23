@@ -1,0 +1,248 @@
+{
+  "lastUpdated": "2025-12-22T09:37:37.023Z",
+  "data": {
+    "EBC-ALG": {
+      "courseCode": "EBC-ALG",
+      "stats": [
+        {
+          "semesterName": "LS 2024/2025 - PEF",
+          "semesterId": "772",
+          "year": 2024,
+          "totalPass": 3,
+          "totalFail": 13,
+          "terms": [
+            {
+              "term": "termín 1",
+              "grades": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0,
+                "E": 1,
+                "F": 7,
+                "FN": 4
+              },
+              "pass": 1,
+              "fail": 11
+            },
+            {
+              "term": "termín 2",
+              "grades": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0,
+                "E": 1,
+                "F": 2,
+                "FN": 0
+              },
+              "pass": 1,
+              "fail": 2
+            },
+            {
+              "term": "termín 3",
+              "grades": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0,
+                "E": 1,
+                "F": 0,
+                "FN": 0
+              },
+              "pass": 1,
+              "fail": 0
+            }
+          ]
+        }
+      ],
+      "lastUpdated": "2025-12-22T09:37:24.775Z"
+    },
+    "EBA-AJ2": {
+      "courseCode": "EBA-AJ2",
+      "stats": [
+        {
+          "semesterName": "LS 2024/2025 - PEF",
+          "semesterId": "772",
+          "year": 2024,
+          "totalPass": 186,
+          "totalFail": 23,
+          "terms": [
+            {
+              "term": "termín 1",
+              "grades": {
+                "A": 98,
+                "B": 50,
+                "C": 22,
+                "D": 8,
+                "E": 7,
+                "F": 23,
+                "FN": 0
+              },
+              "pass": 185,
+              "fail": 23
+            },
+            {
+              "term": "termín 2",
+              "grades": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0,
+                "E": 1,
+                "F": 0,
+                "FN": 0
+              },
+              "pass": 1,
+              "fail": 0
+            }
+          ]
+        }
+      ],
+      "lastUpdated": "2025-12-22T09:37:30.892Z"
+    },
+    "EBA-AJ3": {
+      "courseCode": "EBA-AJ3",
+      "stats": [
+        {
+          "semesterName": "LS 2024/2025 - PEF",
+          "semesterId": "772",
+          "year": 2024,
+          "totalPass": 76,
+          "totalFail": 3,
+          "terms": [
+            {
+              "term": "termín 1",
+              "grades": {
+                "A": 46,
+                "B": 19,
+                "C": 9,
+                "D": 0,
+                "E": 0,
+                "F": 2,
+                "FN": 1
+              },
+              "pass": 74,
+              "fail": 3
+            },
+            {
+              "term": "termín 2",
+              "grades": {
+                "A": 0,
+                "B": 0,
+                "C": 1,
+                "D": 1,
+                "E": 0,
+                "F": 0,
+                "FN": 0
+              },
+              "pass": 2,
+              "fail": 0
+            }
+          ]
+        }
+      ],
+      "lastUpdated": "2025-12-22T09:37:32.355Z"
+    },
+    "EBC-AST": {
+      "courseCode": "EBC-AST",
+      "stats": [
+        {
+          "semesterName": "LS 2024/2025 - PEF",
+          "semesterId": "772",
+          "year": 2024,
+          "totalPass": 17,
+          "totalFail": 8,
+          "terms": [
+            {
+              "term": "termín 1",
+              "grades": {
+                "A": 1,
+                "B": 0,
+                "C": 1,
+                "D": 2,
+                "E": 8,
+                "F": 8,
+                "FN": 0
+              },
+              "pass": 12,
+              "fail": 8
+            },
+            {
+              "term": "termín 2",
+              "grades": {
+                "A": 0,
+                "B": 0,
+                "C": 3,
+                "D": 1,
+                "E": 1,
+                "F": 0,
+                "FN": 0
+              },
+              "pass": 5,
+              "fail": 0
+            }
+          ]
+        }
+      ],
+      "lastUpdated": "2025-12-22T09:37:35.436Z"
+    },
+    "EBC-AOS": {
+      "courseCode": "EBC-AOS",
+      "stats": [
+        {
+          "semesterName": "LS 2024/2025 - PEF",
+          "semesterId": "772",
+          "year": 2024,
+          "totalPass": 82,
+          "totalFail": 162,
+          "terms": [
+            {
+              "term": "termín 1",
+              "grades": {
+                "A": 1,
+                "B": 5,
+                "C": 10,
+                "D": 12,
+                "E": 8,
+                "F": 101,
+                "FN": 2
+              },
+              "pass": 36,
+              "fail": 103
+            },
+            {
+              "term": "termín 2",
+              "grades": {
+                "A": 2,
+                "B": 2,
+                "C": 4,
+                "D": 7,
+                "E": 8,
+                "F": 43,
+                "FN": 0
+              },
+              "pass": 23,
+              "fail": 43
+            },
+            {
+              "term": "termín 3",
+              "grades": {
+                "A": 0,
+                "B": 0,
+                "C": 6,
+                "D": 4,
+                "E": 13,
+                "F": 16,
+                "FN": 0
+              },
+              "pass": 23,
+              "fail": 16
+            }
+          ]
+        }
+      ],
+      "lastUpdated": "2025-12-22T09:37:37.023Z"
+    }
+  }
+}
