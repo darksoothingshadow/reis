@@ -1,0 +1,43 @@
+{
+  "courseCode": "WD",
+  "stats": [
+    {
+      "semesterName": "ZS 2022/2023 - PEF",
+      "semesterId": "689",
+      "year": 2022,
+      "totalPass": 21,
+      "totalFail": 8,
+      "terms": [
+        {
+          "term": "termín 1",
+          "grades": {
+            "A": 3,
+            "B": 3,
+            "C": 6,
+            "D": 1,
+            "E": 5,
+            "F": 7,
+            "FN": 1
+          },
+          "pass": 18,
+          "fail": 8
+        },
+        {
+          "term": "termín 2",
+          "grades": {
+            "A": 0,
+            "B": 1,
+            "C": 1,
+            "D": 0,
+            "E": 1,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 3,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T08:58:38.053Z"
+}

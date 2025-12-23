@@ -1,0 +1,159 @@
+{
+  "courseCode": "EBA-MAAN",
+  "stats": [
+    {
+      "semesterName": "ZS 2022/2023 - PEF",
+      "semesterId": "689",
+      "year": 2022,
+      "totalPass": 25,
+      "totalFail": 22,
+      "terms": [
+        {
+          "term": "termín 1",
+          "grades": {
+            "A": 5,
+            "B": 5,
+            "C": 3,
+            "D": 4,
+            "E": 2,
+            "F": 10,
+            "FN": 2
+          },
+          "pass": 19,
+          "fail": 12
+        },
+        {
+          "term": "termín 2",
+          "grades": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 1,
+            "E": 2,
+            "F": 7,
+            "FN": 0
+          },
+          "pass": 3,
+          "fail": 7
+        },
+        {
+          "term": "termín 3",
+          "grades": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "E": 3,
+            "F": 3,
+            "FN": 0
+          },
+          "pass": 3,
+          "fail": 3
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2023/2024 - PEF",
+      "semesterId": "734",
+      "year": 2023,
+      "totalPass": 42,
+      "totalFail": 25,
+      "terms": [
+        {
+          "term": "termín 1",
+          "grades": {
+            "A": 3,
+            "B": 3,
+            "C": 8,
+            "D": 10,
+            "E": 4,
+            "F": 16,
+            "FN": 2
+          },
+          "pass": 28,
+          "fail": 18
+        },
+        {
+          "term": "termín 2",
+          "grades": {
+            "A": 0,
+            "B": 0,
+            "C": 5,
+            "D": 4,
+            "E": 1,
+            "F": 5,
+            "FN": 1
+          },
+          "pass": 10,
+          "fail": 6
+        },
+        {
+          "term": "termín 3",
+          "grades": {
+            "A": 0,
+            "B": 0,
+            "C": 1,
+            "D": 3,
+            "E": 0,
+            "F": 1,
+            "FN": 0
+          },
+          "pass": 4,
+          "fail": 1
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2024/2025 - PEF",
+      "semesterId": "754",
+      "year": 2024,
+      "totalPass": 20,
+      "totalFail": 12,
+      "terms": [
+        {
+          "term": "termín 1",
+          "grades": {
+            "A": 2,
+            "B": 5,
+            "C": 4,
+            "D": 2,
+            "E": 2,
+            "F": 7,
+            "FN": 0
+          },
+          "pass": 15,
+          "fail": 7
+        },
+        {
+          "term": "termín 2",
+          "grades": {
+            "A": 0,
+            "B": 1,
+            "C": 1,
+            "D": 1,
+            "E": 1,
+            "F": 1,
+            "FN": 2
+          },
+          "pass": 4,
+          "fail": 3
+        },
+        {
+          "term": "termín 3",
+          "grades": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "E": 1,
+            "F": 1,
+            "FN": 1
+          },
+          "pass": 1,
+          "fail": 2
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T08:58:37.948Z"
+}

@@ -28,6 +28,9 @@ export const STORAGE_KEYS = {
     // Outlook calendar sync
     OUTLOOK_SYNC: 'reis_outlook_sync',
 
+    // Preferences
+    THEME: 'reis_theme',
+
     // Sync metadata
     LAST_SYNC: 'reis_last_sync',
     SYNC_ERROR: 'reis_sync_error',

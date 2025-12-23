@@ -1,24 +1,18 @@
 import { useState, useRef, useEffect } from 'react';
 import {
-  ChevronRight,
   LayoutGrid,
   Mail,
   Settings,
-  ExternalLink,
-  Calendar,
-  Moon,
   CalendarCheck,
   Users
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
 import { MENDELU_LOGO_PATH } from '../constants/icons';
 import { useUserParams } from '../hooks/useUserParams';
 import { getFacultySync } from '../utils/userParams';
 import { getMainMenuItems, type MenuItem } from './menuConfig';
-import { useOutlookSync } from '../hooks/data';
-import { useTheme } from '../hooks/useTheme';
 import { getUserAssociation } from '../services/spolky';
-
+import { NavItem } from './Sidebar/NavItem';
+import { ProfilePopup } from './Sidebar/ProfilePopup';
 
 export type AppView = 'calendar' | 'exams';
 
@@ -29,7 +23,7 @@ interface SidebarProps {
   onOpenSettingsRef?: React.MutableRefObject<(() => void) | null>;
 }
 
-export const Sidebar = ({ currentView: _currentView, onViewChange, onOpenSettingsRef }: SidebarProps) => {
+export const Sidebar = ({ onViewChange, onOpenSettingsRef }: SidebarProps) => {
   const [activeItem, setActiveItem] = useState<string>('dashboard');
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const [profilHovered, setProfilHovered] = useState(false);
@@ -49,13 +43,6 @@ export const Sidebar = ({ currentView: _currentView, onViewChange, onOpenSetting
       }
     };
   }, [onOpenSettingsRef]);
-
-  // Outlook sync hook
-  const { isEnabled: outlookSyncEnabled, isLoading: outlookSyncLoading, toggle: toggleOutlookSync } = useOutlookSync();
-
-  // Theme toggle
-  const { isDark, isLoading: themeLoading, toggle: toggleTheme } = useTheme();
-
 
   const { params } = useUserParams();
   const studiumId = params?.studium || '';
@@ -105,115 +92,56 @@ export const Sidebar = ({ currentView: _currentView, onViewChange, onOpenSetting
         {/* Navigation Items */}
         <nav className="flex-1 flex flex-col w-full px-2 gap-2">
           {/* Domů - Dashboard */}
-          <div className="relative group">
-            <button
-              onClick={() => {
-                setActiveItem('dashboard');
-                onViewChange('calendar');
-              }}
-              className={`w-14 h-auto min-h-[56px] py-2 rounded-xl flex flex-col items-center justify-center transition-all duration-200 mx-auto
-                ${activeItem === 'dashboard'
-                  ? 'bg-primary/10 text-primary shadow-sm'
-                  : 'text-base-content/50 hover:bg-base-100 hover:text-base-content hover:shadow-sm'
-                }`}
-            >
-              {mainMenuItems.find(i => i.id === 'dashboard')?.icon}
-              <span className="text-[10px] mt-1 font-medium w-full text-center px-1 leading-tight">
-                Domů
-              </span>
-            </button>
-          </div>
+          <NavItem
+            item={mainMenuItems.find(i => i.id === 'dashboard')!}
+            isActive={activeItem === 'dashboard'}
+            isHovered={hoveredItem === 'dashboard'}
+            onMouseEnter={() => handleMouseEnter('dashboard')}
+            onMouseLeave={handleMouseLeave}
+            onClick={() => {
+              setActiveItem('dashboard');
+              onViewChange('calendar');
+            }}
+            onViewChange={onViewChange}
+          />
 
           {/* Divider */}
           <div className="h-px bg-base-300 mx-2 my-1" />
 
           {/* Zkousky - Own Section */}
-          <div className="relative group">
-            <button
-              onClick={() => {
-                setActiveItem('zkousky');
-                onViewChange('exams');
-              }}
-              className={`w-14 h-auto min-h-[56px] py-2 rounded-xl flex flex-col items-center justify-center transition-all duration-200 mx-auto
-                ${activeItem === 'zkousky'
-                  ? 'bg-primary/10 text-primary shadow-sm'
-                  : 'text-base-content/50 hover:bg-base-100 hover:text-base-content hover:shadow-sm'
-                }`}
-            >
-              <CalendarCheck className="w-5 h-5" />
-              <span className="text-[10px] mt-1 font-medium w-full text-center px-1 leading-tight">
-                Zkoušky
-              </span>
-            </button>
-          </div>
+          <NavItem
+            item={{
+              id: 'zkousky',
+              label: 'Zkoušky',
+              icon: <CalendarCheck className="w-5 h-5" />,
+              expandable: false
+            }}
+            isActive={activeItem === 'zkousky'}
+            isHovered={hoveredItem === 'zkousky'}
+            onMouseEnter={() => handleMouseEnter('zkousky')}
+            onMouseLeave={handleMouseLeave}
+            onClick={() => {
+              setActiveItem('zkousky');
+              onViewChange('exams');
+            }}
+            onViewChange={onViewChange}
+          />
 
           {/* Divider */}
           <div className="h-px bg-base-300 mx-2 my-1" />
 
           {/* Other Menu Items (excluding dashboard) */}
           {mainMenuItems.filter(item => item.id !== 'dashboard').map((item) => (
-            <div
+            <NavItem
               key={item.id}
-              className="relative group"
+              item={item}
+              isActive={activeItem === item.id}
+              isHovered={hoveredItem === item.id}
               onMouseEnter={() => handleMouseEnter(item.id)}
               onMouseLeave={handleMouseLeave}
-            >
-              <button
-                onClick={() => handleItemClick(item)}
-                className={`w-14 h-auto min-h-[56px] py-2 rounded-xl flex flex-col items-center justify-center transition-all duration-200 mx-auto
-                                    ${activeItem === item.id
-                    ? 'bg-primary/10 text-primary shadow-sm'
-                    : 'text-base-content/50 hover:bg-base-100 hover:text-base-content hover:shadow-sm'
-                  }`}
-              >
-                {item.icon}
-                <span className="text-[10px] mt-1 font-medium w-full text-center px-1 leading-tight">
-                  {item.label}
-                </span>
-              </button>
-
-              {/* Popup Menu */}
-              <AnimatePresence>
-                {hoveredItem === item.id && item.expandable && (
-                  <motion.div
-                    initial={{ opacity: 0, x: 10, scale: 0.95 }}
-                    animate={{ opacity: 1, x: 0, scale: 1 }}
-                    exit={{ opacity: 0, x: 10, scale: 0.95 }}
-                    transition={{ duration: 0.15, ease: "easeOut" }}
-                    className="absolute left-14 -top-4 w-64 bg-base-100 rounded-xl shadow-popover-heavy border border-base-300 p-2 z-50"
-                  >
-                    <div className="px-3 py-2 border-b border-base-200 mb-1">
-                      <h3 className="font-semibold text-base-content">{item.label}</h3>
-                    </div>
-                    <div className="flex flex-col gap-0.5">
-                      {item.children?.map((child) => (
-                        <a
-                          key={child.id}
-                          href={child.href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={(e) => {
-                            if (child.id === 'zapisy-zkousky') {
-                              e.preventDefault();
-                              onViewChange('exams');
-                            }
-                          }}
-                          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-base-content/70 hover:bg-base-200 hover:text-primary transition-colors group/item cursor-pointer"
-                        >
-                          <span className="text-base-content/50 group-hover/item:text-primary transition-colors">
-                            {child.icon || <ChevronRight className="w-4 h-4" />}
-                          </span>
-                          <span className="flex-1">{child.label}</span>
-                          {!child.isFeature && (
-                            <ExternalLink className="w-3 h-3 text-base-content/30 group-hover/item:text-base-content/50" />
-                          )}
-                        </a>
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+              onClick={() => handleItemClick(item)}
+              onViewChange={onViewChange}
+            />
           ))}
         </nav>
 
@@ -267,52 +195,7 @@ export const Sidebar = ({ currentView: _currentView, onViewChange, onOpenSetting
             </button>
 
             {/* Profil Popup */}
-            <AnimatePresence>
-              {profilHovered && (
-                <motion.div
-                  initial={{ opacity: 0, x: 10, scale: 0.95 }}
-                  animate={{ opacity: 1, x: 0, scale: 1 }}
-                  exit={{ opacity: 0, x: 10, scale: 0.95 }}
-                  transition={{ duration: 0.15, ease: "easeOut" }}
-                  className="absolute left-14 bottom-0 w-72 bg-base-100 rounded-xl shadow-popover-heavy border border-base-300 p-3 z-50"
-                >
-                  <div className="px-1 py-1 border-b border-base-200 mb-3">
-                    <h3 className="font-semibold text-base-content">Nastavení</h3>
-                  </div>
-
-                  {/* Outlook Sync Toggle */}
-                  <label className="flex items-center justify-between gap-3 px-1 py-2 cursor-pointer hover:bg-base-200 rounded-lg transition-colors">
-                    <div className="flex items-center gap-2 flex-1">
-                      <Calendar className="w-4 h-4 text-base-content/50 shrink-0" />
-                      <span className="text-xs text-base-content/70">Synchronizace rozvrhu do Outlooku</span>
-                    </div>
-                    <input
-                      type="checkbox"
-                      className="toggle toggle-primary toggle-sm"
-                      checked={outlookSyncEnabled ?? false}
-                      disabled={outlookSyncLoading || outlookSyncEnabled === null}
-                      onChange={() => toggleOutlookSync()}
-                    />
-                  </label>
-
-                  {/* Dark Theme Toggle */}
-                  <label className="flex items-center justify-between gap-3 px-1 py-2 cursor-pointer hover:bg-base-200 rounded-lg transition-colors">
-                    <div className="flex items-center gap-2 flex-1">
-                      <Moon className="w-4 h-4 text-base-content/50 shrink-0" />
-                      <span className="text-xs text-base-content/70">Tmavý režim</span>
-                    </div>
-                    <input
-                      type="checkbox"
-                      className="toggle toggle-primary toggle-sm"
-                      checked={isDark}
-                      disabled={themeLoading}
-                      onChange={() => toggleTheme()}
-                    />
-                  </label>
-
-                </motion.div>
-              )}
-            </AnimatePresence>
+            <ProfilePopup isOpen={profilHovered} />
           </div>
         </div>
       </aside>

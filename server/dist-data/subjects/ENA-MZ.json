@@ -1,0 +1,43 @@
+{
+  "courseCode": "ENA-MZ",
+  "stats": [
+    {
+      "semesterName": "ZS 2023/2024 - PEF",
+      "semesterId": "734",
+      "year": 2023,
+      "totalPass": 34,
+      "totalFail": 6,
+      "terms": [
+        {
+          "term": "termín 1",
+          "grades": {
+            "A": 17,
+            "B": 9,
+            "C": 4,
+            "D": 1,
+            "E": 0,
+            "F": 6,
+            "FN": 0
+          },
+          "pass": 31,
+          "fail": 6
+        },
+        {
+          "term": "termín 2",
+          "grades": {
+            "A": 0,
+            "B": 0,
+            "C": 2,
+            "D": 0,
+            "E": 1,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 3,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T08:58:38.008Z"
+}

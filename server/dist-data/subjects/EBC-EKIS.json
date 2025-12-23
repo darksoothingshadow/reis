@@ -1,0 +1,43 @@
+{
+  "courseCode": "EBC-EKIS",
+  "stats": [
+    {
+      "semesterName": "LS 2021/2022 - PEF",
+      "semesterId": "671",
+      "year": 2021,
+      "totalPass": 12,
+      "totalFail": 2,
+      "terms": [
+        {
+          "term": "termín 1",
+          "grades": {
+            "A": 0,
+            "B": 0,
+            "C": 4,
+            "D": 3,
+            "E": 4,
+            "F": 1,
+            "FN": 1
+          },
+          "pass": 11,
+          "fail": 2
+        },
+        {
+          "term": "termín 2",
+          "grades": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 1,
+            "E": 0,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 1,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T08:58:37.965Z"
+}

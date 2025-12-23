@@ -5,21 +5,16 @@
  * Returns filtered success rate data for requested course codes
  */
 
-import { Router } from 'express';
+import { Request, Response, Router } from 'express';
 import * as db from '../../db/index.js';
+import { SubjectSuccessRate } from '../types.js';
 
 const router = Router();
-
-interface SubjectSuccessRate {
-    courseCode: string;
-    stats: any[];
-    lastUpdated: string;
-}
 
 /**
  * GET /api/success-rates?codes=EBC-ALG,EBC-MAT
  */
-router.get('/', (req, res) => {
+router.get('/', (req: Request, res: Response) => {
     const codesParam = req.query.codes as string;
     
     if (!codesParam) {

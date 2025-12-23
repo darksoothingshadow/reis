@@ -7,7 +7,7 @@ import { Router } from 'express';
 import bcrypt from 'bcrypt';
 import db from '../db.js';
 import { generateToken } from '../middleware/auth.js';
-import type { Admin, LoginInput } from '../types.js';
+import type { LoginInput } from '../types.js';
 
 const router = Router();
 

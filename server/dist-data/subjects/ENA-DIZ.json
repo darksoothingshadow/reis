@@ -1,0 +1,43 @@
+{
+  "courseCode": "ENA-DIZ",
+  "stats": [
+    {
+      "semesterName": "LS 2022/2023 - PEF",
+      "semesterId": "717",
+      "year": 2022,
+      "totalPass": 10,
+      "totalFail": 9,
+      "terms": [
+        {
+          "term": "termín 1",
+          "grades": {
+            "A": 3,
+            "B": 1,
+            "C": 1,
+            "D": 1,
+            "E": 0,
+            "F": 5,
+            "FN": 3
+          },
+          "pass": 6,
+          "fail": 8
+        },
+        {
+          "term": "termín 2",
+          "grades": {
+            "A": 0,
+            "B": 0,
+            "C": 2,
+            "D": 1,
+            "E": 1,
+            "F": 1,
+            "FN": 0
+          },
+          "pass": 4,
+          "fail": 1
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T08:58:38.001Z"
+}

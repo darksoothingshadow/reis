@@ -2,6 +2,7 @@ import Database from 'better-sqlite3';
 import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
+import { SubjectSuccessRate, SemesterStats } from '../src/types.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -91,6 +92,17 @@ export function markSemesterScraped(id: number): void {
   db.prepare(`UPDATE semesters SET last_scraped = datetime('now') WHERE id = ?`).run(id);
 }
 
+export function clearIncompleteSuccessRates(semesterId: number): void {
+  const db = getDb();
+  const result = db.prepare(`
+    DELETE FROM success_rates 
+    WHERE semester_id = ? AND (source_url IS NULL OR source_url = '')
+  `).run(semesterId);
+  if (result.changes > 0) {
+    console.log(`      🧹 Cleared ${result.changes} incomplete success_rates entries for semester ${semesterId}`);
+  }
+}
+
 export function getUnscrapedCourses(semesterId: number): Array<{ id: number; code: string; predmetId: string }> {
   const db = getDb();
   return db.prepare(`
@@ -101,7 +113,22 @@ export function getUnscrapedCourses(semesterId: number): Array<{ id: number; cod
   `).all(semesterId) as Array<{ id: number; code: string; predmetId: string }>;
 }
 
-export function getSuccessRatesByCourse(courseCode: string): any {
+interface SuccessRateRow {
+  term_name: string;
+  grade_a: number;
+  grade_b: number;
+  grade_c: number;
+  grade_d: number;
+  grade_e: number;
+  grade_f: number;
+  grade_fn: number;
+  source_url: string | null;
+  semester_name: string;
+  year: number;
+  course_code: string;
+}
+
+export function getSuccessRatesByCourse(courseCode: string): SubjectSuccessRate | null {
   const db = getDb();
   
   const rates = db.prepare(`
@@ -121,8 +148,8 @@ export function getSuccessRatesByCourse(courseCode: string): any {
   if (rates.length === 0) return null;
   
   // Group by semester
-  const grouped: Record<string, any> = {};
-  for (const r of rates as any[]) {
+  const grouped: Record<string, SemesterStats & { hasAggregate?: boolean }> = {};
+  for (const r of rates as unknown as SuccessRateRow[]) {
     const key = r.semester_name;
     const isAggregate = r.term_name === 'Všechny termíny';
     
@@ -169,9 +196,9 @@ export function getSuccessRatesByCourse(courseCode: string): any {
   }
   
   // Clean up internal flags before returning
-  const resultStats = Object.values(grouped).map((s: any) => {
+  const resultStats = Object.values(grouped).map((s) => {
     delete s.hasAggregate;
-    return s;
+    return s as SemesterStats;
   });
   
   return {

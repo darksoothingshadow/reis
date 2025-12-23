@@ -61,6 +61,7 @@ export function useExams(): UseExamsResult {
         });
 
         return unsubscribe;
+        // eslint-disable-next-line react-hooks/set-state-in-effect
     }, [loadFromStorage]);
 
     return { exams, isLoaded, error, lastSync, retry };

@@ -70,7 +70,7 @@ export function parseSubjectResults(htmlString: string): Subject[] {
         const prevElement = link.previousElementSibling as HTMLElement;
         const colorStyle = prevElement?.getAttribute?.('style') ?? '';
         const colorMatch = colorStyle.match(/background-color:\s*(#[a-fA-F0-9]{6})/);
-        const facultyColor = colorMatch ? colorMatch[1] : '#6b7280';
+        const facultyColor = colorMatch ? colorMatch[1] : 'var(--color-base-content-400, #6b7280)';
 
         // Build absolute URL
         let subjectLink = href.startsWith('../') 
@@ -88,7 +88,7 @@ export function parseSubjectResults(htmlString: string): Subject[] {
             faculty: sanitizeString(faculty, 20),
             facultyColor,
             semester
-        });
+        } as Subject);
     });
 
     console.log('[parseSubjectResults] Final result:', subjects.length, 'unique subjects');

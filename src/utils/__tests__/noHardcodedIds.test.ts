@@ -12,11 +12,10 @@ const HARDCODED_STUDIUM = '149707';
 const HARDCODED_OBDOBI = 'obdobi=801';
 
 // Files that should be checked for hardcoded values (for reference)
-// @ts-expect-error - future use for dynamic file checking
-const API_FILES = [
-    'src/api/exams.ts',
-    'src/api/schedule.ts',
-];
+// const API_FILES = [
+//     'src/api/exams.ts',
+//     'src/api/schedule.ts',
+// ];
 
 describe('No Hardcoded User IDs', () => {
     it('should not have hardcoded studium in exams.ts', () => {
@@ -44,7 +43,7 @@ describe('injectUserParams', () => {
         const content = fs.readFileSync(path.resolve(__dirname, '../../components/SearchBar.tsx'), 'utf-8');
         // Should import injectUserParams
         expect(content).toContain('injectUserParams');
-        // Should use it when opening links
-        expect(content).toContain('injectUserParams(result.link)');
+        // Should use it when opening links (refactored version uses window.open with injectUserParams)
+        expect(content).toContain('window.open(injectUserParams(');
     });
 });

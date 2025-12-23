@@ -1,0 +1,80 @@
+{
+  "courseCode": "EBC-FRR",
+  "stats": [
+    {
+      "semesterName": "LS 2021/2022 - PEF",
+      "semesterId": "671",
+      "year": 2021,
+      "totalPass": 46,
+      "totalFail": 21,
+      "terms": [
+        {
+          "term": "termín 1",
+          "grades": {
+            "A": 1,
+            "B": 0,
+            "C": 4,
+            "D": 6,
+            "E": 18,
+            "F": 18,
+            "FN": 2
+          },
+          "pass": 29,
+          "fail": 20
+        },
+        {
+          "term": "termín 2",
+          "grades": {
+            "A": 0,
+            "B": 1,
+            "C": 4,
+            "D": 4,
+            "E": 8,
+            "F": 1,
+            "FN": 0
+          },
+          "pass": 17,
+          "fail": 1
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2023/2024 - PEF",
+      "semesterId": "753",
+      "year": 2023,
+      "totalPass": 25,
+      "totalFail": 11,
+      "terms": [
+        {
+          "term": "termín 1",
+          "grades": {
+            "A": 0,
+            "B": 0,
+            "C": 1,
+            "D": 4,
+            "E": 10,
+            "F": 10,
+            "FN": 1
+          },
+          "pass": 15,
+          "fail": 11
+        },
+        {
+          "term": "termín 2",
+          "grades": {
+            "A": 0,
+            "B": 1,
+            "C": 1,
+            "D": 4,
+            "E": 4,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 10,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T08:58:37.968Z"
+}

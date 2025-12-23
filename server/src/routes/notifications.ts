@@ -11,22 +11,37 @@
  * GET /api/stats/:associationId - Auth required, own stats
  */
 
-import { Router } from 'express';
+import { Request, Response, Router } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import db from '../db.js';
 import { requireAuth, requireSuperadmin } from '../middleware/auth.js';
-import type { CreateNotificationInput, Notification } from '../types.js';
+import type { CreateNotificationInput } from '../types.js';
 
 const router = Router();
 
 // Rate limit: 1 notification per 7 days
 const RATE_LIMIT_DAYS = 7;
 
+interface NotificationRow {
+  id: string;
+  association_id: string;
+  title: string;
+  body: string;
+  link: string | null;
+  priority: 'normal' | 'high';
+  status: 'pending' | 'approved' | 'rejected';
+  created_at: string;
+  expires_at: string;
+  approved_at: string | null;
+  view_count: number;
+  click_count: number;
+}
+
 /**
  * GET /api/notifications
  * Public - Returns approved, non-expired notifications
  */
-router.get('/', (req, res) => {
+router.get('/', (req: Request, res: Response) => {
   try {
     const now = new Date().toISOString();
     const stmt = db.prepare(`
@@ -35,10 +50,10 @@ router.get('/', (req, res) => {
       WHERE status = 'approved' AND expires_at > ?
       ORDER BY created_at DESC
     `);
-    const rows = stmt.all(now);
+    const rows = stmt.all(now) as unknown as NotificationRow[];
 
     // Transform to camelCase for frontend
-    const notifications = rows.map((row: any) => ({
+    const notifications = rows.map((row) => ({
       id: row.id,
       associationId: row.association_id,
       title: row.title,
@@ -61,7 +76,7 @@ router.get('/', (req, res) => {
  * Auth required - Creates notification with pending status
  * Rate limited: 1 per 14 days
  */
-router.post('/', requireAuth, (req, res) => {
+router.post('/', requireAuth, (req: Request, res: Response) => {
   try {
     const admin = req.admin!;
     const input = req.body as CreateNotificationInput;
@@ -143,14 +158,14 @@ router.post('/', requireAuth, (req, res) => {
  * GET /api/notifications/pending
  * Superadmin only - Lists all pending notifications
  */
-router.get('/pending', requireAuth, requireSuperadmin, (req, res) => {
+router.get('/pending', requireAuth, requireSuperadmin, (req: Request, res: Response) => {
   try {
     const stmt = db.prepare(`
       SELECT * FROM notifications WHERE status = 'pending' ORDER BY created_at DESC
     `);
-    const rows = stmt.all();
+    const rows = stmt.all() as unknown as NotificationRow[];
 
-    const notifications = rows.map((row: any) => ({
+    const notifications = rows.map((row) => ({
       id: row.id,
       associationId: row.association_id,
       title: row.title,
@@ -173,7 +188,7 @@ router.get('/pending', requireAuth, requireSuperadmin, (req, res) => {
  * POST /api/notifications/:id/approve
  * Superadmin only - Approves a pending notification
  */
-router.post('/:id/approve', requireAuth, requireSuperadmin, (req, res) => {
+router.post('/:id/approve', requireAuth, requireSuperadmin, (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const now = new Date().toISOString();
@@ -200,7 +215,7 @@ router.post('/:id/approve', requireAuth, requireSuperadmin, (req, res) => {
  * POST /api/notifications/:id/reject
  * Superadmin only - Rejects a pending notification
  */
-router.post('/:id/reject', requireAuth, requireSuperadmin, (req, res) => {
+router.post('/:id/reject', requireAuth, requireSuperadmin, (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
@@ -226,7 +241,7 @@ router.post('/:id/reject', requireAuth, requireSuperadmin, (req, res) => {
  * DELETE /api/notifications/:id
  * Auth required - Superadmin can delete any, others can delete only their own
  */
-router.delete('/:id', requireAuth, (req, res) => {
+router.delete('/:id', requireAuth, (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const admin = req.admin!;
@@ -261,7 +276,7 @@ router.delete('/:id', requireAuth, (req, res) => {
  * POST /api/notifications/:id/view
  * Public - Increments view count
  */
-router.post('/:id/view', (req, res) => {
+router.post('/:id/view', (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
@@ -279,7 +294,7 @@ router.post('/:id/view', (req, res) => {
  * POST /api/notifications/:id/click
  * Public - Increments click count
  */
-router.post('/:id/click', (req, res) => {
+router.post('/:id/click', (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
@@ -297,7 +312,7 @@ router.post('/:id/click', (req, res) => {
  * GET /api/stats/:associationId
  * Auth required - Get stats for own association
  */
-router.get('/stats/:associationId', requireAuth, (req, res) => {
+router.get('/stats/:associationId', requireAuth, (req: Request, res: Response) => {
   try {
     const { associationId } = req.params;
     const admin = req.admin!;
@@ -319,7 +334,10 @@ router.get('/stats/:associationId', requireAuth, (req, res) => {
       FROM notifications
       WHERE association_id = ?
     `);
-    const stats = stmt.get(associationId) as any;
+    const stats = stmt.get(associationId) as { 
+        total: number; approved: number; pending: number; rejected: number; 
+        total_views: number; total_clicks: number; 
+    };
 
     res.json({
       associationId,

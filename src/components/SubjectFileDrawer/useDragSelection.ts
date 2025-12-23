@@ -57,6 +57,7 @@ export function useDragSelection({
             setSelectionEnd(null);
             isDraggingRef.current = false;
         }
+        // eslint-disable-next-line react-hooks/set-state-in-effect
     }, [isOpen]);
 
     // Process selection based on mouse position

@@ -1,0 +1,43 @@
+{
+  "courseCode": "ENA-AA",
+  "stats": [
+    {
+      "semesterName": "ZS 2022/2023 - PEF",
+      "semesterId": "689",
+      "year": 2022,
+      "totalPass": 16,
+      "totalFail": 4,
+      "terms": [
+        {
+          "term": "termín 1",
+          "grades": {
+            "A": 6,
+            "B": 2,
+            "C": 3,
+            "D": 0,
+            "E": 4,
+            "F": 1,
+            "FN": 3
+          },
+          "pass": 15,
+          "fail": 4
+        },
+        {
+          "term": "termín 2",
+          "grades": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "E": 1,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 1,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T08:58:37.999Z"
+}

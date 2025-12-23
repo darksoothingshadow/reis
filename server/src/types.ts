@@ -44,3 +44,30 @@ export interface JwtPayload {
   associationId: string;
   isSuperadmin: boolean;
 }
+
+export interface GradeStats {
+    A: number; B: number; C: number; D: number; E: number; F: number; FN: number;
+}
+
+export interface TermStats {
+    term: string;
+    grades: GradeStats;
+    pass: number;
+    fail: number;
+}
+
+export interface SemesterStats {
+    semesterName: string;
+    semesterId: string;
+    year: number;
+    totalPass: number;
+    totalFail: number;
+    sourceUrl?: string | null;
+    terms: TermStats[];
+}
+
+export interface SubjectSuccessRate {
+    courseCode: string;
+    stats: SemesterStats[];
+    lastUpdated: string;
+}

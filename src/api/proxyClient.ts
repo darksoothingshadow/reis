@@ -38,16 +38,16 @@ function initMessageListener() {
     if (listenerInitialized) return;
     listenerInitialized = true;
 
-    window.addEventListener('message', (event: MessageEvent) => {
+    window.addEventListener('message', (event: MessageEvent<unknown>) => {
         // Only process messages from parent (Content Script)
         if (event.source !== window.parent) return;
 
-        const data = event.data;
+        const data = event.data as Record<string, unknown>;
         if (!data || typeof data !== 'object') return;
 
         // Handle fetch results
         if (data.type === 'REIS_FETCH_RESULT') {
-            const msg = data as FetchResultMessage;
+            const msg = data as unknown as FetchResultMessage;
             const pending = pendingFetches.get(msg.id);
 
             if (pending) {
@@ -65,7 +65,7 @@ function initMessageListener() {
 
         // Handle action results
         if (data.type === 'REIS_ACTION_RESULT') {
-            const msg = data as ActionResultMessage;
+            const msg = data as unknown as ActionResultMessage;
             const pending = pendingActions.get(msg.id);
 
             if (pending) {

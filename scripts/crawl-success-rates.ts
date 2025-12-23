@@ -1,21 +1,18 @@
 import { chromium } from '@playwright/test';
 import { writeFile } from 'fs/promises';
-import { dirname, join } from 'path';
-import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import * as db from '../server/db';
+import { GradeStats, SemesterStats } from '../server/src/types.js';
 
 // Load environment variables
 dotenv.config();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 const BASE_URL = 'https://is.mendelu.cz';
 const LOGIN_URL = `${BASE_URL}/system/login.pl`;
 const STATS_URL = `${BASE_URL}/auth/student/hodnoceni.pl`;
 
-// Correct faculty IDs from spec
+// Correct faculty IDs from user specification
 const FACULTIES = [
   { id: '2', name: 'PEF' },
   { id: '14', name: 'Agronomická' },
@@ -23,9 +20,10 @@ const FACULTIES = [
   { id: '38', name: 'LDF' },
   { id: '60', name: 'Zahradnická' },
   { id: '220', name: 'ICV' },
+  { id: '631', name: 'CSA' },
+  { id: '79', name: 'Rektorát' },
 ];
 
-const MAX_HISTORY_YEARS = 15;
 
 async function run() {
   const args = process.argv.slice(2);
@@ -54,7 +52,6 @@ async function run() {
     await page.waitForLoadState('networkidle');
     console.log('✅ Logged in successfully');
 
-    const currentYear = new Date().getFullYear();
 
     // 2. Iterate Faculties
     for (const faculty of FACULTIES) {
@@ -100,13 +97,17 @@ async function run() {
         return results;
       });
 
-      const validSemesters = semesterLinks.filter(s => s.year >= currentYear - MAX_HISTORY_YEARS);
-      console.log(`📅 Found ${validSemesters.length} relevant semesters`);
+      const validSemesters = semesterLinks.slice(0, 5);
+      console.log(`📅 Found ${semesterLinks.length} semesters, processing latest ${validSemesters.length}`);
 
       for (const sem of validSemesters) {
         console.log(`  🔍 Processing Semester: ${sem.name}`);
         const semesterId = parseInt(sem.id, 10);
         db.upsertSemester(semesterId, parseInt(faculty.id, 10), sem.name, sem.year);
+        
+        // Clear any poisoned rows from previous incomplete runs
+        db.clearIncompleteSuccessRates(semesterId);
+        db.markSemesterScraped(semesterId);
 
         const fullUrl = sem.url.startsWith('http') 
           ? sem.url 
@@ -132,8 +133,8 @@ async function run() {
             const cells = row.querySelectorAll('td');
             if (cells.length < 3) return;
             
-            let code = cells[1]?.textContent?.trim() || '';
-            let name = cells[2]?.textContent?.trim() || '';
+            const code = cells[1]?.textContent?.trim() || '';
+            const name = cells[2]?.textContent?.trim() || '';
             let predmetId = '';
             
             const link = row.querySelector('a[href*="predmet="]');
@@ -159,11 +160,11 @@ async function run() {
           const courseId = db.upsertCourse(course.code, course.name, course.predmetId);
           
           if (resume) {
-             // Basic resume logic: if we already have stats for this course in this semester, skip
-             // A more advanced one would check last_scraped timestamp
+             // Only skip if stats for this semester are already in the DB AND they have source_url
              const existing = db.getSuccessRatesByCourse(course.code);
-             if (existing && existing.stats.some((s: any) => s.semesterName === sem.name)) {
-                // console.log(`      ⏭️  Skipping ${course.code} (already in DB)`);
+             const statsForSem = existing && existing.stats.find((s: SemesterStats) => s.semesterName === sem.name);
+             if (statsForSem && statsForSem.sourceUrl) {
+                // console.log(`      ⏭️  Skipping ${course.code} (already has stats + sourceUrl)`);
                 continue;
              }
           }
@@ -190,7 +191,7 @@ async function run() {
             if (match && match[1]) {
                 const valuesStr = match[1];
                 const valueRegex = /\{\s*x:\s*['"]([^'"]+)['"],\s*y:\s*(\d+)\s*}/g;
-                const grades: any = { A: 0, B: 0, C: 0, D: 0, E: 0, F: 0, FN: 0 };
+                const grades: GradeStats = { A: 0, B: 0, C: 0, D: 0, E: 0, F: 0, FN: 0 };
                 let vm;
                 while ((vm = valueRegex.exec(valuesStr)) !== null) {
                     const grade = vm[1];
@@ -208,7 +209,7 @@ async function run() {
                 // Insert as a single "Všechny termíny" record (Final Outcome)
                 db.insertSuccessRate(courseId, semesterId, 'Všechny termíny', grades, statsUrl);
                 scrapedTotal++;
-                console.log(`      ✅ Scraped ${course.code} (N=${Object.values(grades).reduce((a: any, b: any) => a + b, 0)}) [${scrapedTotal}/${maxCourses > 10000 ? '?' : maxCourses}]`);
+                console.log(`      ✅ Scraped ${course.code} (N=${Object.values(grades).reduce((a: number, b: number) => a + b, 0)}) [${scrapedTotal}/${maxCourses > 10000 ? '?' : maxCourses}]`);
                 db.markCourseScraped(course.code);
             } else {
                 // Fallback to table parsing if chart not found (older IS pages or different layout)
@@ -248,8 +249,8 @@ async function run() {
                     }
                 }
             }
-          } catch (e: any) {
-            console.error(`      ❌ Error processing course ${course.code}:`, e.message);
+          } catch (e: unknown) {
+            console.error(`      ❌ Error processing course ${course.code}:`, e instanceof Error ? e.message : String(e));
           }
         }
         db.markSemesterScraped(semesterId);

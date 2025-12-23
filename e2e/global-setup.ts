@@ -1,4 +1,4 @@
-import { chromium, FullConfig } from '@playwright/test';
+import { chromium } from '@playwright/test';
 import * as dotenv from 'dotenv';
 import * as path from 'path';
 import * as fs from 'fs';
@@ -9,7 +9,7 @@ const __dirname = path.dirname(__filename);
 
 dotenv.config();
 
-async function globalSetup(config: FullConfig) {
+async function globalSetup() {
   const username = process.env.MENDELU_USER;
   const password = process.env.MENDELU_PASS;
 

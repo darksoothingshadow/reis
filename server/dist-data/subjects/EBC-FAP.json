@@ -1,0 +1,43 @@
+{
+  "courseCode": "EBC-FAP",
+  "stats": [
+    {
+      "semesterName": "ZS 2023/2024 - PEF",
+      "semesterId": "734",
+      "year": 2023,
+      "totalPass": 60,
+      "totalFail": 11,
+      "terms": [
+        {
+          "term": "termín 1",
+          "grades": {
+            "A": 20,
+            "B": 10,
+            "C": 17,
+            "D": 2,
+            "E": 0,
+            "F": 11,
+            "FN": 0
+          },
+          "pass": 49,
+          "fail": 11
+        },
+        {
+          "term": "termín 2",
+          "grades": {
+            "A": 0,
+            "B": 0,
+            "C": 6,
+            "D": 3,
+            "E": 2,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 11,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T08:58:37.967Z"
+}

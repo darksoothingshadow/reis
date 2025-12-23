@@ -1,0 +1,43 @@
+{
+  "courseCode": "EBC-MP",
+  "stats": [
+    {
+      "semesterName": "LS 2023/2024 - PEF",
+      "semesterId": "753",
+      "year": 2023,
+      "totalPass": 45,
+      "totalFail": 4,
+      "terms": [
+        {
+          "term": "termín 1",
+          "grades": {
+            "A": 23,
+            "B": 9,
+            "C": 4,
+            "D": 1,
+            "E": 6,
+            "F": 2,
+            "FN": 1
+          },
+          "pass": 43,
+          "fail": 3
+        },
+        {
+          "term": "termín 2",
+          "grades": {
+            "A": 2,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "E": 0,
+            "F": 0,
+            "FN": 1
+          },
+          "pass": 2,
+          "fail": 1
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T08:58:37.973Z"
+}

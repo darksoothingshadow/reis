@@ -204,7 +204,7 @@ export function ExamTimeline({ exams }: ExamTimelineProps) {
                                 <div className="timeline-middle tooltip tooltip-bottom" data-tip={tooltip}>
                                     <div className="flex flex-col items-center">
                                         {item.isWarning && <GapIcon size={12} className={color} />}
-                                        <span className={`text-[10px] ${item.isWarning ? 'text-error font-medium' : 'text-base-content/30'}`}>
+                                        <span className={`text-2xs ${item.isWarning ? 'text-error font-medium' : 'text-base-content/30'}`}>
                                             {item.days}d
                                         </span>
                                     </div>

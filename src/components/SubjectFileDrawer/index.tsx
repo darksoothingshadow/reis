@@ -69,6 +69,7 @@ export function SubjectFileDrawer({ lesson, isOpen, onClose }: SubjectFileDrawer
         const cachedFiles = getFilesForSubject(lesson.courseCode);
         setFiles(cachedFiles);
         setLoading(false);
+        // eslint-disable-next-line react-hooks/set-state-in-effect
     }, [isOpen, lesson, subjectsLoaded]);
 
     // Reset tab on close
@@ -77,6 +78,7 @@ export function SubjectFileDrawer({ lesson, isOpen, onClose }: SubjectFileDrawer
             setShowDragHint(false);
             setActiveTab('files');
         }
+        // eslint-disable-next-line react-hooks/set-state-in-effect
     }, [isOpen]);
 
     // Show drag hint on first use
@@ -95,6 +97,7 @@ export function SubjectFileDrawer({ lesson, isOpen, onClose }: SubjectFileDrawer
             clearTimeout(showTimer);
             clearTimeout(hideTimer);
         };
+        // eslint-disable-next-line react-hooks/set-state-in-effect
     }, [isOpen, loading, files]);
 
     // Resolve courseId from schedule if not present

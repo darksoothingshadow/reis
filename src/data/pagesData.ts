@@ -159,11 +159,6 @@ export const pagesData: PageCategory[] = [
                 "href": "https://is.mendelu.cz/auth/student/oblibene_predmety.pl?studium=149707;lang=cz"
             },
             {
-                "id": "prihlasovani-zkouskam",
-                "label": "Přihlašování na zkoušky",
-                "href": "https://is.mendelu.cz/auth/student/terminy_seznam.pl?studium=149707;lang=cz"
-            },
-            {
                 "id": "registrace-zapisy",
                 "label": "Registrace, zápisy a změny po zápisech",
                 "href": "https://is.mendelu.cz/auth/student/registrace.pl?studium=149707;lang=cz"

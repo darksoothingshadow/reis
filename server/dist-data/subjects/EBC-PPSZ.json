@@ -1,0 +1,43 @@
+{
+  "courseCode": "EBC-PPSZ",
+  "stats": [
+    {
+      "semesterName": "ZS 2023/2024 - PEF",
+      "semesterId": "734",
+      "year": 2023,
+      "totalPass": 27,
+      "totalFail": 5,
+      "terms": [
+        {
+          "term": "termín 1",
+          "grades": {
+            "A": 7,
+            "B": 5,
+            "C": 4,
+            "D": 4,
+            "E": 3,
+            "F": 3,
+            "FN": 2
+          },
+          "pass": 23,
+          "fail": 5
+        },
+        {
+          "term": "termín 2",
+          "grades": {
+            "A": 0,
+            "B": 0,
+            "C": 3,
+            "D": 1,
+            "E": 0,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 4,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T08:58:37.982Z"
+}

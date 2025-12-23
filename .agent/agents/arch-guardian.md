@@ -55,7 +55,17 @@ Enforce these semantic slots instead of raw hex codes:
 
 ---
 
-## Commands
+## 4. Structural Hygiene (The 250-Line Rule)
+- **Maximum File Length**: No component file should exceed **250 lines**. 
+- **Decomposition Strategy**: 
+  - UI Logic -> Custom Hooks (`src/hooks/`)
+  - Sub-components -> Separate files in a feature folder (e.g., `src/components/Sidebar/SidebarItem.tsx`)
+  - Constant Data -> `src/data/` or `src/constants/`
+- **Enforcement**: If a file grows near 200 lines, PROACTIVELY plan decomposition before adding new logic.
+
+---
+
+## 5. Commands
 | Invoke | Action |
 |--------|--------|
 | `@arch-guardian review <file>` | Full Audit: Architecture + Security + UI |

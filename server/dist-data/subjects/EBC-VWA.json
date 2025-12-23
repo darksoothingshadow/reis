@@ -1,0 +1,94 @@
+{
+  "courseCode": "EBC-VWA",
+  "stats": [
+    {
+      "semesterName": "ZS 2022/2023 - PEF",
+      "semesterId": "689",
+      "year": 2022,
+      "totalPass": 78,
+      "totalFail": 17,
+      "terms": [
+        {
+          "term": "termín 1",
+          "grades": {
+            "A": 19,
+            "B": 19,
+            "C": 18,
+            "D": 10,
+            "E": 4,
+            "F": 16,
+            "FN": 1
+          },
+          "pass": 70,
+          "fail": 17
+        },
+        {
+          "term": "termín 2",
+          "grades": {
+            "A": 0,
+            "B": 0,
+            "C": 1,
+            "D": 5,
+            "E": 2,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 8,
+          "fail": 0
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2024/2025 - PEF",
+      "semesterId": "754",
+      "year": 2024,
+      "totalPass": 117,
+      "totalFail": 37,
+      "terms": [
+        {
+          "term": "termín 1",
+          "grades": {
+            "A": 9,
+            "B": 23,
+            "C": 25,
+            "D": 27,
+            "E": 12,
+            "F": 21,
+            "FN": 13
+          },
+          "pass": 96,
+          "fail": 34
+        },
+        {
+          "term": "termín 2",
+          "grades": {
+            "A": 1,
+            "B": 3,
+            "C": 5,
+            "D": 6,
+            "E": 4,
+            "F": 3,
+            "FN": 0
+          },
+          "pass": 19,
+          "fail": 3
+        },
+        {
+          "term": "termín 3",
+          "grades": {
+            "A": 1,
+            "B": 1,
+            "C": 0,
+            "D": 0,
+            "E": 0,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 2,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T08:58:37.993Z"
+}

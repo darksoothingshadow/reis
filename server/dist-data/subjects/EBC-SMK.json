@@ -1,0 +1,95 @@
+{
+  "courseCode": "EBC-SMK",
+  "stats": [
+    {
+      "semesterName": "LS 2022/2023 - PEF",
+      "semesterId": "717",
+      "year": 2022,
+      "totalPass": 62,
+      "totalFail": 4,
+      "terms": [
+        {
+          "term": "termín 1",
+          "grades": {
+            "A": 2,
+            "B": 9,
+            "C": 27,
+            "D": 13,
+            "E": 9,
+            "F": 1,
+            "FN": 3
+          },
+          "pass": 60,
+          "fail": 4
+        },
+        {
+          "term": "termín 2",
+          "grades": {
+            "A": 0,
+            "B": 1,
+            "C": 0,
+            "D": 0,
+            "E": 1,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 2,
+          "fail": 0
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2024/2025 - PEF",
+      "semesterId": "772",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=2;obdobi=772;predmet=156604;lang=cz",
+      "totalPass": 63,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 2,
+            "B": 5,
+            "C": 28,
+            "D": 22,
+            "E": 6,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 63,
+          "fail": 0
+        },
+        {
+          "term": "termín 1",
+          "grades": {
+            "A": 2,
+            "B": 5,
+            "C": 28,
+            "D": 21,
+            "E": 5,
+            "F": 2,
+            "FN": 0
+          },
+          "pass": 61,
+          "fail": 2
+        },
+        {
+          "term": "termín 2",
+          "grades": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 1,
+            "E": 1,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 2,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T08:58:37.985Z"
+}

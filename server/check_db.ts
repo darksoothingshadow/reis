@@ -13,7 +13,7 @@ if (!course) {
     console.log('Course EBC-ALG not found');
 } else {
     console.log('Course ID:', course.id);
-    const semesters = db.prepare(`SELECT * FROM semesters WHERE name LIKE '%2024/2025%'`).all() as any[];
+    const semesters = db.prepare(`SELECT * FROM semesters WHERE name LIKE '%2024/2025%'`).all() as { id: number; name: string }[];
     console.log('Semesters found:', semesters.length);
     for (const sem of semesters) {
         console.log(`\nSemester: ${sem.name} (ID: ${sem.id})`);

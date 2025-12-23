@@ -1,0 +1,43 @@
+{
+  "courseCode": "ENC-NSS",
+  "stats": [
+    {
+      "semesterName": "LS 2021/2022 - PEF",
+      "semesterId": "671",
+      "year": 2021,
+      "totalPass": 43,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "termín 1",
+          "grades": {
+            "A": 22,
+            "B": 13,
+            "C": 4,
+            "D": 2,
+            "E": 1,
+            "F": 0,
+            "FN": 1
+          },
+          "pass": 42,
+          "fail": 1
+        },
+        {
+          "term": "termín 2",
+          "grades": {
+            "A": 1,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "E": 0,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 1,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T08:58:38.032Z"
+}

@@ -1,0 +1,43 @@
+{
+  "courseCode": "ENA-RKI",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - PEF",
+      "semesterId": "754",
+      "year": 2024,
+      "totalPass": 33,
+      "totalFail": 3,
+      "terms": [
+        {
+          "term": "termín 1",
+          "grades": {
+            "A": 1,
+            "B": 4,
+            "C": 7,
+            "D": 10,
+            "E": 10,
+            "F": 3,
+            "FN": 0
+          },
+          "pass": 32,
+          "fail": 3
+        },
+        {
+          "term": "termín 2",
+          "grades": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "E": 1,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 1,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T08:58:38.011Z"
+}

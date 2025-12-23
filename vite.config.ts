@@ -58,6 +58,13 @@ export default defineConfig(() => {
           entryFileNames: 'assets/[name]-[hash].js',
           chunkFileNames: 'assets/[name]-[hash].js',
           assetFileNames: 'assets/[name]-[hash].[ext]',
+          manualChunks: {
+            // Split large vendor dependencies
+            'vendor-react': ['react', 'react-dom'],
+            'vendor-charts': ['recharts'],
+            'vendor-motion': ['motion'],
+            'vendor-ui': ['lucide-react', 'sonner'],
+          },
         },
       },
     },

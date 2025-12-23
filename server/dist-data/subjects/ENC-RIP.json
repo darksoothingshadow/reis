@@ -1,0 +1,43 @@
+{
+  "courseCode": "ENC-RIP",
+  "stats": [
+    {
+      "semesterName": "LS 2023/2024 - PEF",
+      "semesterId": "753",
+      "year": 2023,
+      "totalPass": 89,
+      "totalFail": 11,
+      "terms": [
+        {
+          "term": "termín 1",
+          "grades": {
+            "A": 19,
+            "B": 33,
+            "C": 20,
+            "D": 16,
+            "E": 0,
+            "F": 0,
+            "FN": 11
+          },
+          "pass": 88,
+          "fail": 11
+        },
+        {
+          "term": "termín 2",
+          "grades": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 1,
+            "E": 0,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 1,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T08:58:38.037Z"
+}

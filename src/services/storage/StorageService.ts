@@ -150,4 +150,16 @@ export const StorageService = {
             console.warn(`[StorageService] Failed to remove async key "${key}":`, error);
         }
     },
+
+    /**
+     * Subscribe to changes in chrome.storage.local.
+     */
+    onChanged(callback: (changes: { [key: string]: chrome.storage.StorageChange }) => void): () => void {
+        if (!this.isChromeStorageAvailable()) return () => { };
+
+        chrome.storage.local.onChanged.addListener(callback);
+        return () => {
+            chrome.storage.local.onChanged.removeListener(callback);
+        };
+    }
 };

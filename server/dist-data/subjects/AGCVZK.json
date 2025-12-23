@@ -1,0 +1,57 @@
+{
+  "courseCode": "AGCVZK",
+  "stats": [
+    {
+      "semesterName": "LS 2024/2025 - AF",
+      "semesterId": "779",
+      "year": 2024,
+      "totalPass": 19,
+      "totalFail": 24,
+      "terms": [
+        {
+          "term": "termín 1",
+          "grades": {
+            "A": 0,
+            "B": 5,
+            "C": 2,
+            "D": 1,
+            "E": 2,
+            "F": 13,
+            "FN": 1
+          },
+          "pass": 10,
+          "fail": 14
+        },
+        {
+          "term": "termín 2",
+          "grades": {
+            "A": 0,
+            "B": 0,
+            "C": 1,
+            "D": 1,
+            "E": 2,
+            "F": 9,
+            "FN": 0
+          },
+          "pass": 4,
+          "fail": 9
+        },
+        {
+          "term": "termín 3",
+          "grades": {
+            "A": 0,
+            "B": 0,
+            "C": 2,
+            "D": 2,
+            "E": 1,
+            "F": 1,
+            "FN": 0
+          },
+          "pass": 5,
+          "fail": 1
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T08:58:37.936Z"
+}

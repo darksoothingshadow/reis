@@ -1,0 +1,109 @@
+{
+  "courseCode": "EBC-EA",
+  "stats": [
+    {
+      "semesterName": "LS 2023/2024 - PEF",
+      "semesterId": "753",
+      "year": 2023,
+      "totalPass": 36,
+      "totalFail": 13,
+      "terms": [
+        {
+          "term": "termín 1",
+          "grades": {
+            "A": 11,
+            "B": 3,
+            "C": 3,
+            "D": 8,
+            "E": 8,
+            "F": 4,
+            "FN": 7
+          },
+          "pass": 33,
+          "fail": 11
+        },
+        {
+          "term": "termín 2",
+          "grades": {
+            "A": 0,
+            "B": 0,
+            "C": 2,
+            "D": 0,
+            "E": 0,
+            "F": 1,
+            "FN": 1
+          },
+          "pass": 2,
+          "fail": 2
+        },
+        {
+          "term": "termín 3",
+          "grades": {
+            "A": 1,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "E": 0,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 1,
+          "fail": 0
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2024/2025 - PEF",
+      "semesterId": "772",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=2;obdobi=772;predmet=156607;lang=cz",
+      "totalPass": 41,
+      "totalFail": 7,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 18,
+            "B": 8,
+            "C": 7,
+            "D": 2,
+            "E": 6,
+            "F": 0,
+            "FN": 7
+          },
+          "pass": 41,
+          "fail": 7
+        },
+        {
+          "term": "termín 1",
+          "grades": {
+            "A": 16,
+            "B": 8,
+            "C": 7,
+            "D": 1,
+            "E": 5,
+            "F": 3,
+            "FN": 8
+          },
+          "pass": 37,
+          "fail": 11
+        },
+        {
+          "term": "termín 2",
+          "grades": {
+            "A": 2,
+            "B": 0,
+            "C": 0,
+            "D": 1,
+            "E": 1,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 4,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T08:58:37.965Z"
+}

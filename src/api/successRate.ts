@@ -8,9 +8,10 @@
 import { StorageService, STORAGE_KEYS } from "../services/storage";
 import type { SubjectSuccessRate, SuccessRateData } from "../types/documents";
 
-// For localized development, use localhost:3001. 
-// In production, this would be https://reismendelu.app/api/success-rates
-const API_URL = "http://localhost:3001/api/success-rates";
+// JSDelivr CDN for GitHub-hosted data
+// In development, you can run a local server: npx serve server/dist-data -l 8080
+// and set CDN_BASE_URL = "http://localhost:8080"
+const CDN_BASE_URL = "https://cdn.jsdelivr.net/gh/darksoothingshadow/reis-data@main/data";
 const CACHE_EXPIRY = 30 * 24 * 60 * 60 * 1000; // 30 days
 
 /**
@@ -51,10 +52,11 @@ function markAsSynced(courseCodes: string[]): void {
 
 /**
  * Fetches success rates for the given list of target course codes.
+ * Uses GitHub-hosted static JSON files via JSDelivr CDN.
  * Returns a SuccessRateData object and saves it to storage.
  */
 export async function fetchSubjectSuccessRates(targetCodes: string[]): Promise<SuccessRateData> {
-    console.log(`[SuccessRate] Fetching ${targetCodes.length} courses from API...`);
+    console.log(`[SuccessRate] Fetching ${targetCodes.length} courses from CDN...`);
     
     // 1. Check cache for each code
     const existing = getStoredSuccessRates();
@@ -76,40 +78,53 @@ export async function fetchSubjectSuccessRates(targetCodes: string[]): Promise<S
         return { lastUpdated: existing?.lastUpdated || new Date().toISOString(), data: results };
     }
 
-    console.log(`[SuccessRate] Fetching ${codesToFetch.length} codes from API: ${codesToFetch.join(', ')}`);
+    console.log(`[SuccessRate] Fetching ${codesToFetch.length} codes from CDN: ${codesToFetch.join(', ')}`);
 
-    // 2. Fetch from API
-    try {
-        const response = await fetch(`${API_URL}?codes=${codesToFetch.join(',')}`);
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    // 2. Fetch each course from CDN (parallel)
+    const fetchPromises = codesToFetch.map(async (code) => {
+        const url = `${CDN_BASE_URL}/subjects/${code}.json`;
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                if (response.status === 404) {
+                    console.warn(`[SuccessRate] Course ${code} not found in CDN (404)`);
+                    return null;
+                }
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            return await response.json() as SubjectSuccessRate;
+        } catch (error) {
+            console.error(`[SuccessRate] Failed to fetch ${code}:`, error);
+            return null;
         }
+    });
 
-        const apiData = await response.json() as SuccessRateData;
-        
-        // 3. Merge with existing cache
-        for (const [code, data] of Object.entries(apiData.data)) {
-            results[code] = data;
+    const fetchedData = await Promise.all(fetchPromises);
+    
+    // 3. Merge with existing cache
+    const successfulCodes: string[] = [];
+    codesToFetch.forEach((code, i) => {
+        if (fetchedData[i]) {
+            results[code] = fetchedData[i]!;
+            successfulCodes.push(code);
         }
+    });
 
-        // 4. Mark fetched codes as synced
-        markAsSynced(codesToFetch);
-
-        const finalResult: SuccessRateData = {
-            lastUpdated: apiData.lastUpdated || new Date().toISOString(),
-            data: results
-        };
-
-        // 5. Save to storage
-        saveSuccessRates(finalResult);
-        console.log(`[SuccessRate] Cached ${Object.keys(apiData.data).length} courses from API`);
-
-        return finalResult;
-    } catch (error) {
-        console.error('[SuccessRate] API fetch failed:', error);
-        // Return whatever we have cached
-        return { lastUpdated: new Date().toISOString(), data: results };
+    // 4. Mark fetched codes as synced
+    if (successfulCodes.length > 0) {
+        markAsSynced(successfulCodes);
     }
+
+    const finalResult: SuccessRateData = {
+        lastUpdated: new Date().toISOString(),
+        data: results
+    };
+
+    // 5. Save to storage
+    saveSuccessRates(finalResult);
+    console.log(`[SuccessRate] Cached ${successfulCodes.length}/${codesToFetch.length} courses from CDN`);
+
+    return finalResult;
 }
 
 /**

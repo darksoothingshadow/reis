@@ -1,0 +1,58 @@
+{
+  "courseCode": "MZD",
+  "stats": [
+    {
+      "semesterName": "LS 2024/2025 - PEF",
+      "semesterId": "772",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=2;obdobi=772;predmet=156602;lang=cz",
+      "totalPass": 27,
+      "totalFail": 2,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 2,
+            "B": 4,
+            "C": 9,
+            "D": 10,
+            "E": 2,
+            "F": 0,
+            "FN": 2
+          },
+          "pass": 27,
+          "fail": 2
+        },
+        {
+          "term": "termín 1",
+          "grades": {
+            "A": 2,
+            "B": 1,
+            "C": 8,
+            "D": 6,
+            "E": 1,
+            "F": 9,
+            "FN": 2
+          },
+          "pass": 18,
+          "fail": 11
+        },
+        {
+          "term": "termín 2",
+          "grades": {
+            "A": 0,
+            "B": 3,
+            "C": 1,
+            "D": 4,
+            "E": 1,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 9,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T08:58:38.048Z"
+}

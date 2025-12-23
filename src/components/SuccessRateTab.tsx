@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useSuccessRate } from '../hooks/data/useSuccessRate';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, ExternalLink } from 'lucide-react';
 import type { GradeStats } from '../types/documents';
 
 interface SuccessRateTabProps {
@@ -10,15 +10,15 @@ interface SuccessRateTabProps {
 // Grade order for consistent styling
 const GRADE_ORDER: (keyof GradeStats)[] = ['A', 'B', 'C', 'D', 'E', 'F', 'FN'];
 
-// Grade colors - warm progression
+// Grade colors - using theme tokens from index.css
 const GRADE_COLORS: Record<keyof GradeStats, string> = {
-    A: '#22c55e', // green
-    B: '#84cc16', // lime
-    C: '#facc15', // yellow
-    D: '#f59e0b', // amber
-    E: '#f97316', // orange
-    F: '#ef4444', // red
-    FN: '#dc2626', // dark red
+    A: 'var(--color-grade-a)',
+    B: 'var(--color-grade-b)',
+    C: 'var(--color-grade-c)',
+    D: 'var(--color-grade-d)',
+    E: 'var(--color-grade-e)',
+    F: 'var(--color-grade-f)',
+    FN: 'var(--color-grade-fn)',
 };
 
 export function SuccessRateTab({ courseCode }: SuccessRateTabProps) {
@@ -67,20 +67,34 @@ export function SuccessRateTab({ courseCode }: SuccessRateTabProps) {
     const maxGrade = Math.max(...gradeData, 1);
     const MAX_BAR_HEIGHT = 160; // Fixed pixel height for context
 
-    // Format year label: "21/22" style
+    // Format year label: "ZS 21/22" style
     const formatYearLabel = (year: number, semesterName: string) => {
         const yearShort = year % 100;
         const isWinter = semesterName.startsWith('ZS');
-        return isWinter ? `${yearShort}/${yearShort + 1}` : `${yearShort - 1}/${yearShort}`;
+        const semesterPrefix = isWinter ? 'ZS' : 'LS';
+        const yearRange = isWinter ? `${yearShort}/${yearShort + 1}` : `${yearShort - 1}/${yearShort}`;
+        return `${semesterPrefix} ${yearRange}`;
     };
 
     return (
-        <div className="flex flex-col h-full px-4 py-3 select-none" data-testid="success-rate-tab">
-            {/* 1. Student count at top (Bigger as requested) */}
-            <div className="text-center mb-6">
-                <span className="text-sm opacity-50 font-bold uppercase tracking-wider">
+        <div className="flex flex-col h-full px-4 py-3 select-none font-inter" data-testid="success-rate-tab">
+            {/* 1. Student count at top with source link */}
+            <div className="text-center mb-6 flex items-center justify-center gap-2">
+                <span className="text-sm text-base-content/50 font-bold uppercase tracking-wider">
                     {totalStudents} studentů
                 </span>
+                {activeSemester.sourceUrl && (
+                    <a 
+                        href={activeSemester.sourceUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary/50 hover:text-primary transition-colors"
+                        title="Ověřit data v IS MENDELU"
+                        data-testid="source-url-link"
+                    >
+                        <ExternalLink className="w-4 h-4" />
+                    </a>
+                )}
             </div>
 
             {/* 2. Bar Chart - RELATIVE scaling with fixed max height */}
@@ -93,7 +107,7 @@ export function SuccessRateTab({ courseCode }: SuccessRateTabProps) {
                     return (
                         <div key={grade} className="flex-1 flex flex-col items-center gap-1 group">
                             {/* Value label */}
-                            <span className={`text-[11px] font-bold transition-opacity ${value > 0 ? 'opacity-40 group-hover:opacity-100' : 'opacity-0'}`}>
+                            <span className={`text-2xs font-bold transition-opacity ${value > 0 ? 'text-base-content/40 group-hover:text-base-content/100' : 'opacity-0'}`}>
                                 {value}
                             </span>
                             {/* Bar */}
@@ -102,11 +116,11 @@ export function SuccessRateTab({ courseCode }: SuccessRateTabProps) {
                                 style={{
                                     height: `${Math.max(barHeight, 4)}px`,
                                     backgroundColor: value > 0 ? GRADE_COLORS[grade] : 'var(--color-base-content)',
-                                    opacity: value > 0 ? 0.95 : 0.05
+                                    opacity: value > 0 ? 1 : 0.05
                                 }}
                             />
                             {/* Grade label */}
-                            <span className="text-[11px] font-black opacity-30 mt-1 uppercase">
+                            <span className="text-2xs font-black text-base-content/30 mt-1 uppercase">
                                 {grade === 'FN' ? '-' : grade}
                             </span>
                         </div>
@@ -126,10 +140,10 @@ export function SuccessRateTab({ courseCode }: SuccessRateTabProps) {
                         <button
                             key={`year-${s.year}-${s.semesterName}`}
                             onClick={() => setActiveIndex(i)}
-                            className={`flex flex-col items-center gap-2 px-2 py-2 rounded-xl transition-all ${
+                            className={`flex flex-col items-center gap-2 px-3 py-2 rounded-xl transition-all ${
                                 isActive
-                                    ? 'bg-primary/10 ring-2 ring-primary/40'
-                                    : 'opacity-40 hover:opacity-100 hover:bg-base-200'
+                                    ? 'bg-primary/10 ring-1 ring-primary/30'
+                                    : 'text-base-content/40 hover:text-base-content/100 hover:bg-base-200'
                             }`}
                         >
                             {/* Success rate circle - BIGGER as requested */}
@@ -149,12 +163,12 @@ export function SuccessRateTab({ courseCode }: SuccessRateTabProps) {
                                         strokeLinecap="round"
                                     />
                                 </svg>
-                                <span className={`absolute text-[10px] font-black ${isActive ? '' : 'opacity-80'}`}>
+                                <span className="absolute text-2xs font-black">
                                     {rate}%
                                 </span>
                             </div>
                             {/* Year label */}
-                            <span className={`text-[10px] font-black ${isActive ? 'text-primary' : ''}`}>
+                            <span className={`text-2xs font-black ${isActive ? 'text-primary' : ''}`}>
                                 {label}
                             </span>
                         </button>

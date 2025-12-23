@@ -1,0 +1,43 @@
+{
+  "courseCode": "ENA-PE",
+  "stats": [
+    {
+      "semesterName": "LS 2022/2023 - PEF",
+      "semesterId": "717",
+      "year": 2022,
+      "totalPass": 62,
+      "totalFail": 7,
+      "terms": [
+        {
+          "term": "termín 1",
+          "grades": {
+            "A": 15,
+            "B": 1,
+            "C": 16,
+            "D": 8,
+            "E": 21,
+            "F": 1,
+            "FN": 6
+          },
+          "pass": 61,
+          "fail": 7
+        },
+        {
+          "term": "termín 2",
+          "grades": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "E": 1,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 1,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T08:58:38.010Z"
+}

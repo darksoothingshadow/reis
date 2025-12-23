@@ -1,5 +1,5 @@
 import { parseExamData } from "../utils/examParser";
-import type { ExamSubject } from "../components/ExamDrawer";
+import type { ExamSubject } from "../types/exams";
 import { fetchWithAuth } from "./client";
 import { getUserParams } from "../utils/userParams";
 import { loggers } from "../utils/logger";

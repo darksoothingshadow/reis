@@ -29,7 +29,7 @@ export async function fetchNotifications(): Promise<SpolekNotification[]> {
 export function getUserAssociation(facultyId: string | null): AssociationProfile | null {
   if (!facultyId) return null;
   
-  const associationId = FACULTY_TO_ASSOCIATION[facultyId as any];
+  const associationId = FACULTY_TO_ASSOCIATION[facultyId as keyof typeof FACULTY_TO_ASSOCIATION];
   if (!associationId) return null;
   
   return ASSOCIATION_PROFILES[associationId] || null;

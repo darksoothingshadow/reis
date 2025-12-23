@@ -20,7 +20,40 @@ describe('Success Rate Tab', () => {
     const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
     const EXTENSION_ID = calculateExtensionId(manifest.key);
 
-    const mockStats = {
+    interface MockStats {
+        [courseCode: string]: {
+            courseCode: string;
+            lastUpdated: string;
+            stats: Array<{
+                semesterName: string;
+                semesterId: string;
+                year: number;
+                totalPass: number;
+                totalFail: number;
+                terms: Array<{
+                    term: string;
+                    grades: Record<string, number>;
+                    pass: number;
+                    fail: number;
+                }>;
+            }>;
+        };
+    }
+
+    interface MockScheduleItem {
+        id: string;
+        courseCode: string;
+        courseName: string;
+        courseId: string;
+        date: string;
+        startTime: string;
+        endTime: string;
+        room: string;
+        teachers: Array<{ fullName: string; shortName: string; id: string }>;
+        isSeminar: string;
+    }
+
+    const mockStats: MockStats = {
         "EBC-ALG": {
             "courseCode": "EBC-ALG",
             "lastUpdated": new Date().toISOString(),
@@ -59,7 +92,7 @@ describe('Success Rate Tab', () => {
         }
     };
 
-    const mockSchedule = [
+    const mockSchedule: MockScheduleItem[] = [
         {
             "id": "1",
             "courseCode": "EBC-ALG",
@@ -93,10 +126,10 @@ describe('Success Rate Tab', () => {
             WaitForHydration(),
             
             // Inject mock data
-            Interaction.where('#actor injects mock data', async (actor: any) => {
-                const page = await (BrowseTheWebWithPlaywright.as(actor) as any).currentPage();
+            Interaction.where('#actor injects mock data', async (actor) => {
+                const page = await (BrowseTheWebWithPlaywright.as(actor) as unknown as { currentPage: () => Promise<{ nativePage: () => Promise<{ evaluate: (fn: (args: { stats: MockStats, schedule: MockScheduleItem[] }) => void, args: { stats: MockStats, schedule: MockScheduleItem[] }) => Promise<void> }> }> }).currentPage();
                 const nativePage = await page.nativePage();
-                await nativePage.evaluate(({ stats, schedule }) => {
+                await nativePage.evaluate(({ stats, schedule }: { stats: MockStats, schedule: MockScheduleItem[] }) => {
                     localStorage.setItem('reis_success_rates', JSON.stringify({ data: stats, lastUpdated: new Date().toISOString() }));
                     localStorage.setItem('reis_schedule', JSON.stringify(schedule));
                     window.location.reload();
@@ -115,8 +148,8 @@ describe('Success Rate Tab', () => {
             Wait.for(Duration.ofMilliseconds(1000)),
             
             // Take screenshots for visual verification
-            Interaction.where('#actor takes screenshots', async (actor: any) => {
-                const page = await (BrowseTheWebWithPlaywright.as(actor) as any).currentPage();
+            Interaction.where('#actor takes screenshots', async (actor) => {
+                const page = await (BrowseTheWebWithPlaywright.as(actor) as unknown as { currentPage: () => Promise<{ nativePage: () => Promise<{ screenshot: (options: { path: string, fullPage: boolean }) => Promise<void>; waitForTimeout: (timeout: number) => Promise<void>; evaluate: (fn: () => void) => Promise<void> }> }> }).currentPage();
                 const nativePage = await page.nativePage();
                 
                 // Ensure artifacts directory is accessible

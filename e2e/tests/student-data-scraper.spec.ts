@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
@@ -6,21 +6,41 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+interface GradeStats {
+    A: number; B: number; C: number; D: number; E: number; F: number; FN: number;
+}
+
+interface ScraperResult {
+    facultyId: number;
+    semester: string;
+    course: string;
+    totalPass: number;
+    totalFail: number;
+    grades: GradeStats;
+    sourceUrl: string;
+    timestamp: string;
+}
+
 test.describe('Student Subject Data Scraper', () => {
-  // Configuration - Restricted to PEF and last 5 semesters
-  const FACULTY_IDS = [2]; // PEF only
-  const TARGET_COURSES = ['EBC-ALG', 'EBC-AP', 'EBC-KOM', 'EBC-TZI', 'EBC-UICT', 'EBC-ZOO', 'ALG', 'ICT', 'TZI'];
+  // Configuration - ALL FACULTIES (correct IDs from MENDELU)
+  const ALL_FACULTY_IDS = [2, 14, 23, 38, 60, 220, 631, 79]; // PEF, Agro, FRRMS, LDF, Zahradnická, ICV, CSA, Rektorát
+  
+  // Support single-faculty scraping via environment variable
+  const SCRAPE_FACULTY = process.env.SCRAPE_FACULTY ? parseInt(process.env.SCRAPE_FACULTY, 10) : null;
+  const FACULTY_IDS = SCRAPE_FACULTY ? [SCRAPE_FACULTY] : ALL_FACULTY_IDS;
+  
   const MAX_SEMESTERS = 5;
+  const SCRAPE_ALL_COURSES = true; // Set to false to use TARGET_COURSES filter
+  const TARGET_COURSES = ['EBC-ALG', 'EBC-AP', 'EBC-KOM']; // Only used if SCRAPE_ALL_COURSES is false
   
   // State
-  const results: any[] = [];
-  const currentYear = new Date().getFullYear();
+  const results: ScraperResult[] = [];
 
   test('scrape subject statistics', async ({ page }) => {
-    // Increase timeout for long scraping session
-    test.setTimeout(10 * 60 * 1000); // 10 minutes
+    // Increase timeout for long scraping session (all faculties)
+    test.setTimeout(60 * 60 * 1000); // 60 minutes
 
-    console.log(`🚀 Starting scraper (PEF only, last ${MAX_SEMESTERS} semesters)...`);
+    console.log(`🚀 Starting scraper (${FACULTY_IDS.length} faculties, last ${MAX_SEMESTERS} semesters${SCRAPE_ALL_COURSES ? ', ALL courses' : ''})...`);
 
       // Level 1: Faculty Selection
       console.log(`\n🏫 Level 1: Investigating Faculty Selection Portal...`);
@@ -128,8 +148,11 @@ test.describe('Student Subject Data Scraper', () => {
 
             for (let c = 0; c < cellCount; c++) {
                 const text = (await cells.nth(c).innerText()).trim();
-                if (!code && TARGET_COURSES.includes(text)) {
-                    code = text;
+                // Extract course code - either all courses or filter by TARGET_COURSES
+                if (!code && text.match(/^[A-Z]{2,}-?[A-Z0-9]+$/i)) {
+                    if (SCRAPE_ALL_COURSES || TARGET_COURSES.includes(text)) {
+                        code = text;
+                    }
                 }
                 const links = cells.nth(c).locator('a[href*="hodnoceni.pl"][href*="predmet="][href*="obdobi="]');
                 if (await links.count() > 0) {
@@ -169,7 +192,7 @@ test.describe('Student Subject Data Scraper', () => {
                  try {
                      const headerHtml = await headerRow.innerHTML();
                      console.log(`       [DEBUG] Header HTML: ${headerHtml}`);
-                 } catch (e) {}
+                 } catch { /* ignore */ }
                  continue;
              }
              // --- NEW LOGIC: Parse NVD3 Chart Script for "Všechny termíny" ---
@@ -183,7 +206,7 @@ test.describe('Student Subject Data Scraper', () => {
              let totalPass = 0;
              let totalFail = 0;
              let uniqueStudents = 0;
-             const grades: any = { A: 0, B: 0, C: 0, D: 0, E: 0, F: 0, FN: 0 };
+             const grades: GradeStats = { A: 0, B: 0, C: 0, D: 0, E: 0, F: 0, FN: 0 };
              
              if (match && match[1]) {
                  // Parse the values array: { x: 'A', y: 10 }, ...
@@ -236,7 +259,7 @@ test.describe('Student Subject Data Scraper', () => {
              // Save incrementally
              const outputDir = path.join(__dirname, '..', 'test-results');
              if (!fs.existsSync(outputDir)) {
-                 try { fs.mkdirSync(outputDir, { recursive: true }); } catch (e) {}
+                 try { fs.mkdirSync(outputDir, { recursive: true }); } catch { /* ignore */ }
              }
              const outputPath = path.join(outputDir, 'student-data.json');
              fs.writeFileSync(outputPath, JSON.stringify(results, null, 2));

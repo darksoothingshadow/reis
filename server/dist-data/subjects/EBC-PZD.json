@@ -1,0 +1,350 @@
+{
+  "courseCode": "EBC-PZD",
+  "stats": [
+    {
+      "semesterName": "LS 2021/2022 - PEF",
+      "semesterId": "671",
+      "year": 2021,
+      "totalPass": 184,
+      "totalFail": 192,
+      "terms": [
+        {
+          "term": "termín 1",
+          "grades": {
+            "A": 17,
+            "B": 11,
+            "C": 17,
+            "D": 31,
+            "E": 29,
+            "F": 94,
+            "FN": 39
+          },
+          "pass": 105,
+          "fail": 133
+        },
+        {
+          "term": "termín 2",
+          "grades": {
+            "A": 1,
+            "B": 1,
+            "C": 8,
+            "D": 14,
+            "E": 29,
+            "F": 37,
+            "FN": 11
+          },
+          "pass": 53,
+          "fail": 48
+        },
+        {
+          "term": "termín 3",
+          "grades": {
+            "A": 0,
+            "B": 1,
+            "C": 2,
+            "D": 7,
+            "E": 16,
+            "F": 7,
+            "FN": 4
+          },
+          "pass": 26,
+          "fail": 11
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2022/2023 - PEF",
+      "semesterId": "689",
+      "year": 2022,
+      "totalPass": 9,
+      "totalFail": 6,
+      "terms": [
+        {
+          "term": "termín 1",
+          "grades": {
+            "A": 1,
+            "B": 1,
+            "C": 3,
+            "D": 1,
+            "E": 2,
+            "F": 3,
+            "FN": 2
+          },
+          "pass": 8,
+          "fail": 5
+        },
+        {
+          "term": "termín 2",
+          "grades": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "E": 1,
+            "F": 1,
+            "FN": 0
+          },
+          "pass": 1,
+          "fail": 1
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2022/2023 - PEF",
+      "semesterId": "717",
+      "year": 2022,
+      "totalPass": 203,
+      "totalFail": 216,
+      "terms": [
+        {
+          "term": "termín 1",
+          "grades": {
+            "A": 14,
+            "B": 28,
+            "C": 22,
+            "D": 27,
+            "E": 35,
+            "F": 123,
+            "FN": 15
+          },
+          "pass": 126,
+          "fail": 138
+        },
+        {
+          "term": "termín 2",
+          "grades": {
+            "A": 0,
+            "B": 2,
+            "C": 1,
+            "D": 7,
+            "E": 29,
+            "F": 54,
+            "FN": 8
+          },
+          "pass": 39,
+          "fail": 62
+        },
+        {
+          "term": "termín 3",
+          "grades": {
+            "A": 0,
+            "B": 0,
+            "C": 2,
+            "D": 11,
+            "E": 25,
+            "F": 12,
+            "FN": 4
+          },
+          "pass": 38,
+          "fail": 16
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2023/2024 - PEF",
+      "semesterId": "734",
+      "year": 2023,
+      "totalPass": 53,
+      "totalFail": 47,
+      "terms": [
+        {
+          "term": "termín 1",
+          "grades": {
+            "A": 2,
+            "B": 3,
+            "C": 4,
+            "D": 11,
+            "E": 9,
+            "F": 26,
+            "FN": 4
+          },
+          "pass": 29,
+          "fail": 30
+        },
+        {
+          "term": "termín 2",
+          "grades": {
+            "A": 1,
+            "B": 0,
+            "C": 0,
+            "D": 7,
+            "E": 3,
+            "F": 14,
+            "FN": 2
+          },
+          "pass": 11,
+          "fail": 16
+        },
+        {
+          "term": "termín 3",
+          "grades": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 4,
+            "E": 9,
+            "F": 1,
+            "FN": 0
+          },
+          "pass": 13,
+          "fail": 1
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2023/2024 - PEF",
+      "semesterId": "753",
+      "year": 2023,
+      "totalPass": 19,
+      "totalFail": 9,
+      "terms": [
+        {
+          "term": "termín 1",
+          "grades": {
+            "A": 0,
+            "B": 2,
+            "C": 4,
+            "D": 3,
+            "E": 5,
+            "F": 7,
+            "FN": 1
+          },
+          "pass": 14,
+          "fail": 8
+        },
+        {
+          "term": "termín 2",
+          "grades": {
+            "A": 0,
+            "B": 0,
+            "C": 1,
+            "D": 3,
+            "E": 1,
+            "F": 1,
+            "FN": 0
+          },
+          "pass": 5,
+          "fail": 1
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2024/2025 - PEF",
+      "semesterId": "754",
+      "year": 2024,
+      "totalPass": 80,
+      "totalFail": 77,
+      "terms": [
+        {
+          "term": "termín 1",
+          "grades": {
+            "A": 7,
+            "B": 5,
+            "C": 8,
+            "D": 13,
+            "E": 17,
+            "F": 37,
+            "FN": 10
+          },
+          "pass": 50,
+          "fail": 47
+        },
+        {
+          "term": "termín 2",
+          "grades": {
+            "A": 0,
+            "B": 1,
+            "C": 3,
+            "D": 4,
+            "E": 8,
+            "F": 22,
+            "FN": 3
+          },
+          "pass": 16,
+          "fail": 25
+        },
+        {
+          "term": "termín 3",
+          "grades": {
+            "A": 0,
+            "B": 1,
+            "C": 1,
+            "D": 2,
+            "E": 10,
+            "F": 5,
+            "FN": 0
+          },
+          "pass": 14,
+          "fail": 5
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2024/2025 - PEF",
+      "semesterId": "772",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=2;obdobi=772;predmet=156530;lang=cz",
+      "totalPass": 163,
+      "totalFail": 15,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 3,
+            "B": 11,
+            "C": 25,
+            "D": 49,
+            "E": 75,
+            "F": 13,
+            "FN": 2
+          },
+          "pass": 163,
+          "fail": 15
+        },
+        {
+          "term": "termín 1",
+          "grades": {
+            "A": 3,
+            "B": 7,
+            "C": 13,
+            "D": 18,
+            "E": 32,
+            "F": 105,
+            "FN": 0
+          },
+          "pass": 73,
+          "fail": 105
+        },
+        {
+          "term": "termín 2",
+          "grades": {
+            "A": 0,
+            "B": 2,
+            "C": 8,
+            "D": 23,
+            "E": 28,
+            "F": 39,
+            "FN": 2
+          },
+          "pass": 61,
+          "fail": 41
+        },
+        {
+          "term": "termín 3",
+          "grades": {
+            "A": 0,
+            "B": 2,
+            "C": 4,
+            "D": 8,
+            "E": 15,
+            "F": 8,
+            "FN": 0
+          },
+          "pass": 29,
+          "fail": 8
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T08:58:37.983Z"
+}
