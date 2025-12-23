@@ -48,10 +48,12 @@ function formatShortDate(dateStr: string): string {
 function getGapInfo(days: number, nextExamSuccessRate?: number): { Icon: typeof Frown | typeof TriangleAlert; color: string; tooltip: string; isRisk: boolean } {
     // Contextual Risk Intelligence:
     // If gap is short AND the upcoming exam has a low success rate (< 60%), trigger High Risk Warning.
+    // DESIGN UPDATE: "Only one warning shines". We keep the gap distinct (temporal) and let the Card be the primary Risk Indicator.
+    // So we calculate isRisk for styling (red line), but we don't change the Gap Icon to TriangleAlert.
     if (days <= 2 && nextExamSuccessRate !== undefined && nextExamSuccessRate < 0.6) {
         const ratePercent = Math.round(nextExamSuccessRate * 100);
         return { 
-            Icon: TriangleAlert, 
+            Icon: Frown, // Downgraded from TriangleAlert to avoid "double warning" icons
             color: 'text-error', 
             tooltip: `Vysoké riziko: Následující zkouška má úspěšnost jen ${ratePercent}%. ${days} den na přípravu je kriticky málo.`,
             isRisk: true
@@ -245,7 +247,7 @@ export function ExamTimeline({ exams }: ExamTimelineProps) {
                                     <div className="flex flex-col items-center">
                                         <GapIcon 
                                             size={12} 
-                                            className={`${color} ${isRisk ? 'animate-pulse' : ''}`} 
+                                            className={color} 
                                         />
                                         <span className={`text-2xs ${item.isWarning || isRisk ? 'text-error font-medium' : 'text-base-content/30'}`}>
                                             {item.days}d
@@ -295,7 +297,7 @@ export function ExamTimeline({ exams }: ExamTimelineProps) {
                                         <div className="text-xs text-base-content/60">{formatShortDate(exam.date)}</div>
                                         {isRisk && (
                                             <div 
-                                                className="badge badge-error badge-xs gap-1 font-semibold text-white cursor-help"
+                                                className="badge badge-error badge-xs gap-1 font-semibold text-white"
                                                 title="Průměrná úspěšnost předmětu"
                                             >
                                                 <TriangleAlert size={8} />
