@@ -1,0 +1,30 @@
+{
+  "courseCode": "PAAP",
+  "stats": [
+    {
+      "semesterName": "LS 2022/2023 - ICV",
+      "semesterId": "716",
+      "year": 2022,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=220;obdobi=716;predmet=142342;lang=cz",
+      "totalPass": 56,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 16,
+            "B": 17,
+            "C": 6,
+            "D": 5,
+            "E": 12,
+            "F": 0,
+            "FN": 1
+          },
+          "pass": 56,
+          "fail": 1
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.580Z"
+}

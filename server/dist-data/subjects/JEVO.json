@@ -1,0 +1,78 @@
+{
+  "courseCode": "JEVO",
+  "stats": [
+    {
+      "semesterName": "LS 2022/2023 - AF",
+      "semesterId": "727",
+      "year": 2022,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=727;predmet=140621;lang=cz",
+      "totalPass": 17,
+      "totalFail": 2,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 11,
+            "B": 4,
+            "C": 0,
+            "D": 1,
+            "E": 1,
+            "F": 0,
+            "FN": 2
+          },
+          "pass": 17,
+          "fail": 2
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2023/2024 - AF",
+      "semesterId": "733",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=733;predmet=146580;lang=cz",
+      "totalPass": 8,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 7,
+            "B": 1,
+            "C": 0,
+            "D": 0,
+            "E": 0,
+            "F": 0,
+            "FN": 1
+          },
+          "pass": 8,
+          "fail": 1
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2024/2025 - AF",
+      "semesterId": "779",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=779;predmet=157575;lang=cz",
+      "totalPass": 13,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 8,
+            "B": 3,
+            "C": 2,
+            "D": 0,
+            "E": 0,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 13,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.520Z"
+}

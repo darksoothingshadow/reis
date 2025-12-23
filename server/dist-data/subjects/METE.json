@@ -1,0 +1,126 @@
+{
+  "courseCode": "METE",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - AF",
+      "semesterId": "704",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=704;predmet=153725;lang=cz",
+      "totalPass": 37,
+      "totalFail": 8,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 0,
+            "B": 2,
+            "C": 4,
+            "D": 6,
+            "E": 25,
+            "F": 7,
+            "FN": 1
+          },
+          "pass": 37,
+          "fail": 8
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2022/2023 - AF",
+      "semesterId": "727",
+      "year": 2022,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=727;predmet=143180;lang=cz",
+      "totalPass": 7,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 0,
+            "B": 1,
+            "C": 1,
+            "D": 0,
+            "E": 5,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 7,
+          "fail": 0
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2023/2024 - AF",
+      "semesterId": "733",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=733;predmet=147134;lang=cz",
+      "totalPass": 31,
+      "totalFail": 6,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 1,
+            "B": 0,
+            "C": 10,
+            "D": 1,
+            "E": 19,
+            "F": 4,
+            "FN": 2
+          },
+          "pass": 31,
+          "fail": 6
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2023/2024 - AF",
+      "semesterId": "752",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=752;predmet=152085;lang=cz",
+      "totalPass": 2,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 0,
+            "B": 0,
+            "C": 1,
+            "D": 0,
+            "E": 1,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 2,
+          "fail": 0
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2024/2025 - AF",
+      "semesterId": "779",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=779;predmet=158265;lang=cz",
+      "totalPass": 5,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 1,
+            "E": 4,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 5,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.547Z"
+}

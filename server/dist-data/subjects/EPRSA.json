@@ -1,0 +1,54 @@
+{
+  "courseCode": "EPRSA",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - FRRMS",
+      "semesterId": "672",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=672;predmet=153886;lang=cz",
+      "totalPass": 28,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 7,
+            "B": 10,
+            "C": 6,
+            "D": 4,
+            "E": 1,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 28,
+          "fail": 0
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2023/2024 - FRRMS",
+      "semesterId": "737",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=737;predmet=146672;lang=cz",
+      "totalPass": 29,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 15,
+            "B": 7,
+            "C": 6,
+            "D": 1,
+            "E": 0,
+            "F": 0,
+            "FN": 1
+          },
+          "pass": 29,
+          "fail": 1
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.466Z"
+}

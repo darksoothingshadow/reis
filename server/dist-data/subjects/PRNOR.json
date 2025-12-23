@@ -1,0 +1,30 @@
+{
+  "courseCode": "PRNOR",
+  "stats": [
+    {
+      "semesterName": "ZS 2023/2024 - AF",
+      "semesterId": "733",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=733;predmet=146788;lang=cz",
+      "totalPass": 12,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 3,
+            "B": 3,
+            "C": 0,
+            "D": 5,
+            "E": 1,
+            "F": 0,
+            "FN": 1
+          },
+          "pass": 12,
+          "fail": 1
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.598Z"
+}

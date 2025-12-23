@@ -1,0 +1,54 @@
+{
+  "courseCode": "OVOSK",
+  "stats": [
+    {
+      "semesterName": "ZS 2022/2023 - ZF",
+      "semesterId": "693",
+      "year": 2022,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=60;obdobi=693;predmet=137045;lang=cz",
+      "totalPass": 15,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 4,
+            "B": 3,
+            "C": 2,
+            "D": 3,
+            "E": 3,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 15,
+          "fail": 0
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2024/2025 - ZF",
+      "semesterId": "763",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=60;obdobi=763;predmet=154088;lang=cz",
+      "totalPass": 18,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 1,
+            "B": 4,
+            "C": 6,
+            "D": 4,
+            "E": 3,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 18,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.578Z"
+}

@@ -1,0 +1,30 @@
+{
+  "courseCode": "MAZIS",
+  "stats": [
+    {
+      "semesterName": "LS 2023/2024 - FRRMS",
+      "semesterId": "757",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=757;predmet=151653;lang=cz",
+      "totalPass": 24,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 24,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "E": 0,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 24,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.542Z"
+}

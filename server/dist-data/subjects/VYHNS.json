@@ -1,0 +1,30 @@
+{
+  "courseCode": "VYHNS",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - ZF",
+      "semesterId": "763",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=60;obdobi=763;predmet=154001;lang=cz",
+      "totalPass": 5,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 0,
+            "B": 1,
+            "C": 0,
+            "D": 1,
+            "E": 3,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 5,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.682Z"
+}

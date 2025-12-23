@@ -1,0 +1,54 @@
+{
+  "courseCode": "FYZZO",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - AF",
+      "semesterId": "704",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=704;predmet=153992;lang=cz",
+      "totalPass": 45,
+      "totalFail": 26,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 0,
+            "B": 7,
+            "C": 14,
+            "D": 5,
+            "E": 19,
+            "F": 26,
+            "FN": 0
+          },
+          "pass": 45,
+          "fail": 26
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2023/2024 - AF",
+      "semesterId": "733",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=733;predmet=147157;lang=cz",
+      "totalPass": 78,
+      "totalFail": 2,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 12,
+            "B": 14,
+            "C": 26,
+            "D": 10,
+            "E": 16,
+            "F": 0,
+            "FN": 2
+          },
+          "pass": 78,
+          "fail": 2
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.502Z"
+}

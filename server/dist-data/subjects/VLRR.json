@@ -1,0 +1,54 @@
+{
+  "courseCode": "VLRR",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - FRRMS",
+      "semesterId": "672",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=672;predmet=153901;lang=cz",
+      "totalPass": 79,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 31,
+            "B": 24,
+            "C": 10,
+            "D": 7,
+            "E": 7,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 79,
+          "fail": 0
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2023/2024 - FRRMS",
+      "semesterId": "737",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=737;predmet=146658;lang=cz",
+      "totalPass": 91,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 4,
+            "B": 19,
+            "C": 38,
+            "D": 16,
+            "E": 14,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 91,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.679Z"
+}

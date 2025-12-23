@@ -1,0 +1,78 @@
+{
+  "courseCode": "EKMZ",
+  "stats": [
+    {
+      "semesterName": "LS 2022/2023 - LDF",
+      "semesterId": "725",
+      "year": 2022,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=725;predmet=141043;lang=cz",
+      "totalPass": 20,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 5,
+            "B": 4,
+            "C": 3,
+            "D": 5,
+            "E": 3,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 20,
+          "fail": 0
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2023/2024 - LDF",
+      "semesterId": "758",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=758;predmet=150964;lang=cz",
+      "totalPass": 29,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 6,
+            "B": 6,
+            "C": 8,
+            "D": 4,
+            "E": 5,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 29,
+          "fail": 0
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2024/2025 - LDF",
+      "semesterId": "777",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=777;predmet=156884;lang=cz",
+      "totalPass": 29,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 9,
+            "B": 9,
+            "C": 6,
+            "D": 3,
+            "E": 2,
+            "F": 1,
+            "FN": 0
+          },
+          "pass": 29,
+          "fail": 1
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.321Z"
+}

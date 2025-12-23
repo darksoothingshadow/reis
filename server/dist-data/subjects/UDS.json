@@ -1,0 +1,54 @@
+{
+  "courseCode": "UDS",
+  "stats": [
+    {
+      "semesterName": "ZS 2023/2024 - LDF",
+      "semesterId": "732",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=732;predmet=147287;lang=cz",
+      "totalPass": 103,
+      "totalFail": 35,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 13,
+            "B": 32,
+            "C": 36,
+            "D": 14,
+            "E": 8,
+            "F": 0,
+            "FN": 35
+          },
+          "pass": 103,
+          "fail": 35
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2024/2025 - LDF",
+      "semesterId": "765",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=765;predmet=153484;lang=cz",
+      "totalPass": 102,
+      "totalFail": 47,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 17,
+            "B": 26,
+            "C": 29,
+            "D": 19,
+            "E": 11,
+            "F": 0,
+            "FN": 47
+          },
+          "pass": 102,
+          "fail": 47
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.670Z"
+}

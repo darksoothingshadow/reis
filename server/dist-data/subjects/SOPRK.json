@@ -1,0 +1,54 @@
+{
+  "courseCode": "SOPRK",
+  "stats": [
+    {
+      "semesterName": "LS 2022/2023 - AF",
+      "semesterId": "727",
+      "year": 2022,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=727;predmet=141652;lang=cz",
+      "totalPass": 12,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 5,
+            "B": 2,
+            "C": 3,
+            "D": 1,
+            "E": 1,
+            "F": 1,
+            "FN": 0
+          },
+          "pass": 12,
+          "fail": 1
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2024/2025 - AF",
+      "semesterId": "779",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=779;predmet=157255;lang=cz",
+      "totalPass": 26,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 8,
+            "B": 3,
+            "C": 10,
+            "D": 2,
+            "E": 3,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 26,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.643Z"
+}

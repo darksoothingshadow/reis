@@ -1,0 +1,54 @@
+{
+  "courseCode": "NJZ2A",
+  "stats": [
+    {
+      "semesterName": "LS 2023/2024 - FRRMS",
+      "semesterId": "757",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=757;predmet=151774;lang=cz",
+      "totalPass": 8,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 0,
+            "B": 1,
+            "C": 5,
+            "D": 1,
+            "E": 1,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 8,
+          "fail": 0
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2024/2025 - FRRMS",
+      "semesterId": "778",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=778;predmet=157638;lang=cz",
+      "totalPass": 7,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 1,
+            "B": 2,
+            "C": 0,
+            "D": 3,
+            "E": 1,
+            "F": 1,
+            "FN": 0
+          },
+          "pass": 7,
+          "fail": 1
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.564Z"
+}

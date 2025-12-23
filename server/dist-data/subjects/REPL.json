@@ -1,0 +1,30 @@
+{
+  "courseCode": "REPL",
+  "stats": [
+    {
+      "semesterName": "LS 2023/2024 - AF",
+      "semesterId": "752",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=752;predmet=150602;lang=cz",
+      "totalPass": 21,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 12,
+            "B": 3,
+            "C": 6,
+            "D": 0,
+            "E": 0,
+            "F": 0,
+            "FN": 1
+          },
+          "pass": 21,
+          "fail": 1
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.613Z"
+}

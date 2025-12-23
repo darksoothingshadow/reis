@@ -1,0 +1,54 @@
+{
+  "courseCode": "KSK",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - AF",
+      "semesterId": "704",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=704;predmet=152617;lang=cz",
+      "totalPass": 36,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 15,
+            "B": 6,
+            "C": 6,
+            "D": 9,
+            "E": 0,
+            "F": 0,
+            "FN": 1
+          },
+          "pass": 36,
+          "fail": 1
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2022/2023 - AF",
+      "semesterId": "727",
+      "year": 2022,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=727;predmet=141813;lang=cz",
+      "totalPass": 18,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 6,
+            "B": 4,
+            "C": 4,
+            "D": 3,
+            "E": 1,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 18,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.529Z"
+}

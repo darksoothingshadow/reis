@@ -5,39 +5,26 @@
       "semesterName": "LS 2022/2023 - PEF",
       "semesterId": "717",
       "year": 2022,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=2;obdobi=717;predmet=140129;lang=cz",
       "totalPass": 4,
-      "totalFail": 7,
+      "totalFail": 4,
       "terms": [
         {
-          "term": "termín 1",
-          "grades": {
-            "A": 0,
-            "B": 0,
-            "C": 0,
-            "D": 1,
-            "E": 0,
-            "F": 5,
-            "FN": 2
-          },
-          "pass": 1,
-          "fail": 7
-        },
-        {
-          "term": "termín 2",
+          "term": "Všechny termíny",
           "grades": {
             "A": 0,
             "B": 0,
             "C": 1,
-            "D": 1,
+            "D": 2,
             "E": 1,
-            "F": 0,
-            "FN": 0
+            "F": 2,
+            "FN": 2
           },
-          "pass": 3,
-          "fail": 0
+          "pass": 4,
+          "fail": 4
         }
       ]
     }
   ],
-  "lastUpdated": "2025-12-23T08:58:38.017Z"
+  "lastUpdated": "2025-12-23T12:35:07.361Z"
 }

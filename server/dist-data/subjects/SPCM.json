@@ -1,0 +1,30 @@
+{
+  "courseCode": "SPCM",
+  "stats": [
+    {
+      "semesterName": "ZS 2023/2024 - LDF",
+      "semesterId": "732",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=732;predmet=147278;lang=cz",
+      "totalPass": 38,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 8,
+            "B": 0,
+            "C": 15,
+            "D": 12,
+            "E": 3,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 38,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.643Z"
+}

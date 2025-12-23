@@ -1,0 +1,54 @@
+{
+  "courseCode": "GNSD",
+  "stats": [
+    {
+      "semesterName": "ZS 2023/2024 - LDF",
+      "semesterId": "732",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=732;predmet=147247;lang=cz",
+      "totalPass": 42,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 10,
+            "B": 10,
+            "C": 15,
+            "D": 6,
+            "E": 1,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 42,
+          "fail": 0
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2024/2025 - LDF",
+      "semesterId": "765",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=765;predmet=153530;lang=cz",
+      "totalPass": 40,
+      "totalFail": 2,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 16,
+            "B": 7,
+            "C": 10,
+            "D": 4,
+            "E": 3,
+            "F": 0,
+            "FN": 2
+          },
+          "pass": 40,
+          "fail": 2
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.511Z"
+}

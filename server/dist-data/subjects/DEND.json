@@ -1,0 +1,78 @@
+{
+  "courseCode": "DEND",
+  "stats": [
+    {
+      "semesterName": "LS 2022/2023 - LDF",
+      "semesterId": "725",
+      "year": 2022,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=725;predmet=143021;lang=cz",
+      "totalPass": 5,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 0,
+            "B": 0,
+            "C": 4,
+            "D": 0,
+            "E": 1,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 5,
+          "fail": 0
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2023/2024 - LDF",
+      "semesterId": "732",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=732;predmet=146976;lang=cz",
+      "totalPass": 89,
+      "totalFail": 5,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 3,
+            "B": 9,
+            "C": 41,
+            "D": 18,
+            "E": 18,
+            "F": 4,
+            "FN": 1
+          },
+          "pass": 89,
+          "fail": 5
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2024/2025 - LDF",
+      "semesterId": "765",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=765;predmet=153332;lang=cz",
+      "totalPass": 63,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 2,
+            "B": 13,
+            "C": 14,
+            "D": 16,
+            "E": 18,
+            "F": 1,
+            "FN": 0
+          },
+          "pass": 63,
+          "fail": 1
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.242Z"
+}

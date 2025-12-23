@@ -1,0 +1,30 @@
+{
+  "courseCode": "AFZ1",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - LDF",
+      "semesterId": "765",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=765;predmet=153503;lang=cz",
+      "totalPass": 57,
+      "totalFail": 3,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 18,
+            "B": 13,
+            "C": 12,
+            "D": 4,
+            "E": 10,
+            "F": 0,
+            "FN": 3
+          },
+          "pass": 57,
+          "fail": 3
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.195Z"
+}

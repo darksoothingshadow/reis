@@ -1,0 +1,54 @@
+{
+  "courseCode": "RBH",
+  "stats": [
+    {
+      "semesterName": "LS 2023/2024 - LDF",
+      "semesterId": "758",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=758;predmet=151023;lang=cz",
+      "totalPass": 31,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 13,
+            "B": 10,
+            "C": 8,
+            "D": 0,
+            "E": 0,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 31,
+          "fail": 0
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2024/2025 - LDF",
+      "semesterId": "777",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=777;predmet=156806;lang=cz",
+      "totalPass": 44,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 22,
+            "B": 6,
+            "C": 13,
+            "D": 2,
+            "E": 1,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 44,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.611Z"
+}

@@ -1,0 +1,54 @@
+{
+  "courseCode": "ENVIR",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - AF",
+      "semesterId": "704",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=704;predmet=152700;lang=cz",
+      "totalPass": 51,
+      "totalFail": 4,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 10,
+            "B": 6,
+            "C": 14,
+            "D": 17,
+            "E": 4,
+            "F": 1,
+            "FN": 3
+          },
+          "pass": 51,
+          "fail": 4
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2023/2024 - AF",
+      "semesterId": "733",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=733;predmet=146744;lang=cz",
+      "totalPass": 45,
+      "totalFail": 4,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 8,
+            "B": 8,
+            "C": 12,
+            "D": 10,
+            "E": 7,
+            "F": 1,
+            "FN": 3
+          },
+          "pass": 45,
+          "fail": 4
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.460Z"
+}

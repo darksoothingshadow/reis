@@ -1,0 +1,30 @@
+{
+  "courseCode": "PODMA",
+  "stats": [
+    {
+      "semesterName": "LS 2021/2022 - ZF",
+      "semesterId": "683",
+      "year": 2021,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=60;obdobi=683;predmet=134105;lang=cz",
+      "totalPass": 75,
+      "totalFail": 4,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 19,
+            "B": 12,
+            "C": 20,
+            "D": 17,
+            "E": 7,
+            "F": 0,
+            "FN": 4
+          },
+          "pass": 75,
+          "fail": 4
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.588Z"
+}

@@ -1,0 +1,54 @@
+{
+  "courseCode": "FZK",
+  "stats": [
+    {
+      "semesterName": "ZS 2023/2024 - LDF",
+      "semesterId": "732",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=732;predmet=143529;lang=cz",
+      "totalPass": 139,
+      "totalFail": 12,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 2,
+            "B": 12,
+            "C": 23,
+            "D": 50,
+            "E": 52,
+            "F": 5,
+            "FN": 7
+          },
+          "pass": 139,
+          "fail": 12
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2024/2025 - LDF",
+      "semesterId": "765",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=765;predmet=153506;lang=cz",
+      "totalPass": 141,
+      "totalFail": 6,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 9,
+            "B": 43,
+            "C": 41,
+            "D": 32,
+            "E": 16,
+            "F": 3,
+            "FN": 3
+          },
+          "pass": 141,
+          "fail": 6
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.503Z"
+}

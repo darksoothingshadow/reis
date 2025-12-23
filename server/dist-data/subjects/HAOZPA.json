@@ -1,0 +1,30 @@
+{
+  "courseCode": "HAOZPA",
+  "stats": [
+    {
+      "semesterName": "LS 2023/2024 - FRRMS",
+      "semesterId": "757",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=757;predmet=151671;lang=cz",
+      "totalPass": 19,
+      "totalFail": 2,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 2,
+            "B": 5,
+            "C": 7,
+            "D": 2,
+            "E": 3,
+            "F": 2,
+            "FN": 0
+          },
+          "pass": 19,
+          "fail": 2
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.511Z"
+}

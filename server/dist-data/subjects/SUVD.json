@@ -1,0 +1,54 @@
+{
+  "courseCode": "SUVD",
+  "stats": [
+    {
+      "semesterName": "LS 2022/2023 - LDF",
+      "semesterId": "725",
+      "year": 2022,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=725;predmet=140981;lang=cz",
+      "totalPass": 15,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 6,
+            "B": 3,
+            "C": 4,
+            "D": 2,
+            "E": 0,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 15,
+          "fail": 0
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2023/2024 - LDF",
+      "semesterId": "758",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=758;predmet=151043;lang=cz",
+      "totalPass": 18,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 7,
+            "B": 3,
+            "C": 7,
+            "D": 1,
+            "E": 0,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 18,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.650Z"
+}

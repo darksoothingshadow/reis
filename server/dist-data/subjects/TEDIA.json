@@ -1,0 +1,30 @@
+{
+  "courseCode": "TEDIA",
+  "stats": [
+    {
+      "semesterName": "ZS 2023/2024 - AF",
+      "semesterId": "733",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=733;predmet=146260;lang=cz",
+      "totalPass": 28,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 5,
+            "B": 7,
+            "C": 11,
+            "D": 3,
+            "E": 2,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 28,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.655Z"
+}

@@ -1,0 +1,30 @@
+{
+  "courseCode": "OVOCB",
+  "stats": [
+    {
+      "semesterName": "LS 2021/2022 - ZF",
+      "semesterId": "683",
+      "year": 2021,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=60;obdobi=683;predmet=133994;lang=cz",
+      "totalPass": 51,
+      "totalFail": 4,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 5,
+            "B": 11,
+            "C": 14,
+            "D": 6,
+            "E": 15,
+            "F": 4,
+            "FN": 0
+          },
+          "pass": 51,
+          "fail": 4
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.577Z"
+}

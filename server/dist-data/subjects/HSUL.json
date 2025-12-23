@@ -1,0 +1,30 @@
+{
+  "courseCode": "HSUL",
+  "stats": [
+    {
+      "semesterName": "ZS 2023/2024 - LDF",
+      "semesterId": "732",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=732;predmet=147022;lang=cz",
+      "totalPass": 19,
+      "totalFail": 2,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 1,
+            "B": 3,
+            "C": 3,
+            "D": 7,
+            "E": 5,
+            "F": 2,
+            "FN": 0
+          },
+          "pass": 19,
+          "fail": 2
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.513Z"
+}

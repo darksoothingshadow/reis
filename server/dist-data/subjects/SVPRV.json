@@ -1,0 +1,30 @@
+{
+  "courseCode": "SVPRV",
+  "stats": [
+    {
+      "semesterName": "LS 2021/2022 - ZF",
+      "semesterId": "683",
+      "year": 2021,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=60;obdobi=683;predmet=134162;lang=cz",
+      "totalPass": 46,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 11,
+            "B": 12,
+            "C": 14,
+            "D": 3,
+            "E": 6,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 46,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.650Z"
+}

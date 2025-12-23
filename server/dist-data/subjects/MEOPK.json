@@ -1,0 +1,30 @@
+{
+  "courseCode": "MEOPK",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - AF",
+      "semesterId": "704",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=704;predmet=153778;lang=cz",
+      "totalPass": 8,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 0,
+            "B": 1,
+            "C": 2,
+            "D": 2,
+            "E": 3,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 8,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.546Z"
+}

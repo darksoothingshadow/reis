@@ -1,0 +1,54 @@
+{
+  "courseCode": "BKL",
+  "stats": [
+    {
+      "semesterName": "ZS 2023/2024 - LDF",
+      "semesterId": "732",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=732;predmet=147237;lang=cz",
+      "totalPass": 165,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 32,
+            "B": 17,
+            "C": 36,
+            "D": 33,
+            "E": 47,
+            "F": 1,
+            "FN": 0
+          },
+          "pass": 165,
+          "fail": 1
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2024/2025 - LDF",
+      "semesterId": "765",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=765;predmet=153493;lang=cz",
+      "totalPass": 216,
+      "totalFail": 2,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 33,
+            "B": 31,
+            "C": 48,
+            "D": 32,
+            "E": 72,
+            "F": 1,
+            "FN": 1
+          },
+          "pass": 216,
+          "fail": 2
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.219Z"
+}

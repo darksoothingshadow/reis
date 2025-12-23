@@ -1,0 +1,30 @@
+{
+  "courseCode": "RRGEA",
+  "stats": [
+    {
+      "semesterName": "ZS 2023/2024 - FRRMS",
+      "semesterId": "737",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=737;predmet=146654;lang=cz",
+      "totalPass": 13,
+      "totalFail": 3,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 7,
+            "B": 2,
+            "C": 2,
+            "D": 1,
+            "E": 1,
+            "F": 1,
+            "FN": 2
+          },
+          "pass": 13,
+          "fail": 3
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.617Z"
+}

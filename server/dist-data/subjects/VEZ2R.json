@@ -1,0 +1,30 @@
+{
+  "courseCode": "VEZ2R",
+  "stats": [
+    {
+      "semesterName": "LS 2021/2022 - ZF",
+      "semesterId": "683",
+      "year": 2021,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=60;obdobi=683;predmet=134118;lang=cz",
+      "totalPass": 8,
+      "totalFail": 2,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 1,
+            "B": 0,
+            "C": 2,
+            "D": 5,
+            "E": 0,
+            "F": 2,
+            "FN": 0
+          },
+          "pass": 8,
+          "fail": 2
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.675Z"
+}

@@ -1,0 +1,54 @@
+{
+  "courseCode": "MATM1",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - AF",
+      "semesterId": "704",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=704;predmet=152705;lang=cz",
+      "totalPass": 74,
+      "totalFail": 6,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 15,
+            "B": 7,
+            "C": 10,
+            "D": 14,
+            "E": 28,
+            "F": 6,
+            "FN": 0
+          },
+          "pass": 74,
+          "fail": 6
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2023/2024 - AF",
+      "semesterId": "733",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=733;predmet=146774;lang=cz",
+      "totalPass": 73,
+      "totalFail": 5,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 10,
+            "B": 8,
+            "C": 14,
+            "D": 13,
+            "E": 28,
+            "F": 5,
+            "FN": 0
+          },
+          "pass": 73,
+          "fail": 5
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.542Z"
+}

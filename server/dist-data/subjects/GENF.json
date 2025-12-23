@@ -1,0 +1,54 @@
+{
+  "courseCode": "GENF",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - AF",
+      "semesterId": "704",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=704;predmet=152708;lang=cz",
+      "totalPass": 25,
+      "totalFail": 6,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 10,
+            "B": 3,
+            "C": 6,
+            "D": 5,
+            "E": 1,
+            "F": 0,
+            "FN": 6
+          },
+          "pass": 25,
+          "fail": 6
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2023/2024 - AF",
+      "semesterId": "733",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=733;predmet=146760;lang=cz",
+      "totalPass": 30,
+      "totalFail": 15,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 8,
+            "B": 5,
+            "C": 8,
+            "D": 5,
+            "E": 4,
+            "F": 0,
+            "FN": 15
+          },
+          "pass": 30,
+          "fail": 15
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.507Z"
+}

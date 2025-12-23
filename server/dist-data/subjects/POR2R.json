@@ -1,0 +1,54 @@
+{
+  "courseCode": "POR2R",
+  "stats": [
+    {
+      "semesterName": "ZS 2022/2023 - ZF",
+      "semesterId": "693",
+      "year": 2022,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=60;obdobi=693;predmet=137054;lang=cz",
+      "totalPass": 10,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 0,
+            "B": 3,
+            "C": 0,
+            "D": 6,
+            "E": 1,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 10,
+          "fail": 0
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2024/2025 - ZF",
+      "semesterId": "763",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=60;obdobi=763;predmet=154108;lang=cz",
+      "totalPass": 4,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 0,
+            "B": 1,
+            "C": 0,
+            "D": 2,
+            "E": 1,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 4,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.589Z"
+}

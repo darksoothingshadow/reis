@@ -1,0 +1,30 @@
+{
+  "courseCode": "PRVES",
+  "stats": [
+    {
+      "semesterName": "ZS 2021/2022 - ZF",
+      "semesterId": "652",
+      "year": 2021,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=60;obdobi=652;predmet=129427;lang=cz",
+      "totalPass": 23,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 8,
+            "B": 2,
+            "C": 5,
+            "D": 6,
+            "E": 2,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 23,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.601Z"
+}

@@ -1,0 +1,30 @@
+{
+  "courseCode": "MANKV",
+  "stats": [
+    {
+      "semesterName": "LS 2021/2022 - ZF",
+      "semesterId": "683",
+      "year": 2021,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=60;obdobi=683;predmet=134014;lang=cz",
+      "totalPass": 20,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 5,
+            "B": 2,
+            "C": 7,
+            "D": 5,
+            "E": 1,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 20,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.539Z"
+}

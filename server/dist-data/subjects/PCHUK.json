@@ -1,0 +1,30 @@
+{
+  "courseCode": "PCHUK",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - ZF",
+      "semesterId": "763",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=60;obdobi=763;predmet=154234;lang=cz",
+      "totalPass": 23,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 9,
+            "B": 10,
+            "C": 3,
+            "D": 1,
+            "E": 0,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 23,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.581Z"
+}

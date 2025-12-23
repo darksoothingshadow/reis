@@ -1,0 +1,54 @@
+{
+  "courseCode": "ASAP",
+  "stats": [
+    {
+      "semesterName": "LS 2022/2023 - ICV",
+      "semesterId": "716",
+      "year": 2022,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=220;obdobi=716;predmet=142343;lang=cz",
+      "totalPass": 55,
+      "totalFail": 2,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 3,
+            "B": 4,
+            "C": 14,
+            "D": 14,
+            "E": 20,
+            "F": 0,
+            "FN": 2
+          },
+          "pass": 55,
+          "fail": 2
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2024/2025 - ICV",
+      "semesterId": "781",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=220;obdobi=781;predmet=157914;lang=cz",
+      "totalPass": 52,
+      "totalFail": 2,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 28,
+            "B": 11,
+            "C": 10,
+            "D": 3,
+            "E": 0,
+            "F": 0,
+            "FN": 2
+          },
+          "pass": 52,
+          "fail": 2
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.212Z"
+}

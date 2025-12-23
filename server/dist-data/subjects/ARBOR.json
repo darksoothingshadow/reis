@@ -1,0 +1,30 @@
+{
+  "courseCode": "ARBOR",
+  "stats": [
+    {
+      "semesterName": "LS 2021/2022 - ZF",
+      "semesterId": "683",
+      "year": 2021,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=60;obdobi=683;predmet=134007;lang=cz",
+      "totalPass": 7,
+      "totalFail": 4,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 1,
+            "B": 1,
+            "C": 2,
+            "D": 2,
+            "E": 1,
+            "F": 0,
+            "FN": 4
+          },
+          "pass": 7,
+          "fail": 4
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.211Z"
+}

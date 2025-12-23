@@ -1,0 +1,30 @@
+{
+  "courseCode": "VCELK",
+  "stats": [
+    {
+      "semesterName": "LS 2023/2024 - AF",
+      "semesterId": "752",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=752;predmet=150298;lang=cz",
+      "totalPass": 23,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 5,
+            "B": 10,
+            "C": 4,
+            "D": 1,
+            "E": 3,
+            "F": 0,
+            "FN": 1
+          },
+          "pass": 23,
+          "fail": 1
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.674Z"
+}

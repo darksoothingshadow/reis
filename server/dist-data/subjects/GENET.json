@@ -1,0 +1,30 @@
+{
+  "courseCode": "GENET",
+  "stats": [
+    {
+      "semesterName": "LS 2021/2022 - ZF",
+      "semesterId": "683",
+      "year": 2021,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=60;obdobi=683;predmet=134070;lang=cz",
+      "totalPass": 50,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 10,
+            "B": 7,
+            "C": 17,
+            "D": 7,
+            "E": 9,
+            "F": 1,
+            "FN": 0
+          },
+          "pass": 50,
+          "fail": 1
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.506Z"
+}

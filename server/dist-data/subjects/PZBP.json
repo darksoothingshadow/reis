@@ -1,0 +1,54 @@
+{
+  "courseCode": "PZBP",
+  "stats": [
+    {
+      "semesterName": "LS 2022/2023 - FRRMS",
+      "semesterId": "715",
+      "year": 2022,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=715;predmet=142148;lang=cz",
+      "totalPass": 84,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 8,
+            "B": 13,
+            "C": 25,
+            "D": 27,
+            "E": 11,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 84,
+          "fail": 0
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2023/2024 - FRRMS",
+      "semesterId": "757",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=757;predmet=151241;lang=cz",
+      "totalPass": 68,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 10,
+            "B": 14,
+            "C": 12,
+            "D": 16,
+            "E": 16,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 68,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.608Z"
+}

@@ -1,0 +1,54 @@
+{
+  "courseCode": "BIVIN",
+  "stats": [
+    {
+      "semesterName": "ZS 2021/2022 - ZF",
+      "semesterId": "652",
+      "year": 2021,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=60;obdobi=652;predmet=129290;lang=cz",
+      "totalPass": 51,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 20,
+            "B": 10,
+            "C": 14,
+            "D": 6,
+            "E": 1,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 51,
+          "fail": 0
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2023/2024 - ZF",
+      "semesterId": "735",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=60;obdobi=735;predmet=146426;lang=cz",
+      "totalPass": 42,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 19,
+            "B": 11,
+            "C": 10,
+            "D": 0,
+            "E": 2,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 42,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.219Z"
+}

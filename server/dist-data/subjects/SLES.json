@@ -1,0 +1,54 @@
+{
+  "courseCode": "SLES",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - FRRMS",
+      "semesterId": "672",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=672;predmet=152813;lang=cz",
+      "totalPass": 149,
+      "totalFail": 13,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 11,
+            "B": 12,
+            "C": 33,
+            "D": 25,
+            "E": 68,
+            "F": 6,
+            "FN": 7
+          },
+          "pass": 149,
+          "fail": 13
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2023/2024 - FRRMS",
+      "semesterId": "737",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=737;predmet=146753;lang=cz",
+      "totalPass": 223,
+      "totalFail": 2,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 19,
+            "B": 27,
+            "C": 51,
+            "D": 52,
+            "E": 74,
+            "F": 0,
+            "FN": 2
+          },
+          "pass": 223,
+          "fail": 2
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.638Z"
+}

@@ -1,0 +1,54 @@
+{
+  "courseCode": "MECHZM",
+  "stats": [
+    {
+      "semesterName": "LS 2022/2023 - AF",
+      "semesterId": "727",
+      "year": 2022,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=727;predmet=141647;lang=cz",
+      "totalPass": 10,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 2,
+            "B": 3,
+            "C": 3,
+            "D": 2,
+            "E": 0,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 10,
+          "fail": 0
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2023/2024 - AF",
+      "semesterId": "752",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=752;predmet=150733;lang=cz",
+      "totalPass": 13,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 2,
+            "B": 3,
+            "C": 2,
+            "D": 2,
+            "E": 4,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 13,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.544Z"
+}

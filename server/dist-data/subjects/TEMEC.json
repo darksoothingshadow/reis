@@ -1,0 +1,30 @@
+{
+  "courseCode": "TEMEC",
+  "stats": [
+    {
+      "semesterName": "LS 2024/2025 - AF",
+      "semesterId": "779",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=779;predmet=157167;lang=cz",
+      "totalPass": 48,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 2,
+            "B": 9,
+            "C": 6,
+            "D": 14,
+            "E": 17,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 48,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.656Z"
+}

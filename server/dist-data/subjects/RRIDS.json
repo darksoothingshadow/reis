@@ -1,0 +1,54 @@
+{
+  "courseCode": "RRIDS",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - FRRMS",
+      "semesterId": "672",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=672;predmet=152817;lang=cz",
+      "totalPass": 143,
+      "totalFail": 26,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 13,
+            "B": 21,
+            "C": 36,
+            "D": 33,
+            "E": 40,
+            "F": 21,
+            "FN": 5
+          },
+          "pass": 143,
+          "fail": 26
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2023/2024 - FRRMS",
+      "semesterId": "737",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=737;predmet=146011;lang=cz",
+      "totalPass": 111,
+      "totalFail": 21,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 9,
+            "B": 17,
+            "C": 27,
+            "D": 21,
+            "E": 37,
+            "F": 19,
+            "FN": 2
+          },
+          "pass": 111,
+          "fail": 21
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.618Z"
+}

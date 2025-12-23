@@ -1,0 +1,30 @@
+{
+  "courseCode": "MKII",
+  "stats": [
+    {
+      "semesterName": "ZS 2021/2022 - ZF",
+      "semesterId": "652",
+      "year": 2021,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=60;obdobi=652;predmet=131858;lang=cz",
+      "totalPass": 6,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 0,
+            "B": 3,
+            "C": 3,
+            "D": 0,
+            "E": 0,
+            "F": 0,
+            "FN": 1
+          },
+          "pass": 6,
+          "fail": 1
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.551Z"
+}

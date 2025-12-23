@@ -1,0 +1,30 @@
+{
+  "courseCode": "CHE",
+  "stats": [
+    {
+      "semesterName": "ZS 2023/2024 - AF",
+      "semesterId": "733",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=733;predmet=146764;lang=cz",
+      "totalPass": 19,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 0,
+            "B": 0,
+            "C": 4,
+            "D": 7,
+            "E": 8,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 19,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.232Z"
+}

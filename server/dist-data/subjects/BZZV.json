@@ -1,0 +1,54 @@
+{
+  "courseCode": "BZZV",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - AF",
+      "semesterId": "704",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=704;predmet=152544;lang=cz",
+      "totalPass": 52,
+      "totalFail": 11,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 6,
+            "B": 7,
+            "C": 17,
+            "D": 9,
+            "E": 13,
+            "F": 4,
+            "FN": 7
+          },
+          "pass": 52,
+          "fail": 11
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2023/2024 - AF",
+      "semesterId": "733",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=733;predmet=146726;lang=cz",
+      "totalPass": 33,
+      "totalFail": 15,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 5,
+            "B": 7,
+            "C": 10,
+            "D": 7,
+            "E": 4,
+            "F": 11,
+            "FN": 4
+          },
+          "pass": 33,
+          "fail": 15
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.227Z"
+}

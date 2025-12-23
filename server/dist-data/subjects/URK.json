@@ -1,0 +1,30 @@
+{
+  "courseCode": "URK",
+  "stats": [
+    {
+      "semesterName": "ZS 2021/2022 - ZF",
+      "semesterId": "652",
+      "year": 2021,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=60;obdobi=652;predmet=129410;lang=cz",
+      "totalPass": 18,
+      "totalFail": 2,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 5,
+            "B": 6,
+            "C": 4,
+            "D": 2,
+            "E": 1,
+            "F": 0,
+            "FN": 2
+          },
+          "pass": 18,
+          "fail": 2
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.671Z"
+}

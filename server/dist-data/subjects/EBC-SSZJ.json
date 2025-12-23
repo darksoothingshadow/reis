@@ -42,50 +42,23 @@
       "semesterName": "ZS 2023/2024 - PEF",
       "semesterId": "734",
       "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=2;obdobi=734;predmet=147463;lang=cz",
       "totalPass": 23,
-      "totalFail": 12,
+      "totalFail": 1,
       "terms": [
         {
-          "term": "termín 1",
+          "term": "Všechny termíny",
           "grades": {
             "A": 4,
-            "B": 3,
-            "C": 6,
-            "D": 3,
+            "B": 4,
+            "C": 9,
+            "D": 6,
             "E": 0,
-            "F": 7,
-            "FN": 1
-          },
-          "pass": 16,
-          "fail": 8
-        },
-        {
-          "term": "termín 2",
-          "grades": {
-            "A": 0,
-            "B": 0,
-            "C": 2,
-            "D": 2,
-            "E": 0,
-            "F": 4,
+            "F": 1,
             "FN": 0
           },
-          "pass": 4,
-          "fail": 4
-        },
-        {
-          "term": "termín 3",
-          "grades": {
-            "A": 0,
-            "B": 1,
-            "C": 1,
-            "D": 1,
-            "E": 0,
-            "F": 0,
-            "FN": 0
-          },
-          "pass": 3,
-          "fail": 0
+          "pass": 23,
+          "fail": 1
         }
       ]
     },
@@ -93,39 +66,26 @@
       "semesterName": "ZS 2024/2025 - PEF",
       "semesterId": "754",
       "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=2;obdobi=754;predmet=154355;lang=cz",
       "totalPass": 18,
-      "totalFail": 10,
+      "totalFail": 8,
       "terms": [
         {
-          "term": "termín 1",
+          "term": "Všechny termíny",
           "grades": {
             "A": 3,
-            "B": 5,
+            "B": 6,
             "C": 4,
-            "D": 3,
+            "D": 4,
             "E": 1,
-            "F": 3,
+            "F": 1,
             "FN": 7
           },
-          "pass": 16,
-          "fail": 10
-        },
-        {
-          "term": "termín 2",
-          "grades": {
-            "A": 0,
-            "B": 1,
-            "C": 0,
-            "D": 1,
-            "E": 0,
-            "F": 0,
-            "FN": 0
-          },
-          "pass": 2,
-          "fail": 0
+          "pass": 18,
+          "fail": 8
         }
       ]
     }
   ],
-  "lastUpdated": "2025-12-23T08:58:37.986Z"
+  "lastUpdated": "2025-12-23T12:35:07.295Z"
 }

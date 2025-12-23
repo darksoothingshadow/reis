@@ -1,0 +1,30 @@
+{
+  "courseCode": "ZELIB",
+  "stats": [
+    {
+      "semesterName": "LS 2021/2022 - ZF",
+      "semesterId": "683",
+      "year": 2021,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=60;obdobi=683;predmet=134015;lang=cz",
+      "totalPass": 20,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 2,
+            "B": 4,
+            "C": 11,
+            "D": 2,
+            "E": 1,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 20,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.696Z"
+}

@@ -1,0 +1,54 @@
+{
+  "courseCode": "BOTAN",
+  "stats": [
+    {
+      "semesterName": "ZS 2021/2022 - ZF",
+      "semesterId": "652",
+      "year": 2021,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=60;obdobi=652;predmet=131883;lang=cz",
+      "totalPass": 12,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 0,
+            "B": 1,
+            "C": 2,
+            "D": 3,
+            "E": 6,
+            "F": 0,
+            "FN": 1
+          },
+          "pass": 12,
+          "fail": 1
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2021/2022 - ZF",
+      "semesterId": "683",
+      "year": 2021,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=60;obdobi=683;predmet=134114;lang=cz",
+      "totalPass": 22,
+      "totalFail": 2,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 0,
+            "B": 4,
+            "C": 9,
+            "D": 5,
+            "E": 4,
+            "F": 2,
+            "FN": 0
+          },
+          "pass": 22,
+          "fail": 2
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.221Z"
+}

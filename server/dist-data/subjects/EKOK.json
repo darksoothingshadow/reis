@@ -1,0 +1,54 @@
+{
+  "courseCode": "EKOK",
+  "stats": [
+    {
+      "semesterName": "LS 2023/2024 - AF",
+      "semesterId": "752",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=752;predmet=150759;lang=cz",
+      "totalPass": 11,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 1,
+            "E": 10,
+            "F": 1,
+            "FN": 0
+          },
+          "pass": 11,
+          "fail": 1
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2024/2025 - AF",
+      "semesterId": "779",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=779;predmet=157323;lang=cz",
+      "totalPass": 45,
+      "totalFail": 5,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 8,
+            "B": 5,
+            "C": 6,
+            "D": 8,
+            "E": 18,
+            "F": 0,
+            "FN": 5
+          },
+          "pass": 45,
+          "fail": 5
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.322Z"
+}

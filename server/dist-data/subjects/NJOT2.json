@@ -1,0 +1,30 @@
+{
+  "courseCode": "NJOT2",
+  "stats": [
+    {
+      "semesterName": "LS 2021/2022 - ZF",
+      "semesterId": "683",
+      "year": 2021,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=60;obdobi=683;predmet=134021;lang=cz",
+      "totalPass": 6,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 2,
+            "B": 4,
+            "C": 0,
+            "D": 0,
+            "E": 0,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 6,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.563Z"
+}

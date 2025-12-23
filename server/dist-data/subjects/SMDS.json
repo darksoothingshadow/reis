@@ -1,0 +1,54 @@
+{
+  "courseCode": "SMDS",
+  "stats": [
+    {
+      "semesterName": "ZS 2023/2024 - LDF",
+      "semesterId": "732",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=732;predmet=147279;lang=cz",
+      "totalPass": 98,
+      "totalFail": 7,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 17,
+            "B": 14,
+            "C": 19,
+            "D": 20,
+            "E": 28,
+            "F": 3,
+            "FN": 4
+          },
+          "pass": 98,
+          "fail": 7
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2024/2025 - LDF",
+      "semesterId": "765",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=765;predmet=153489;lang=cz",
+      "totalPass": 114,
+      "totalFail": 3,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 17,
+            "B": 24,
+            "C": 22,
+            "D": 19,
+            "E": 32,
+            "F": 1,
+            "FN": 2
+          },
+          "pass": 114,
+          "fail": 3
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.640Z"
+}

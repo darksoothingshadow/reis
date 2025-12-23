@@ -1,0 +1,54 @@
+{
+  "courseCode": "MFYHZ",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - AF",
+      "semesterId": "704",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=704;predmet=152727;lang=cz",
+      "totalPass": 33,
+      "totalFail": 12,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 5,
+            "B": 2,
+            "C": 11,
+            "D": 6,
+            "E": 9,
+            "F": 6,
+            "FN": 6
+          },
+          "pass": 33,
+          "fail": 12
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2023/2024 - AF",
+      "semesterId": "733",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=733;predmet=146777;lang=cz",
+      "totalPass": 44,
+      "totalFail": 12,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 15,
+            "B": 7,
+            "C": 8,
+            "D": 5,
+            "E": 9,
+            "F": 9,
+            "FN": 3
+          },
+          "pass": 44,
+          "fail": 12
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.549Z"
+}

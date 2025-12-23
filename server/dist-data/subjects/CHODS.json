@@ -1,0 +1,54 @@
+{
+  "courseCode": "CHODS",
+  "stats": [
+    {
+      "semesterName": "ZS 2023/2024 - LDF",
+      "semesterId": "732",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=732;predmet=147255;lang=cz",
+      "totalPass": 36,
+      "totalFail": 65,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 0,
+            "B": 0,
+            "C": 3,
+            "D": 4,
+            "E": 29,
+            "F": 55,
+            "FN": 10
+          },
+          "pass": 36,
+          "fail": 65
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2024/2025 - LDF",
+      "semesterId": "765",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=765;predmet=153504;lang=cz",
+      "totalPass": 49,
+      "totalFail": 54,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 0,
+            "B": 1,
+            "C": 3,
+            "D": 9,
+            "E": 36,
+            "F": 41,
+            "FN": 13
+          },
+          "pass": 49,
+          "fail": 54
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.234Z"
+}

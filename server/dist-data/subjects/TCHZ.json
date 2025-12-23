@@ -1,0 +1,30 @@
+{
+  "courseCode": "TCHZ",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - LDF",
+      "semesterId": "765",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=765;predmet=154431;lang=cz",
+      "totalPass": 8,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 2,
+            "B": 1,
+            "C": 3,
+            "D": 1,
+            "E": 1,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 8,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.653Z"
+}

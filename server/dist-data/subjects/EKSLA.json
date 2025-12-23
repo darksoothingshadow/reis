@@ -1,0 +1,54 @@
+{
+  "courseCode": "EKSLA",
+  "stats": [
+    {
+      "semesterName": "ZS 2023/2024 - FRRMS",
+      "semesterId": "737",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=737;predmet=146839;lang=cz",
+      "totalPass": 11,
+      "totalFail": 2,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 1,
+            "B": 2,
+            "C": 2,
+            "D": 2,
+            "E": 4,
+            "F": 0,
+            "FN": 2
+          },
+          "pass": 11,
+          "fail": 2
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2024/2025 - FRRMS",
+      "semesterId": "778",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=778;predmet=157780;lang=cz",
+      "totalPass": 14,
+      "totalFail": 3,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 5,
+            "B": 5,
+            "C": 1,
+            "D": 3,
+            "E": 0,
+            "F": 0,
+            "FN": 3
+          },
+          "pass": 14,
+          "fail": 3
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.326Z"
+}

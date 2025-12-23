@@ -1,0 +1,30 @@
+{
+  "courseCode": "DTOV",
+  "stats": [
+    {
+      "semesterName": "ZS 2023/2024 - ICV",
+      "semesterId": "741",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=220;obdobi=741;predmet=147549;lang=cz",
+      "totalPass": 22,
+      "totalFail": 6,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 9,
+            "B": 9,
+            "C": 2,
+            "D": 2,
+            "E": 0,
+            "F": 0,
+            "FN": 6
+          },
+          "pass": 22,
+          "fail": 6
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.248Z"
+}

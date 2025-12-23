@@ -1,0 +1,30 @@
+{
+  "courseCode": "FIRSA",
+  "stats": [
+    {
+      "semesterName": "ZS 2023/2024 - FRRMS",
+      "semesterId": "737",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=737;predmet=145991;lang=cz",
+      "totalPass": 28,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 3,
+            "B": 6,
+            "C": 13,
+            "D": 6,
+            "E": 0,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 28,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.477Z"
+}

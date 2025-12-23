@@ -1,0 +1,54 @@
+{
+  "courseCode": "RRMAE",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - FRRMS",
+      "semesterId": "672",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=672;predmet=152818;lang=cz",
+      "totalPass": 200,
+      "totalFail": 9,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 27,
+            "B": 27,
+            "C": 51,
+            "D": 49,
+            "E": 46,
+            "F": 3,
+            "FN": 6
+          },
+          "pass": 200,
+          "fail": 9
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2023/2024 - FRRMS",
+      "semesterId": "737",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=737;predmet=146006;lang=cz",
+      "totalPass": 206,
+      "totalFail": 11,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 27,
+            "B": 15,
+            "C": 42,
+            "D": 51,
+            "E": 71,
+            "F": 7,
+            "FN": 4
+          },
+          "pass": 206,
+          "fail": 11
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.619Z"
+}

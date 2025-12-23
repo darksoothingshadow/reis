@@ -1,0 +1,54 @@
+{
+  "courseCode": "SAJ2",
+  "stats": [
+    {
+      "semesterName": "LS 2022/2023 - LDF",
+      "semesterId": "725",
+      "year": 2022,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=725;predmet=140827;lang=cz",
+      "totalPass": 319,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 115,
+            "B": 123,
+            "C": 47,
+            "D": 28,
+            "E": 6,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 319,
+          "fail": 0
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2024/2025 - LDF",
+      "semesterId": "777",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=777;predmet=156665;lang=cz",
+      "totalPass": 323,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 97,
+            "B": 101,
+            "C": 65,
+            "D": 33,
+            "E": 27,
+            "F": 0,
+            "FN": 1
+          },
+          "pass": 323,
+          "fail": 1
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.630Z"
+}

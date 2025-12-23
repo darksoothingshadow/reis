@@ -1,0 +1,54 @@
+{
+  "courseCode": "EUPDV",
+  "stats": [
+    {
+      "semesterName": "LS 2022/2023 - FRRMS",
+      "semesterId": "715",
+      "year": 2022,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=715;predmet=142234;lang=cz",
+      "totalPass": 21,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 9,
+            "B": 7,
+            "C": 4,
+            "D": 0,
+            "E": 1,
+            "F": 0,
+            "FN": 1
+          },
+          "pass": 21,
+          "fail": 1
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2023/2024 - FRRMS",
+      "semesterId": "757",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=757;predmet=151644;lang=cz",
+      "totalPass": 18,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 5,
+            "B": 4,
+            "C": 8,
+            "D": 1,
+            "E": 0,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 18,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.470Z"
+}

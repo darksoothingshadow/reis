@@ -1,0 +1,30 @@
+{
+  "courseCode": "INTEP",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - ZF",
+      "semesterId": "763",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=60;obdobi=763;predmet=154081;lang=cz",
+      "totalPass": 18,
+      "totalFail": 2,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 8,
+            "B": 5,
+            "C": 4,
+            "D": 1,
+            "E": 0,
+            "F": 1,
+            "FN": 1
+          },
+          "pass": 18,
+          "fail": 2
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.517Z"
+}

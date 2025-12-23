@@ -1,0 +1,54 @@
+{
+  "courseCode": "NTM",
+  "stats": [
+    {
+      "semesterName": "LS 2023/2024 - LDF",
+      "semesterId": "758",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=758;predmet=150901;lang=cz",
+      "totalPass": 37,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 8,
+            "B": 6,
+            "C": 13,
+            "D": 6,
+            "E": 4,
+            "F": 1,
+            "FN": 0
+          },
+          "pass": 37,
+          "fail": 1
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2024/2025 - LDF",
+      "semesterId": "777",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=777;predmet=156742;lang=cz",
+      "totalPass": 62,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 31,
+            "B": 12,
+            "C": 11,
+            "D": 6,
+            "E": 2,
+            "F": 1,
+            "FN": 0
+          },
+          "pass": 62,
+          "fail": 1
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.567Z"
+}

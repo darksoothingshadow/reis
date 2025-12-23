@@ -1,0 +1,54 @@
+{
+  "courseCode": "HYDR",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - AF",
+      "semesterId": "704",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=704;predmet=152699;lang=cz",
+      "totalPass": 32,
+      "totalFail": 3,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 8,
+            "B": 8,
+            "C": 11,
+            "D": 2,
+            "E": 3,
+            "F": 3,
+            "FN": 0
+          },
+          "pass": 32,
+          "fail": 3
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2023/2024 - AF",
+      "semesterId": "733",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=733;predmet=146762;lang=cz",
+      "totalPass": 39,
+      "totalFail": 2,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 7,
+            "B": 15,
+            "C": 11,
+            "D": 2,
+            "E": 4,
+            "F": 2,
+            "FN": 0
+          },
+          "pass": 39,
+          "fail": 2
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.514Z"
+}

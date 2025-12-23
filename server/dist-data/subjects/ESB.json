@@ -1,0 +1,54 @@
+{
+  "courseCode": "ESB",
+  "stats": [
+    {
+      "semesterName": "LS 2022/2023 - LDF",
+      "semesterId": "725",
+      "year": 2022,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=725;predmet=140832;lang=cz",
+      "totalPass": 65,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 28,
+            "B": 19,
+            "C": 9,
+            "D": 5,
+            "E": 4,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 65,
+          "fail": 0
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2023/2024 - LDF",
+      "semesterId": "758",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=758;predmet=150822;lang=cz",
+      "totalPass": 64,
+      "totalFail": 2,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 7,
+            "B": 6,
+            "C": 14,
+            "D": 23,
+            "E": 14,
+            "F": 2,
+            "FN": 0
+          },
+          "pass": 64,
+          "fail": 2
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.467Z"
+}

@@ -1,0 +1,54 @@
+{
+  "courseCode": "PFAP",
+  "stats": [
+    {
+      "semesterName": "ZS 2023/2024 - ICV",
+      "semesterId": "741",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=220;obdobi=741;predmet=147564;lang=cz",
+      "totalPass": 41,
+      "totalFail": 5,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 13,
+            "B": 11,
+            "C": 10,
+            "D": 2,
+            "E": 5,
+            "F": 0,
+            "FN": 5
+          },
+          "pass": 41,
+          "fail": 5
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2024/2025 - ICV",
+      "semesterId": "749",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=220;obdobi=749;predmet=154485;lang=cz",
+      "totalPass": 55,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 20,
+            "B": 19,
+            "C": 12,
+            "D": 3,
+            "E": 1,
+            "F": 0,
+            "FN": 1
+          },
+          "pass": 55,
+          "fail": 1
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.584Z"
+}

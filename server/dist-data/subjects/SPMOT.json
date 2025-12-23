@@ -1,0 +1,54 @@
+{
+  "courseCode": "SPMOT",
+  "stats": [
+    {
+      "semesterName": "LS 2022/2023 - AF",
+      "semesterId": "727",
+      "year": 2022,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=727;predmet=141762;lang=cz",
+      "totalPass": 25,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 3,
+            "B": 3,
+            "C": 6,
+            "D": 10,
+            "E": 3,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 25,
+          "fail": 0
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2023/2024 - AF",
+      "semesterId": "752",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=752;predmet=150766;lang=cz",
+      "totalPass": 25,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 11,
+            "B": 6,
+            "C": 3,
+            "D": 1,
+            "E": 4,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 25,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.644Z"
+}

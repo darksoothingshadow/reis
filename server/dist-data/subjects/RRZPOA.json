@@ -1,0 +1,30 @@
+{
+  "courseCode": "RRZPOA",
+  "stats": [
+    {
+      "semesterName": "LS 2022/2023 - FRRMS",
+      "semesterId": "715",
+      "year": 2022,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=715;predmet=142254;lang=cz",
+      "totalPass": 3,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 0,
+            "B": 0,
+            "C": 1,
+            "D": 1,
+            "E": 1,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 3,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.629Z"
+}

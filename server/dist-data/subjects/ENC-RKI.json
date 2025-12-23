@@ -42,39 +42,26 @@
       "semesterName": "ZS 2023/2024 - PEF",
       "semesterId": "734",
       "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=2;obdobi=734;predmet=143700;lang=cz",
       "totalPass": 67,
-      "totalFail": 18,
+      "totalFail": 4,
       "terms": [
         {
-          "term": "termín 1",
+          "term": "Všechny termíny",
           "grades": {
-            "A": 13,
-            "B": 19,
-            "C": 13,
-            "D": 5,
-            "E": 3,
-            "F": 14,
+            "A": 15,
+            "B": 23,
+            "C": 16,
+            "D": 9,
+            "E": 4,
+            "F": 0,
             "FN": 4
           },
-          "pass": 53,
-          "fail": 18
-        },
-        {
-          "term": "termín 2",
-          "grades": {
-            "A": 2,
-            "B": 4,
-            "C": 3,
-            "D": 4,
-            "E": 1,
-            "F": 0,
-            "FN": 0
-          },
-          "pass": 14,
-          "fail": 0
+          "pass": 67,
+          "fail": 4
         }
       ]
     }
   ],
-  "lastUpdated": "2025-12-23T08:58:38.037Z"
+  "lastUpdated": "2025-12-23T12:35:07.428Z"
 }

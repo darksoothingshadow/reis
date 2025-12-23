@@ -1,0 +1,30 @@
+{
+  "courseCode": "SRK",
+  "stats": [
+    {
+      "semesterName": "ZS 2023/2024 - LDF",
+      "semesterId": "732",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=732;predmet=147041;lang=cz",
+      "totalPass": 24,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 6,
+            "B": 6,
+            "C": 12,
+            "D": 0,
+            "E": 0,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 24,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.645Z"
+}

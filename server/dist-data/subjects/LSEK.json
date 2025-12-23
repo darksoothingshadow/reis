@@ -1,0 +1,54 @@
+{
+  "courseCode": "LSEK",
+  "stats": [
+    {
+      "semesterName": "LS 2022/2023 - LDF",
+      "semesterId": "725",
+      "year": 2022,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=725;predmet=140904;lang=cz",
+      "totalPass": 52,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 6,
+            "B": 9,
+            "C": 17,
+            "D": 11,
+            "E": 9,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 52,
+          "fail": 0
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2024/2025 - LDF",
+      "semesterId": "777",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=777;predmet=156732;lang=cz",
+      "totalPass": 40,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 5,
+            "B": 10,
+            "C": 10,
+            "D": 7,
+            "E": 8,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 40,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.535Z"
+}

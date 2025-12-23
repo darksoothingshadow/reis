@@ -1,0 +1,54 @@
+{
+  "courseCode": "AHIZ-VS",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - AF",
+      "semesterId": "704",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=704;predmet=152713;lang=cz",
+      "totalPass": 44,
+      "totalFail": 7,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 25,
+            "B": 5,
+            "C": 7,
+            "D": 2,
+            "E": 5,
+            "F": 7,
+            "FN": 0
+          },
+          "pass": 44,
+          "fail": 7
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2023/2024 - AF",
+      "semesterId": "733",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=733;predmet=146712;lang=cz",
+      "totalPass": 34,
+      "totalFail": 13,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 21,
+            "B": 4,
+            "C": 4,
+            "D": 1,
+            "E": 4,
+            "F": 13,
+            "FN": 0
+          },
+          "pass": 34,
+          "fail": 13
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.204Z"
+}

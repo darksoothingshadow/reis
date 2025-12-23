@@ -1,0 +1,30 @@
+{
+  "courseCode": "PLNT",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - LDF",
+      "semesterId": "765",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=765;predmet=153320;lang=cz",
+      "totalPass": 22,
+      "totalFail": 3,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 4,
+            "B": 6,
+            "C": 11,
+            "D": 1,
+            "E": 0,
+            "F": 0,
+            "FN": 3
+          },
+          "pass": 22,
+          "fail": 3
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.586Z"
+}

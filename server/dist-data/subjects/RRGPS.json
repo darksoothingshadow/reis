@@ -1,0 +1,78 @@
+{
+  "courseCode": "RRGPS",
+  "stats": [
+    {
+      "semesterName": "LS 2022/2023 - FRRMS",
+      "semesterId": "715",
+      "year": 2022,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=715;predmet=142140;lang=cz",
+      "totalPass": 81,
+      "totalFail": 4,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 4,
+            "B": 19,
+            "C": 12,
+            "D": 19,
+            "E": 27,
+            "F": 4,
+            "FN": 0
+          },
+          "pass": 81,
+          "fail": 4
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2023/2024 - FRRMS",
+      "semesterId": "757",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=757;predmet=151231;lang=cz",
+      "totalPass": 77,
+      "totalFail": 4,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 0,
+            "B": 4,
+            "C": 16,
+            "D": 27,
+            "E": 30,
+            "F": 2,
+            "FN": 2
+          },
+          "pass": 77,
+          "fail": 4
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2024/2025 - FRRMS",
+      "semesterId": "778",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=778;predmet=157588;lang=cz",
+      "totalPass": 99,
+      "totalFail": 9,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 5,
+            "B": 5,
+            "C": 21,
+            "D": 28,
+            "E": 40,
+            "F": 5,
+            "FN": 4
+          },
+          "pass": 99,
+          "fail": 9
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.618Z"
+}

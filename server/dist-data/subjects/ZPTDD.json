@@ -1,0 +1,54 @@
+{
+  "courseCode": "ZPTDD",
+  "stats": [
+    {
+      "semesterName": "LS 2022/2023 - LDF",
+      "semesterId": "725",
+      "year": 2022,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=725;predmet=141050;lang=cz",
+      "totalPass": 46,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 3,
+            "B": 6,
+            "C": 22,
+            "D": 11,
+            "E": 4,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 46,
+          "fail": 0
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2024/2025 - LDF",
+      "semesterId": "777",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=777;predmet=156891;lang=cz",
+      "totalPass": 84,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 4,
+            "B": 27,
+            "C": 25,
+            "D": 16,
+            "E": 12,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 84,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.706Z"
+}

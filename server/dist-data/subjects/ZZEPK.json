@@ -1,0 +1,30 @@
+{
+  "courseCode": "ZZEPK",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - AF",
+      "semesterId": "704",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=704;predmet=153841;lang=cz",
+      "totalPass": 26,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 7,
+            "B": 9,
+            "C": 7,
+            "D": 1,
+            "E": 2,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 26,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.712Z"
+}

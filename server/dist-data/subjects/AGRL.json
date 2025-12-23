@@ -1,0 +1,54 @@
+{
+  "courseCode": "AGRL",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - AF",
+      "semesterId": "704",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=704;predmet=152701;lang=cz",
+      "totalPass": 38,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 16,
+            "B": 1,
+            "C": 12,
+            "D": 5,
+            "E": 4,
+            "F": 1,
+            "FN": 0
+          },
+          "pass": 38,
+          "fail": 1
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2023/2024 - AF",
+      "semesterId": "733",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=733;predmet=146710;lang=cz",
+      "totalPass": 40,
+      "totalFail": 3,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 15,
+            "B": 5,
+            "C": 11,
+            "D": 1,
+            "E": 8,
+            "F": 2,
+            "FN": 1
+          },
+          "pass": 40,
+          "fail": 3
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.201Z"
+}

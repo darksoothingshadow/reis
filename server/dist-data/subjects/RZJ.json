@@ -1,0 +1,30 @@
+{
+  "courseCode": "RZJ",
+  "stats": [
+    {
+      "semesterName": "ZS 2023/2024 - LDF",
+      "semesterId": "732",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=732;predmet=147099;lang=cz",
+      "totalPass": 14,
+      "totalFail": 2,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 2,
+            "B": 4,
+            "C": 2,
+            "D": 4,
+            "E": 2,
+            "F": 1,
+            "FN": 1
+          },
+          "pass": 14,
+          "fail": 2
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.630Z"
+}

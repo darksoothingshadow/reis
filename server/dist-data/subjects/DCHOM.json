@@ -1,0 +1,102 @@
+{
+  "courseCode": "DCHOM",
+  "stats": [
+    {
+      "semesterName": "ZS 2021/2022 - ZF",
+      "semesterId": "652",
+      "year": 2021,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=60;obdobi=652;predmet=129478;lang=cz",
+      "totalPass": 46,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 6,
+            "B": 6,
+            "C": 8,
+            "D": 12,
+            "E": 14,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 46,
+          "fail": 0
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2022/2023 - ZF",
+      "semesterId": "693",
+      "year": 2022,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=60;obdobi=693;predmet=137039;lang=cz",
+      "totalPass": 64,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 3,
+            "B": 4,
+            "C": 24,
+            "D": 19,
+            "E": 14,
+            "F": 1,
+            "FN": 0
+          },
+          "pass": 64,
+          "fail": 1
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2023/2024 - ZF",
+      "semesterId": "735",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=60;obdobi=735;predmet=146528;lang=cz",
+      "totalPass": 49,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 10,
+            "B": 15,
+            "C": 13,
+            "D": 8,
+            "E": 3,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 49,
+          "fail": 0
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2024/2025 - ZF",
+      "semesterId": "763",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=60;obdobi=763;predmet=154109;lang=cz",
+      "totalPass": 58,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 7,
+            "B": 19,
+            "C": 11,
+            "D": 8,
+            "E": 13,
+            "F": 0,
+            "FN": 1
+          },
+          "pass": 58,
+          "fail": 1
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.241Z"
+}

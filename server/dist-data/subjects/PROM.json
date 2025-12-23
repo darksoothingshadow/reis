@@ -1,0 +1,54 @@
+{
+  "courseCode": "PROM",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - FRRMS",
+      "semesterId": "672",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=672;predmet=153867;lang=cz",
+      "totalPass": 89,
+      "totalFail": 4,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 11,
+            "B": 23,
+            "C": 26,
+            "D": 20,
+            "E": 9,
+            "F": 3,
+            "FN": 1
+          },
+          "pass": 89,
+          "fail": 4
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2023/2024 - FRRMS",
+      "semesterId": "737",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=737;predmet=145995;lang=cz",
+      "totalPass": 78,
+      "totalFail": 3,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 9,
+            "B": 18,
+            "C": 22,
+            "D": 16,
+            "E": 13,
+            "F": 2,
+            "FN": 1
+          },
+          "pass": 78,
+          "fail": 3
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.599Z"
+}

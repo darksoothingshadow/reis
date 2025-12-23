@@ -1,0 +1,78 @@
+{
+  "courseCode": "GEOD",
+  "stats": [
+    {
+      "semesterName": "LS 2022/2023 - AF",
+      "semesterId": "727",
+      "year": 2022,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=727;predmet=141361;lang=cz",
+      "totalPass": 33,
+      "totalFail": 2,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 7,
+            "B": 7,
+            "C": 5,
+            "D": 6,
+            "E": 8,
+            "F": 0,
+            "FN": 2
+          },
+          "pass": 33,
+          "fail": 2
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2023/2024 - AF",
+      "semesterId": "752",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=752;predmet=150549;lang=cz",
+      "totalPass": 25,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 3,
+            "B": 7,
+            "C": 4,
+            "D": 10,
+            "E": 1,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 25,
+          "fail": 0
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2024/2025 - AF",
+      "semesterId": "779",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=779;predmet=157163;lang=cz",
+      "totalPass": 33,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 3,
+            "B": 6,
+            "C": 8,
+            "D": 3,
+            "E": 13,
+            "F": 0,
+            "FN": 1
+          },
+          "pass": 33,
+          "fail": 1
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.507Z"
+}

@@ -1,0 +1,30 @@
+{
+  "courseCode": "LZAP",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - ICV",
+      "semesterId": "749",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=220;obdobi=749;predmet=154451;lang=cz",
+      "totalPass": 37,
+      "totalFail": 2,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 16,
+            "B": 6,
+            "C": 9,
+            "D": 6,
+            "E": 0,
+            "F": 0,
+            "FN": 2
+          },
+          "pass": 37,
+          "fail": 2
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.537Z"
+}

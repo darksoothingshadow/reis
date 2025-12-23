@@ -1,0 +1,30 @@
+{
+  "courseCode": "CHVZZ",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - AF",
+      "semesterId": "704",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=704;predmet=152610;lang=cz",
+      "totalPass": 21,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 8,
+            "B": 4,
+            "C": 4,
+            "D": 2,
+            "E": 3,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 21,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.236Z"
+}

@@ -1,0 +1,54 @@
+{
+  "courseCode": "EFDR",
+  "stats": [
+    {
+      "semesterName": "LS 2022/2023 - LDF",
+      "semesterId": "725",
+      "year": 2022,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=725;predmet=140822;lang=cz",
+      "totalPass": 25,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 6,
+            "B": 8,
+            "C": 3,
+            "D": 3,
+            "E": 5,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 25,
+          "fail": 0
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2024/2025 - LDF",
+      "semesterId": "777",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=777;predmet=156660;lang=cz",
+      "totalPass": 34,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 4,
+            "B": 4,
+            "C": 11,
+            "D": 7,
+            "E": 8,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 34,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.314Z"
+}

@@ -1,0 +1,54 @@
+{
+  "courseCode": "OCHZP",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - AF",
+      "semesterId": "704",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=704;predmet=152626;lang=cz",
+      "totalPass": 239,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 46,
+            "B": 54,
+            "C": 61,
+            "D": 56,
+            "E": 22,
+            "F": 1,
+            "FN": 0
+          },
+          "pass": 239,
+          "fail": 1
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2023/2024 - AF",
+      "semesterId": "733",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=733;predmet=146376;lang=cz",
+      "totalPass": 128,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 13,
+            "B": 30,
+            "C": 32,
+            "D": 31,
+            "E": 22,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 128,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.569Z"
+}

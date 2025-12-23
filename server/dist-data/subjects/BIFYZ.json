@@ -1,0 +1,54 @@
+{
+  "courseCode": "BIFYZ",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - AF",
+      "semesterId": "704",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=704;predmet=153732;lang=cz",
+      "totalPass": 33,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 2,
+            "B": 6,
+            "C": 11,
+            "D": 10,
+            "E": 4,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 33,
+          "fail": 0
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2023/2024 - AF",
+      "semesterId": "733",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=733;predmet=147140;lang=cz",
+      "totalPass": 29,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 3,
+            "B": 6,
+            "C": 15,
+            "D": 2,
+            "E": 3,
+            "F": 1,
+            "FN": 0
+          },
+          "pass": 29,
+          "fail": 1
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.217Z"
+}

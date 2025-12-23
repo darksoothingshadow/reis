@@ -1,0 +1,54 @@
+{
+  "courseCode": "AJOT1",
+  "stats": [
+    {
+      "semesterName": "ZS 2021/2022 - ZF",
+      "semesterId": "652",
+      "year": 2021,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=60;obdobi=652;predmet=129289;lang=cz",
+      "totalPass": 111,
+      "totalFail": 41,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 34,
+            "B": 33,
+            "C": 3,
+            "D": 18,
+            "E": 23,
+            "F": 0,
+            "FN": 41
+          },
+          "pass": 111,
+          "fail": 41
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2022/2023 - ZF",
+      "semesterId": "693",
+      "year": 2022,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=60;obdobi=693;predmet=136906;lang=cz",
+      "totalPass": 101,
+      "totalFail": 12,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 54,
+            "B": 25,
+            "C": 15,
+            "D": 6,
+            "E": 1,
+            "F": 0,
+            "FN": 12
+          },
+          "pass": 101,
+          "fail": 12
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.205Z"
+}

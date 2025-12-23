@@ -1,0 +1,30 @@
+{
+  "courseCode": "DE3",
+  "stats": [
+    {
+      "semesterName": "LS 2021/2022 - ZF",
+      "semesterId": "683",
+      "year": 2021,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=60;obdobi=683;predmet=134644;lang=cz",
+      "totalPass": 12,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 0,
+            "B": 4,
+            "C": 4,
+            "D": 3,
+            "E": 1,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 12,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.241Z"
+}

@@ -1,0 +1,54 @@
+{
+  "courseCode": "RRODA",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - FRRMS",
+      "semesterId": "672",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=672;predmet=153850;lang=cz",
+      "totalPass": 104,
+      "totalFail": 5,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 1,
+            "B": 13,
+            "C": 18,
+            "D": 31,
+            "E": 41,
+            "F": 2,
+            "FN": 3
+          },
+          "pass": 104,
+          "fail": 5
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2023/2024 - FRRMS",
+      "semesterId": "737",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=737;predmet=146662;lang=cz",
+      "totalPass": 216,
+      "totalFail": 6,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 52,
+            "B": 90,
+            "C": 48,
+            "D": 17,
+            "E": 9,
+            "F": 2,
+            "FN": 4
+          },
+          "pass": 216,
+          "fail": 6
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.621Z"
+}

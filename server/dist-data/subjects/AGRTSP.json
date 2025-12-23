@@ -1,0 +1,30 @@
+{
+  "courseCode": "AGRTSP",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - AF",
+      "semesterId": "704",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=704;predmet=152794;lang=cz",
+      "totalPass": 53,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 39,
+            "B": 5,
+            "C": 5,
+            "D": 4,
+            "E": 0,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 53,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.202Z"
+}

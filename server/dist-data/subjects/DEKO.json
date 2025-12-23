@@ -1,0 +1,30 @@
+{
+  "courseCode": "DEKO",
+  "stats": [
+    {
+      "semesterName": "ZS 2023/2024 - LDF",
+      "semesterId": "732",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=732;predmet=146974;lang=cz",
+      "totalPass": 73,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 10,
+            "B": 23,
+            "C": 20,
+            "D": 12,
+            "E": 8,
+            "F": 1,
+            "FN": 0
+          },
+          "pass": 73,
+          "fail": 1
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.242Z"
+}

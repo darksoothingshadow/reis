@@ -1,0 +1,54 @@
+{
+  "courseCode": "ZEDOEV",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - AF",
+      "semesterId": "704",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=704;predmet=152731;lang=cz",
+      "totalPass": 87,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 12,
+            "B": 20,
+            "C": 20,
+            "D": 23,
+            "E": 12,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 87,
+          "fail": 0
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2023/2024 - AF",
+      "semesterId": "733",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=733;predmet=146806;lang=cz",
+      "totalPass": 69,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 14,
+            "B": 20,
+            "C": 18,
+            "D": 13,
+            "E": 4,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 69,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.696Z"
+}

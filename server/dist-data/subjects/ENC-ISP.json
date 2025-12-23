@@ -5,35 +5,22 @@
       "semesterName": "LS 2022/2023 - PEF",
       "semesterId": "717",
       "year": 2022,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=2;obdobi=717;predmet=140814;lang=cz",
       "totalPass": 41,
-      "totalFail": 2,
+      "totalFail": 0,
       "terms": [
         {
-          "term": "termín 1",
+          "term": "Všechny termíny",
           "grades": {
             "A": 9,
             "B": 10,
             "C": 12,
-            "D": 5,
+            "D": 7,
             "E": 3,
-            "F": 2,
-            "FN": 0
-          },
-          "pass": 39,
-          "fail": 2
-        },
-        {
-          "term": "termín 2",
-          "grades": {
-            "A": 0,
-            "B": 0,
-            "C": 0,
-            "D": 2,
-            "E": 0,
             "F": 0,
             "FN": 0
           },
-          "pass": 2,
+          "pass": 41,
           "fail": 0
         }
       ]
@@ -42,39 +29,26 @@
       "semesterName": "LS 2023/2024 - PEF",
       "semesterId": "753",
       "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=2;obdobi=753;predmet=151493;lang=cz",
       "totalPass": 35,
-      "totalFail": 2,
+      "totalFail": 1,
       "terms": [
         {
-          "term": "termín 1",
+          "term": "Všechny termíny",
           "grades": {
             "A": 11,
             "B": 7,
-            "C": 8,
+            "C": 9,
             "D": 5,
             "E": 3,
-            "F": 1,
+            "F": 0,
             "FN": 1
           },
-          "pass": 34,
-          "fail": 2
-        },
-        {
-          "term": "termín 2",
-          "grades": {
-            "A": 0,
-            "B": 0,
-            "C": 1,
-            "D": 0,
-            "E": 0,
-            "F": 0,
-            "FN": 0
-          },
-          "pass": 1,
-          "fail": 0
+          "pass": 35,
+          "fail": 1
         }
       ]
     }
   ],
-  "lastUpdated": "2025-12-23T08:58:38.025Z"
+  "lastUpdated": "2025-12-23T12:35:07.390Z"
 }

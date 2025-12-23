@@ -1,0 +1,30 @@
+{
+  "courseCode": "VKNB",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - LDF",
+      "semesterId": "765",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=765;predmet=153322;lang=cz",
+      "totalPass": 57,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 27,
+            "B": 18,
+            "C": 9,
+            "D": 3,
+            "E": 0,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 57,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.678Z"
+}

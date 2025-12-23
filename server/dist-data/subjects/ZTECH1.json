@@ -1,0 +1,54 @@
+{
+  "courseCode": "ZTECH1",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - AF",
+      "semesterId": "704",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=704;predmet=152692;lang=cz",
+      "totalPass": 48,
+      "totalFail": 2,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 8,
+            "B": 8,
+            "C": 8,
+            "D": 7,
+            "E": 17,
+            "F": 0,
+            "FN": 2
+          },
+          "pass": 48,
+          "fail": 2
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2023/2024 - AF",
+      "semesterId": "733",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=733;predmet=146418;lang=cz",
+      "totalPass": 47,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 6,
+            "B": 9,
+            "C": 11,
+            "D": 15,
+            "E": 6,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 47,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.708Z"
+}

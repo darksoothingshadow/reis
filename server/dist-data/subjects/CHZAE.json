@@ -1,0 +1,54 @@
+{
+  "courseCode": "CHZAE",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - AF",
+      "semesterId": "704",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=704;predmet=153720;lang=cz",
+      "totalPass": 27,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 7,
+            "B": 5,
+            "C": 9,
+            "D": 1,
+            "E": 5,
+            "F": 0,
+            "FN": 1
+          },
+          "pass": 27,
+          "fail": 1
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2023/2024 - AF",
+      "semesterId": "733",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=733;predmet=147129;lang=cz",
+      "totalPass": 32,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 4,
+            "B": 6,
+            "C": 11,
+            "D": 5,
+            "E": 6,
+            "F": 0,
+            "FN": 1
+          },
+          "pass": 32,
+          "fail": 1
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.237Z"
+}

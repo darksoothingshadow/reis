@@ -1,0 +1,30 @@
+{
+  "courseCode": "DROV",
+  "stats": [
+    {
+      "semesterName": "ZS 2023/2024 - ICV",
+      "semesterId": "741",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=220;obdobi=741;predmet=147548;lang=cz",
+      "totalPass": 13,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 3,
+            "B": 6,
+            "C": 1,
+            "D": 2,
+            "E": 1,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 13,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.247Z"
+}

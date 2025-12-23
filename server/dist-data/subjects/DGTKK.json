@@ -1,0 +1,54 @@
+{
+  "courseCode": "DGTKK",
+  "stats": [
+    {
+      "semesterName": "ZS 2023/2024 - LDF",
+      "semesterId": "732",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=732;predmet=147240;lang=cz",
+      "totalPass": 56,
+      "totalFail": 24,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 9,
+            "B": 6,
+            "C": 13,
+            "D": 6,
+            "E": 22,
+            "F": 0,
+            "FN": 24
+          },
+          "pass": 56,
+          "fail": 24
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2024/2025 - LDF",
+      "semesterId": "765",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=765;predmet=153513;lang=cz",
+      "totalPass": 34,
+      "totalFail": 5,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 10,
+            "B": 4,
+            "C": 9,
+            "D": 4,
+            "E": 7,
+            "F": 1,
+            "FN": 4
+          },
+          "pass": 34,
+          "fail": 5
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.245Z"
+}

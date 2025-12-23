@@ -1,0 +1,30 @@
+{
+  "courseCode": "ZMAN",
+  "stats": [
+    {
+      "semesterName": "LS 2023/2024 - FRRMS",
+      "semesterId": "757",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=757;predmet=151667;lang=cz",
+      "totalPass": 37,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 9,
+            "B": 11,
+            "C": 11,
+            "D": 4,
+            "E": 2,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 37,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.703Z"
+}

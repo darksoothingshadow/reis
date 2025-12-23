@@ -1,0 +1,54 @@
+{
+  "courseCode": "TMCH",
+  "stats": [
+    {
+      "semesterName": "ZS 2023/2024 - LDF",
+      "semesterId": "732",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=732;predmet=146987;lang=cz",
+      "totalPass": 51,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 15,
+            "B": 7,
+            "C": 7,
+            "D": 14,
+            "E": 8,
+            "F": 1,
+            "FN": 0
+          },
+          "pass": 51,
+          "fail": 1
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2024/2025 - LDF",
+      "semesterId": "765",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=765;predmet=153343;lang=cz",
+      "totalPass": 47,
+      "totalFail": 2,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 6,
+            "B": 8,
+            "C": 14,
+            "D": 8,
+            "E": 11,
+            "F": 0,
+            "FN": 2
+          },
+          "pass": 47,
+          "fail": 2
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.660Z"
+}

@@ -1,0 +1,54 @@
+{
+  "courseCode": "GEOLL",
+  "stats": [
+    {
+      "semesterName": "ZS 2023/2024 - LDF",
+      "semesterId": "732",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=732;predmet=147261;lang=cz",
+      "totalPass": 85,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 10,
+            "B": 17,
+            "C": 36,
+            "D": 16,
+            "E": 6,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 85,
+          "fail": 0
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2024/2025 - LDF",
+      "semesterId": "765",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=765;predmet=153498;lang=cz",
+      "totalPass": 108,
+      "totalFail": 2,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 7,
+            "B": 24,
+            "C": 45,
+            "D": 18,
+            "E": 14,
+            "F": 2,
+            "FN": 0
+          },
+          "pass": 108,
+          "fail": 2
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.508Z"
+}

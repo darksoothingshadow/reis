@@ -1,0 +1,30 @@
+{
+  "courseCode": "ZAGEP",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - AF",
+      "semesterId": "704",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=704;predmet=153789;lang=cz",
+      "totalPass": 27,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 15,
+            "B": 3,
+            "C": 4,
+            "D": 5,
+            "E": 0,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 27,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.689Z"
+}

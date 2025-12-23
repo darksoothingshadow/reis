@@ -1,0 +1,54 @@
+{
+  "courseCode": "GFG",
+  "stats": [
+    {
+      "semesterName": "ZS 2023/2024 - LDF",
+      "semesterId": "732",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=732;predmet=146971;lang=cz",
+      "totalPass": 30,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 7,
+            "B": 6,
+            "C": 5,
+            "D": 6,
+            "E": 6,
+            "F": 1,
+            "FN": 0
+          },
+          "pass": 30,
+          "fail": 1
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2024/2025 - LDF",
+      "semesterId": "765",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=765;predmet=153326;lang=cz",
+      "totalPass": 30,
+      "totalFail": 2,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 3,
+            "B": 8,
+            "C": 8,
+            "D": 3,
+            "E": 8,
+            "F": 2,
+            "FN": 0
+          },
+          "pass": 30,
+          "fail": 2
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.509Z"
+}

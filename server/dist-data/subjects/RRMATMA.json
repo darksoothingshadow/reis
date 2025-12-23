@@ -1,0 +1,54 @@
+{
+  "courseCode": "RRMATMA",
+  "stats": [
+    {
+      "semesterName": "LS 2023/2024 - FRRMS",
+      "semesterId": "757",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=757;predmet=151274;lang=cz",
+      "totalPass": 3,
+      "totalFail": 20,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 0,
+            "B": 1,
+            "C": 1,
+            "D": 0,
+            "E": 1,
+            "F": 8,
+            "FN": 12
+          },
+          "pass": 3,
+          "fail": 20
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2024/2025 - FRRMS",
+      "semesterId": "778",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=778;predmet=157585;lang=cz",
+      "totalPass": 30,
+      "totalFail": 2,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 6,
+            "B": 5,
+            "C": 6,
+            "D": 3,
+            "E": 10,
+            "F": 2,
+            "FN": 0
+          },
+          "pass": 30,
+          "fail": 2
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.620Z"
+}

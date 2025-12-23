@@ -1,0 +1,30 @@
+{
+  "courseCode": "ZED",
+  "stats": [
+    {
+      "semesterName": "ZS 2023/2024 - LDF",
+      "semesterId": "732",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=732;predmet=147348;lang=cz",
+      "totalPass": 8,
+      "totalFail": 3,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 3,
+            "B": 3,
+            "C": 1,
+            "D": 1,
+            "E": 0,
+            "F": 0,
+            "FN": 3
+          },
+          "pass": 8,
+          "fail": 3
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.696Z"
+}

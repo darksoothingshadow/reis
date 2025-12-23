@@ -1,0 +1,78 @@
+{
+  "courseCode": "OPAP",
+  "stats": [
+    {
+      "semesterName": "LS 2022/2023 - ICV",
+      "semesterId": "716",
+      "year": 2022,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=220;obdobi=716;predmet=142346;lang=cz",
+      "totalPass": 57,
+      "totalFail": 2,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 21,
+            "B": 8,
+            "C": 9,
+            "D": 9,
+            "E": 10,
+            "F": 0,
+            "FN": 2
+          },
+          "pass": 57,
+          "fail": 2
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2023/2024 - ICV",
+      "semesterId": "741",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=220;obdobi=741;predmet=147867;lang=cz",
+      "totalPass": 39,
+      "totalFail": 5,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 12,
+            "B": 3,
+            "C": 8,
+            "D": 7,
+            "E": 9,
+            "F": 0,
+            "FN": 5
+          },
+          "pass": 39,
+          "fail": 5
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2024/2025 - ICV",
+      "semesterId": "749",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=220;obdobi=749;predmet=154886;lang=cz",
+      "totalPass": 55,
+      "totalFail": 8,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 22,
+            "B": 11,
+            "C": 9,
+            "D": 9,
+            "E": 4,
+            "F": 1,
+            "FN": 7
+          },
+          "pass": 55,
+          "fail": 8
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.573Z"
+}

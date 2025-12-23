@@ -1,0 +1,54 @@
+{
+  "courseCode": "KNB1",
+  "stats": [
+    {
+      "semesterName": "LS 2022/2023 - LDF",
+      "semesterId": "725",
+      "year": 2022,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=725;predmet=140830;lang=cz",
+      "totalPass": 25,
+      "totalFail": 2,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 2,
+            "B": 8,
+            "C": 9,
+            "D": 0,
+            "E": 6,
+            "F": 0,
+            "FN": 2
+          },
+          "pass": 25,
+          "fail": 2
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2024/2025 - LDF",
+      "semesterId": "765",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=765;predmet=153319;lang=cz",
+      "totalPass": 24,
+      "totalFail": 2,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 6,
+            "B": 1,
+            "C": 16,
+            "D": 1,
+            "E": 0,
+            "F": 0,
+            "FN": 2
+          },
+          "pass": 24,
+          "fail": 2
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.523Z"
+}

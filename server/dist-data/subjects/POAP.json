@@ -1,0 +1,30 @@
+{
+  "courseCode": "POAP",
+  "stats": [
+    {
+      "semesterName": "ZS 2023/2024 - ICV",
+      "semesterId": "741",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=220;obdobi=741;predmet=147522;lang=cz",
+      "totalPass": 47,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 18,
+            "B": 15,
+            "C": 10,
+            "D": 3,
+            "E": 1,
+            "F": 0,
+            "FN": 1
+          },
+          "pass": 47,
+          "fail": 1
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.587Z"
+}

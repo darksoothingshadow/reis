@@ -1,0 +1,54 @@
+{
+  "courseCode": "RRZPRA",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - FRRMS",
+      "semesterId": "672",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=672;predmet=153853;lang=cz",
+      "totalPass": 29,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 5,
+            "B": 3,
+            "C": 10,
+            "D": 4,
+            "E": 7,
+            "F": 0,
+            "FN": 1
+          },
+          "pass": 29,
+          "fail": 1
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2023/2024 - FRRMS",
+      "semesterId": "737",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=737;predmet=146018;lang=cz",
+      "totalPass": 20,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 3,
+            "B": 6,
+            "C": 3,
+            "D": 7,
+            "E": 1,
+            "F": 0,
+            "FN": 1
+          },
+          "pass": 20,
+          "fail": 1
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.629Z"
+}

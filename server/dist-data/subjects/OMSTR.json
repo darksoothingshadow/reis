@@ -1,0 +1,54 @@
+{
+  "courseCode": "OMSTR",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - AF",
+      "semesterId": "704",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=704;predmet=152628;lang=cz",
+      "totalPass": 14,
+      "totalFail": 4,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 4,
+            "B": 4,
+            "C": 3,
+            "D": 3,
+            "E": 0,
+            "F": 0,
+            "FN": 4
+          },
+          "pass": 14,
+          "fail": 4
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2023/2024 - AF",
+      "semesterId": "733",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=733;predmet=146378;lang=cz",
+      "totalPass": 36,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 9,
+            "B": 8,
+            "C": 13,
+            "D": 4,
+            "E": 2,
+            "F": 0,
+            "FN": 1
+          },
+          "pass": 36,
+          "fail": 1
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.572Z"
+}

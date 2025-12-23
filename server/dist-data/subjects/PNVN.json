@@ -1,0 +1,30 @@
+{
+  "courseCode": "PNVN",
+  "stats": [
+    {
+      "semesterName": "ZS 2023/2024 - LDF",
+      "semesterId": "732",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=732;predmet=147106;lang=cz",
+      "totalPass": 36,
+      "totalFail": 2,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 17,
+            "B": 7,
+            "C": 3,
+            "D": 6,
+            "E": 3,
+            "F": 0,
+            "FN": 2
+          },
+          "pass": 36,
+          "fail": 2
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.587Z"
+}

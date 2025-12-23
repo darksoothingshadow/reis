@@ -1,0 +1,78 @@
+{
+  "courseCode": "FZVD",
+  "stats": [
+    {
+      "semesterName": "LS 2022/2023 - LDF",
+      "semesterId": "725",
+      "year": 2022,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=725;predmet=140865;lang=cz",
+      "totalPass": 48,
+      "totalFail": 6,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 3,
+            "B": 3,
+            "C": 12,
+            "D": 11,
+            "E": 19,
+            "F": 6,
+            "FN": 0
+          },
+          "pass": 48,
+          "fail": 6
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2023/2024 - LDF",
+      "semesterId": "758",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=758;predmet=150856;lang=cz",
+      "totalPass": 31,
+      "totalFail": 22,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 1,
+            "B": 6,
+            "C": 6,
+            "D": 8,
+            "E": 10,
+            "F": 14,
+            "FN": 8
+          },
+          "pass": 31,
+          "fail": 22
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2024/2025 - LDF",
+      "semesterId": "777",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=777;predmet=156713;lang=cz",
+      "totalPass": 42,
+      "totalFail": 6,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 6,
+            "B": 1,
+            "C": 16,
+            "D": 11,
+            "E": 8,
+            "F": 4,
+            "FN": 2
+          },
+          "pass": 42,
+          "fail": 6
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.503Z"
+}

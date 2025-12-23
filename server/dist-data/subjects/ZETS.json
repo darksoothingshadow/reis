@@ -1,0 +1,30 @@
+{
+  "courseCode": "ZETS",
+  "stats": [
+    {
+      "semesterName": "LS 2009/2010 - REK",
+      "semesterId": "199",
+      "year": 2009,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=79;obdobi=199;predmet=48375;lang=cz",
+      "totalPass": 0,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "E": 0,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 0,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.698Z"
+}

@@ -1,0 +1,30 @@
+{
+  "courseCode": "DEN2",
+  "stats": [
+    {
+      "semesterName": "LS 2024/2025 - LDF",
+      "semesterId": "777",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=777;predmet=156770;lang=cz",
+      "totalPass": 14,
+      "totalFail": 6,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 0,
+            "B": 1,
+            "C": 5,
+            "D": 7,
+            "E": 1,
+            "F": 6,
+            "FN": 0
+          },
+          "pass": 14,
+          "fail": 6
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.242Z"
+}

@@ -1,0 +1,78 @@
+{
+  "courseCode": "TEKP",
+  "stats": [
+    {
+      "semesterName": "LS 2022/2023 - AF",
+      "semesterId": "727",
+      "year": 2022,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=727;predmet=141855;lang=cz",
+      "totalPass": 49,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 2,
+            "B": 3,
+            "C": 11,
+            "D": 17,
+            "E": 16,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 49,
+          "fail": 0
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2023/2024 - AF",
+      "semesterId": "752",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=752;predmet=150714;lang=cz",
+      "totalPass": 38,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 2,
+            "B": 2,
+            "C": 11,
+            "D": 15,
+            "E": 8,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 38,
+          "fail": 0
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2024/2025 - AF",
+      "semesterId": "779",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=779;predmet=157154;lang=cz",
+      "totalPass": 34,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 2,
+            "B": 2,
+            "C": 12,
+            "D": 11,
+            "E": 7,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 34,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.655Z"
+}

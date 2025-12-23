@@ -1,0 +1,54 @@
+{
+  "courseCode": "RPJVAA",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - FRRMS",
+      "semesterId": "672",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=672;predmet=153906;lang=cz",
+      "totalPass": 127,
+      "totalFail": 2,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 7,
+            "B": 41,
+            "C": 46,
+            "D": 15,
+            "E": 18,
+            "F": 0,
+            "FN": 2
+          },
+          "pass": 127,
+          "fail": 2
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2023/2024 - FRRMS",
+      "semesterId": "737",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=737;predmet=146651;lang=cz",
+      "totalPass": 113,
+      "totalFail": 2,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 11,
+            "B": 23,
+            "C": 50,
+            "D": 21,
+            "E": 8,
+            "F": 0,
+            "FN": 2
+          },
+          "pass": 113,
+          "fail": 2
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.615Z"
+}

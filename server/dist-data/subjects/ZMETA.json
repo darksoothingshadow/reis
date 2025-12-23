@@ -1,0 +1,54 @@
+{
+  "courseCode": "ZMETA",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - FRRMS",
+      "semesterId": "672",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=672;predmet=153859;lang=cz",
+      "totalPass": 16,
+      "totalFail": 7,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 3,
+            "B": 0,
+            "C": 6,
+            "D": 6,
+            "E": 1,
+            "F": 0,
+            "FN": 7
+          },
+          "pass": 16,
+          "fail": 7
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2023/2024 - FRRMS",
+      "semesterId": "737",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=737;predmet=146002;lang=cz",
+      "totalPass": 28,
+      "totalFail": 9,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 0,
+            "B": 5,
+            "C": 1,
+            "D": 8,
+            "E": 14,
+            "F": 1,
+            "FN": 8
+          },
+          "pass": 28,
+          "fail": 9
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.704Z"
+}

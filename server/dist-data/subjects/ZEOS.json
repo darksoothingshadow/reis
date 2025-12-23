@@ -1,0 +1,30 @@
+{
+  "courseCode": "ZEOS",
+  "stats": [
+    {
+      "semesterName": "LS 2022/2023 - LDF",
+      "semesterId": "725",
+      "year": 2022,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=725;predmet=141197;lang=cz",
+      "totalPass": 4,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 0,
+            "B": 1,
+            "C": 1,
+            "D": 2,
+            "E": 0,
+            "F": 0,
+            "FN": 1
+          },
+          "pass": 4,
+          "fail": 1
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.697Z"
+}

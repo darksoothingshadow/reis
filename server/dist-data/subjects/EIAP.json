@@ -1,0 +1,54 @@
+{
+  "courseCode": "EIAP",
+  "stats": [
+    {
+      "semesterName": "ZS 2023/2024 - ICV",
+      "semesterId": "741",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=220;obdobi=741;predmet=147550;lang=cz",
+      "totalPass": 39,
+      "totalFail": 9,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 1,
+            "B": 5,
+            "C": 12,
+            "D": 12,
+            "E": 9,
+            "F": 0,
+            "FN": 9
+          },
+          "pass": 39,
+          "fail": 9
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2024/2025 - ICV",
+      "semesterId": "749",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=220;obdobi=749;predmet=154488;lang=cz",
+      "totalPass": 54,
+      "totalFail": 11,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 5,
+            "B": 10,
+            "C": 10,
+            "D": 7,
+            "E": 22,
+            "F": 1,
+            "FN": 10
+          },
+          "pass": 54,
+          "fail": 11
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.318Z"
+}

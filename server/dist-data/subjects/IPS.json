@@ -1,0 +1,54 @@
+{
+  "courseCode": "IPS",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - FRRMS",
+      "semesterId": "672",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=672;predmet=153972;lang=cz",
+      "totalPass": 38,
+      "totalFail": 8,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 2,
+            "B": 2,
+            "C": 7,
+            "D": 9,
+            "E": 18,
+            "F": 4,
+            "FN": 4
+          },
+          "pass": 38,
+          "fail": 8
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2023/2024 - FRRMS",
+      "semesterId": "737",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=737;predmet=146847;lang=cz",
+      "totalPass": 32,
+      "totalFail": 8,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 1,
+            "B": 3,
+            "C": 7,
+            "D": 8,
+            "E": 13,
+            "F": 6,
+            "FN": 2
+          },
+          "pass": 32,
+          "fail": 8
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.518Z"
+}

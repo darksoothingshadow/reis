@@ -1,0 +1,30 @@
+{
+  "courseCode": "DEUM2",
+  "stats": [
+    {
+      "semesterName": "LS 2021/2022 - ZF",
+      "semesterId": "683",
+      "year": 2021,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=60;obdobi=683;predmet=134068;lang=cz",
+      "totalPass": 42,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 15,
+            "B": 7,
+            "C": 11,
+            "D": 4,
+            "E": 5,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 42,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.244Z"
+}

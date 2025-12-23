@@ -1,0 +1,54 @@
+{
+  "courseCode": "PRTZV",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - AF",
+      "semesterId": "704",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=704;predmet=153742;lang=cz",
+      "totalPass": 31,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 9,
+            "B": 6,
+            "C": 8,
+            "D": 4,
+            "E": 4,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 31,
+          "fail": 0
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2023/2024 - AF",
+      "semesterId": "733",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=733;predmet=147144;lang=cz",
+      "totalPass": 33,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 9,
+            "B": 9,
+            "C": 9,
+            "D": 3,
+            "E": 3,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 33,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.601Z"
+}

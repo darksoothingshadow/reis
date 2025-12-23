@@ -1,0 +1,30 @@
+{
+  "courseCode": "SPRO",
+  "stats": [
+    {
+      "semesterName": "ZS 2023/2024 - FRRMS",
+      "semesterId": "737",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=737;predmet=146005;lang=cz",
+      "totalPass": 50,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 9,
+            "B": 8,
+            "C": 18,
+            "D": 8,
+            "E": 7,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 50,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.645Z"
+}

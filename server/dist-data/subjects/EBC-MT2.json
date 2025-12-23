@@ -56,50 +56,23 @@
       "semesterName": "LS 2022/2023 - PEF",
       "semesterId": "717",
       "year": 2022,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=2;obdobi=717;predmet=140164;lang=cz",
       "totalPass": 68,
-      "totalFail": 112,
+      "totalFail": 26,
       "terms": [
         {
-          "term": "termín 1",
+          "term": "Všechny termíny",
           "grades": {
-            "A": 3,
-            "B": 1,
-            "C": 2,
-            "D": 10,
-            "E": 5,
-            "F": 72,
-            "FN": 1
-          },
-          "pass": 21,
-          "fail": 73
-        },
-        {
-          "term": "termín 2",
-          "grades": {
-            "A": 1,
-            "B": 2,
-            "C": 4,
-            "D": 6,
-            "E": 15,
-            "F": 29,
+            "A": 6,
+            "B": 5,
+            "C": 10,
+            "D": 19,
+            "E": 28,
+            "F": 26,
             "FN": 0
           },
-          "pass": 28,
-          "fail": 29
-        },
-        {
-          "term": "termín 3",
-          "grades": {
-            "A": 2,
-            "B": 2,
-            "C": 4,
-            "D": 3,
-            "E": 8,
-            "F": 10,
-            "FN": 0
-          },
-          "pass": 19,
-          "fail": 10
+          "pass": 68,
+          "fail": 26
         }
       ]
     },
@@ -107,50 +80,23 @@
       "semesterName": "LS 2023/2024 - PEF",
       "semesterId": "753",
       "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=2;obdobi=753;predmet=151214;lang=cz",
       "totalPass": 63,
-      "totalFail": 144,
+      "totalFail": 34,
       "terms": [
         {
-          "term": "termín 1",
+          "term": "Všechny termíny",
           "grades": {
-            "A": 2,
-            "B": 1,
-            "C": 3,
-            "D": 4,
-            "E": 7,
-            "F": 79,
+            "A": 3,
+            "B": 4,
+            "C": 11,
+            "D": 15,
+            "E": 30,
+            "F": 33,
             "FN": 1
           },
-          "pass": 17,
-          "fail": 80
-        },
-        {
-          "term": "termín 2",
-          "grades": {
-            "A": 1,
-            "B": 1,
-            "C": 1,
-            "D": 5,
-            "E": 14,
-            "F": 45,
-            "FN": 0
-          },
-          "pass": 22,
-          "fail": 45
-        },
-        {
-          "term": "termín 3",
-          "grades": {
-            "A": 0,
-            "B": 2,
-            "C": 7,
-            "D": 6,
-            "E": 9,
-            "F": 19,
-            "FN": 0
-          },
-          "pass": 24,
-          "fail": 19
+          "pass": 63,
+          "fail": 34
         }
       ]
     },
@@ -175,51 +121,9 @@
           },
           "pass": 42,
           "fail": 28
-        },
-        {
-          "term": "termín 1",
-          "grades": {
-            "A": 0,
-            "B": 2,
-            "C": 4,
-            "D": 6,
-            "E": 8,
-            "F": 48,
-            "FN": 2
-          },
-          "pass": 20,
-          "fail": 50
-        },
-        {
-          "term": "termín 2",
-          "grades": {
-            "A": 1,
-            "B": 0,
-            "C": 2,
-            "D": 3,
-            "E": 6,
-            "F": 26,
-            "FN": 0
-          },
-          "pass": 12,
-          "fail": 26
-        },
-        {
-          "term": "termín 3",
-          "grades": {
-            "A": 1,
-            "B": 0,
-            "C": 1,
-            "D": 2,
-            "E": 6,
-            "F": 15,
-            "FN": 0
-          },
-          "pass": 10,
-          "fail": 15
         }
       ]
     }
   ],
-  "lastUpdated": "2025-12-23T08:58:37.974Z"
+  "lastUpdated": "2025-12-23T12:35:07.282Z"
 }

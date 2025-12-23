@@ -1,0 +1,30 @@
+{
+  "courseCode": "ZAZ",
+  "stats": [
+    {
+      "semesterName": "LS 2024/2025 - LDF",
+      "semesterId": "777",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=777;predmet=156684;lang=cz",
+      "totalPass": 32,
+      "totalFail": 5,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 9,
+            "B": 9,
+            "C": 9,
+            "D": 3,
+            "E": 2,
+            "F": 0,
+            "FN": 5
+          },
+          "pass": 32,
+          "fail": 5
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.692Z"
+}

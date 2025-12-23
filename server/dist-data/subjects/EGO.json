@@ -1,0 +1,78 @@
+{
+  "courseCode": "EGO",
+  "stats": [
+    {
+      "semesterName": "LS 2022/2023 - FRRMS",
+      "semesterId": "715",
+      "year": 2022,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=715;predmet=142180;lang=cz",
+      "totalPass": 104,
+      "totalFail": 25,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 11,
+            "B": 11,
+            "C": 20,
+            "D": 27,
+            "E": 35,
+            "F": 20,
+            "FN": 5
+          },
+          "pass": 104,
+          "fail": 25
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2023/2024 - FRRMS",
+      "semesterId": "757",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=757;predmet=151312;lang=cz",
+      "totalPass": 96,
+      "totalFail": 12,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 22,
+            "B": 14,
+            "C": 23,
+            "D": 16,
+            "E": 21,
+            "F": 7,
+            "FN": 5
+          },
+          "pass": 96,
+          "fail": 12
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2024/2025 - FRRMS",
+      "semesterId": "778",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=778;predmet=157615;lang=cz",
+      "totalPass": 98,
+      "totalFail": 12,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 15,
+            "B": 14,
+            "C": 26,
+            "D": 17,
+            "E": 26,
+            "F": 9,
+            "FN": 3
+          },
+          "pass": 98,
+          "fail": 12
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.318Z"
+}

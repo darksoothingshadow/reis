@@ -1,0 +1,30 @@
+{
+  "courseCode": "PICK",
+  "stats": [
+    {
+      "semesterName": "LS 2022/2023 - AF",
+      "semesterId": "727",
+      "year": 2022,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=727;predmet=141617;lang=cz",
+      "totalPass": 13,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 2,
+            "B": 1,
+            "C": 5,
+            "D": 1,
+            "E": 4,
+            "F": 1,
+            "FN": 0
+          },
+          "pass": 13,
+          "fail": 1
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.585Z"
+}

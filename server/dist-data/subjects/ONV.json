@@ -1,0 +1,30 @@
+{
+  "courseCode": "ONV",
+  "stats": [
+    {
+      "semesterName": "LS 2022/2023 - LDF",
+      "semesterId": "725",
+      "year": 2022,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=725;predmet=141039;lang=cz",
+      "totalPass": 36,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 5,
+            "B": 9,
+            "C": 9,
+            "D": 11,
+            "E": 2,
+            "F": 1,
+            "FN": 0
+          },
+          "pass": 36,
+          "fail": 1
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.573Z"
+}

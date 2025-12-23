@@ -1,0 +1,54 @@
+{
+  "courseCode": "PZZP",
+  "stats": [
+    {
+      "semesterName": "ZS 2023/2024 - LDF",
+      "semesterId": "732",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=732;predmet=146983;lang=cz",
+      "totalPass": 23,
+      "totalFail": 8,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 2,
+            "B": 10,
+            "C": 8,
+            "D": 2,
+            "E": 1,
+            "F": 8,
+            "FN": 0
+          },
+          "pass": 23,
+          "fail": 8
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2024/2025 - LDF",
+      "semesterId": "765",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=765;predmet=153339;lang=cz",
+      "totalPass": 42,
+      "totalFail": 2,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 9,
+            "B": 7,
+            "C": 17,
+            "D": 8,
+            "E": 1,
+            "F": 2,
+            "FN": 0
+          },
+          "pass": 42,
+          "fail": 2
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.611Z"
+}

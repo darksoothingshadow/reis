@@ -1,0 +1,30 @@
+{
+  "courseCode": "KONKRK",
+  "stats": [
+    {
+      "semesterName": "ZS 2023/2024 - AF",
+      "semesterId": "733",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=733;predmet=146945;lang=cz",
+      "totalPass": 15,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 8,
+            "B": 5,
+            "C": 2,
+            "D": 0,
+            "E": 0,
+            "F": 0,
+            "FN": 1
+          },
+          "pass": 15,
+          "fail": 1
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.525Z"
+}

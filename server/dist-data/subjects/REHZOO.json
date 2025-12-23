@@ -1,0 +1,54 @@
+{
+  "courseCode": "REHZOO",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - AF",
+      "semesterId": "704",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=704;predmet=153990;lang=cz",
+      "totalPass": 79,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 11,
+            "B": 8,
+            "C": 28,
+            "D": 11,
+            "E": 21,
+            "F": 0,
+            "FN": 1
+          },
+          "pass": 79,
+          "fail": 1
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2023/2024 - AF",
+      "semesterId": "733",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=733;predmet=147155;lang=cz",
+      "totalPass": 74,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 8,
+            "B": 16,
+            "C": 32,
+            "D": 11,
+            "E": 7,
+            "F": 0,
+            "FN": 1
+          },
+          "pass": 74,
+          "fail": 1
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.612Z"
+}

@@ -1,0 +1,30 @@
+{
+  "courseCode": "KNSAA",
+  "stats": [
+    {
+      "semesterName": "LS 2024/2025 - FRRMS",
+      "semesterId": "778",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=778;predmet=157788;lang=cz",
+      "totalPass": 13,
+      "totalFail": 5,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 2,
+            "B": 3,
+            "C": 2,
+            "D": 4,
+            "E": 2,
+            "F": 3,
+            "FN": 2
+          },
+          "pass": 13,
+          "fail": 5
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.523Z"
+}

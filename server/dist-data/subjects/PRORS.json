@@ -1,0 +1,54 @@
+{
+  "courseCode": "PRORS",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - AF",
+      "semesterId": "704",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=704;predmet=152697;lang=cz",
+      "totalPass": 34,
+      "totalFail": 3,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 5,
+            "B": 5,
+            "C": 13,
+            "D": 4,
+            "E": 7,
+            "F": 0,
+            "FN": 3
+          },
+          "pass": 34,
+          "fail": 3
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2023/2024 - AF",
+      "semesterId": "733",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=733;predmet=146790;lang=cz",
+      "totalPass": 39,
+      "totalFail": 4,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 16,
+            "B": 2,
+            "C": 7,
+            "D": 4,
+            "E": 10,
+            "F": 3,
+            "FN": 1
+          },
+          "pass": 39,
+          "fail": 4
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.600Z"
+}

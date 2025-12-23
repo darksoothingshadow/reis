@@ -1,0 +1,30 @@
+{
+  "courseCode": "RRMPS",
+  "stats": [
+    {
+      "semesterName": "LS 2023/2024 - FRRMS",
+      "semesterId": "757",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=757;predmet=151775;lang=cz",
+      "totalPass": 63,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 34,
+            "B": 9,
+            "C": 10,
+            "D": 8,
+            "E": 2,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 63,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.621Z"
+}

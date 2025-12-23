@@ -42,50 +42,23 @@
       "semesterName": "LS 2022/2023 - PEF",
       "semesterId": "717",
       "year": 2022,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=2;obdobi=717;predmet=140069;lang=cz",
       "totalPass": 141,
-      "totalFail": 5,
+      "totalFail": 3,
       "terms": [
         {
-          "term": "termín 1",
+          "term": "Všechny termíny",
           "grades": {
             "A": 53,
-            "B": 57,
+            "B": 58,
             "C": 24,
             "D": 2,
             "E": 4,
-            "F": 1,
+            "F": 0,
             "FN": 3
           },
-          "pass": 140,
-          "fail": 4
-        },
-        {
-          "term": "termín 2",
-          "grades": {
-            "A": 0,
-            "B": 0,
-            "C": 0,
-            "D": 0,
-            "E": 0,
-            "F": 1,
-            "FN": 0
-          },
-          "pass": 0,
-          "fail": 1
-        },
-        {
-          "term": "termín 3",
-          "grades": {
-            "A": 0,
-            "B": 1,
-            "C": 0,
-            "D": 0,
-            "E": 0,
-            "F": 0,
-            "FN": 0
-          },
-          "pass": 1,
-          "fail": 0
+          "pass": 141,
+          "fail": 3
         }
       ]
     },
@@ -110,37 +83,9 @@
           },
           "pass": 150,
           "fail": 4
-        },
-        {
-          "term": "termín 1",
-          "grades": {
-            "A": 49,
-            "B": 33,
-            "C": 26,
-            "D": 23,
-            "E": 11,
-            "F": 7,
-            "FN": 5
-          },
-          "pass": 142,
-          "fail": 12
-        },
-        {
-          "term": "termín 2",
-          "grades": {
-            "A": 0,
-            "B": 0,
-            "C": 0,
-            "D": 3,
-            "E": 5,
-            "F": 0,
-            "FN": 0
-          },
-          "pass": 8,
-          "fail": 0
         }
       ]
     }
   ],
-  "lastUpdated": "2025-12-23T08:58:37.985Z"
+  "lastUpdated": "2025-12-23T12:35:07.294Z"
 }

@@ -1,0 +1,30 @@
+{
+  "courseCode": "KNL",
+  "stats": [
+    {
+      "semesterName": "LS 2024/2025 - LDF",
+      "semesterId": "777",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=777;predmet=156802;lang=cz",
+      "totalPass": 42,
+      "totalFail": 3,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 3,
+            "B": 7,
+            "C": 16,
+            "D": 10,
+            "E": 6,
+            "F": 2,
+            "FN": 1
+          },
+          "pass": 42,
+          "fail": 3
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.523Z"
+}

@@ -1,0 +1,30 @@
+{
+  "courseCode": "PORSA",
+  "stats": [
+    {
+      "semesterName": "LS 2023/2024 - FRRMS",
+      "semesterId": "757",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=757;predmet=151271;lang=cz",
+      "totalPass": 23,
+      "totalFail": 4,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 3,
+            "B": 9,
+            "C": 8,
+            "D": 1,
+            "E": 2,
+            "F": 3,
+            "FN": 1
+          },
+          "pass": 23,
+          "fail": 4
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.590Z"
+}

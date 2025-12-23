@@ -1,0 +1,30 @@
+{
+  "courseCode": "PROMA",
+  "stats": [
+    {
+      "semesterName": "LS 2024/2025 - FRRMS",
+      "semesterId": "778",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=778;predmet=154180;lang=cz",
+      "totalPass": 33,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 11,
+            "B": 13,
+            "C": 2,
+            "D": 6,
+            "E": 1,
+            "F": 1,
+            "FN": 0
+          },
+          "pass": 33,
+          "fail": 1
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.599Z"
+}

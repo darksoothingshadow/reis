@@ -1,0 +1,54 @@
+{
+  "courseCode": "MEVZ",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - FRRMS",
+      "semesterId": "672",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=672;predmet=153904;lang=cz",
+      "totalPass": 86,
+      "totalFail": 38,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 2,
+            "B": 8,
+            "C": 10,
+            "D": 29,
+            "E": 37,
+            "F": 22,
+            "FN": 16
+          },
+          "pass": 86,
+          "fail": 38
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2023/2024 - FRRMS",
+      "semesterId": "737",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=737;predmet=146649;lang=cz",
+      "totalPass": 103,
+      "totalFail": 8,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 0,
+            "B": 6,
+            "C": 26,
+            "D": 32,
+            "E": 39,
+            "F": 3,
+            "FN": 5
+          },
+          "pass": 103,
+          "fail": 8
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.547Z"
+}

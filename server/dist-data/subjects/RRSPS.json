@@ -1,0 +1,30 @@
+{
+  "courseCode": "RRSPS",
+  "stats": [
+    {
+      "semesterName": "ZS 2023/2024 - FRRMS",
+      "semesterId": "737",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=737;predmet=146664;lang=cz",
+      "totalPass": 181,
+      "totalFail": 8,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 58,
+            "B": 44,
+            "C": 49,
+            "D": 23,
+            "E": 7,
+            "F": 0,
+            "FN": 8
+          },
+          "pass": 181,
+          "fail": 8
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.627Z"
+}

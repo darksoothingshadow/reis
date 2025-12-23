@@ -1,0 +1,54 @@
+{
+  "courseCode": "LBOTO",
+  "stats": [
+    {
+      "semesterName": "ZS 2023/2024 - LDF",
+      "semesterId": "732",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=732;predmet=147260;lang=cz",
+      "totalPass": 86,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 5,
+            "B": 10,
+            "C": 24,
+            "D": 24,
+            "E": 23,
+            "F": 1,
+            "FN": 0
+          },
+          "pass": 86,
+          "fail": 1
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2024/2025 - LDF",
+      "semesterId": "765",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=765;predmet=153499;lang=cz",
+      "totalPass": 114,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 5,
+            "B": 15,
+            "C": 25,
+            "D": 36,
+            "E": 33,
+            "F": 1,
+            "FN": 0
+          },
+          "pass": 114,
+          "fail": 1
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.533Z"
+}

@@ -1,0 +1,54 @@
+{
+  "courseCode": "KRAPL",
+  "stats": [
+    {
+      "semesterName": "ZS 2023/2024 - ZF",
+      "semesterId": "735",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=60;obdobi=735;predmet=146498;lang=cz",
+      "totalPass": 30,
+      "totalFail": 4,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 10,
+            "B": 7,
+            "C": 6,
+            "D": 5,
+            "E": 2,
+            "F": 0,
+            "FN": 4
+          },
+          "pass": 30,
+          "fail": 4
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2024/2025 - ZF",
+      "semesterId": "763",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=60;obdobi=763;predmet=154042;lang=cz",
+      "totalPass": 33,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 15,
+            "B": 11,
+            "C": 4,
+            "D": 3,
+            "E": 0,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 33,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.527Z"
+}

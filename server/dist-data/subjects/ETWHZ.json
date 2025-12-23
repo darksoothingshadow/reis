@@ -1,0 +1,54 @@
+{
+  "courseCode": "ETWHZ",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - AF",
+      "semesterId": "704",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=704;predmet=153921;lang=cz",
+      "totalPass": 76,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 21,
+            "B": 21,
+            "C": 12,
+            "D": 13,
+            "E": 9,
+            "F": 0,
+            "FN": 1
+          },
+          "pass": 76,
+          "fail": 1
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2023/2024 - AF",
+      "semesterId": "733",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=733;predmet=147161;lang=cz",
+      "totalPass": 67,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 23,
+            "B": 21,
+            "C": 13,
+            "D": 6,
+            "E": 4,
+            "F": 0,
+            "FN": 1
+          },
+          "pass": 67,
+          "fail": 1
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.469Z"
+}

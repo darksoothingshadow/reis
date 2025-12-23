@@ -1,0 +1,54 @@
+{
+  "courseCode": "INSEHZ",
+  "stats": [
+    {
+      "semesterName": "LS 2023/2024 - AF",
+      "semesterId": "752",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=752;predmet=150750;lang=cz",
+      "totalPass": 31,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 11,
+            "B": 2,
+            "C": 11,
+            "D": 5,
+            "E": 2,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 31,
+          "fail": 0
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2024/2025 - AF",
+      "semesterId": "779",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=779;predmet=157215;lang=cz",
+      "totalPass": 32,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 5,
+            "B": 8,
+            "C": 9,
+            "D": 6,
+            "E": 4,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 32,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.517Z"
+}

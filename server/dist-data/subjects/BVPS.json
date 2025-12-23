@@ -1,0 +1,54 @@
+{
+  "courseCode": "BVPS",
+  "stats": [
+    {
+      "semesterName": "LS 2022/2023 - FRRMS",
+      "semesterId": "715",
+      "year": 2022,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=715;predmet=142228;lang=cz",
+      "totalPass": 17,
+      "totalFail": 4,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 3,
+            "B": 1,
+            "C": 4,
+            "D": 3,
+            "E": 6,
+            "F": 1,
+            "FN": 3
+          },
+          "pass": 17,
+          "fail": 4
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2023/2024 - FRRMS",
+      "semesterId": "757",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=757;predmet=151633;lang=cz",
+      "totalPass": 21,
+      "totalFail": 2,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 4,
+            "B": 5,
+            "C": 4,
+            "D": 4,
+            "E": 4,
+            "F": 0,
+            "FN": 2
+          },
+          "pass": 21,
+          "fail": 2
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.225Z"
+}

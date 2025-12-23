@@ -1,0 +1,54 @@
+{
+  "courseCode": "CORK",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - AF",
+      "semesterId": "704",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=704;predmet=153845;lang=cz",
+      "totalPass": 16,
+      "totalFail": 10,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 1,
+            "B": 3,
+            "C": 3,
+            "D": 5,
+            "E": 4,
+            "F": 1,
+            "FN": 9
+          },
+          "pass": 16,
+          "fail": 10
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2023/2024 - AF",
+      "semesterId": "733",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=733;predmet=147449;lang=cz",
+      "totalPass": 23,
+      "totalFail": 2,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 0,
+            "B": 5,
+            "C": 3,
+            "D": 4,
+            "E": 11,
+            "F": 0,
+            "FN": 2
+          },
+          "pass": 23,
+          "fail": 2
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.238Z"
+}

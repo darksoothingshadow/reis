@@ -1,0 +1,54 @@
+{
+  "courseCode": "MARKF",
+  "stats": [
+    {
+      "semesterName": "ZS 2021/2022 - ZF",
+      "semesterId": "652",
+      "year": 2021,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=60;obdobi=652;predmet=131169;lang=cz",
+      "totalPass": 18,
+      "totalFail": 2,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 4,
+            "B": 2,
+            "C": 2,
+            "D": 3,
+            "E": 7,
+            "F": 1,
+            "FN": 1
+          },
+          "pass": 18,
+          "fail": 2
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2022/2023 - ZF",
+      "semesterId": "693",
+      "year": 2022,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=60;obdobi=693;predmet=136937;lang=cz",
+      "totalPass": 14,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 6,
+            "B": 4,
+            "C": 1,
+            "D": 3,
+            "E": 0,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 14,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.541Z"
+}

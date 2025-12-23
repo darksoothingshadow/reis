@@ -1,0 +1,54 @@
+{
+  "courseCode": "GEPOP",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - AF",
+      "semesterId": "704",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=704;predmet=152603;lang=cz",
+      "totalPass": 30,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 2,
+            "B": 7,
+            "C": 14,
+            "D": 5,
+            "E": 2,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 30,
+          "fail": 0
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2023/2024 - AF",
+      "semesterId": "733",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=733;predmet=146240;lang=cz",
+      "totalPass": 22,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 2,
+            "B": 1,
+            "C": 6,
+            "D": 10,
+            "E": 3,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 22,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.509Z"
+}

@@ -56,50 +56,23 @@
       "semesterName": "ZS 2023/2024 - PEF",
       "semesterId": "734",
       "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=2;obdobi=734;predmet=143655;lang=cz",
       "totalPass": 85,
-      "totalFail": 103,
+      "totalFail": 51,
       "terms": [
         {
-          "term": "termín 1",
+          "term": "Všechny termíny",
           "grades": {
-            "A": 1,
-            "B": 6,
-            "C": 9,
-            "D": 7,
-            "E": 27,
-            "F": 41,
+            "A": 2,
+            "B": 8,
+            "C": 14,
+            "D": 15,
+            "E": 46,
+            "F": 6,
             "FN": 45
           },
-          "pass": 50,
-          "fail": 86
-        },
-        {
-          "term": "termín 2",
-          "grades": {
-            "A": 1,
-            "B": 2,
-            "C": 5,
-            "D": 6,
-            "E": 15,
-            "F": 11,
-            "FN": 1
-          },
-          "pass": 29,
-          "fail": 12
-        },
-        {
-          "term": "termín 3",
-          "grades": {
-            "A": 0,
-            "B": 0,
-            "C": 0,
-            "D": 2,
-            "E": 4,
-            "F": 5,
-            "FN": 0
-          },
-          "pass": 6,
-          "fail": 5
+          "pass": 85,
+          "fail": 51
         }
       ]
     },
@@ -107,50 +80,23 @@
       "semesterName": "ZS 2024/2025 - PEF",
       "semesterId": "754",
       "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=2;obdobi=754;predmet=153200;lang=cz",
       "totalPass": 126,
-      "totalFail": 114,
+      "totalFail": 26,
       "terms": [
         {
-          "term": "termín 1",
+          "term": "Všechny termíny",
           "grades": {
             "A": 1,
-            "B": 8,
-            "C": 9,
-            "D": 16,
-            "E": 28,
-            "F": 86,
-            "FN": 4
+            "B": 10,
+            "C": 20,
+            "D": 40,
+            "E": 55,
+            "F": 21,
+            "FN": 5
           },
-          "pass": 62,
-          "fail": 90
-        },
-        {
-          "term": "termín 2",
-          "grades": {
-            "A": 0,
-            "B": 2,
-            "C": 10,
-            "D": 19,
-            "E": 21,
-            "F": 18,
-            "FN": 1
-          },
-          "pass": 52,
-          "fail": 19
-        },
-        {
-          "term": "termín 3",
-          "grades": {
-            "A": 0,
-            "B": 0,
-            "C": 1,
-            "D": 5,
-            "E": 6,
-            "F": 4,
-            "FN": 1
-          },
-          "pass": 12,
-          "fail": 5
+          "pass": 126,
+          "fail": 26
         }
       ]
     },
@@ -158,53 +104,26 @@
       "semesterName": "LS 2024/2025 - PEF",
       "semesterId": "772",
       "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=2;obdobi=772;predmet=158245;lang=cz",
       "totalPass": 4,
-      "totalFail": 9,
+      "totalFail": 1,
       "terms": [
         {
-          "term": "termín 1",
+          "term": "Všechny termíny",
           "grades": {
             "A": 0,
             "B": 0,
             "C": 0,
             "D": 0,
-            "E": 0,
-            "F": 5,
-            "FN": 0
-          },
-          "pass": 0,
-          "fail": 5
-        },
-        {
-          "term": "termín 2",
-          "grades": {
-            "A": 0,
-            "B": 0,
-            "C": 0,
-            "D": 0,
-            "E": 2,
-            "F": 3,
-            "FN": 0
-          },
-          "pass": 2,
-          "fail": 3
-        },
-        {
-          "term": "termín 3",
-          "grades": {
-            "A": 0,
-            "B": 0,
-            "C": 0,
-            "D": 0,
-            "E": 2,
+            "E": 4,
             "F": 1,
             "FN": 0
           },
-          "pass": 2,
+          "pass": 4,
           "fail": 1
         }
       ]
     }
   ],
-  "lastUpdated": "2025-12-23T08:58:37.991Z"
+  "lastUpdated": "2025-12-23T12:35:07.300Z"
 }

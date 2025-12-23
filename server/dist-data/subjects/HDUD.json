@@ -1,0 +1,30 @@
+{
+  "courseCode": "HDUD",
+  "stats": [
+    {
+      "semesterName": "LS 2023/2024 - LDF",
+      "semesterId": "758",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=758;predmet=150977;lang=cz",
+      "totalPass": 53,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 6,
+            "B": 18,
+            "C": 16,
+            "D": 6,
+            "E": 7,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 53,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.512Z"
+}

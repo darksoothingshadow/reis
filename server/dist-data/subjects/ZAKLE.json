@@ -1,0 +1,30 @@
+{
+  "courseCode": "ZAKLE",
+  "stats": [
+    {
+      "semesterName": "ZS 2023/2024 - ZF",
+      "semesterId": "735",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=60;obdobi=735;predmet=146557;lang=cz",
+      "totalPass": 27,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 9,
+            "B": 2,
+            "C": 7,
+            "D": 8,
+            "E": 1,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 27,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.691Z"
+}

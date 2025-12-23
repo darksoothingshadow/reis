@@ -1,0 +1,30 @@
+{
+  "courseCode": "PVC",
+  "stats": [
+    {
+      "semesterName": "ZS 2023/2024 - LDF",
+      "semesterId": "732",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=732;predmet=147064;lang=cz",
+      "totalPass": 6,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 0,
+            "B": 1,
+            "C": 3,
+            "D": 1,
+            "E": 1,
+            "F": 0,
+            "FN": 1
+          },
+          "pass": 6,
+          "fail": 1
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.606Z"
+}

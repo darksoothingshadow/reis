@@ -56,36 +56,23 @@
       "semesterName": "ZS 2023/2024 - PEF",
       "semesterId": "734",
       "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=2;obdobi=734;predmet=143698;lang=cz",
       "totalPass": 95,
-      "totalFail": 5,
+      "totalFail": 1,
       "terms": [
         {
-          "term": "termín 1",
+          "term": "Všechny termíny",
           "grades": {
-            "A": 38,
-            "B": 8,
+            "A": 41,
+            "B": 9,
             "C": 23,
             "D": 9,
             "E": 13,
-            "F": 4,
+            "F": 0,
             "FN": 1
           },
-          "pass": 91,
-          "fail": 5
-        },
-        {
-          "term": "termín 2",
-          "grades": {
-            "A": 3,
-            "B": 1,
-            "C": 0,
-            "D": 0,
-            "E": 0,
-            "F": 0,
-            "FN": 0
-          },
-          "pass": 4,
-          "fail": 0
+          "pass": 95,
+          "fail": 1
         }
       ]
     },
@@ -93,39 +80,26 @@
       "semesterName": "ZS 2024/2025 - PEF",
       "semesterId": "754",
       "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=2;obdobi=754;predmet=153274;lang=cz",
       "totalPass": 61,
-      "totalFail": 4,
+      "totalFail": 0,
       "terms": [
         {
-          "term": "termín 1",
+          "term": "Všechny termíny",
           "grades": {
-            "A": 26,
-            "B": 7,
+            "A": 29,
+            "B": 8,
             "C": 6,
             "D": 7,
             "E": 11,
-            "F": 4,
-            "FN": 0
-          },
-          "pass": 57,
-          "fail": 4
-        },
-        {
-          "term": "termín 2",
-          "grades": {
-            "A": 3,
-            "B": 1,
-            "C": 0,
-            "D": 0,
-            "E": 0,
             "F": 0,
             "FN": 0
           },
-          "pass": 4,
+          "pass": 61,
           "fail": 0
         }
       ]
     }
   ],
-  "lastUpdated": "2025-12-23T08:58:38.038Z"
+  "lastUpdated": "2025-12-23T12:35:07.428Z"
 }

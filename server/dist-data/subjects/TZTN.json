@@ -1,0 +1,54 @@
+{
+  "courseCode": "TZTN",
+  "stats": [
+    {
+      "semesterName": "ZS 2023/2024 - LDF",
+      "semesterId": "732",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=732;predmet=147610;lang=cz",
+      "totalPass": 61,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 19,
+            "B": 12,
+            "C": 11,
+            "D": 7,
+            "E": 12,
+            "F": 1,
+            "FN": 0
+          },
+          "pass": 61,
+          "fail": 1
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2024/2025 - LDF",
+      "semesterId": "765",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=765;predmet=153510;lang=cz",
+      "totalPass": 65,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 18,
+            "B": 15,
+            "C": 14,
+            "D": 10,
+            "E": 8,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 65,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.668Z"
+}

@@ -1,0 +1,54 @@
+{
+  "courseCode": "STHB",
+  "stats": [
+    {
+      "semesterName": "ZS 2023/2024 - LDF",
+      "semesterId": "732",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=732;predmet=147093;lang=cz",
+      "totalPass": 100,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 6,
+            "B": 25,
+            "C": 30,
+            "D": 26,
+            "E": 13,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 100,
+          "fail": 0
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2024/2025 - LDF",
+      "semesterId": "765",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=765;predmet=153449;lang=cz",
+      "totalPass": 100,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 10,
+            "B": 17,
+            "C": 35,
+            "D": 19,
+            "E": 19,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 100,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.647Z"
+}

@@ -1,0 +1,30 @@
+{
+  "courseCode": "PPOV",
+  "stats": [
+    {
+      "semesterName": "LS 2022/2023 - ICV",
+      "semesterId": "716",
+      "year": 2022,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=220;obdobi=716;predmet=142360;lang=cz",
+      "totalPass": 29,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 5,
+            "B": 3,
+            "C": 10,
+            "D": 7,
+            "E": 4,
+            "F": 0,
+            "FN": 1
+          },
+          "pass": 29,
+          "fail": 1
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.593Z"
+}

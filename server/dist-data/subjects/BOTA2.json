@@ -1,0 +1,30 @@
+{
+  "courseCode": "BOTA2",
+  "stats": [
+    {
+      "semesterName": "LS 2021/2022 - ZF",
+      "semesterId": "683",
+      "year": 2021,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=60;obdobi=683;predmet=134023;lang=cz",
+      "totalPass": 21,
+      "totalFail": 4,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 8,
+            "B": 3,
+            "C": 2,
+            "D": 1,
+            "E": 7,
+            "F": 2,
+            "FN": 2
+          },
+          "pass": 21,
+          "fail": 4
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.221Z"
+}

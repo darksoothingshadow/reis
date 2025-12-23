@@ -1,0 +1,54 @@
+{
+  "courseCode": "ZAPS",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - FRRMS",
+      "semesterId": "672",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=672;predmet=152816;lang=cz",
+      "totalPass": 202,
+      "totalFail": 28,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 19,
+            "B": 43,
+            "C": 41,
+            "D": 56,
+            "E": 43,
+            "F": 28,
+            "FN": 0
+          },
+          "pass": 202,
+          "fail": 28
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2023/2024 - FRRMS",
+      "semesterId": "737",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=737;predmet=146013;lang=cz",
+      "totalPass": 237,
+      "totalFail": 106,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 25,
+            "B": 53,
+            "C": 52,
+            "D": 55,
+            "E": 52,
+            "F": 76,
+            "FN": 30
+          },
+          "pass": 237,
+          "fail": 106
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.691Z"
+}

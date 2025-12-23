@@ -1,0 +1,54 @@
+{
+  "courseCode": "IPSA",
+  "stats": [
+    {
+      "semesterName": "LS 2022/2023 - FRRMS",
+      "semesterId": "715",
+      "year": 2022,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=715;predmet=142237;lang=cz",
+      "totalPass": 41,
+      "totalFail": 4,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 4,
+            "B": 14,
+            "C": 8,
+            "D": 12,
+            "E": 3,
+            "F": 0,
+            "FN": 4
+          },
+          "pass": 41,
+          "fail": 4
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2023/2024 - FRRMS",
+      "semesterId": "757",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=757;predmet=151672;lang=cz",
+      "totalPass": 88,
+      "totalFail": 3,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 28,
+            "B": 28,
+            "C": 16,
+            "D": 11,
+            "E": 5,
+            "F": 0,
+            "FN": 3
+          },
+          "pass": 88,
+          "fail": 3
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.518Z"
+}

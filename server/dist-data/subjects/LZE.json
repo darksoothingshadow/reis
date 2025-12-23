@@ -1,0 +1,54 @@
+{
+  "courseCode": "LZE",
+  "stats": [
+    {
+      "semesterName": "ZS 2023/2024 - LDF",
+      "semesterId": "732",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=732;predmet=147262;lang=cz",
+      "totalPass": 166,
+      "totalFail": 13,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 3,
+            "B": 7,
+            "C": 35,
+            "D": 62,
+            "E": 59,
+            "F": 5,
+            "FN": 8
+          },
+          "pass": 166,
+          "fail": 13
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2024/2025 - LDF",
+      "semesterId": "765",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=38;obdobi=765;predmet=153490;lang=cz",
+      "totalPass": 205,
+      "totalFail": 10,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 5,
+            "B": 26,
+            "C": 60,
+            "D": 48,
+            "E": 66,
+            "F": 4,
+            "FN": 6
+          },
+          "pass": 205,
+          "fail": 10
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.538Z"
+}

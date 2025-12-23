@@ -1,0 +1,30 @@
+{
+  "courseCode": "DMPRO",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - AF",
+      "semesterId": "704",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=14;obdobi=704;predmet=153723;lang=cz",
+      "totalPass": 45,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 0,
+            "B": 3,
+            "C": 14,
+            "D": 19,
+            "E": 9,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 45,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.246Z"
+}

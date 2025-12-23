@@ -1,0 +1,54 @@
+{
+  "courseCode": "PEZP",
+  "stats": [
+    {
+      "semesterName": "ZS 2024/2025 - FRRMS",
+      "semesterId": "672",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=672;predmet=153895;lang=cz",
+      "totalPass": 81,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 34,
+            "B": 19,
+            "C": 8,
+            "D": 8,
+            "E": 12,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 81,
+          "fail": 0
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2023/2024 - FRRMS",
+      "semesterId": "737",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=23;obdobi=737;predmet=146660;lang=cz",
+      "totalPass": 80,
+      "totalFail": 0,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 2,
+            "B": 19,
+            "C": 39,
+            "D": 7,
+            "E": 13,
+            "F": 0,
+            "FN": 0
+          },
+          "pass": 80,
+          "fail": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.584Z"
+}

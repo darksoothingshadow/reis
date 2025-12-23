@@ -1,0 +1,126 @@
+{
+  "courseCode": "VYHRR",
+  "stats": [
+    {
+      "semesterName": "ZS 2021/2022 - ZF",
+      "semesterId": "652",
+      "year": 2021,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=60;obdobi=652;predmet=129320;lang=cz",
+      "totalPass": 19,
+      "totalFail": 11,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 0,
+            "B": 5,
+            "C": 8,
+            "D": 6,
+            "E": 0,
+            "F": 7,
+            "FN": 4
+          },
+          "pass": 19,
+          "fail": 11
+        }
+      ]
+    },
+    {
+      "semesterName": "LS 2021/2022 - ZF",
+      "semesterId": "683",
+      "year": 2021,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=60;obdobi=683;predmet=135970;lang=cz",
+      "totalPass": 5,
+      "totalFail": 1,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 0,
+            "B": 0,
+            "C": 1,
+            "D": 1,
+            "E": 3,
+            "F": 1,
+            "FN": 0
+          },
+          "pass": 5,
+          "fail": 1
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2022/2023 - ZF",
+      "semesterId": "693",
+      "year": 2022,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=60;obdobi=693;predmet=136928;lang=cz",
+      "totalPass": 26,
+      "totalFail": 5,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 4,
+            "B": 1,
+            "C": 6,
+            "D": 11,
+            "E": 4,
+            "F": 4,
+            "FN": 1
+          },
+          "pass": 26,
+          "fail": 5
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2023/2024 - ZF",
+      "semesterId": "735",
+      "year": 2023,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=60;obdobi=735;predmet=146481;lang=cz",
+      "totalPass": 31,
+      "totalFail": 12,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 1,
+            "B": 3,
+            "C": 4,
+            "D": 7,
+            "E": 16,
+            "F": 10,
+            "FN": 2
+          },
+          "pass": 31,
+          "fail": 12
+        }
+      ]
+    },
+    {
+      "semesterName": "ZS 2024/2025 - ZF",
+      "semesterId": "763",
+      "year": 2024,
+      "sourceUrl": "https://is.mendelu.cz/auth/student/hodnoceni.pl?fakulta=60;obdobi=763;predmet=154147;lang=cz",
+      "totalPass": 20,
+      "totalFail": 4,
+      "terms": [
+        {
+          "term": "Všechny termíny",
+          "grades": {
+            "A": 2,
+            "B": 4,
+            "C": 1,
+            "D": 5,
+            "E": 8,
+            "F": 4,
+            "FN": 0
+          },
+          "pass": 20,
+          "fail": 4
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-12-23T12:35:07.682Z"
+}
