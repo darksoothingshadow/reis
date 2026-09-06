@@ -19,13 +19,23 @@
 import { chromium, type Page } from '@playwright/test';
 import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { analyzeProbe, type Finding, type ProbeResult } from './lib/uiFindings';
+import {
+  analyzeProbe,
+  assertShell,
+  describeShell,
+  type Finding,
+  type ProbeResult,
+} from './lib/uiFindings';
 import { probeSource } from './lib/uiProbe';
 
 const DEFAULT_WIDTHS = [320, 390, 430];
 const DEFAULT_URL = 'http://localhost:3000';
 const OUT_DIR = resolve(process.cwd(), '.verify');
-const VIEWPORT_HEIGHT = 844;
+// A phone's height. The desktop tree ships inside a full-window iframe, where
+// the usable height is the browser window's — ~800px on a 1440x900 laptop, less
+// with a bookmarks bar. `h-screen overflow-hidden` clips rather than scrolls, so
+// height is a real variable there and --height exists to vary it.
+const DEFAULT_VIEWPORT_HEIGHT = 844;
 
 interface Options {
   label: string;
@@ -45,6 +55,32 @@ interface Options {
    *  Re-applied after every --click step too, so a click's own async refetch
    *  (e.g. the admin console's housing tab reloading its list) can't clobber it. */
   seedStore?: string;
+  height: number;
+  /** Fail the run if the other shell rendered. See assertShell(). */
+  expectShell?: 'desktop' | 'phone';
+}
+
+/**
+ * `Number()` waves through NaN, Infinity and negatives, and `||` would treat
+ * `--height 0` as "unset" and silently use the default. A viewport is not
+ * something to guess at: a bad value should stop the run, the way an unknown
+ * --expect-shell does.
+ */
+function parseHeight(raw: string | undefined): number {
+  if (raw === undefined || raw === '') return DEFAULT_VIEWPORT_HEIGHT;
+  const value = Number(raw);
+  if (!Number.isFinite(value) || value <= 0) {
+    console.error(`--height must be a positive finite number, not "${raw}"`);
+    process.exit(2);
+  }
+  return value;
+}
+
+function parseExpectShell(raw: string | undefined): 'desktop' | 'phone' | undefined {
+  if (!raw) return undefined;
+  if (raw === 'desktop' || raw === 'phone') return raw;
+  console.error(`--expect-shell takes "desktop" or "phone", not "${raw}"`);
+  process.exit(2);
 }
 
 function parseArgs(argv: string[]): Options {
@@ -90,6 +126,8 @@ function parseArgs(argv: string[]): Options {
     wait: Number(flags.get('wait') ?? 600),
     onboarding: flags.has('onboarding'),
     seedStore: flags.get('seed-store'),
+    height: parseHeight(flags.get('height')),
+    expectShell: parseExpectShell(flags.get('expect-shell')),
   };
 }
 
@@ -276,7 +314,10 @@ async function run(): Promise<number> {
   mkdirSync(OUT_DIR, { recursive: true });
 
   const browser = await chromium.launch();
-  const report: Record<string, { shot: string; findings: Finding[] }> = {};
+  const report: Record<
+    string,
+    { shot: string; findings: Finding[]; shell: string; height: number }
+  > = {};
   let errorCount = 0;
 
   try {
@@ -286,7 +327,7 @@ async function run(): Promise<number> {
       // context there, not just the matching CSS width.
       const hasTouch = width < 768;
       const context = await browser.newContext({
-        viewport: { width, height: VIEWPORT_HEIGHT },
+        viewport: { width, height: opts.height },
         deviceScaleFactor: 2,
         colorScheme: opts.theme === 'light' ? 'light' : 'dark',
         hasTouch,
@@ -315,6 +356,17 @@ async function run(): Promise<number> {
       if (opts.theme) seed['reis_theme'] = opts.theme === 'light' ? 'mendelu' : 'mendelu-dark';
       await seedMeta(page, seed);
 
+      // Settle BEFORE the first click, not only after the last one. seedMeta
+      // reloads the page, so without this a --click races the app's boot and
+      // fails on anything data-driven — the subject rows are painted from
+      // IndexedDB, and every drawer run died with "no visible element" against
+      // a screen that renders it perfectly a moment later.
+      //
+      // This settle also runs ahead of --seed-store, which needs the app booted
+      // far enough to have published `window.__reisStore` and throws when it has
+      // not. A run with no clicks keeps the original ordering (seed straight
+      // after the reload), which is what every --seed-store run so far has used.
+      if (opts.clicks.length > 0) await page.waitForTimeout(opts.wait);
       if (opts.seedStore) await seedStoreState(page, opts.seedStore);
 
       for (const click of opts.clicks) {
@@ -330,15 +382,22 @@ async function run(): Promise<number> {
       }
       await page.waitForTimeout(opts.wait);
 
+      // Which shell actually mounted, before anything is measured or believed.
+      const shell = describeShell(
+        (await page.locator('[data-testid="desktop-app"]').count()) > 0,
+        (await page.locator('[data-testid="mobile-app"]').count()) > 0
+      );
+      if (opts.expectShell) assertShell(opts.expectShell, shell, width);
+
       const shot = resolve(OUT_DIR, `${opts.label}-${width}.png`);
       await page.screenshot({ path: shot, fullPage: false });
 
       const probe = (await page.evaluate(probeSource)) as ProbeResult;
       const findings = analyzeProbe(probe);
       errorCount += findings.filter((f) => f.severity === 'error').length;
-      report[String(width)] = { shot, findings };
+      report[String(width)] = { shot, findings, shell, height: opts.height };
 
-      console.log(`\n\x1b[1m${width}px\x1b[0m  ${shot}`);
+      console.log(`\n\x1b[1m${width}x${opts.height}\x1b[0m  [${shell}]  ${shot}`);
       if (consoleErrors.length) {
         console.log(`  \x1b[31mconsole:\x1b[0m ${consoleErrors.length} error(s)`);
         for (const e of consoleErrors.slice(0, 3)) console.log(`    ${e.slice(0, 160)}`);

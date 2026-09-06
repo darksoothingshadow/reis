@@ -32,7 +32,7 @@ export function BottomActions({ onOpenFeedback }: { onOpenFeedback?: () => void 
         href="https://teams.microsoft.com"
         target="_blank"
         rel="noopener noreferrer"
-        className="w-12 h-auto py-2 rounded-xl flex flex-col items-center justify-center text-base-content/50 hover:bg-base-100 hover:text-info group"
+        className="w-12 h-auto py-2 rounded-xl flex flex-col items-center justify-center text-base-content/70 hover:bg-base-100 hover:text-info group"
       >
         <img
           src={TEAMS_ICON_PATH}
@@ -45,7 +45,7 @@ export function BottomActions({ onOpenFeedback }: { onOpenFeedback?: () => void 
         href="https://outlook.office.com"
         target="_blank"
         rel="noopener noreferrer"
-        className="w-12 h-auto py-2 rounded-xl flex flex-col items-center justify-center text-base-content/50 hover:bg-base-100 hover:text-info group"
+        className="w-12 h-auto py-2 rounded-xl flex flex-col items-center justify-center text-base-content/70 hover:bg-base-100 hover:text-info group"
       >
         <img
           src={OUTLOOK_ICON_PATH}
@@ -54,10 +54,10 @@ export function BottomActions({ onOpenFeedback }: { onOpenFeedback?: () => void 
         />
         <span className="text-[10px] mt-1 font-medium">Outlook</span>
       </a>
-      <div className="h-px bg-base-300 w-full my-1" />
+      <div className="h-px bg-base-content/10 w-full my-1" />
       <div className="relative" onMouseEnter={handleEnter} onMouseLeave={handleLeave}>
         <button
-          className={`w-12 h-12 rounded-xl flex flex-col items-center justify-center transition-all ${isOpen ? 'bg-primary text-primary-content shadow-md' : 'text-base-content/50 hover:bg-base-100 hover:text-base-content'}`}
+          className={`w-12 h-12 rounded-xl flex flex-col items-center justify-center transition-all ${isOpen ? 'bg-primary text-primary-content shadow-md' : 'text-base-content/70 hover:bg-base-100 hover:text-base-content'}`}
         >
           <Settings className="w-5 h-5" />
           <span className="text-[10px] mt-1 font-medium">{t('sidebar.profile')}</span>

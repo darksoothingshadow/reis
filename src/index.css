@@ -88,10 +88,16 @@ body,
   default: false;
   color-scheme: light;
 
-  /* Base colors */
+  /* Base colors.
+     Was #ffffff / #f9fafb / #f3f4f6 — three shades of almost-white, with
+     base-100 on base-200 at 1.045:1, under the 1.05 below which a surface is
+     simply not visible. On the desktop that erased every card edge, the
+     calendar's time gutter and the shell boundary at once: seven "invisible
+     surface" findings on the calendar screen alone, all of them this. 1.083
+     and 1.126 now — still a quiet, near-white page, but the surfaces exist. */
   --color-base-100: #ffffff;
-  --color-base-200: #f9fafb;
-  --color-base-300: #f3f4f6;
+  --color-base-200: #f4f6f8;
+  --color-base-300: #e5e9ed;
   --color-base-content: #111827;
 
   /* Brand colors */
@@ -134,6 +140,19 @@ body,
    * contrast bar over its own pale tint (see .btn-primary/.btn-secondary). */
   --btn-tonal-primary: color-mix(in oklab, var(--color-primary) 62%, black);
   --btn-tonal-secondary: color-mix(in oklab, var(--color-secondary) 56%, black);
+
+  /* A semantic colour used as TEXT, typically on a pale tint of itself — the
+   * badge that says "Přednáška", the fail-rate pill, the progression banner.
+   * The raw hues are 2.0-3.2:1 on their own /12 tint, so the app used to spell
+   * these in a colour nobody could read; setting the glyph in ink instead fixed
+   * the number and threw away the signal, which is worse. Darkening the hue
+   * keeps the design — coloured text on a whisper of tint — and clears 4.5:1.
+   * Same idea as --btn-tonal-primary above, extended to the other five. */
+  --tone-primary: color-mix(in oklab, var(--color-primary) 58%, black);
+  --tone-success: color-mix(in oklab, var(--color-success) 58%, black);
+  --tone-warning: color-mix(in oklab, var(--color-warning) 55%, black);
+  --tone-error: color-mix(in oklab, var(--color-error) 62%, black);
+  --tone-info: color-mix(in oklab, var(--color-info) 62%, black);
 }
 
 /* Custom Mendelu dark theme for REIS extension */
@@ -142,10 +161,16 @@ body,
   default: true;
   color-scheme: dark;
 
-  /* Base colors - dark */
+  /* Base colors - dark.
+     base-300 was #0f172a — DARKER than base-200 and 1.006:1 against it. That
+     token carries 187 borders and every h-px divider in the app, so in the dark
+     theme none of them were visible: the sidebar's separators, card outlines and
+     chip borders were all drawing nothing. Lifting it above base-200 (1.456:1)
+     makes a divider a divider, and the fills that use it read as gently raised,
+     which is what a chip on a base-200 page is meant to look like. */
   --color-base-100: #1f2937;
   --color-base-200: #111827;
-  --color-base-300: #0f172a;
+  --color-base-300: #2b3648;
   --color-base-content: #f3f4f6;
 
   /* Brand colors - preserved */
@@ -188,6 +213,16 @@ body,
    * dark tint, so no darkening needed (see .btn-primary/.btn-secondary). */
   --btn-tonal-primary: var(--color-primary);
   --btn-tonal-secondary: var(--color-secondary);
+
+  /* Dark theme: green, amber and the success green already read on their own
+   * tint (5.2-5.5:1), so they stay exactly as they are. Red and blue do not —
+   * 3.51:1 and 3.43:1 — so those two are lifted toward white instead of down
+   * toward black. */
+  --tone-primary: var(--color-primary);
+  --tone-success: var(--color-success);
+  --tone-warning: color-mix(in oklab, var(--color-warning) 84%, white);
+  --tone-error: color-mix(in oklab, var(--color-error) 62%, white);
+  --tone-info: color-mix(in oklab, var(--color-info) 64%, white);
 }
 
 /* Tailwind v4: Custom tokens via @theme */

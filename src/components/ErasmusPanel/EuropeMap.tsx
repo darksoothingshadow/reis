@@ -16,13 +16,13 @@ function priceLevelColor(pli: number | null): string {
   if (pli == null) return 'oklch(var(--b3))';
   // Range 40 (Cheap) to 160 (Expensive). 100 is EU average.
   const t = Math.max(0, Math.min(1, (pli - 40) / 120));
-  
+
   // Semantic Hue: 170 (Mint/Teal) -> 220 (Blue) -> 30 (Amber/Rose)
   // We want Lighter/Safe for Cheap, and Warm for Expensive.
   let hue = 170;
   if (t <= 0.5) {
     // 0 to 0.5: 170 to 220
-    hue = 170 + (t * 2) * 50;
+    hue = 170 + t * 2 * 50;
   } else {
     // 0.5 to 1: 220 to 30 (crossing through 0/360 or just direct)
     // Actually, let's go 220 -> 300 -> 30? No, let's go 220 -> 360/0 -> 30.
@@ -31,7 +31,7 @@ function priceLevelColor(pli: number | null): string {
   }
 
   // Consistent lightness to avoid "darkness" being interpreted as anything else
-  const lightness = 72; 
+  const lightness = 72;
   const chroma = 0.08;
   return `oklch(${lightness}% ${chroma} ${hue % 360})`;
 }
@@ -55,8 +55,8 @@ const MAX_ZOOM = 5;
 
 export function EuropeMap({ selectedCountryId, onSelectCountry, lang }: EuropeMapProps) {
   const { t } = useTranslation();
-  const erasmusConfig = useAppStore(s => s.erasmusConfig);
-  const erasmusIds = useMemo(() => new Set(ERASMUS_COUNTRIES.map(c => c.id)), []);
+  const erasmusConfig = useAppStore((s) => s.erasmusConfig);
+  const erasmusIds = useMemo(() => new Set(ERASMUS_COUNTRIES.map((c) => c.id)), []);
   const [tooltip, setTooltip] = useState<TooltipData | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
@@ -85,7 +85,7 @@ export function EuropeMap({ selectedCountryId, onSelectCountry, lang }: EuropeMa
 
     const step = 1 + Math.min(Math.abs(e.deltaY), 100) * 0.002;
     const factor = e.deltaY > 0 ? step : 1 / step;
-    setVb(prev => {
+    setVb((prev) => {
       const nw = prev.w * factor;
       // Zoom toward mouse position
       // Clamp size first, then adjust origin proportionally
@@ -94,7 +94,8 @@ export function EuropeMap({ selectedCountryId, onSelectCountry, lang }: EuropeMa
       const cx = prev.x + (prev.w - cw) * mx;
       const cy = prev.y + (prev.h - ch) * my;
       return {
-        w: cw, h: ch,
+        w: cw,
+        h: ch,
         x: Math.max(BASE[0], Math.min(BASE[0] + BASE[2] - cw, cx)),
         y: Math.max(BASE[1], Math.min(BASE[1] + BASE[3] - ch, cy)),
       };
@@ -107,7 +108,7 @@ export function EuropeMap({ selectedCountryId, onSelectCountry, lang }: EuropeMa
 
   useEffect(() => {
     if (!containerRef.current) return;
-    const observer = new ResizeObserver(entries => {
+    const observer = new ResizeObserver((entries) => {
       for (const entry of entries) {
         setContainerWidth(entry.contentRect.width);
       }
@@ -116,50 +117,68 @@ export function EuropeMap({ selectedCountryId, onSelectCountry, lang }: EuropeMa
     return () => observer.disconnect();
   }, []);
 
-  const handlePointerDown = useCallback((e: React.PointerEvent) => {
-    if (e.button !== 0) return;
-    (e.target as Element).setPointerCapture(e.pointerId);
-    dragRef.current = { startX: e.clientX, startY: e.clientY, vb: { ...vb } };
-    didDragRef.current = false;
-    setIsDragging(true);
-  }, [vb]);
+  const handlePointerDown = useCallback(
+    (e: React.PointerEvent) => {
+      if (e.button !== 0) return;
+      (e.target as Element).setPointerCapture(e.pointerId);
+      dragRef.current = { startX: e.clientX, startY: e.clientY, vb: { ...vb } };
+      didDragRef.current = false;
+      setIsDragging(true);
+    },
+    [vb]
+  );
 
-  const handlePointerMove = useCallback((e: React.PointerEvent) => {
-    if (!dragRef.current || !svgRef.current) return;
-    const rect = svgRef.current.getBoundingClientRect();
-    const dx = (e.clientX - dragRef.current.startX) / rect.width * dragRef.current.vb.w;
-    const dy = (e.clientY - dragRef.current.startY) / rect.height * dragRef.current.vb.h;
-    if (Math.abs(dx) > 2 || Math.abs(dy) > 2) didDragRef.current = true;
-    setVb(clampVb(
-      dragRef.current.vb.x - dx,
-      dragRef.current.vb.y - dy,
-      dragRef.current.vb.w
-    ));
-    setTooltip(null);
-  }, [clampVb]);
+  const handlePointerMove = useCallback(
+    (e: React.PointerEvent) => {
+      if (!dragRef.current || !svgRef.current) return;
+      const rect = svgRef.current.getBoundingClientRect();
+      const dx = ((e.clientX - dragRef.current.startX) / rect.width) * dragRef.current.vb.w;
+      const dy = ((e.clientY - dragRef.current.startY) / rect.height) * dragRef.current.vb.h;
+      if (Math.abs(dx) > 2 || Math.abs(dy) > 2) didDragRef.current = true;
+      setVb(clampVb(dragRef.current.vb.x - dx, dragRef.current.vb.y - dy, dragRef.current.vb.w));
+      setTooltip(null);
+    },
+    [clampVb]
+  );
 
   const handlePointerUp = useCallback(() => {
     dragRef.current = null;
   }, []);
 
-  const handleMouseEnter = useCallback((id: string, e: React.MouseEvent) => {
-    const country = ERASMUS_COUNTRIES.find(c => c.id === id);
-    if (!country || !containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    setTooltip({ name: country[lang], countryId: id, x: e.clientX - rect.left, y: e.clientY - rect.top });
-  }, [lang]);
+  const handleMouseEnter = useCallback(
+    (id: string, e: React.MouseEvent) => {
+      const country = ERASMUS_COUNTRIES.find((c) => c.id === id);
+      if (!country || !containerRef.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      setTooltip({
+        name: country[lang],
+        countryId: id,
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+      });
+    },
+    [lang]
+  );
 
-  const handleMouseMoveTooltip = useCallback((e: React.MouseEvent) => {
-    if (!tooltip || !containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    setTooltip(prev => prev ? { ...prev, x: e.clientX - rect.left, y: e.clientY - rect.top } : null);
-  }, [tooltip]);
+  const handleMouseMoveTooltip = useCallback(
+    (e: React.MouseEvent) => {
+      if (!tooltip || !containerRef.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      setTooltip((prev) =>
+        prev ? { ...prev, x: e.clientX - rect.left, y: e.clientY - rect.top } : null
+      );
+    },
+    [tooltip]
+  );
 
   const handleMouseLeave = useCallback(() => setTooltip(null), []);
 
-  const handleCountryClick = useCallback((id: string) => {
-    if (!didDragRef.current) onSelectCountry(id);
-  }, [onSelectCountry]);
+  const handleCountryClick = useCallback(
+    (id: string) => {
+      if (!didDragRef.current) onSelectCountry(id);
+    },
+    [onSelectCountry]
+  );
 
   const isZoomed = vb.w < BASE[2] - 1;
 
@@ -170,19 +189,20 @@ export function EuropeMap({ selectedCountryId, onSelectCountry, lang }: EuropeMa
       .map(([id, s]) => ({ id, count: s.count }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 3)
-      .map(item => {
-        const country = ERASMUS_COUNTRIES.find(c => c.id === item.id);
+      .map((item) => {
+        const country = ERASMUS_COUNTRIES.find((c) => c.id === item.id);
         return {
           id: item.id,
           name: country ? country[lang] : item.id,
-          count: item.count
+          count: item.count,
         };
       });
   }, [lang]);
 
-  const totalReports = useMemo(() => 
-    Object.values(ERASMUS_COUNTRY_STATS).reduce((acc, s) => acc + s.count, 0), 
-  []);
+  const totalReports = useMemo(
+    () => Object.values(ERASMUS_COUNTRY_STATS).reduce((acc, s) => acc + s.count, 0),
+    []
+  );
 
   return (
     <div className="flex h-full gap-4 p-1 overflow-hidden">
@@ -214,9 +234,10 @@ export function EuropeMap({ selectedCountryId, onSelectCountry, lang }: EuropeMa
             const isSelected = id === selectedCountryId;
             const opacity = selectedCountryId ? (isSelected ? 0 : 0.4) : 1;
 
-            const fill = isErasmus && pathStats
-              ? priceLevelColor(pathStats.priceLevelIndex)
-              : 'oklch(var(--b3))';
+            const fill =
+              isErasmus && pathStats
+                ? priceLevelColor(pathStats.priceLevelIndex)
+                : 'oklch(var(--b3))';
 
             return (
               <path
@@ -233,7 +254,9 @@ export function EuropeMap({ selectedCountryId, onSelectCountry, lang }: EuropeMa
                 onClick={isErasmus ? () => handleCountryClick(id) : undefined}
                 onMouseEnter={isErasmus ? (e) => handleMouseEnter(id, e) : undefined}
                 onMouseLeave={isErasmus ? handleMouseLeave : undefined}
-                aria-label={isErasmus ? ERASMUS_COUNTRIES.find(c => c.id === id)?.[lang] : undefined}
+                aria-label={
+                  isErasmus ? ERASMUS_COUNTRIES.find((c) => c.id === id)?.[lang] : undefined
+                }
                 opacity={opacity}
                 style={{ transition: 'opacity 0.3s' }}
               />
@@ -241,23 +264,17 @@ export function EuropeMap({ selectedCountryId, onSelectCountry, lang }: EuropeMa
           })}
 
           {/* Special effects for selected country (Stage 1) - Rendered on TOP */}
-          {selectedCountryId && (
+          {selectedCountryId &&
             (() => {
-              const path = EUROPE_PATHS.find(p => p.id === selectedCountryId);
+              const path = EUROPE_PATHS.find((p) => p.id === selectedCountryId);
               if (!path) return null;
               const s = ERASMUS_COUNTRY_STATS[path.id];
               const fill = s ? priceLevelColor(s.priceLevelIndex) : 'oklch(var(--b3))';
-              
+
               return (
                 <g className="pointer-events-none">
                   {/* Layer 1: Stark White Outline (Base contrast) */}
-                  <path
-                    d={path.d}
-                    fill="none"
-                    stroke="white"
-                    strokeWidth={5}
-                    fillRule="evenodd"
-                  />
+                  <path d={path.d} fill="none" stroke="white" strokeWidth={5} fillRule="evenodd" />
                   {/* Layer 2: Primary Core (Creates the colored edge) */}
                   <path
                     d={path.d}
@@ -267,18 +284,13 @@ export function EuropeMap({ selectedCountryId, onSelectCountry, lang }: EuropeMa
                     fillRule="evenodd"
                   />
                   {/* Layer 3: The Fill (Ensures stroke only shows OUTWARDS) */}
-                  <path
-                    d={path.d}
-                    fill={fill}
-                    fillRule="evenodd"
-                  />
+                  <path d={path.d} fill={fill} fillRule="evenodd" />
                 </g>
               );
-            })()
-          )}
+            })()}
 
-        {/* Vertical separator line (Stage 3) */}
-        <line x1="120" y1="0" x2="120" y2="519" stroke="oklch(var(--b3))" strokeWidth="1" />
+          {/* Vertical separator line (Stage 3) */}
+          <line x1="120" y1="0" x2="120" y2="519" stroke="oklch(var(--b3))" strokeWidth="1" />
         </svg>
 
         {/* Reset zoom button */}
@@ -307,17 +319,20 @@ export function EuropeMap({ selectedCountryId, onSelectCountry, lang }: EuropeMa
             </div>
             {stats.priceLevelIndex != null && (
               <div className="text-base-content/70">
-                {t('erasmus.priceLevel')}: <span className="font-semibold text-base-content">{stats.priceLevelIndex}</span> <span className="text-base-content/50">EU=100</span>
+                {t('erasmus.priceLevel')}:{' '}
+                <span className="font-semibold text-base-content">{stats.priceLevelIndex}</span>{' '}
+                <span className="text-base-content/70">EU=100</span>
               </div>
             )}
-            {erasmusConfig && (() => {
-              const grant = getGrantForCountryId(erasmusConfig, tooltip.countryId);
-              return grant ? (
-                <div className="text-success font-semibold mt-0.5">
-                  {t('erasmus.grantPerMonth', { amount: grant })}
-                </div>
-              ) : null;
-            })()}
+            {erasmusConfig &&
+              (() => {
+                const grant = getGrantForCountryId(erasmusConfig, tooltip.countryId);
+                return grant ? (
+                  <div className="text-success font-semibold mt-0.5">
+                    {t('erasmus.grantPerMonth', { amount: grant })}
+                  </div>
+                ) : null;
+              })()}
           </div>
         )}
       </div>
@@ -327,19 +342,33 @@ export function EuropeMap({ selectedCountryId, onSelectCountry, lang }: EuropeMa
         {/* Price Level Legend */}
         <div className="flex flex-col gap-3">
           <div className="flex items-baseline justify-between gap-2">
-            <h3 className="text-xs font-bold opacity-40 uppercase tracking-widest">{t('erasmus.legend')}</h3>
-            <span className="text-[10px] opacity-40 font-bold whitespace-nowrap">{totalReports} {t('erasmus.reports')}</span>
+            <h3 className="text-xs font-bold opacity-40 uppercase tracking-widest">
+              {t('erasmus.legend')}
+            </h3>
+            <span className="text-[10px] opacity-40 font-bold whitespace-nowrap">
+              {totalReports} {t('erasmus.reports')}
+            </span>
           </div>
           <div className="flex flex-col gap-3">
             <div className="flex items-center gap-3">
-              <div className="w-4 h-4 rounded-full ring-1 ring-base-content/10 shadow-sm" style={{ backgroundColor: priceLevelColor(160) }} />
-              <span className="text-sm font-medium text-base-content/80">{t('erasmus.higherPrices')}</span>
+              <div
+                className="w-4 h-4 rounded-full ring-1 ring-base-content/10 shadow-sm"
+                style={{ backgroundColor: priceLevelColor(160) }}
+              />
+              <span className="text-sm font-medium text-base-content/80">
+                {t('erasmus.higherPrices')}
+              </span>
             </div>
             <div className="flex items-center gap-3">
-              <div className="w-4 h-4 rounded-full ring-1 ring-base-content/10 shadow-sm" style={{ backgroundColor: priceLevelColor(40) }} />
-              <span className="text-sm font-medium text-base-content/80">{t('erasmus.lowerPrices')}</span>
+              <div
+                className="w-4 h-4 rounded-full ring-1 ring-base-content/10 shadow-sm"
+                style={{ backgroundColor: priceLevelColor(40) }}
+              />
+              <span className="text-sm font-medium text-base-content/80">
+                {t('erasmus.lowerPrices')}
+              </span>
             </div>
-            <p className="text-[10px] text-base-content/40 italic leading-tight pl-0.5">
+            <p className="text-[10px] text-base-content/70 italic leading-tight pl-0.5">
               {t('erasmus.legendDesc')}
             </p>
           </div>
@@ -347,19 +376,23 @@ export function EuropeMap({ selectedCountryId, onSelectCountry, lang }: EuropeMa
 
         {/* Top 3 Stats */}
         <div className="flex flex-col gap-3">
-          <h3 className="text-xs font-bold opacity-40 uppercase tracking-widest">{t('erasmus.topDestinations')}</h3>
+          <h3 className="text-xs font-bold opacity-40 uppercase tracking-widest">
+            {t('erasmus.topDestinations')}
+          </h3>
           <ul className="flex flex-col gap-3 list-none p-0 m-0">
             {top3.map((item) => (
               <li key={item.id} className="flex flex-col gap-1.5">
                 <div className="flex items-baseline justify-between gap-2">
                   <span className="text-sm font-bold truncate max-w-[140px]">{item.name}</span>
-                  <span className="text-xs opacity-60 font-mono whitespace-nowrap">({item.count} {t('erasmus.reports')})</span>
+                  <span className="text-xs opacity-60 font-mono whitespace-nowrap">
+                    ({item.count} {t('erasmus.reports')})
+                  </span>
                 </div>
                 {/* Visual indicator (optional bar) */}
                 <div className="w-full h-1.5 bg-base-300 rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-primary/40" 
-                    style={{ width: `${(item.count / top3[0].count) * 100}%` }} 
+                  <div
+                    className="h-full bg-primary/40"
+                    style={{ width: `${(item.count / top3[0].count) * 100}%` }}
                   />
                 </div>
               </li>

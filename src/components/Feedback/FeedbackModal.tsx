@@ -106,7 +106,7 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
               <button
                 onClick={handleClose}
                 aria-label={t('feedback.close')}
-                className="btn btn-sm btn-ghost btn-circle text-base-content/60 hover:text-base-content"
+                className="btn btn-sm btn-ghost btn-circle text-base-content/75 hover:text-base-content"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -138,21 +138,21 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                       <button
                         type="button"
                         onClick={() => setType('bug')}
-                        className={`btn btn-sm border-0 ${type === 'bug' ? 'bg-error/20 text-error hover:bg-error/30' : 'bg-base-200 text-base-content/60 hover:bg-base-300 hover:text-base-content'}`}
+                        className={`btn btn-sm border-0 ${type === 'bug' ? 'bg-error/20 text-base-content hover:bg-error/30' : 'bg-base-200 text-base-content/75 hover:bg-base-300 hover:text-base-content'}`}
                       >
                         {t('feedback.bug')}
                       </button>
                       <button
                         type="button"
                         onClick={() => setType('idea')}
-                        className={`btn btn-sm border-0 ${type === 'idea' ? 'bg-warning/20 text-warning hover:bg-warning/30' : 'bg-base-200 text-base-content/60 hover:bg-base-300 hover:text-base-content'}`}
+                        className={`btn btn-sm border-0 ${type === 'idea' ? 'bg-warning/20 text-base-content hover:bg-warning/30' : 'bg-base-200 text-base-content/75 hover:bg-base-300 hover:text-base-content'}`}
                       >
                         {t('feedback.idea')}
                       </button>
                       <button
                         type="button"
                         onClick={() => setType('other')}
-                        className={`btn btn-sm border-0 ${type === 'other' ? 'bg-neutral text-neutral-content hover:bg-neutral/80' : 'bg-base-200 text-base-content/60 hover:bg-base-300 hover:text-base-content'}`}
+                        className={`btn btn-sm border-0 ${type === 'other' ? 'bg-neutral text-neutral-content hover:bg-neutral/80' : 'bg-base-200 text-base-content/75 hover:bg-base-300 hover:text-base-content'}`}
                       >
                         {t('feedback.other')}
                       </button>
@@ -235,7 +235,7 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                     </button>
                   </div>
 
-                  <p className="text-[10px] text-center text-base-content/50 mt-2">
+                  <p className="text-[10px] text-center text-base-content/75 mt-2">
                     {t('feedback.footer')}
                   </p>
                 </div>

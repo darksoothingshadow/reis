@@ -64,7 +64,13 @@ export function MapEventsSection({ showFilter = true }: MapEventsSectionProps) {
   return (
     <div className="flex max-h-[60vh] flex-col">
       {showFilter && (
-        <div className="flex gap-1.5 overflow-x-auto px-3 py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        // Wrap, never scroll sideways. This row renders on DESKTOP only — the
+        // phone panel passes showFilter={false} — and a horizontal scroller
+        // with its scrollbar hidden is a touch pattern: with a mouse there is
+        // nothing to swipe and no bar to drag, so every society past the fourth
+        // was cut off at the panel edge and unreachable. Wrapping costs one
+        // more row and makes the whole filter visible at once.
+        <div className="flex flex-wrap gap-1.5 px-3 py-2">
           {/* "Vše" keeps the brand primary; each society chip fills with its own
               brand colour when active, so the colour legend pays off here */}
           <button

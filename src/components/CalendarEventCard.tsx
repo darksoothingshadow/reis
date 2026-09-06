@@ -240,18 +240,12 @@ export function CalendarEventCard({ lesson, onClick, language }: CalendarEventCa
             {room && !isCompact && (
               <div className="flex items-center gap-1 min-w-0 flex-1">
                 <MapPin size={12} className="flex-shrink-0" />
+                {/* No "show on map" button here. A calendar block is minutes
+                    tall and already carries the course, the room and the time;
+                    a third control spelled out as a sentence pushed the row
+                    past the block at every width. The room is still reachable
+                    on the map from the subject drawer. */}
                 <span className="truncate">{room}</span>
-                <button
-                  className="btn btn-ghost btn-xs gap-1 flex-shrink-0 px-1"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    useAppStore
-                      .getState()
-                      .focusRoomByCode(room.replace(/\s*\([^)]*\)\s*$/, '').trim());
-                  }}
-                >
-                  {t('map.showOnMap')}
-                </button>
               </div>
             )}
             <div className="text-content-secondary whitespace-nowrap flex-shrink-0">

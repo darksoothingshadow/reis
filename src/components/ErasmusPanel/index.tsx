@@ -175,8 +175,8 @@ export function ErasmusPanel({
             onClick={() => handleTabChange(tab)}
             className={`px-3 py-1.5 rounded-t-lg text-xs font-bold transition-all border-b-2 ${
               currentTab === tab
-                ? 'border-primary text-primary bg-primary/5'
-                : 'border-transparent text-base-content/40 hover:text-base-content/60'
+                ? 'border-primary text-[var(--tone-primary)] bg-primary/12'
+                : 'border-transparent text-base-content/70 hover:text-base-content'
             }`}
           >
             {tab === 'plan' ? t('erasmus.tabPlan') : t('erasmus.tabExplore')}
@@ -200,7 +200,7 @@ export function ErasmusPanel({
               {tableAOptions.length < 4 && (
                 <button
                   onClick={addOption}
-                  className="btn btn-ghost btn-sm rounded-full px-4 h-8 text-base-content/40 hover:text-base-content/70 border border-base-300 hover:border-base-content/20 font-normal"
+                  className="btn btn-ghost btn-sm rounded-full px-4 h-8 text-base-content/70 hover:text-base-content/70 border border-base-300 hover:border-base-content/20 font-normal"
                 >
                   <Plus size={14} className="opacity-70" />
                   <span className="font-bold text-xs">
@@ -228,11 +228,11 @@ export function ErasmusPanel({
 
       {currentTab === 'explore' && (
         <div className="flex-1 min-h-0 px-4 pb-4 pt-2 flex flex-col gap-2">
-          <div className="flex items-start gap-2 px-1 py-1.5 text-[10px] text-base-content/50 leading-relaxed">
+          <div className="flex items-start gap-2 px-1 py-1.5 text-[10px] text-base-content/70 leading-relaxed">
             <Info size={12} className="shrink-0 mt-0.5 text-info" />
             <span>{t('erasmus.exploreDisclaimer')}</span>
           </div>
-          <div className="bg-base-200/50 rounded-xl p-2 border border-base-300 flex-1 min-h-0">
+          <div className="bg-base-200 rounded-xl p-2 border border-base-300 flex-1 min-h-0">
             <EuropeMap
               selectedCountryId={drawerOpen ? currentCountryId : ''}
               onSelectCountry={(id) => {
