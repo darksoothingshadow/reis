@@ -91,6 +91,15 @@ Device: ______ iPadOS: ______ Build: ______ Pencil: ______
 19. [ ] With ink on a file, put the iPad in flight mode and open the subject → the annotated file
         is in the sidebar and opens; nothing is refetched.
 
+## Known edge, not fixed
+
+An added page and the ink on it can part company if the teacher re-uploads a SHORTER PDF.
+`InkPages.apply` clamps an insert past the new end back to the end; the ink keeps the page index
+it was drawn at, so the blank page comes back empty and those strokes are held but not shown.
+Nothing is destroyed, and it needs both a shortened re-upload and an added page beyond the new
+end. Fixing it means shifting the ink keys by the same clamp delta — a larger change than this
+branch should carry.
+
 ## Report back
 
 Record any finding not in the design here, with the step number.
