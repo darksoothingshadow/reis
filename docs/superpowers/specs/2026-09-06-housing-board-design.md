@@ -55,6 +55,7 @@ One table, `public.housing_posts`:
 | note | text, max 500 | hand-typed |
 | contact | text, max 120 | hand-typed: email, phone, Instagram, whatever the poster chooses |
 | is_login | text | the poster's IS login, attached by the app after consent |
+| is_person_id | text | the poster's IS person id, attached with the login; it is what opens the person sheet |
 | install_id | uuid | random per-install id, so the owner can close their own post (pattern from `event_rsvps`) |
 | expires_at | timestamptz | `created_at + 14 days`, fixed; a student whose room is still open re-posts |
 | hidden_by_admin | bool | default false |
