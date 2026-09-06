@@ -113,4 +113,21 @@ do $$ declare v_install uuid := gen_random_uuid(); v_id uuid; i int; begin
   reset role;
 end $$;
 
+-- 10. a null install id is refused, not raised (an install must be able to
+-- close what it posted; a null one could never be matched by close_housing_post)
+do $$ declare v_id uuid; begin
+  set local role anon;
+  v_id := public.submit_housing_post('offer','flat','Brno',1,current_date,null,'','x','x','1',null);
+  if v_id is not null then raise exception 'null install id accepted'; end if;
+  reset role;
+end $$;
+
+-- 11. admin moderation (hide/unhide/delete via HousingModerationPanel) needs a
+-- reis_admin session, which this transaction cannot fabricate — Supabase auth
+-- users are not something SQL alone can stand up. Dominik: after `db push`,
+-- verify by hand in `npm run dev:web:admin` that the moderation panel lists a
+-- submitted post, that Hide/Unhide toggles hidden_by_admin (and the post drops
+-- out of list_housing_posts while hidden — test 5 above covers the RLS side of
+-- that), and that Delete removes the row for good.
+
 rollback;

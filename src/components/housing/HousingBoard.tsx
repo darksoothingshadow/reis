@@ -27,7 +27,7 @@ export function HousingBoard({ onVerify }: { onVerify: (post: HousingPost) => vo
 
   const report = async (post: HousingPost): Promise<boolean> => {
     // Moderation reuses the suggestions inbox: no new plumbing, admins already read it.
-    const res = await submitSuggestion({ type: 'other', title: `[housing] ${post.id}`, body: `${post.kind} · ${post.district} · ${post.isLogin}` });
+    const res = await submitSuggestion({ type: 'other', title: `[housing] ${post.id}`, body: `${post.kind} · ${post.district}` });
     return res.ok;
   };
 
