@@ -33,7 +33,10 @@ import { createViewportSlice } from './slices/createViewportSlice';
 import { createMobileUiSlice } from './slices/createMobileUiSlice';
 import { createMapSlice } from './slices/createMapSlice';
 import { createRsvpSlice } from './slices/createRsvpSlice';
+import { createHousingSlice } from './slices/createHousingSlice';
 import { createAdminSlice } from './slices/createAdminSlice';
+import { createHousingAdminSlice } from './slices/createHousingAdminSlice';
+import { createAdminStatsSlice } from './slices/createAdminStatsSlice';
 import { createSuggestionsSlice } from './slices/createSuggestionsSlice';
 import { createDemoSlice } from './slices/createDemoSlice';
 import { syncService } from '../services/sync';
@@ -78,7 +81,10 @@ export const useAppStore = create<AppState>()((...a) => ({
   ...createMobileUiSlice(...a),
   ...createMapSlice(...a),
   ...createRsvpSlice(...a),
+  ...createHousingSlice(...a),
   ...createAdminSlice(...a),
+  ...createHousingAdminSlice(...a),
+  ...createAdminStatsSlice(...a),
   ...createSuggestionsSlice(...a),
   ...createDemoSlice(...a),
 }));
@@ -167,10 +173,13 @@ export const initializeStore = async () => {
     useAppStore.getState().prefetchTodaySubjects();
   });
 
-  // Fire-and-forget daily usage tracking. No longer reads user params: the row
-  // is keyed on a random install id, so the student's identity is not needed
-  // and is deliberately not fetched.
-  import('../api/feedback').then(({ trackDailyUsage }) => trackDailyUsage());
+  // Fire-and-forget daily usage tracking. The row is still keyed on a random
+  // install id, never the student's identity; since September 2026 it also
+  // carries two GROUP labels (faculty, platform) read via getUserParams()/
+  // getPlatform() — see the comment on trackDailyUsage.
+  // getPlatform() can throw during boot ordering; caught here so a fire-and-
+  // forget call can never surface as an unhandled rejection.
+  import('../api/feedback').then(({ trackDailyUsage }) => trackDailyUsage()).catch(() => {});
 
   // Subscribe to sync service — selective refresh based on type
   const unsubscribe = syncService.subscribe((type) => {

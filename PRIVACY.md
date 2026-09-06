@@ -1,6 +1,6 @@
 # Privacy Policy for reIS
 
-**Last Updated: September 4, 2026**
+**Last Updated: September 6, 2026**
 
 ## Introduction
 reIS ("we", "our", or "us") is a Chrome extension designed to modernize and enhance the user experience of the Mendel University Information System (IS Mendelu). We are committed to protecting your privacy and ensuring the security of your data.
@@ -26,7 +26,7 @@ We collect anonymous usage data to improve the extension:
 
 ### 3. Daily Usage & NPS Feedback
 To understand how actively reIS is used, we record:
-- **Daily Usage**: Each day you open reIS, a **random identifier generated on your device** is sent to our Supabase backend to record one usage event. This identifier is a random UUID created the first time you use the app and stored locally. It is **not derived from your student ID, your name, or anything else about you**, and it cannot be linked back to you.
+- **Daily Usage**: Each day you open reIS, a **random identifier generated on your device** is sent to our Supabase backend to record one usage event. This identifier is a random UUID created the first time you use the app and stored locally. It is **not derived from your student ID, your name, or anything else about you**, and it cannot be linked back to you. Since September 2026 the event also carries two group labels: your faculty and the platform (extension, iOS, Android or web). These describe a group of thousands of installs, not you; nothing else about the event changed.
 - **NPS Rating (Voluntary)**: Once per semester you may be shown a satisfaction prompt. If you choose to rate, the same random identifier and your rating are sent. You can dismiss the prompt without sending anything.
 
 **What this means for our numbers**: because the identifier belongs to an installation rather than to a person, these figures count **installations, not people**. If you use reIS on a phone and a laptop, you are counted twice.
@@ -52,6 +52,7 @@ reIS contacts the following services. **IS Mendelu is the only one that receives
 **Always:**
 1. **IS Mendelu** (`is.mendelu.cz`) — fetches your academic data, authenticated by you.
 2. **Supabase** (`*.supabase.co`) — reIS's own backend: public notifications, society events and their attendance counts, anonymous usage events, and feedback you submit. Different records carry different keys. The daily usage count, the in-app survey and event RSVPs use the random installation identifier described above; society view/click counters carry only a post row id. A submitted suggestion carries no identifier we generate — but if you fill in the optional contact field, it carries whatever you typed there, because asking us to reply is what that field is for.
+	- **Housing board (optional, you type it)**: If you publish a post on the housing board ("Bydlení"), reIS stores on its Supabase backend exactly what you enter — offer or request, room type, district, price, free-from and free-until dates, a note, and the contact you choose to give — together with your IS login and IS person id, which the app attaches after you tick the consent box. The board is public to anyone running reIS: posts are served through the same public key every install carries, so treat a post like a notice on a public noticeboard, not a private message. The two reIS administrators can hide or delete a post. A post stops being shown 14 days after you publish it (or when you close it) and the row is deleted shortly afterwards, by the next publish on the board. Nothing on the board is collected automatically, and the board records nothing about who reads it. A random per-install id is stored with the post only so your own device can close it.
 3. **jsDelivr** (`cdn.jsdelivr.net`) — static subject-difficulty data. No identifier is sent, but the set of subjects requested does reveal to the CDN which courses you are enrolled in.
 4. **OpenStreetMap** — campus map tiles.
 

@@ -75,7 +75,8 @@
     "more": "More",
     "isPages": "IS Pages",
     "people": "People",
-    "map": "Map"
+    "map": "Map",
+    "housing": "Housing"
   },
   "calendar": {
     "emptyWeek": "Nothing this week, you're free",
@@ -225,7 +226,8 @@
     "copiedToClipboard": "Email copied to clipboard",
     "czk": "CZK",
     "download": "Download",
-    "errorGeneric": "Something went wrong. Please try again."
+    "errorGeneric": "Something went wrong. Please try again.",
+    "refresh": "Refresh"
   },
   "search": {
     "placeholder": "Search subjects, people, pages... ({shortcut}K)",
@@ -953,7 +955,28 @@
     "passwordChanged": "Password changed",
     "passwordChangeFailed": "Could not change the password",
     "createAccount": "Create account",
-    "displayName": "Display name"
+    "displayName": "Display name",
+    "housingTab": "Housing",
+    "urlLabel": "Link (optional)",
+    "urlHint": "https://… or reis://housing to open the housing board",
+    "urlInvalid": "Enter an https:// link or reis://housing",
+    "housingHide": "Hide",
+    "housingUnhide": "Unhide",
+    "housingDelete": "Delete",
+    "housingHidden": "hidden",
+    "statsTab": "Statistics",
+    "stats": {
+      "today": "Today",
+      "d7": "7 days",
+      "d30": "30 days",
+      "byFaculty": "By faculty (30 days)",
+      "byPlatform": "By platform (30 days)",
+      "weekly": "Weekly active installs (12 weeks)",
+      "installsNote": "We count installs, not people: a student on a phone and a laptop counts twice.",
+      "under5": "under 5",
+      "unknown": "unknown",
+      "loadFailed": "Could not load statistics."
+    }
   },
   "mobile": {
     "header": {
@@ -1092,7 +1115,9 @@
     "profile": {
       "appearance": "Appearance",
       "settings": "Settings",
-      "societies": "Societies on the map"
+      "societies": "Societies on the map",
+      "housing": "Housing",
+      "housingSub": "Rooms from students for students"
     },
     "loadFailed": {
       "title": "Couldn't load your data",
@@ -1125,5 +1150,55 @@
     "partnersLabel": "Companies we work with",
     "partnersBody": "We pick them ourselves, for the subjects people study here. It is about internships and events. They see nothing from your IS.",
     "eyBody": "They keep reIS running."
+  },
+  "housing": {
+    "title": "Housing",
+    "subtitle": "Rooms from students for students",
+    "tabOffer": "Offering",
+    "tabRequest": "Looking",
+    "empty": "Nothing here yet. Be the first.",
+    "loadFailed": "Could not load the board.",
+    "add": "Add",
+    "mine": "My posts",
+    "noMine": "You have no live post.",
+    "close": "Close",
+    "report": "Report",
+    "reported": "Thanks, we'll look at it.",
+    "verify": "Verify in IS",
+    "contact": "Contact",
+    "freeFrom": "Free from",
+    "freeUntil": "until",
+    "priceUnit": "CZK/month",
+    "expires": "Expires {date}",
+    "kind": {
+      "offer": "Offering",
+      "request": "Looking"
+    },
+    "roomType": {
+      "bed_shared": "Bed in a shared room",
+      "room_private": "Private room",
+      "flat": "Whole flat"
+    },
+    "form": {
+      "title": "New post",
+      "kind": "What do you want?",
+      "roomType": "Type",
+      "district": "District",
+      "districtPlaceholder": "e.g. Královo Pole",
+      "price": "Price (CZK/month)",
+      "freeFrom": "Free from",
+      "freeUntil": "Free until (optional)",
+      "note": "Note",
+      "notePlaceholder": "Size, flatmates, deposit, anything that matters",
+      "contact": "Contact for replies",
+      "contactPlaceholder": "email, phone or Instagram",
+      "loginLabel": "Published as",
+      "consent": "I agree that my IS login, a link to my IS profile, and the contact I typed are visible to anyone using reIS until this post expires (14 days) or I close it.",
+      "publish": "Publish",
+      "published": "Your post is live.",
+      "refused": "Not now: at most 3 live posts and 5 attempts per hour.",
+      "failed": "Sending failed. Try again.",
+      "cancel": "Cancel"
+    }
   }
 }

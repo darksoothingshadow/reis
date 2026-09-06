@@ -51,6 +51,13 @@ interface Options {
   height: number;
   /** Fail the run if the other shell rendered. See assertShell(). */
   expectShell?: 'desktop' | 'phone';
+  /** Raw JSON object merged into the running app store via `window.__reisStore.setState`
+   *  (see dev/storeHandle.ts). Covers state IndexedDB seeding can't reach — data
+   *  normally fetched from a network this harness has no credentials for (housing
+   *  posts, admin session/rows), or a sheet/view stack that only lives in memory.
+   *  Re-applied after every --click step too, so a click's own async refetch
+   *  (e.g. the admin console's housing tab reloading its list) can't clobber it. */
+  seedStore?: string;
 }
 
 /**
@@ -120,6 +127,7 @@ function parseArgs(argv: string[]): Options {
     onboarding: flags.has('onboarding'),
     height: parseHeight(flags.get('height')),
     expectShell: parseExpectShell(flags.get('expect-shell')),
+    seedStore: flags.get('seed-store'),
   };
 }
 
@@ -197,20 +205,106 @@ async function seedMeta(page: Page, entries: Record<string, unknown>): Promise<v
   await page.reload({ waitUntil: 'load' });
 }
 
-/** Click a step of a `--click` path. Visible text first, then accessible name:
- *  icon-only controls (the phone shell's initials avatar, a bare chevron) carry
- *  their meaning in `aria-label`, and a text-only lookup can never reach the
- *  surfaces behind them. */
-async function clickByTextOrLabel(page: Page, text: string): Promise<void> {
+/** Merge `entries` into the running app store via the dev harness's published
+ *  handle (`window.__reisStore`, see dev/storeHandle.ts). Throws with a clear
+ *  message if the handle is missing — the harness is off (not a DEV/preview
+ *  build) — rather than silently screenshotting an unseeded page. */
+async function seedStoreState(page: Page, json: string): Promise<void> {
+  let entries: Record<string, unknown>;
+  try {
+    entries = JSON.parse(json);
+  } catch (err) {
+    throw new Error(`--seed-store: invalid JSON (${(err as Error).message})`);
+  }
+  const ok = await page.evaluate((kv) => {
+    const w = window as unknown as { __reisStore?: { setState: (v: object) => void } };
+    if (!w.__reisStore) return false;
+    w.__reisStore.setState(kv as object);
+    return true;
+  }, entries);
+  if (!ok) {
+    throw new Error(
+      '--seed-store: window.__reisStore is not present. It is published by dev/storeHandle.ts, ' +
+        'gated on isHarnessEnabled — confirm the page is npm run dev:web (or a variant) and not some ' +
+        'other server.'
+    );
+  }
+  // Seeding e.g. `mobileSheets` mounts a Sheet, which slides up over ~0.3s
+  // (see Sheet.tsx's `animate-[sheetUp]`). A `--click` that lands during that
+  // transform-in-flight can tap empty space where the target will be once
+  // settled rather than where it is now — this is what made the FIRST click
+  // after a seed unreliable (reproduced: a tap on the offer/request tabs,
+  // fired with no settle wait, landed with no effect roughly a third of the
+  // time). Cheaper than a generic settle: wait past the animation once, here,
+  // rather than padding every caller's own `--wait`.
+  await page.waitForTimeout(350);
+}
+
+/**
+ * Click (or, on a touch context, tap) a step of a `--click` path. Visible text
+ * first, then accessible name: icon-only controls (the phone shell's initials
+ * avatar, a bare chevron) carry their meaning in `aria-label`, and a text-only
+ * lookup can never reach the surfaces behind them.
+ *
+ * `hasTouch` matters more than it looks. Every mobile sheet (`Sheet` +
+ * `useSheetDrag`) calls `setPointerCapture` on its panel from the FIRST
+ * `pointerdown` inside it, to be ready for a drag-to-dismiss that might follow.
+ * Per the Pointer Events spec, once a pointer is captured the compatibility
+ * MOUSE events synthesised for it — including the eventual `click` — retarget
+ * to the CAPTURING element, not whatever was actually pressed. A `.click()`
+ * dispatches those as synthetic MOUSE events, so a tap on a button inside any
+ * open sheet silently retargets to the sheet's own panel and the button's
+ * `onClick` never fires — no error, no console noise, just a screenshot of the
+ * state before the click. A real finger sends TOUCH pointers instead, whose
+ * compatibility click does not retarget the same way — confirmed by fixing a
+ * "the Add FAB and the offer/request tabs don't respond to --click at phone
+ * widths" failure by switching to `touchscreen.tap` at the exact same
+ * coordinates. Desktop widths have no touchscreen and keep using `.click()`,
+ * which is correct there — a mouse is what a desktop user actually has.
+ */
+async function clickByTextOrLabel(page: Page, text: string, hasTouch: boolean): Promise<void> {
   // `visible: true` matters more than it looks: getByText matches hidden nodes
   // too, and this app keeps large ones around — a collapsed popover, and a
   // Leaflet pane whose descendants carry event titles. `.first()` on an
   // unfiltered query happily returns one of those and clicks nothing.
   const byText = page.getByText(text, { exact: false }).filter({ visible: true }).first();
-  if ((await byText.count()) > 0) return byText.click();
   const byLabel = page.getByLabel(text, { exact: false }).filter({ visible: true }).first();
-  if ((await byLabel.count()) > 0) return byLabel.click();
-  throw new Error(`--click "${text}": no visible element with that text or accessible name`);
+  const target = (await byText.count()) > 0 ? byText : byLabel;
+  if ((await target.count()) === 0) {
+    throw new Error(`--click "${text}": no visible element with that text or accessible name`);
+  }
+  if (!hasTouch) return target.click();
+  // Tapping instead of clicking (see the doc comment above) drops Playwright's
+  // actionability/"not obscured" check, so a tap landing on an overlay
+  // (spinner, backdrop, mis-stacked z-index) would silently succeed. Restore
+  // that guard two ways without reintroducing the pointer-capture retargeting
+  // bug a real `.click()` would bring back:
+  // 1. A trial click runs the actionability + interception check only — no
+  //    event is dispatched — and throws "subtree intercepts pointer events"
+  //    if something covers the target. It also scrolls the target into view
+  //    as one of those checks, so the box used for the tap is read AFTER
+  //    this call, not before: a target below the fold (confirmed against the
+  //    housing form's consent checkbox) would otherwise hand the tap stale,
+  //    pre-scroll coordinates that land nowhere once the page has moved.
+  await target.click({ trial: true });
+  const box = await target.boundingBox();
+  if (!box) throw new Error(`--click "${text}": matched an element with no visible box`);
+  const cx = box.x + box.width / 2;
+  const cy = box.y + box.height / 2;
+  // 2. elementFromPoint at the tap coordinates, captured BEFORE tapping: a
+  //    post-tap check alone isn't enough, since the tap can legitimately
+  //    change the DOM (e.g. open a form) and elementFromPoint would then be
+  //    answering for the wrong page state.
+  const tapHitsTarget = await target.evaluate(
+    (el, [x, y]) => el.contains(document.elementFromPoint(x, y)),
+    [cx, cy]
+  );
+  if (!tapHitsTarget) {
+    throw new Error(
+      `--click "${text}": another element covers the tap point, not the matched target`
+    );
+  }
+  await page.touchscreen.tap(cx, cy);
 }
 
 async function run(): Promise<number> {
@@ -230,10 +324,16 @@ async function run(): Promise<number> {
 
   try {
     for (const width of opts.widths) {
+      // Below the phone breakpoint the app renders the phone shell, built for
+      // touch — see clickByTextOrLabel for why a `--click` needs a real touch
+      // context there, not just the matching CSS width.
+      const hasTouch = width < 768;
       const context = await browser.newContext({
         viewport: { width, height: opts.height },
         deviceScaleFactor: 2,
         colorScheme: opts.theme === 'light' ? 'light' : 'dark',
+        hasTouch,
+        isMobile: hasTouch,
       });
       const page = await context.newPage();
       // tsx compiles with esbuild's keepNames, which wraps functions in a
@@ -264,12 +364,18 @@ async function run(): Promise<number> {
       // IndexedDB, and every drawer run died with "no visible element" against
       // a screen that renders it perfectly a moment later.
       if (opts.clicks.length > 0) await page.waitForTimeout(opts.wait);
+      if (opts.seedStore) await seedStoreState(page, opts.seedStore);
 
       for (const click of opts.clicks) {
-        await clickByTextOrLabel(page, click);
+        await clickByTextOrLabel(page, click, hasTouch);
         // Settle between steps: each click may mount the surface the next one
         // needs (a popover, an expanding section) behind an animation.
         await page.waitForTimeout(250);
+        // Re-seed after every click: a click can fire its own async store
+        // write (e.g. the admin console's housing tab calling loadAdminHousing,
+        // which overwrites adminHousing with whatever the harness's own fetch
+        // returns) that would otherwise race the seed and win.
+        if (opts.seedStore) await seedStoreState(page, opts.seedStore);
       }
       await page.waitForTimeout(opts.wait);
 

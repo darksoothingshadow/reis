@@ -132,3 +132,30 @@ describe('MobileAdminConsole — accounts tab', () => {
     expect(screen.getByRole('button', { name: 'Změnit heslo' })).toBeInTheDocument();
   });
 });
+
+describe('MobileAdminConsole — tab bar at phone width', () => {
+  // A reIS admin gets six tabs (Akce/Mapa/Návrhy/Bydlení/Statistiky/Účty) in one
+  // flex-nowrap row. verify-ui measured this at 320px and found the row itself
+  // 39px wider than the viewport with no overflow-x-auto on the tablist, so
+  // "Účty" was clipped by the console's own overflow-hidden shell — not
+  // scrollable, just unreachable. overflow-x-auto turns that into a swipeable
+  // row instead (uiFindings.ts's own rule: clipped is worse than scrolled).
+  it('lets the six reis_admin tabs scroll horizontally instead of clipping', () => {
+    act(() => {
+      useAppStore.setState({ adminRole: 'reis_admin' });
+    });
+    render(<MobileAdminConsole />);
+    expect(screen.getByRole('tablist').className).toContain('overflow-x-auto');
+  });
+
+  // verify-ui measured the inactive-tab default (DaisyUI's base-content at 60%
+  // opacity) by hand at 3.37:1 in the light theme — below the 4.5:1 WCAG AA
+  // floor. Same bug, same fix already landed for HousingBoard/HousingForm's
+  // tabs-box (see those components): full-opacity text-base-content on the
+  // inactive branch.
+  it('keeps inactive tab text at full opacity for AA contrast', () => {
+    render(<MobileAdminConsole />);
+    const inactive = screen.getByRole('tab', { name: 'Mapa' });
+    expect(inactive.className).toContain('text-base-content');
+  });
+});
