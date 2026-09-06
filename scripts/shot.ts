@@ -51,6 +51,13 @@ interface Options {
   height: number;
   /** Fail the run if the other shell rendered. See assertShell(). */
   expectShell?: 'desktop' | 'phone';
+  /** Raw JSON object merged into the running app store via `window.__reisStore.setState`
+   *  (see dev/storeHandle.ts). Covers state IndexedDB seeding can't reach — data
+   *  normally fetched from a network this harness has no credentials for (housing
+   *  posts, admin session/rows), or a sheet/view stack that only lives in memory.
+   *  Re-applied after every --click step too, so a click's own async refetch
+   *  (e.g. the admin console's housing tab reloading its list) can't clobber it. */
+  seedStore?: string;
 }
 
 /**
@@ -74,13 +81,6 @@ function parseExpectShell(raw: string | undefined): 'desktop' | 'phone' | undefi
   if (raw === 'desktop' || raw === 'phone') return raw;
   console.error(`--expect-shell takes "desktop" or "phone", not "${raw}"`);
   process.exit(2);
-  /** Raw JSON object merged into the running app store via `window.__reisStore.setState`
-   *  (see dev/storeHandle.ts). Covers state IndexedDB seeding can't reach — data
-   *  normally fetched from a network this harness has no credentials for (housing
-   *  posts, admin session/rows), or a sheet/view stack that only lives in memory.
-   *  Re-applied after every --click step too, so a click's own async refetch
-   *  (e.g. the admin console's housing tab reloading its list) can't clobber it. */
-  seedStore?: string;
 }
 
 function parseArgs(argv: string[]): Options {
