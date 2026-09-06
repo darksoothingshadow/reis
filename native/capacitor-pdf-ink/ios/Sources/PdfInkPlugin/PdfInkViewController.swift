@@ -179,9 +179,15 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         return true
     }
 
-    /// Blank page and one sentence; the file stays in the list. Same contract as `load`.
-    func showMessage(_ text: String, discardingUnsaved: Bool = false) -> Bool {
-        guard clear(title: title ?? "", discardingUnsaved: discardingUnsaved) else { return false }
+    /// Blank page and one sentence; the file stays in the list. Same contract as
+    /// `load`. `title` names the file the message is about — without it the bar
+    /// would keep naming the file that was on screen before, which is not the one
+    /// that failed.
+    func showMessage(_ text: String, title: String? = nil, discardingUnsaved: Bool = false) -> Bool
+    {
+        guard clear(title: title ?? self.title ?? "", discardingUnsaved: discardingUnsaved) else {
+            return false
+        }
         message.text = text
         message.isHidden = false
         return true

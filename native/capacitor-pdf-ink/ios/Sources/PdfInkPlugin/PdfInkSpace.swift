@@ -116,8 +116,20 @@ final class PdfInkSpace: NSObject {
 
     private func show(_ file: File, from url: URL) {
         guard let document = InkDocument.open(at: url) else {
-            transition { [reader, strings] discard in
-                reader.showMessage(strings.openFailed, discardingUnsaved: discard)
+            // The message replaces whatever was on screen, so nothing is current
+            // any more — and only once the reader accepted the transition, since
+            // a refused one (unsaved ink) leaves the previous file displayed.
+            // Without this the student is stuck: `select` refuses `currentLink`,
+            // so the file they were reading could not be tapped again.
+            transition { [weak self, reader, strings] discard in
+                guard let self,
+                    reader.showMessage(
+                        strings.openFailed, title: file.name, discardingUnsaved: discard)
+                else { return false }
+                let previous = currentLink
+                currentLink = ""
+                refreshInkMark(for: previous)
+                return true
             }
             return
         }
