@@ -46,6 +46,7 @@ export function EventComposer({ onDone }: { onDone: () => void }) {
   const [title, setTitle] = useState(editing?.title ?? '');
   const [date, setDate] = useState(editing?.date ?? '');
   const [time, setTime] = useState(editing?.time ?? '');
+  const [url, setUrl] = useState(editing?.url ?? '');
   const [venue, setVenue] = useState<'offcampus' | 'campus'>(
     editing?.venueKind === 'campus' ? 'campus' : 'offcampus'
   );
@@ -139,6 +140,7 @@ export function EventComposer({ onDone }: { onDone: () => void }) {
       coordLng: coord[0],
       coordLat: coord[1],
       location: venue === 'campus' ? null : placeName,
+      url: url.trim() || null,
     };
     try {
       const res = editId
@@ -152,6 +154,7 @@ export function EventComposer({ onDone }: { onDone: () => void }) {
             coord_lng: input.coordLng,
             coord_lat: input.coordLat,
             location: input.location ?? null,
+            url: input.url ?? null,
           })
         : await createPost(input, associationId, email);
       if (res.error) {
@@ -199,6 +202,16 @@ export function EventComposer({ onDone }: { onDone: () => void }) {
         value={title}
         onChange={(e) => setTitle(e.target.value)}
       />
+
+      <label className="form-control w-full">
+        <span className="label-text text-xs">{t('admin.urlLabel')}</span>
+        <input
+          className="input input-bordered input-sm"
+          placeholder={t('admin.urlHint')}
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+        />
+      </label>
 
       <label className="mb-1 mt-3 block text-[10px] font-bold uppercase tracking-wide text-base-content/60">
         {t('map.eventDate')}
