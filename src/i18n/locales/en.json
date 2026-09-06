@@ -1132,7 +1132,8 @@
       "openFailed": "Couldn't open this file.",
       "addPage": "Add a page",
       "export": "Share with notes",
-      "exportFailed": "Couldn't prepare the file to share."
+      "exportFailed": "Couldn't prepare the file to share.",
+      "pages": "Pages"
     }
   },
   "session": {

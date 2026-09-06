@@ -29,6 +29,8 @@ export interface PdfInkStrings {
   exportFailed: string;
   /** Dismisses the export failure; the app's generic Close. */
   close: string;
+  /** Title of the page-thumbnail sheet. */
+  pages: string;
 }
 
 export interface PdfInkPlugin {

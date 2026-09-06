@@ -80,6 +80,7 @@ export function usePdfPreview(courseCode?: string, subject?: PdfPreviewSubject) 
       export: t('mobile.pdfInk.export'),
       exportFailed: t('mobile.pdfInk.exportFailed'),
       close: t('common.close'),
+      pages: t('mobile.pdfInk.pages'),
     }),
     [t]
   );

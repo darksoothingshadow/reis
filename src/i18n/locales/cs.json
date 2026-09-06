@@ -1132,7 +1132,8 @@
       "openFailed": "Soubor se nepodařilo otevřít.",
       "addPage": "Přidat stránku",
       "export": "Sdílet s poznámkami",
-      "exportFailed": "Soubor ke sdílení se nepodařilo připravit."
+      "exportFailed": "Soubor ke sdílení se nepodařilo připravit.",
+      "pages": "Stránky"
     }
   },
   "session": {

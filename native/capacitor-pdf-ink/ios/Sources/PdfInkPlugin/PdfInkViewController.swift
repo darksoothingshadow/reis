@@ -37,7 +37,7 @@ final class InkPDFView: PDFView {
  */
 @available(iOS 16.0, *)
 final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
-    PKCanvasViewDelegate
+    PKCanvasViewDelegate, UIAdaptivePresentationControllerDelegate
 {
     private let strings: PdfInkStrings
     private let pdfView = InkPDFView()
@@ -56,6 +56,10 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         action: #selector(addPageTapped))
     private lazy var shareItem = UIBarButtonItem(
         barButtonSystemItem: .action, target: self, action: #selector(shareTapped))
+    /// Reads "12/42" and opens the page grid. A lecture deck is unusable without
+    /// a way to say where you are and to get somewhere else.
+    private lazy var pagesItem = UIBarButtonItem(
+        title: "", style: .plain, target: self, action: #selector(pagesTapped))
     private var saveTimer: Timer?
     private(set) var lastSaveError: Error?
 
@@ -79,9 +83,10 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         // itself; the sidebar toggle owns the other corner.
         addPageItem.accessibilityLabel = strings.addPage
         shareItem.accessibilityLabel = strings.export
+        pagesItem.accessibilityLabel = strings.pages
         setBarItems(enabled: false)
         // Share rightmost, as Notes and Files put it.
-        navigationItem.rightBarButtonItems = [shareItem, addPageItem]
+        navigationItem.rightBarButtonItems = [shareItem, addPageItem, pagesItem]
 
         // Provider and markup mode BEFORE any document: PDFView asks for overlays
         // as it lays pages out, and a page laid out with no provider never gets a
@@ -131,6 +136,8 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         NotificationCenter.default.addObserver(
             self, selector: #selector(persistOnResignActive),
             name: UIApplication.willResignActiveNotification, object: nil)
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(updatePageItem), name: .PDFViewPageChanged, object: pdfView)
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -172,6 +179,7 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         message.isHidden = true
         pdfView.document = document
         setBarItems(enabled: true)
+        updatePageItem()
         pdfView.becomeFirstResponder()
         return true
     }
@@ -247,6 +255,7 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         pdfView.document = nil
         pdfView.document = document
         if let page = document.page(at: at) { pdfView.go(to: page) }
+        updatePageItem()
         pdfView.becomeFirstResponder()
         NSLog("PdfInk: blank page added at \(at)")
         persistNow()
@@ -260,6 +269,53 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
     private func setBarItems(enabled: Bool) {
         addPageItem.isEnabled = enabled
         shareItem.isEnabled = enabled
+        pagesItem.isEnabled = enabled
+        if !enabled { pagesItem.title = "" }
+    }
+
+    // MARK: - Pages
+
+    @objc private func updatePageItem() {
+        guard let document, let page = pdfView.currentPage else { return }
+        pagesItem.title = "\(document.index(for: page) + 1)/\(document.pageCount)"
+    }
+
+    @objc private func pagesTapped() {
+        guard let document, let page = pdfView.currentPage else { return }
+        let grid = PageGridViewController(
+            document: document, title: strings.pages, current: document.index(for: page),
+            inked: { [weak self] index in self?.hasInk(onPage: index) ?? false })
+        grid.onPick = { [weak self] index in
+            guard let self, let target = self.document?.page(at: index) else { return }
+            pdfView.go(to: target)
+            updatePageItem()
+        }
+        grid.onDismiss = { [weak self] in self?.showToolPicker() }
+        let sheet = UINavigationController(rootViewController: grid)
+        sheet.modalPresentationStyle = .pageSheet
+        sheet.sheetPresentationController?.detents = [.medium(), .large()]
+        sheet.sheetPresentationController?.prefersGrabberVisible = true
+        // The picker floats in its own window above everything, sheets included,
+        // where it covers the bottom row of pages. It comes back on the way out.
+        sheet.presentationController?.delegate = self
+        toolPicker.setVisible(false, forFirstResponder: pdfView)
+        present(sheet, animated: true)
+    }
+
+    private func showToolPicker() {
+        toolPicker.setVisible(true, forFirstResponder: pdfView)
+        pdfView.becomeFirstResponder()
+    }
+
+    /// Swiping a sheet away never reaches its own buttons.
+    func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+        showToolPicker()
+    }
+
+    /// A canvas on screen is ahead of `drawings` until the next save, so both are asked.
+    private func hasInk(onPage index: Int) -> Bool {
+        if let canvas = canvases[index] { return !canvas.drawing.strokes.isEmpty }
+        return !(drawings[index]?.strokes.isEmpty ?? true)
     }
 
     // MARK: - Export
