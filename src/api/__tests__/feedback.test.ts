@@ -8,9 +8,10 @@ const { rpc, getUserParams } = vi.hoisted(() => ({
   // Real shape: `facultyId` is always '' (see src/utils/userParams/fetchers.ts);
   // the faculty acronym ('PEF', 'AF', ...) lives in `facultyLabel`, optional
   // exactly like the real UserParams type.
-  getUserParams: vi.fn<() => Promise<{ facultyLabel?: string; facultyId: string }>>(
-    async () => ({ facultyLabel: 'PEF', facultyId: '' })
-  ),
+  getUserParams: vi.fn<() => Promise<{ facultyLabel?: string; facultyId: string }>>(async () => ({
+    facultyLabel: 'PEF',
+    facultyId: '',
+  })),
 }));
 
 vi.mock('../../services/spolky/supabaseClient', () => ({

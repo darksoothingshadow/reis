@@ -1,7 +1,15 @@
 import type { UsageGroup } from '../../api/usageStats';
 
 // Plain inline SVG, DaisyUI colour tokens; no chart library.
-export function StatsBars({ groups, labelFor, under5 }: { groups: UsageGroup[]; labelFor: (key: string) => string; under5: string }) {
+export function StatsBars({
+  groups,
+  labelFor,
+  under5,
+}: {
+  groups: UsageGroup[];
+  labelFor: (key: string) => string;
+  under5: string;
+}) {
   const max = Math.max(1, ...groups.map((g) => g.installs));
   return (
     <ul className="flex flex-col gap-1">

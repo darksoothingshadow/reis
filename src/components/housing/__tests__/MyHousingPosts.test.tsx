@@ -3,7 +3,21 @@ import { render, screen } from '@testing-library/react';
 import { useAppStore } from '../../../store/useAppStore';
 import { MyHousingPosts } from '../MyHousingPosts';
 
-const offer = { id: 'o1', kind: 'offer', roomType: 'room_private', district: 'Královo Pole', priceCzk: 7500, freeFrom: '2026-09-15', freeUntil: null, note: '', contact: 'x', isLogin: 'xnovak', personId: '1', createdAt: '2026-09-06T10:00:00Z', expiresAt: '2026-09-20T10:00:00Z' } as const;
+const offer = {
+  id: 'o1',
+  kind: 'offer',
+  roomType: 'room_private',
+  district: 'Královo Pole',
+  priceCzk: 7500,
+  freeFrom: '2026-09-15',
+  freeUntil: null,
+  note: '',
+  contact: 'x',
+  isLogin: 'xnovak',
+  personId: '1',
+  createdAt: '2026-09-06T10:00:00Z',
+  expiresAt: '2026-09-20T10:00:00Z',
+} as const;
 
 describe('MyHousingPosts', () => {
   it('renders nothing when the device has no live post', () => {
@@ -13,7 +27,11 @@ describe('MyHousingPosts', () => {
   });
 
   it('shows the one live post', () => {
-    useAppStore.setState({ housingMineIds: ['o1'], housingPosts: [offer], closeHousing: vi.fn() } as never);
+    useAppStore.setState({
+      housingMineIds: ['o1'],
+      housingPosts: [offer],
+      closeHousing: vi.fn(),
+    } as never);
     render(<MyHousingPosts />);
     expect(screen.getByText('Královo Pole', { exact: false })).toBeInTheDocument();
   });
@@ -23,10 +41,14 @@ describe('MyHousingPosts', () => {
   // The exact case documented in the verify-ui skill for a surface that has
   // to read in both themes: a hairline border, not the tone.
   it('gives the "my posts" box a hairline border so it reads against its backdrop', () => {
-    useAppStore.setState({ housingMineIds: ['o1'], housingPosts: [offer], closeHousing: vi.fn() } as never);
+    useAppStore.setState({
+      housingMineIds: ['o1'],
+      housingPosts: [offer],
+      closeHousing: vi.fn(),
+    } as never);
     render(<MyHousingPosts />);
-    expect(screen.getByText('Královo Pole', { exact: false }).closest('.rounded-box')?.className).toMatch(
-      /border-base-content\/10/
-    );
+    expect(
+      screen.getByText('Královo Pole', { exact: false }).closest('.rounded-box')?.className
+    ).toMatch(/border-base-content\/10/);
   });
 });

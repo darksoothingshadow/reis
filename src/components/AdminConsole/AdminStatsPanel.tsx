@@ -13,7 +13,8 @@ export function AdminStatsPanel() {
   // --color-warning-content is now #111827 in both themes (index.css),
   // 8.26:1 on --color-warning — the DaisyUI alert-warning fill already
   // carries readable text, no override needed.
-  if (!stats && !loading) return <div className="alert alert-warning m-2 text-sm">{t('admin.stats.loadFailed')}</div>;
+  if (!stats && !loading)
+    return <div className="alert alert-warning m-2 text-sm">{t('admin.stats.loadFailed')}</div>;
   if (!stats) return <span className="loading loading-dots loading-sm m-4" />;
 
   const weeklyMax = Math.max(1, ...stats.weekly.map((w) => w.installs));
@@ -25,7 +26,13 @@ export function AdminStatsPanel() {
   return (
     <div className="flex flex-col gap-4 p-3">
       <div className="stats stats-horizontal shadow-sm">
-        {([['today', stats.today], ['d7', stats.d7], ['d30', stats.d30]] as const).map(([k, v]) => (
+        {(
+          [
+            ['today', stats.today],
+            ['d7', stats.d7],
+            ['d30', stats.d30],
+          ] as const
+        ).map(([k, v]) => (
           <div key={k} className="stat p-3">
             <div className="stat-title text-xs">{t(`admin.stats.${k}`)}</div>
             <div className="stat-value text-2xl">{v}</div>
@@ -33,11 +40,22 @@ export function AdminStatsPanel() {
         ))}
       </div>
       <p className="text-xs opacity-70">{t('admin.stats.installsNote')}</p>
-      <section><h4 className="mb-1 text-sm font-semibold">{t('admin.stats.byFaculty')}</h4><StatsBars groups={stats.byFaculty} labelFor={label} under5={under5} /></section>
-      <section><h4 className="mb-1 text-sm font-semibold">{t('admin.stats.byPlatform')}</h4><StatsBars groups={stats.byPlatform} labelFor={label} under5={under5} /></section>
+      <section>
+        <h4 className="mb-1 text-sm font-semibold">{t('admin.stats.byFaculty')}</h4>
+        <StatsBars groups={stats.byFaculty} labelFor={label} under5={under5} />
+      </section>
+      <section>
+        <h4 className="mb-1 text-sm font-semibold">{t('admin.stats.byPlatform')}</h4>
+        <StatsBars groups={stats.byPlatform} labelFor={label} under5={under5} />
+      </section>
       <section>
         <h4 className="mb-1 text-sm font-semibold">{t('admin.stats.weekly')}</h4>
-        <svg viewBox={`0 0 ${weeklyWidth} 40`} className="h-24 w-full" role="img" aria-label={t('admin.stats.weekly')}>
+        <svg
+          viewBox={`0 0 ${weeklyWidth} 40`}
+          className="h-24 w-full"
+          role="img"
+          aria-label={t('admin.stats.weekly')}
+        >
           {stats.weekly.map((w, i) => {
             const suppressed = w.installs < 0;
             const h = suppressed ? 2 : Math.max(1, Math.round((w.installs / weeklyMax) * 36));
@@ -59,7 +77,15 @@ export function AdminStatsPanel() {
           })}
         </svg>
       </section>
-      <button type="button" className="btn btn-ghost btn-xs self-end" aria-label={t('common.refresh')} onClick={() => void reload()} disabled={loading}>↻</button>
+      <button
+        type="button"
+        className="btn btn-ghost btn-xs self-end"
+        aria-label={t('common.refresh')}
+        onClick={() => void reload()}
+        disabled={loading}
+      >
+        ↻
+      </button>
     </div>
   );
 }

@@ -13,7 +13,11 @@ export function HousingPanel() {
       </div>
       <HousingBoard
         onVerify={(post) =>
-          window.open(`https://is.mendelu.cz/lide/clovek.pl?id=${encodeURIComponent(post.personId)}`, '_blank', 'noopener,noreferrer')
+          window.open(
+            `https://is.mendelu.cz/lide/clovek.pl?id=${encodeURIComponent(post.personId)}`,
+            '_blank',
+            'noopener,noreferrer'
+          )
         }
       />
     </div>

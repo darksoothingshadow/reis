@@ -59,7 +59,11 @@ export async function setHousingHidden(id: string, hidden: boolean): Promise<boo
 
 export async function deleteHousingPost(id: string): Promise<boolean> {
   if (DEV_SOCIETY) return true;
-  const { data, error } = await adminAuthClient.from('housing_posts').delete().eq('id', id).select('id');
+  const { data, error } = await adminAuthClient
+    .from('housing_posts')
+    .delete()
+    .eq('id', id)
+    .select('id');
   if (error) {
     logError('Api.deleteHousingPost', error);
     return false;

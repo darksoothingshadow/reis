@@ -33,9 +33,19 @@ const RowSchema = z.object({
 
 function toPost(r: z.infer<typeof RowSchema>): HousingPost {
   return {
-    id: r.id, kind: r.kind, roomType: r.room_type, district: r.district, priceCzk: r.price_czk,
-    freeFrom: r.free_from, freeUntil: r.free_until, note: r.note, contact: r.contact,
-    isLogin: r.is_login, personId: r.is_person_id, createdAt: r.created_at, expiresAt: r.expires_at,
+    id: r.id,
+    kind: r.kind,
+    roomType: r.room_type,
+    district: r.district,
+    priceCzk: r.price_czk,
+    freeFrom: r.free_from,
+    freeUntil: r.free_until,
+    note: r.note,
+    contact: r.contact,
+    isLogin: r.is_login,
+    personId: r.is_person_id,
+    createdAt: r.created_at,
+    expiresAt: r.expires_at,
   };
 }
 

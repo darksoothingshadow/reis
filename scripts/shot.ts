@@ -300,7 +300,9 @@ async function clickByTextOrLabel(page: Page, text: string, hasTouch: boolean): 
     [cx, cy]
   );
   if (!tapHitsTarget) {
-    throw new Error(`--click "${text}": another element covers the tap point, not the matched target`);
+    throw new Error(
+      `--click "${text}": another element covers the tap point, not the matched target`
+    );
   }
   await page.touchscreen.tap(cx, cy);
 }

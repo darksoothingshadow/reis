@@ -179,9 +179,7 @@ export const initializeStore = async () => {
   // getPlatform() — see the comment on trackDailyUsage.
   // getPlatform() can throw during boot ordering; caught here so a fire-and-
   // forget call can never surface as an unhandled rejection.
-  import('../api/feedback')
-    .then(({ trackDailyUsage }) => trackDailyUsage())
-    .catch(() => {});
+  import('../api/feedback').then(({ trackDailyUsage }) => trackDailyUsage()).catch(() => {});
 
   // Subscribe to sync service — selective refresh based on type
   const unsubscribe = syncService.subscribe((type) => {

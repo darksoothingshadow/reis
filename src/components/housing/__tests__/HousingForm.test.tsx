@@ -14,7 +14,7 @@ describe('HousingForm', () => {
     useAppStore.setState({ language: 'cz', publishHousing, housingPosterLogin: 'xnovak' } as never);
   });
 
-  it('renders the poster\'s own IS login instead of a static placeholder', () => {
+  it("renders the poster's own IS login instead of a static placeholder", () => {
     render(<HousingForm onDone={() => {}} />);
     expect(screen.getByText('xnovak')).toBeInTheDocument();
   });
@@ -25,14 +25,21 @@ describe('HousingForm', () => {
     expect(publish).toBeDisabled();
     fireEvent.change(screen.getByLabelText('Čtvrť'), { target: { value: 'Královo Pole' } });
     fireEvent.change(screen.getByLabelText('Volné od'), { target: { value: '2026-09-15' } });
-    fireEvent.change(screen.getByLabelText('Kontakt pro zájemce'), { target: { value: 'ja@example.com' } });
+    fireEvent.change(screen.getByLabelText('Kontakt pro zájemce'), {
+      target: { value: 'ja@example.com' },
+    });
     expect(publish).toBeDisabled();
     fireEvent.click(screen.getByRole('checkbox'));
     expect(publish).toBeEnabled();
     fireEvent.click(publish);
     await waitFor(() => expect(publishHousing).toHaveBeenCalledTimes(1));
     expect(publishHousing.mock.calls[0]![0]).toMatchObject({
-      kind: 'offer', roomType: 'room_private', district: 'Královo Pole', freeFrom: '2026-09-15', contact: 'ja@example.com', priceCzk: null,
+      kind: 'offer',
+      roomType: 'room_private',
+      district: 'Královo Pole',
+      freeFrom: '2026-09-15',
+      contact: 'ja@example.com',
+      priceCzk: null,
     });
   });
 

@@ -200,9 +200,7 @@ describe('no student data leaves the device', () => {
           // second alternative catches the ES2015 shorthand property
           // (`{ personId }`), which carries the identifying value with no
           // colon at all.
-          const re = new RegExp(
-            `:\\s*[^,\\n]*\\b${name}\\b|[{,]\\s*${name}\\s*[,}]`
-          );
+          const re = new RegExp(`:\\s*[^,\\n]*\\b${name}\\b|[{,]\\s*${name}\\s*[,}]`);
           if (re.test(line) && !line.trim().startsWith('//') && !line.trim().startsWith('*')) {
             offences.push(`${f.path}:${i + 1}  ${line.trim()}`);
           }

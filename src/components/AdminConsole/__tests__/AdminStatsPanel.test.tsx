@@ -6,8 +6,19 @@ import { AdminStatsPanel } from '../AdminStatsPanel';
 describe('AdminStatsPanel', () => {
   beforeEach(() => {
     useAppStore.setState({
-      language: 'cz', adminStatsLoading: false,
-      adminStats: { today: 12, d7: 40, d30: 90, byFaculty: [{ key: 'PEF', installs: 50 }, { key: 'LDF', installs: -1 }], byPlatform: [{ key: 'extension', installs: 70 }], weekly: [{ weekStart: '2026-08-31', installs: 40 }] },
+      language: 'cz',
+      adminStatsLoading: false,
+      adminStats: {
+        today: 12,
+        d7: 40,
+        d30: 90,
+        byFaculty: [
+          { key: 'PEF', installs: 50 },
+          { key: 'LDF', installs: -1 },
+        ],
+        byPlatform: [{ key: 'extension', installs: 70 }],
+        weekly: [{ weekStart: '2026-08-31', installs: 40 }],
+      },
     } as never);
   });
 
@@ -27,13 +38,19 @@ describe('AdminStatsPanel', () => {
   it('keeps the load-failed alert readable — no white-on-amber', () => {
     useAppStore.setState({ adminStats: null, adminStatsLoading: false } as never);
     render(<AdminStatsPanel />);
-    expect(screen.getByText('Statistiky se nepodařilo načíst.').className).toContain('alert-warning');
+    expect(screen.getByText('Statistiky se nepodařilo načíst.').className).toContain(
+      'alert-warning'
+    );
   });
 
   it('paints a suppressed week in the weekly chart with a base-content fill, not the low-contrast primary-at-0.3', () => {
     useAppStore.setState({
       adminStats: {
-        today: 1, d7: 1, d30: 1, byFaculty: [], byPlatform: [],
+        today: 1,
+        d7: 1,
+        d30: 1,
+        byFaculty: [],
+        byPlatform: [],
         weekly: [{ weekStart: '2026-08-31', installs: -1 }],
       },
     } as never);
