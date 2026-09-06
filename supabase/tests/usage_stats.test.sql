@@ -16,18 +16,19 @@ begin
   reset role;
   select faculty, platform into v_f, v_p from public.daily_active_usage
    where student_id = '22222222-2222-2222-2222-222222222222' and usage_date = current_date;
-  if v_f <> 'PEF' or v_p <> 'ios' then raise exception 'dimensions not stored: % %', v_f, v_p; end if;
+  if v_f is distinct from 'PEF' or v_p is distinct from 'ios' then raise exception 'dimensions not stored: % %', v_f, v_p; end if;
 end $$;
 
 -- an unknown platform is refused, the row is still counted
 do $$
-declare v_p text;
+declare v_p text; v_n int;
 begin
   set local role anon;
   perform public.track_daily_usage('33333333-3333-3333-3333-333333333333', null, 'toaster');
   reset role;
-  select platform into v_p from public.daily_active_usage
+  select count(*), max(platform) into v_n, v_p from public.daily_active_usage
    where student_id = '33333333-3333-3333-3333-333333333333' and usage_date = current_date;
+  if v_n <> 1 then raise exception 'row not counted: % rows', v_n; end if;
   if v_p is not null then raise exception 'invalid platform stored'; end if;
 end $$;
 
@@ -43,7 +44,7 @@ do $$ begin
   reset role;
 end $$;
 
--- usage_stats suppresses groups under five (run as table owner; role check bypassed via a test-only flag)
+-- usage_stats suppresses groups under five (runs as the connection's own role, which owns the function, so the role check inside usage_stats is bypassed by calling the unchecked helper directly)
 do $$
 declare v json; i int;
 begin
@@ -58,6 +59,24 @@ begin
     then raise exception 'small faculty group not suppressed'; end if;
   if (select (e->>'installs')::int from json_array_elements(v->'by_faculty') e where e->>'key' = 'AF') < 6
     then raise exception 'large faculty group miscounted'; end if;
+end $$;
+
+-- the unchecked helper is not reachable by untrusted roles
+do $$ begin
+  set local role anon;
+  begin
+    perform public.usage_stats_unchecked(30);
+    raise exception 'anon could call usage_stats_unchecked';
+  exception when insufficient_privilege then null;
+  end;
+  reset role;
+  set local role authenticated;
+  begin
+    perform public.usage_stats_unchecked(30);
+    raise exception 'authenticated could call usage_stats_unchecked';
+  exception when insufficient_privilege then null;
+  end;
+  reset role;
 end $$;
 
 rollback;
