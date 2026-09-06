@@ -55,6 +55,13 @@ const SUPABASE_CALLERS = new Set([
   // supabase.rpc), which is why the guard newly matches it; the privacy posture
   // is unchanged.
   'src/api/suggestions.ts',
+  // Housing board. Sends the post the student composed plus their IS login
+  // and IS person id — ONLY after the consent tick on the form, shown to every
+  // reIS user so the poster can be verified in IS, deleted with the post after
+  // 14 days. Reads take no identity. The install id is the random per-install
+  // UUID, never anything derived from the student. Disclosed in PRIVACY.md
+  // ("Housing board") and docs/privacy-policy-app.md item 4.
+  'src/api/housing.ts',
   // Random install id only. Reads take no identity argument at all.
   'src/api/eventRsvp.ts',
   // Random install id only, since the privacy refactor.
