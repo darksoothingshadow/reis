@@ -2,11 +2,16 @@
 --
 -- Identity travels only with an action the student took on purpose: the
 -- poster's IS login and IS person id are attached after an explicit consent
--- tick, shown to every reIS user (any reader can verify the poster in IS),
--- and deleted with the post 14 days after publishing or when the owner closes
--- it. Nothing about who READS the board is recorded. install_id is the same
--- random per-install UUID event_rsvps uses; it exists only so the device that
--- published a post can close it, and it is never returned by the list RPC.
+-- tick, shown to every reIS user (any reader can verify the poster in IS).
+-- The post stops being listed 14 days after publishing (expires_at > now()),
+-- or immediately when the owner closes it. The row itself is deleted lazily,
+-- by the sweep at the top of the NEXT call to submit_housing_post anywhere in
+-- the database, once expires_at is more than a day in the past -- i.e. from
+-- day 15 onward. On a quiet board with no submissions after that point, the
+-- row can persist well past day 15; it is simply never listed. Nothing about
+-- who READS the board is recorded. install_id is the same random per-install
+-- UUID event_rsvps uses; it exists only so the device that published a post
+-- can close it, and it is never returned by the list RPC.
 
 create table public.housing_posts (
   id              uuid primary key default gen_random_uuid(),
@@ -27,7 +32,7 @@ create table public.housing_posts (
   expires_at      timestamptz not null default now() + interval '14 days'
 );
 
-create index housing_posts_live_idx on public.housing_posts (expires_at)
+create index housing_posts_live_idx on public.housing_posts (created_at desc)
   where hidden_by_admin = false;
 
 alter table public.housing_posts enable row level security;
@@ -81,7 +86,15 @@ language plpgsql security definer set search_path = public as $$
 declare
   v_live int; v_recent int; v_id uuid;
 begin
-  -- Serialise per install so check-then-insert cannot race.
+  -- Serialise per install so check-then-insert cannot race. This lock is
+  -- scoped to one install_id: it makes the check-then-insert below atomic
+  -- for that install, but the two sweeps just below are not serialised
+  -- against sweeps running concurrently for other installs (each install
+  -- takes a different lock key). Two submissions from different installs
+  -- can therefore run their sweeps at the same time; both deletes are plain
+  -- idempotent range deletes, so the only cost is occasional duplicate work,
+  -- never a wrong count. Accepted at this traffic level rather than taking a
+  -- table-wide lock for every submission.
   perform pg_advisory_xact_lock(hashtext(p_install_id::text));
 
   -- Opportunistic sweeps: expired posts really disappear, and the rate log
@@ -89,23 +102,34 @@ begin
   delete from public.housing_posts where expires_at < now() - interval '1 day';
   delete from public.housing_rate_log where created_at < now() - interval '1 hour';
 
+  select count(*) into v_recent from public.housing_rate_log
+   where install_id = p_install_id and created_at > now() - interval '1 hour';
+  if v_recent >= 5 then return null; end if;
+
+  -- Charge the attempt to the hourly cap before checking anything else, so
+  -- every call that reaches this point counts toward the 5/hour limit --
+  -- including one later refused by the live-posts cap or by a bad enum/check
+  -- value. Otherwise a caller hammering an already-full board (3 live posts)
+  -- would never be charged and could retry forever without ever tripping the
+  -- rate limit; charging first makes the cap bound total attempts, not just
+  -- successful ones.
+  insert into public.housing_rate_log (install_id) values (p_install_id);
+
   select count(*) into v_live from public.housing_posts
    where install_id = p_install_id and expires_at > now();
   if v_live >= 3 then return null; end if;
 
-  select count(*) into v_recent from public.housing_rate_log where install_id = p_install_id;
-  if v_recent >= 5 then return null; end if;
-
-  insert into public.housing_rate_log (install_id) values (p_install_id);
-  insert into public.housing_posts
-    (kind, room_type, district, price_czk, free_from, free_until, note, contact, is_login, is_person_id, install_id)
-  values
-    (p_kind, p_room_type, btrim(p_district), p_price_czk, p_free_from, p_free_until,
-     coalesce(btrim(p_note), ''), btrim(p_contact), btrim(p_is_login), p_is_person_id, p_install_id)
-  returning id into v_id;
+  begin
+    insert into public.housing_posts
+      (kind, room_type, district, price_czk, free_from, free_until, note, contact, is_login, is_person_id, install_id)
+    values
+      (p_kind, p_room_type, btrim(p_district), p_price_czk, p_free_from, p_free_until,
+       coalesce(btrim(p_note), ''), btrim(p_contact), btrim(p_is_login), p_is_person_id, p_install_id)
+    returning id into v_id;
+  exception
+    when check_violation or not_null_violation then return null;
+  end;
   return v_id;
-exception
-  when check_violation or not_null_violation then return null;
 end $$;
 grant execute on function public.submit_housing_post(text,text,text,int,date,date,text,text,text,text,uuid) to anon, authenticated;
 

@@ -54,6 +54,7 @@ declare v_install uuid := gen_random_uuid(); v_other uuid := gen_random_uuid(); 
 begin
   set local role anon;
   v_id := public.submit_housing_post('offer','flat','Brno',12000,current_date,null,'','x','xhid','2',v_install);
+  if v_id is null then raise exception 'setup submit refused'; end if;
   reset role;
   update public.housing_posts set hidden_by_admin = true where id = v_id;
   set local role anon;
@@ -71,13 +72,33 @@ begin
   reset role;
 end $$;
 
--- 6. list_housing_posts never exposes install_id
+-- 6. list_housing_posts never exposes install_id (undefined_column is raised at plan time)
 do $$ begin
-  if exists (
-    select 1 from information_schema.routines r
-    join information_schema.parameters p on p.specific_name = r.specific_name
-    where r.routine_schema='public' and r.routine_name='list_housing_posts' and p.parameter_name='install_id'
-  ) then raise exception 'list_housing_posts returns install_id'; end if;
+  perform install_id from public.list_housing_posts();
+  raise exception 'list_housing_posts exposes install_id';
+exception when undefined_column then null;
+end $$;
+
+-- 7. a signed-in non-admin sees nothing: RLS, not the grant, is the gate
+-- (test 2 above already inserted at least one row, so this is not vacuous)
+do $$ declare v_count int; begin
+  set local role authenticated;
+  select count(*) into v_count from public.housing_posts;
+  if v_count <> 0 then raise exception 'non-admin authenticated read % rows', v_count; end if;
+  reset role;
+end $$;
+
+-- 8. the hourly cap fires when the live cap does not
+do $$ declare v_install uuid := gen_random_uuid(); v_id uuid; i int; begin
+  set local role anon;
+  for i in 1..5 loop
+    v_id := public.submit_housing_post('offer','flat','Brno',1,current_date,null,'','x','x','1',v_install);
+    if v_id is null then raise exception 'submit % refused too early', i; end if;
+    perform public.close_housing_post(v_id, v_install);
+  end loop;
+  v_id := public.submit_housing_post('offer','flat','Brno',1,current_date,null,'','x','x','1',v_install);
+  if v_id is not null then raise exception 'sixth hourly submission accepted'; end if;
+  reset role;
 end $$;
 
 rollback;
