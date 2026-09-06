@@ -211,10 +211,17 @@ export function EventComposer({ onDone }: { onDone: () => void }) {
         onChange={(e) => setTitle(e.target.value)}
       />
 
-      <label className="form-control w-full">
-        <span className="label-text text-xs">{t('admin.urlLabel')}</span>
+      {/* `form-control` and `label-text` are both DaisyUI 4 — daisyui@5.7.22
+          defines neither, so they were no-ops. The <label> kept its default
+          `display: inline`, which put the span and the input in one line box
+          whenever they fitted: at iPad width the 20rem input rode up over the
+          label text (gap -22.7px at 1024px). `flex w-full flex-col` is the
+          real stacking rule, and `w-full` drops the 20rem cap so the field
+          matches every sibling control in this composer. */}
+      <label className="flex w-full flex-col">
+        <span className="mb-1 text-xs text-base-content/60">{t('admin.urlLabel')}</span>
         <input
-          className="input input-bordered input-sm"
+          className="input input-bordered input-sm w-full"
           placeholder={t('admin.urlHint')}
           value={url}
           onChange={(e) => setUrl(e.target.value)}

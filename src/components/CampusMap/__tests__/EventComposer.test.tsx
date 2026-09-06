@@ -437,4 +437,34 @@ describe('EventComposer — url validation', () => {
     fillRequired();
     expect(screen.getByRole('button', { name: 'Zveřejnit akci' })).toBeEnabled();
   });
+
+  // Same defect as HousingForm's district field. `form-control` and
+  // `label-text` are both DaisyUI 4; daisyui@5.7.22 defines neither, so the
+  // <label> kept its default `display: inline` and its <span> shared a line
+  // box with the control. The url input carries no width of its own beyond
+  // daisyUI's `clamp(3rem, 20rem, 100%)`, so as soon as the composer was
+  // wider than roughly 440px the 20rem input fitted beside the label and rode
+  // up over it — measured at -22.7px of overlap at 1024px, the iPad landscape
+  // width the phone tree is shipped at. The phone widths hid it: there the
+  // 20rem cap already exceeded the container, so the input wrapped by luck.
+  //
+  // verify-ui's collision probe cannot catch this — it compares text-bearing
+  // boxes, and an <input> placeholder is not a DOM text node.
+  it('stacks the url label above its input rather than relying on the removed form-control class', () => {
+    render(<EventComposer onDone={() => {}} />);
+    const urlInput = screen.getByPlaceholderText(
+      'https://… nebo reis://housing pro otevření nástěnky bydlení'
+    );
+    const wrapper = urlInput.closest('label');
+
+    expect(wrapper?.className).toMatch(/(^|\s)flex(\s|$)/);
+    expect(wrapper?.className).toMatch(/flex-col/);
+    // The 20rem cap is what let the input share the label's line box, and it
+    // also made this the one control in the composer narrower than its
+    // siblings. w-full removes both problems.
+    expect(urlInput.className).toMatch(/w-full/);
+    // Neither dead DaisyUI 4 class may come back.
+    expect(wrapper?.className).not.toMatch(/form-control/);
+    expect(wrapper?.querySelector('span')?.className).not.toMatch(/label-text/);
+  });
 });
