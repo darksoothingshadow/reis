@@ -6,8 +6,11 @@ import { useAppStore } from '../../store/useAppStore';
 const { rpc, getUserParams } = vi.hoisted(() => ({
   rpc: vi.fn<(...args: unknown[]) => Promise<{ error: null }>>(async () => ({ error: null })),
   // Real shape: `facultyId` is always '' (see src/utils/userParams/fetchers.ts);
-  // the faculty acronym ('PEF', 'AF', ...) lives in `facultyLabel`.
-  getUserParams: vi.fn(async () => ({ facultyLabel: 'PEF', facultyId: '' })),
+  // the faculty acronym ('PEF', 'AF', ...) lives in `facultyLabel`, optional
+  // exactly like the real UserParams type.
+  getUserParams: vi.fn<() => Promise<{ facultyLabel?: string; facultyId: string }>>(
+    async () => ({ facultyLabel: 'PEF', facultyId: '' })
+  ),
 }));
 
 vi.mock('../../services/spolky/supabaseClient', () => ({
@@ -20,7 +23,7 @@ vi.mock('../../platform', () => ({
   getPlatform: () => ({ kind: 'extension' }),
 }));
 vi.mock('../../utils/userParams', () => ({
-  getUserParams: (...a: unknown[]) => getUserParams(...a),
+  getUserParams,
 }));
 
 import { submitFeedback, trackDailyUsage } from '../feedback';
