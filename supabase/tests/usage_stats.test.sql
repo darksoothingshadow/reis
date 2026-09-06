@@ -32,6 +32,19 @@ begin
   if v_p is not null then raise exception 'invalid platform stored'; end if;
 end $$;
 
+-- an unknown faculty is refused, the row is still counted
+do $$
+declare v_f text; v_n int;
+begin
+  set local role anon;
+  perform public.track_daily_usage('44444444-4444-4444-4444-444444444444', 'HOGWARTS', null);
+  reset role;
+  select count(*), max(faculty) into v_n, v_f from public.daily_active_usage
+   where student_id = '44444444-4444-4444-4444-444444444444' and usage_date = current_date;
+  if v_n <> 1 then raise exception 'row not counted: % rows', v_n; end if;
+  if v_f is not null then raise exception 'invalid faculty stored'; end if;
+end $$;
+
 -- usage_stats refuses anyone who is not reis_admin
 do $$ begin
   set local role authenticated;

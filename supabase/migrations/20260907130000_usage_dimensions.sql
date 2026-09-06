@@ -9,12 +9,16 @@
 -- it AND skip its CHECK silently.
 
 -- Faculty and platform on the anonymous daily usage event, and an admin-only
--- aggregate. Seven faculties times four platforms is a coarse grouping of
+-- aggregate. Six faculties times four platforms is a coarse grouping of
 -- thousands of installs; the row still carries only the random install id.
 -- Nothing about the person is added. Counts are of INSTALLS, not people.
 
+-- Whitelist matches the keys of FACULTY_TO_ASSOCIATION (src/services/spolky/config.ts):
+-- PEF, FRRMS, AF, ZF, LDF, ICV. Anything else — a typo, a future faculty not
+-- yet added client-side, garbage input — is rejected at the column, not just
+-- at the function, so no other write path can slip an arbitrary string in.
 alter table public.daily_active_usage
-  add column if not exists faculty  text check (faculty is null or char_length(faculty) <= 16),
+  add column if not exists faculty  text check (faculty is null or faculty in ('PEF','FRRMS','AF','ZF','LDF','ICV')),
   add column if not exists platform text check (platform is null or platform in ('extension','ios','android','web'));
 
 -- One function with defaults, so the old one-argument call keeps working and
@@ -39,7 +43,11 @@ create or replace function public.track_daily_usage(
 language plpgsql security definer set search_path = public as $$
 declare
   v_platform text := case when p_platform in ('extension','ios','android','web') then p_platform else null end;
-  v_faculty  text := nullif(left(btrim(coalesce(p_faculty, '')), 16), '');
+  -- Same whitelist as the column CHECK above; normalized to upper case so
+  -- case variance from a client never falls through NULL-safely into
+  -- accidental unknown-faculty grouping.
+  v_faculty  text := case when upper(btrim(coalesce(p_faculty, ''))) in ('PEF','FRRMS','AF','ZF','LDF','ICV')
+                      then upper(btrim(p_faculty)) end;
 begin
   insert into public.daily_active_usage (student_id, usage_date, faculty, platform)
   values (p_student_id, current_date, v_faculty, v_platform)
