@@ -71,7 +71,7 @@ export function AdminConsole() {
               role="tab"
               aria-selected={pane === 'events'}
               onClick={() => setPane('events')}
-              className={`tab flex-1 ${pane === 'events' ? 'tab-active font-semibold' : ''}`}
+              className={`tab flex-1 ${pane === 'events' ? 'tab-active font-semibold' : 'text-base-content'}`}
             >
               {t('admin.listTab')}
             </button>
@@ -81,7 +81,7 @@ export function AdminConsole() {
                 role="tab"
                 aria-selected={pane === 'suggestions'}
                 onClick={() => setPane('suggestions')}
-                className={`tab flex-1 gap-1 ${pane === 'suggestions' ? 'tab-active font-semibold' : ''}`}
+                className={`tab flex-1 gap-1 ${pane === 'suggestions' ? 'tab-active font-semibold' : 'text-base-content'}`}
               >
                 {t('admin.suggestionsTab')}
                 {unread > 0 && (
@@ -100,7 +100,7 @@ export function AdminConsole() {
                   void loadAdminHousing();
                   setPane('housing');
                 }}
-                className={`tab flex-1 ${pane === 'housing' ? 'tab-active font-semibold' : ''}`}
+                className={`tab flex-1 ${pane === 'housing' ? 'tab-active font-semibold' : 'text-base-content'}`}
               >
                 {t('admin.housingTab')}
               </button>
@@ -114,7 +114,7 @@ export function AdminConsole() {
                   void loadAdminStats();
                   setPane('stats');
                 }}
-                className={`tab flex-1 ${pane === 'stats' ? 'tab-active font-semibold' : ''}`}
+                className={`tab flex-1 ${pane === 'stats' ? 'tab-active font-semibold' : 'text-base-content'}`}
               >
                 {t('admin.statsTab')}
               </button>
@@ -124,7 +124,7 @@ export function AdminConsole() {
               role="tab"
               aria-selected={pane === 'accounts'}
               onClick={() => setPane('accounts')}
-              className={`tab flex-1 ${pane === 'accounts' ? 'tab-active font-semibold' : ''}`}
+              className={`tab flex-1 ${pane === 'accounts' ? 'tab-active font-semibold' : 'text-base-content'}`}
             >
               {t('admin.accountsTab')}
             </button>
