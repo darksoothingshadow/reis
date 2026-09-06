@@ -12,6 +12,7 @@ import { DocumentNoteEditor } from './DocumentNoteEditor';
 import { NOTES_ENABLED } from '../../config/featureFlags';
 import { FileTypeBadge } from './fileRowBits';
 import { isPdfFile } from './utils/isPdfFile';
+import type { PdfRowMeta } from './types';
 
 export interface FileListItemProps {
   subFile: FileAttachment;
@@ -29,7 +30,7 @@ export interface FileListItemProps {
   ignoreClickRef: React.MutableRefObject<boolean>;
   onToggleSelect: (id: string, e: React.SyntheticEvent) => void;
   onOpenFile: (link: string) => void;
-  onViewPdf?: (link: string) => void;
+  onViewPdf?: (link: string, meta: PdfRowMeta) => void;
   onDownloadSingle?: (link: string) => void;
   onToggleNote: () => void;
   onCloseNote: () => void;
@@ -63,7 +64,7 @@ export function FileListItem({
     if (e.ctrlKey || e.metaKey) {
       onToggleSelect(subFile.link, e);
     } else if (isPdfFile(subFile) && onViewPdf) {
-      onViewPdf(subFile.link);
+      onViewPdf(subFile.link, { name: displayName, date });
     } else {
       onOpenFile(subFile.link);
     }
@@ -153,7 +154,7 @@ export function FileListItem({
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                onViewPdf(subFile.link);
+                onViewPdf(subFile.link, { name: displayName, date });
               }}
               className="btn btn-ghost btn-xs btn-square text-base-content/40 hover:text-primary"
               title={t('course.footer.openInSidebar') || 'Open in Sidebar'}

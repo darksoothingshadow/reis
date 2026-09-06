@@ -57,6 +57,13 @@ describe('FileList', () => {
     expect(onOpenFile).toHaveBeenCalledWith(DOWNLOAD);
   });
 
+  it('hands the row name and IS document date along with a PDF link — the iPad reader caches by date', async () => {
+    const onViewPdf = vi.fn();
+    renderList({ onViewPdf });
+    await userEvent.click(screen.getByText('Přednáška 09'));
+    expect(onViewPdf).toHaveBeenCalledWith(DOWNLOAD, { name: 'Přednáška 09', date: '12. 3. 2026' });
+  });
+
   it('shows the empty state when there is nothing to list', () => {
     renderList({ groups: [] });
     expect(screen.queryByText('Přednáška 09')).toBeNull();

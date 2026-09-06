@@ -24,7 +24,7 @@ describe('usePdfPreview', () => {
   it('shows the blob it fetched', async () => {
     openPdfInline.mockResolvedValue('blob:abc');
     const { result } = renderHook(() => usePdfPreview());
-    await act(async () => void (await result.current.viewPdf('/x.pdf', 'Notes')));
+    await act(async () => void (await result.current.viewPdf('/x.pdf', { name: 'Notes' })));
     expect(result.current.previewUrl).toBe('blob:abc');
     expect(result.current.previewFile).toEqual({ link: '/x.pdf', name: 'Notes' });
   });

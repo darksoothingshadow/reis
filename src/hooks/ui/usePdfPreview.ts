@@ -6,6 +6,12 @@ export interface PdfPreviewFile {
   name: string;
 }
 
+/** What a file row passes along with the link; both are optional for callers that lack them. */
+export interface PdfPreviewMeta {
+  name?: string;
+  date?: string;
+}
+
 /**
  * "Tap to look, press to save" for a file row.
  *
@@ -45,9 +51,10 @@ export function usePdfPreview() {
   }, []);
 
   const viewPdf = useCallback(
-    async (link: string, name?: string) => {
+    async (link: string, meta?: PdfPreviewMeta) => {
       if (isPreviewLoading) return;
       setIsPreviewLoading(true);
+      const name = meta?.name ?? 'PDF';
       try {
         const blobUrl = await openPdfInline(link);
         if (!alive.current) {
@@ -57,7 +64,7 @@ export function usePdfPreview() {
         }
         if (blobUrl) {
           setPreviewUrl(blobUrl);
-          setPreviewFile({ link, name: name ?? 'PDF' });
+          setPreviewFile({ link, name });
         } else {
           await openFile(link);
         }
