@@ -10,6 +10,7 @@ import { trackNotificationClick } from '../../../services/spolky';
 import { openExternal } from '../../../mobile/openExternal';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { useAppStore } from '../../../store/useAppStore';
+import { isHousingLink } from '../../../utils/housingLink';
 
 export interface NotificationsSheetProps {
   onClose: () => void;
@@ -47,6 +48,7 @@ export function NotificationsSheet({ onClose }: NotificationsSheetProps) {
   const focusEventById = useAppStore((s) => s.focusEventById);
   const setMobileTab = useAppStore((s) => s.setMobileTab);
   const markNotificationsRead = useAppStore((s) => s.markNotificationsRead);
+  const pushSheet = useAppStore((s) => s.pushSheet);
 
   /**
    * Opening this sheet IS reading the feed — so the sheet marks it read.
@@ -141,6 +143,14 @@ export function NotificationsSheet({ onClose }: NotificationsSheetProps) {
     const track = () => {
       if (!n.associationId?.startsWith('academic_')) trackNotificationClick(n.id);
     };
+    if (isHousingLink(n.link)) {
+      activationRef.current += 1;
+      openingRef.current = false;
+      track();
+      onClose();
+      pushSheet({ kind: 'housing' });
+      return;
+    }
     if (n.link) {
       activationRef.current += 1;
       openingRef.current = false;
