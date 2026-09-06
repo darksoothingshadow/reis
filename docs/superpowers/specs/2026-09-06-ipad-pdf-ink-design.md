@@ -41,8 +41,9 @@ In scope:
   The app's deployment target stays 15.0; the plugin reports itself unavailable below 16.
 - Subject files (lecture materials) opened from `SubjectDrawerSheet`.
 - Freehand ink: pen, highlighter, eraser, lasso, undo and redo, all from `PKToolPicker`.
-- Pencil draws, finger scrolls (`drawingPolicy = .pencilOnly`), with a toolbar toggle for
-  drawing with a finger.
+- Pencil draws, finger scrolls, with Apple's own "Draw with Finger" toggle: the canvases
+  use `drawingPolicy = .default`, which follows the tool picker's finger-drawing switch
+  when a Pencil is paired and lets a finger draw when none is. No reIS toggle.
 - On-device persistence of the ink and of the PDF bytes.
 
 Out of scope for v1, recorded so they are not rediscovered as gaps:
@@ -104,7 +105,13 @@ interface PdfInkPlugin {
    * Presents the reader over the app and resolves when the student taps Done.
    * Rejects with code 'unreadable' if PDFKit cannot open the file at pdfPath.
    */
-  open(o: { pdfPath: string; inkPath: string; title: string }): Promise<{ hasInk: boolean }>;
+  open(o: {
+    pdfPath: string;
+    inkPath: string;
+    title: string;
+    /** Alert copy for a failed save, translated by the app: title, message, keep, discard. */
+    strings: PdfInkStrings;
+  }): Promise<{ hasInk: boolean }>;
 }
 ```
 
@@ -129,13 +136,17 @@ by the native side only, so drawing data never crosses the bridge.
   by page index. The provider builds a canvas from the drawing when PDFKit asks for a
   page and releases it when PDFKit releases the page. A 200-page deck holds 200 small
   drawings, never 200 live canvases.
-- `PKCanvasView.drawingPolicy = .pencilOnly` by default: a finger scrolls, palm
-  rejection is Apple's. A navigation bar button toggles `.anyInput` for students without
-  a Pencil. The choice is remembered for the session only.
-- `PKToolPicker.shared(for: window)` is made visible and follows the canvas that most
-  recently became first responder, so the palette stays valid as the student moves
-  between pages. Undo and redo come from the picker.
-- Navigation bar: title (the file name), a Done button, the finger toggle. Nothing else.
+- `PKCanvasView.drawingPolicy = .default` on every canvas and
+  `toolPicker.showsDrawingPolicyControls = true`: with a Pencil paired a finger scrolls and
+  the picker's own "Draw with Finger" switch (a system-wide setting shared with Notes)
+  turns finger drawing on; without a Pencil a finger draws. Palm rejection is Apple's.
+  reIS ships no toggle of its own.
+- One `PKToolPicker` instance observes every live canvas and is shown for the PDF view
+  itself (a `PDFView` subclass that can be first responder), so the palette never
+  disappears between pages. Undo and redo come from the picker; the PDF view routes
+  `undoManager` to the canvas the student last drew on.
+- Navigation bar: title (the file name) and a system Done button, which iOS localises.
+  Nothing else.
 - Appearance follows the system; the PDF renders as-is in dark mode.
 
 ### Persistence of ink
@@ -265,7 +276,7 @@ same format as the eduroam one; written with the plan, run on the physical iPad)
 
 1. Open a subject PDF, draw on pages 1 and 3, Done, reopen → strokes present on both.
 2. Pencil-only policy: a finger scrolls and never draws; a palm resting does nothing.
-3. Finger toggle: a finger draws; toggle back; a finger scrolls.
+3. Tool picker's "Draw with Finger" switch on: a finger draws; off: a finger scrolls.
 4. Zoom to the maximum PDFView allows and inspect stroke edges for softness (known
    PDFKit report, Apple forum 792941). Record the result either way.
 5. Rotate the iPad while a page is inked; strokes stay on their content.
@@ -281,7 +292,7 @@ same format as the eduroam one; written with the plan, run on the physical iPad)
 14. Erase everything on a file, Done → the `.ink` file is gone (checked via the
     console log the plugin prints on delete).
 
-The iOS simulator can exercise finger drawing only (`anyInput`); the Pencil policy and
+The iOS simulator can exercise finger drawing only (no Pencil is paired, so `.default` lets a finger draw); the Pencil policy and
 palm rejection need the physical iPad. Screenshots from the device via pymobiledevice3.
 
 ## Release
