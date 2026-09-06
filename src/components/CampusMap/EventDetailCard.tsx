@@ -8,7 +8,7 @@ import { roomCodeToName } from './mapHelpers';
 import type { RoomIndexEntry } from '../../types/campusMap';
 import { parseEventDate } from './eventHelpers';
 import { EventRsvp } from './EventRsvp';
-import { openExternal } from '../../mobile/openExternal';
+import { openExternal, validateExternalUrl } from '../../mobile/openExternal';
 import { getPlatform } from '../../platform';
 import { openVenue } from '../../mobile/openVenue';
 import { logError } from '../../utils/reportError';
@@ -167,7 +167,10 @@ export function EventDetailCard({ event, flush = false }: { event: MapEvent; flu
             {t('housing.title')}
           </button>
         ) : (
-          event.url && (
+          // event.url is data from Supabase, not something the app typed —
+          // a `javascript:` or other non-external scheme must never reach an
+          // <a href>. Same validator openExternal itself uses before opening.
+          event.url && validateExternalUrl(event.url) && (
             <a
               href={event.url}
               target="_blank"

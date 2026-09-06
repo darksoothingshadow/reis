@@ -958,6 +958,7 @@
     "housingTab": "Bydlení",
     "urlLabel": "Odkaz (nepovinný)",
     "urlHint": "https://… nebo reis://housing pro otevření nástěnky bydlení",
+    "urlInvalid": "Zadej odkaz https:// nebo reis://housing",
     "housingHide": "Skrýt",
     "housingUnhide": "Zobrazit",
     "housingDelete": "Smazat",
