@@ -33,7 +33,7 @@ Out of scope for v1: matching logic, chat, photos, landlords, other universities
 
 **Values.** `faculty` is the faculty acronym the store already holds as `userFaculty` (`src/store/types.ts`, sourced from `UserParams.facultyLabel`), the same key `FACULTY_TO_ASSOCIATION` uses, or null when unknown. `platform` is one of `extension`, `ios`, `android`, `web`, derived from the platform layer (`src/platform/`), never from the user agent string.
 
-**Why this is still anonymous.** Seven faculties times four platforms is a coarse grouping of thousands of installs. The row still carries only the random install id. Nothing about the person is added.
+**Why this is still anonymous.** Six faculties times four platforms is a coarse grouping of thousands of installs. The row still carries only the random install id. Nothing about the person is added.
 
 **Privacy text.** `PRIVACY.md`, `docs/privacy-policy-app.md` and the published gist gain one sentence: the daily count now carries faculty and platform, these are group labels, nothing else changed. No new file joins the guard's allow-list; `src/api/feedback.ts` is already on it and its comment is updated.
 
