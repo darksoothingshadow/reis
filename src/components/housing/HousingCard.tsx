@@ -10,10 +10,10 @@ export function HousingCard({
 }: {
   post: HousingPost;
   onVerify: (post: HousingPost) => void;
-  onReport: (post: HousingPost) => Promise<void>;
+  onReport: (post: HousingPost) => Promise<boolean>;
 }) {
   const { t, language } = useTranslation();
-  const [reported, setReported] = useState(false);
+  const [reportState, setReportState] = useState<'idle' | 'sent' | 'failed'>('idle');
   const locale = language === 'cz' ? 'cs' : language;
   const fmt = (iso: string) => new Date(iso).toLocaleDateString(locale, { day: 'numeric', month: 'numeric' });
 
@@ -48,10 +48,10 @@ export function HousingCard({
           <button
             type="button"
             className="btn btn-ghost btn-xs opacity-70"
-            disabled={reported}
-            onClick={async () => { await onReport(post); setReported(true); }}
+            disabled={reportState === 'sent'}
+            onClick={async () => { setReportState((await onReport(post)) ? 'sent' : 'failed'); }}
           >
-            <Flag size={12} /> {reported ? t('housing.reported') : t('housing.report')}
+            <Flag size={12} /> {reportState === 'sent' ? t('housing.reported') : reportState === 'failed' ? t('housing.form.failed') : t('housing.report')}
           </button>
         </div>
       </div>
