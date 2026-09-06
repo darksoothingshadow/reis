@@ -9,13 +9,15 @@ end $$;
 
 -- new call records faculty and platform
 do $$
-declare v_f text; v_p text;
+declare v_f text; v_p text; v_n int;
 begin
   set local role anon;
   perform public.track_daily_usage('22222222-2222-2222-2222-222222222222', 'PEF', 'ios');
+  perform public.track_daily_usage('22222222-2222-2222-2222-222222222222', 'PEF', 'ios');
   reset role;
-  select faculty, platform into v_f, v_p from public.daily_active_usage
+  select faculty, platform, open_count into v_f, v_p, v_n from public.daily_active_usage
    where student_id = '22222222-2222-2222-2222-222222222222' and usage_date = current_date;
+  if v_n is distinct from 2 then raise exception 'open_count not incremented: %', v_n; end if;
   if v_f is distinct from 'PEF' or v_p is distinct from 'ios' then raise exception 'dimensions not stored: % %', v_f, v_p; end if;
 end $$;
 
