@@ -36,6 +36,8 @@ const IDENTIFYING = [
   'rodneCislo',
   'personalNumber',
   'studiumId',
+  'personId',
+  'isLogin',
 ];
 
 /**
@@ -55,9 +57,19 @@ const SUPABASE_CALLERS = new Set([
   // supabase.rpc), which is why the guard newly matches it; the privacy posture
   // is unchanged.
   'src/api/suggestions.ts',
+  // Housing board. Sends the post the student composed plus their IS login
+  // and IS person id — ONLY after the consent tick on the form, shown to every
+  // reIS user so the poster can be verified in IS, deleted with the post after
+  // 14 days. Reads take no identity. The install id is the random per-install
+  // UUID, never anything derived from the student. Disclosed in PRIVACY.md
+  // ("Housing board") and docs/privacy-policy-app.md item 4.
+  'src/api/housing.ts',
   // Random install id only. Reads take no identity argument at all.
   'src/api/eventRsvp.ts',
-  // Random install id only, since the privacy refactor.
+  // Random install id only, since the privacy refactor. Since September 2026
+  // the daily-usage event also carries two GROUP labels (faculty, platform) —
+  // counts over thousands of installs, not per-student data. Disclosed in
+  // PRIVACY.md ("Daily Usage & NPS Feedback") and docs/privacy-policy-app.md.
   'src/api/feedback.ts',
   // Society post view/click counters; sends a post row id and nothing else.
   'src/services/spolky/spolkyService.ts',
@@ -70,6 +82,22 @@ const SUPABASE_CALLERS = new Set([
  * identifier: PKCE verifiers and image fingerprints.
  */
 const DIGEST_CALLERS = new Set(['src/utils/pkce.ts', 'src/services/notes/imageNormalize.ts']);
+
+/**
+ * (file path) -> identifying names THAT SPECIFIC FILE is allowed to send to
+ * Supabase, because a reviewer read the file and confirmed the reason below.
+ * Unlike SUPABASE_CALLERS this exempts individual names, not the whole file:
+ * a new identifying field appearing in an already-exempted file still has to
+ * be argued for and added here explicitly.
+ */
+const IDENTIFYING_EXCEPTIONS: Record<string, string[]> = {
+  // Housing board. isLogin and personId are the poster's IS login and IS
+  // person id, sent ONLY after the consent tick on the housing form, shown
+  // to every reIS user so a reader can verify the poster in IS, and deleted
+  // with the post. Disclosed in PRIVACY.md ("Housing board") and
+  // docs/privacy-policy-app.md.
+  'src/api/housing.ts': ['isLogin', 'personId'],
+};
 
 function walk(dir: string, out: string[] = []): string[] {
   for (const entry of readdirSync(dir)) {
@@ -166,9 +194,13 @@ describe('no student data leaves the device', () => {
         const near = lines.slice(Math.max(0, i - 2), i + 14).join('\n');
         if (!/\bsupabase\s*\.\s*(rpc|from)\s*\(/.test(near)) return;
         for (const name of IDENTIFYING) {
+          if (IDENTIFYING_EXCEPTIONS[f.path]?.includes(name)) continue;
           // `p_student_id:` is the column name on legacy tables; flag only when
-          // an identifying VALUE is being passed, not the parameter name.
-          const re = new RegExp(`:\\s*[^,\\n]*\\b${name}\\b`);
+          // an identifying VALUE is being passed, not the parameter name. The
+          // second alternative catches the ES2015 shorthand property
+          // (`{ personId }`), which carries the identifying value with no
+          // colon at all.
+          const re = new RegExp(`:\\s*[^,\\n]*\\b${name}\\b|[{,]\\s*${name}\\s*[,}]`);
           if (re.test(line) && !line.trim().startsWith('//') && !line.trim().startsWith('*')) {
             offences.push(`${f.path}:${i + 1}  ${line.trim()}`);
           }

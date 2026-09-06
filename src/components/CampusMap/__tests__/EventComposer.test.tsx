@@ -390,3 +390,56 @@ describe('EventComposer — a start time is required', () => {
     expect(createPost.mock.calls[0][0].time).toBe('19:30');
   });
 });
+
+/**
+ * `url` is optional, but when it's filled in it becomes an <a href> in
+ * EventDetailCard and openExternal — a `javascript:` scheme there would run
+ * in the page. Same rule housing links get: reis://housing is the one
+ * non-http scheme allowed through.
+ */
+describe('EventComposer — url validation', () => {
+  const fillRequired = () => {
+    useAppStore.setState({ draftCoord: [16.61, 49.21] });
+    fireEvent.change(screen.getByPlaceholderText('Název akce'), { target: { value: 'Kvíz' } });
+    fireEvent.click(screen.getByText('Vyberte datum'));
+    fireEvent.click(screen.getByRole('button', { name: '15' }));
+    fireEvent.change(screen.getByRole('combobox', { name: 'Čas' }), { target: { value: '1930' } });
+  };
+
+  it('disables publish and shows an inline error for a javascript: url', () => {
+    render(<EventComposer onDone={() => {}} />);
+    fillRequired();
+    expect(screen.getByRole('button', { name: 'Zveřejnit akci' })).toBeEnabled();
+
+    fireEvent.change(
+      screen.getByPlaceholderText('https://… nebo reis://housing pro otevření nástěnky bydlení'),
+      {
+        target: { value: 'javascript:alert(1)' },
+      }
+    );
+
+    expect(screen.getByRole('button', { name: 'Zveřejnit akci' })).toBeDisabled();
+    expect(screen.getByText('Zadej odkaz https:// nebo reis://housing')).toBeInTheDocument();
+  });
+
+  it('allows the reis://housing token through, with no error and publish enabled', () => {
+    render(<EventComposer onDone={() => {}} />);
+    fillRequired();
+
+    fireEvent.change(
+      screen.getByPlaceholderText('https://… nebo reis://housing pro otevření nástěnky bydlení'),
+      {
+        target: { value: 'reis://housing' },
+      }
+    );
+
+    expect(screen.getByRole('button', { name: 'Zveřejnit akci' })).toBeEnabled();
+    expect(screen.queryByText('Zadej odkaz https:// nebo reis://housing')).toBeNull();
+  });
+
+  it('leaves publish enabled when the url field is left empty', () => {
+    render(<EventComposer onDone={() => {}} />);
+    fillRequired();
+    expect(screen.getByRole('button', { name: 'Zveřejnit akci' })).toBeEnabled();
+  });
+});

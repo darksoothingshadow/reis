@@ -1,6 +1,6 @@
 # Privacy Policy for reIS
 
-**Last Updated: 4 September 2026**
+**Last Updated: 6 September 2026**
 
 reIS is a student-built project that simplifies the Mendel University in Brno
 Information System (IS Mendelu). It is a browser extension (Chrome, Edge,
@@ -28,10 +28,11 @@ platform.
 
 | what | when | what it carries |
 |---|---|---|
-| Daily count | once a day | a random install identifier — a UUID unrelated to you. Counts **installs, not people** |
+| Daily count | once a day | a random install identifier — a UUID unrelated to you. Counts **installs, not people**, plus faculty and platform as group labels. |
 | Feedback | you press send | your message, any contact detail you type, the screen name, app version, browser, window size |
 | In-app survey, event RSVP | you answer / RSVP | the same random install identifier |
 | Society post view or click | you open one | a post id |
+| Housing board posts you publish | when you publish a post | the fields you fill in (offer/request, room type, district, price, dates, note, contact) plus your IS login and IS person id, attached only after you tick the consent box. The board is public to anyone running reIS: posts are served through the same public key every install carries, so treat a post like a notice on a public noticeboard, not a private message. A post stops being shown 14 days after you publish it (or when you close it) and the row is deleted shortly afterwards, by the next publish on the board. Two administrators can hide or delete posts. Nothing about who reads the board is recorded. |
 
 Nothing else. Feedback is read by the developers and passed to nobody.
 

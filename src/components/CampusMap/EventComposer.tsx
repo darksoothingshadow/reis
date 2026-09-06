@@ -5,6 +5,8 @@ import { useAppStore } from '../../store/useAppStore';
 import { useTranslation } from '../../hooks/useTranslation';
 import { createPost, updatePost, type PostInput } from '../../api/societyPosts';
 import { isScheduledEvent, goLiveDate } from './eventWindow';
+import { isHousingLink } from '../../utils/housingLink';
+import { validateExternalUrl } from '../../mobile/openExternal';
 import { MiniCalendar } from './MiniCalendar';
 import { ComposerRoomSearch } from './ComposerRoomSearch';
 import { ComposerPlaceSearch } from './ComposerPlaceSearch';
@@ -46,6 +48,7 @@ export function EventComposer({ onDone }: { onDone: () => void }) {
   const [title, setTitle] = useState(editing?.title ?? '');
   const [date, setDate] = useState(editing?.date ?? '');
   const [time, setTime] = useState(editing?.time ?? '');
+  const [url, setUrl] = useState(editing?.url ?? '');
   const [venue, setVenue] = useState<'offcampus' | 'campus'>(
     editing?.venueKind === 'campus' ? 'campus' : 'offcampus'
   );
@@ -72,12 +75,18 @@ export function EventComposer({ onDone }: { onDone: () => void }) {
   // The room stays the source of truth for a campus venue; draftCoord is the
   // map's VIEW of it, kept in step by selectRoom/clearRoom below.
   const coord = venue === 'campus' ? (room?.coord ?? null) : draftCoord;
+  // url is optional, but once something is typed it must be either the
+  // housing token or a URL openExternal will actually open — the same rule
+  // EventDetailCard enforces on the way OUT.
+  const trimmedUrl = url.trim();
+  const urlInvalid =
+    trimmedUrl !== '' && !isHousingLink(trimmedUrl) && !validateExternalUrl(trimmedUrl);
   // Time is required, not optional. A `time: null` row has no start, so it has
   // no "two hours before" and silently got no reminder at all — and the
   // composer is the only place these rows come from (the map reads
   // spolky_events exclusively). Requiring it here is what makes "every event
   // gets a reminder" true, rather than inventing a default hour to notify at.
-  const ready = !!title.trim() && !!date && !!time && !!coord;
+  const ready = !!title.trim() && !!date && !!time && !!coord && !urlInvalid;
   const scheduled = date ? isScheduledEvent(date) : false;
 
   const close = () => {
@@ -139,6 +148,7 @@ export function EventComposer({ onDone }: { onDone: () => void }) {
       coordLng: coord[0],
       coordLat: coord[1],
       location: venue === 'campus' ? null : placeName,
+      url: url.trim() || null,
     };
     try {
       const res = editId
@@ -152,6 +162,7 @@ export function EventComposer({ onDone }: { onDone: () => void }) {
             coord_lng: input.coordLng,
             coord_lat: input.coordLat,
             location: input.location ?? null,
+            url: input.url ?? null,
           })
         : await createPost(input, associationId, email);
       if (res.error) {
@@ -199,6 +210,17 @@ export function EventComposer({ onDone }: { onDone: () => void }) {
         value={title}
         onChange={(e) => setTitle(e.target.value)}
       />
+
+      <label className="form-control w-full">
+        <span className="label-text text-xs">{t('admin.urlLabel')}</span>
+        <input
+          className="input input-bordered input-sm"
+          placeholder={t('admin.urlHint')}
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+        />
+      </label>
+      {urlInvalid && <p className="mt-1 text-[11px] text-error">{t('admin.urlInvalid')}</p>}
 
       <label className="mb-1 mt-3 block text-[10px] font-bold uppercase tracking-wide text-base-content/60">
         {t('map.eventDate')}

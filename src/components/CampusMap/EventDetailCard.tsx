@@ -8,11 +8,12 @@ import { roomCodeToName } from './mapHelpers';
 import type { RoomIndexEntry } from '../../types/campusMap';
 import { parseEventDate } from './eventHelpers';
 import { EventRsvp } from './EventRsvp';
-import { openExternal } from '../../mobile/openExternal';
+import { openExternal, validateExternalUrl } from '../../mobile/openExternal';
 import { getPlatform } from '../../platform';
 import { openVenue } from '../../mobile/openVenue';
 import { logError } from '../../utils/reportError';
 import { venueMapUrl } from '../../utils/venueMapUrl';
+import { isHousingLink } from '../../utils/housingLink';
 import type { MapEvent } from '../../types/events';
 
 const INDEX = roomsIndexJson as RoomIndexEntry[];
@@ -50,6 +51,7 @@ function openInApp(e: React.MouseEvent<HTMLAnchorElement>) {
  */
 export function EventDetailCard({ event, flush = false }: { event: MapEvent; flush?: boolean }) {
   const focusRoom = useAppStore((s) => s.focusRoomByCode);
+  const openHousingBoard = useAppStore((s) => s.openHousingBoard);
   const { t, language } = useTranslation();
   const soc = societyById(event.societyId);
   const locale = language === 'en' ? 'en-US' : 'cs-CZ';
@@ -156,16 +158,30 @@ export function EventDetailCard({ event, flush = false }: { event: MapEvent; flu
           <EventRsvp eventId={event.id} accent={soc.color} />
         </div>
 
-        {event.url && (
-          <a
-            href={event.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={openInApp}
+        {isHousingLink(event.url) ? (
+          <button
+            type="button"
             className="btn btn-primary btn-sm btn-block"
+            onClick={openHousingBoard}
           >
-            {t('map.moreInfo')} <ExternalLink size={13} />
-          </a>
+            {t('housing.title')}
+          </button>
+        ) : (
+          // event.url is data from Supabase, not something the app typed —
+          // a `javascript:` or other non-external scheme must never reach an
+          // <a href>. Same validator openExternal itself uses before opening.
+          event.url &&
+          validateExternalUrl(event.url) && (
+            <a
+              href={event.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={openInApp}
+              className="btn btn-primary btn-sm btn-block"
+            >
+              {t('map.moreInfo')} <ExternalLink size={13} />
+            </a>
+          )
         )}
       </div>
     </div>
