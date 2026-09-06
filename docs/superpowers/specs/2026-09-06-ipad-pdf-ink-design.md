@@ -143,8 +143,10 @@ by the native side only, so drawing data never crosses the bridge.
   reIS ships no toggle of its own.
 - One `PKToolPicker` instance observes every live canvas and is shown for the PDF view
   itself (a `PDFView` subclass that can be first responder), so the palette never
-  disappears between pages. Undo and redo come from the picker; the PDF view routes
-  `undoManager` to the canvas the student last drew on.
+  disappears between pages. Undo and redo come from the picker and act on the window's
+  undo manager, which every canvas reaches through the normal responder chain. The PDF
+  view must NOT override `undoManager`: an override that asked the canvas back recursed
+  until the stack overflowed (found on the first device run).
 - Navigation bar: title (the file name) and a system Done button, which iOS localises.
   Nothing else.
 - Appearance follows the system; the PDF renders as-is in dark mode.

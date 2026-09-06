@@ -3,15 +3,18 @@ import PencilKit
 import UIKit
 
 /**
- * A PDFView that can be first responder — so the tool picker has something to be
- * visible for between pages — and that routes undo/redo to the canvas the student
- * last drew on, which is where the picker's undo buttons look.
+ * A PDFView that can be first responder, so the tool picker has something to be
+ * visible for between pages.
+ *
+ * Deliberately NO `undoManager` override. PencilKit registers each stroke's undo
+ * by walking the responder chain from the canvas; an override here that asked the
+ * canvas back recursed until the stack overflowed (the first device crash). Left
+ * alone, every canvas and this view reach the window's undo manager, which is
+ * also what the picker's undo/redo buttons act on.
  */
 @available(iOS 16.0, *)
 final class InkPDFView: PDFView {
-    weak var activeCanvas: PKCanvasView?
     override var canBecomeFirstResponder: Bool { true }
-    override var undoManager: UndoManager? { activeCanvas?.undoManager ?? super.undoManager }
 }
 
 /**
@@ -79,13 +82,16 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             barButtonSystemItem: .done, target: self, action: #selector(doneTapped))
 
-        pdfView.document = document
+        // Provider and markup mode BEFORE the document: PDFView asks for overlays
+        // as it lays pages out, and a page laid out with no provider never gets a
+        // canvas — the touch then scrolls the page instead of drawing on it.
+        pdfView.pageOverlayViewProvider = self
+        pdfView.isInMarkupMode = true
+        pdfView.usePageViewController(false)
         pdfView.displayMode = .singlePageContinuous
         pdfView.displayDirection = .vertical
         pdfView.autoScales = true
-        pdfView.usePageViewController(false)
-        pdfView.isInMarkupMode = true
-        pdfView.pageOverlayViewProvider = self
+        pdfView.document = document
         pdfView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(pdfView)
         NSLayoutConstraint.activate([
@@ -114,6 +120,7 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         let index = document.index(for: page)
         if let canvas = canvases[index] { return canvas }
         let canvas = PKCanvasView()
+        NSLog("PdfInk: canvas created for page \(index)")
         canvas.tag = index
         canvas.backgroundColor = .clear
         canvas.isOpaque = false
@@ -134,16 +141,11 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         if let canvas = overlayView as? PKCanvasView {
             drawings[index] = canvas.drawing
             toolPicker.removeObserver(canvas)
-            if pdfView.activeCanvas === canvas { pdfView.activeCanvas = nil }
         }
         canvases[index] = nil
     }
 
     // MARK: - PKCanvasViewDelegate
-
-    func canvasViewDidBeginUsingTool(_ canvasView: PKCanvasView) {
-        pdfView.activeCanvas = canvasView
-    }
 
     func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
         drawings[canvasView.tag] = canvasView.drawing
