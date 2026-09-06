@@ -101,4 +101,16 @@ do $$ declare v_install uuid := gen_random_uuid(); v_id uuid; i int; begin
   reset role;
 end $$;
 
+-- 9. a refused attempt still charges the hourly cap (rate row survives the inner rollback)
+do $$ declare v_install uuid := gen_random_uuid(); v_id uuid; i int; begin
+  set local role anon;
+  for i in 1..5 loop
+    v_id := public.submit_housing_post('sell','flat','Brno',1,current_date,null,'','x','x','1',v_install);
+    if v_id is not null then raise exception 'invalid kind accepted'; end if;
+  end loop;
+  v_id := public.submit_housing_post('offer','flat','Brno',1,current_date,null,'','x','x','1',v_install);
+  if v_id is not null then raise exception 'rate log did not survive the inner rollback'; end if;
+  reset role;
+end $$;
+
 rollback;

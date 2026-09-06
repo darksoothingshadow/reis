@@ -86,6 +86,11 @@ language plpgsql security definer set search_path = public as $$
 declare
   v_live int; v_recent int; v_id uuid;
 begin
+  -- A null install id would make the advisory lock below a no-op (a null key
+  -- takes no lock) and then raise on the not-null install_id column in the
+  -- rate-log insert; a public RPC must refuse quietly instead.
+  if p_install_id is null then return null; end if;
+
   -- Serialise per install so check-then-insert cannot race. This lock is
   -- scoped to one install_id: it makes the check-then-insert below atomic
   -- for that install, but the two sweeps just below are not serialised
