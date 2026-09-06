@@ -1,0 +1,16 @@
+{
+  "name": "@reis/capacitor-pdf-ink",
+  "version": "1.0.0",
+  "private": true,
+  "description": "iPad-only PDF reader with PencilKit ink (PDFKit + PKCanvasView + PKToolPicker). A local Capacitor plugin package, not published. iOS only by design — Android keeps the pdf.js viewer; see src/test/guards/nativePluginsAreReachable.test.ts IOS_ONLY.",
+  "license": "Apache-2.0",
+  "capacitor": {
+    "ios": {
+      "src": "ios"
+    }
+  },
+  "files": [
+    "ios/Sources",
+    "Package.swift"
+  ]
+}

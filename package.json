@@ -69,6 +69,7 @@
     "@capgo/capacitor-inappbrowser": "^8.15.3",
     "@fontsource/inter": "^5.3.0",
     "@reis/capacitor-eduroam": "file:native/capacitor-eduroam",
+    "@reis/capacitor-pdf-ink": "file:native/capacitor-pdf-ink",
     "@reis/capacitor-secure-store": "file:native/capacitor-secure-store",
     "@supabase/supabase-js": "^2.112.4",
     "clsx": "^2.1.1",
