@@ -174,4 +174,18 @@ describe('createHousingSlice', () => {
     expect(fetchHousingPosts).toHaveBeenCalledTimes(1);
     expect(state.housingMineIds).toContain('p1');
   });
+
+  it('a post closed while a load is in flight does not come back', async () => {
+    idb.set('housing_posts_mine', ['p1']);
+    let resolveFetch!: (v: { posts: (typeof post)[]; ok: boolean }) => void;
+    fetchHousingPosts.mockImplementationOnce(() => new Promise((r) => { resolveFetch = r; }));
+    const load = state.loadHousing(); // snapshot would be taken now in the old code
+    await flushMicrotasks(); // let readMine (old code) run
+    expect(await state.closeHousing('p1')).toBe(true);
+    expect(state.housingMineIds).toEqual([]);
+    expect(idb.get('housing_posts_mine')).toEqual([]);
+    resolveFetch({ posts: [], ok: true });
+    await load;
+    expect(state.housingMineIds).toEqual([]);
+  });
 });
