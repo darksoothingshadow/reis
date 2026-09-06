@@ -3,7 +3,9 @@ import { useAppStore } from '../../store/useAppStore';
 
 // Hoisted so the vi.mock factories below (which vitest hoists above these
 // imports) can close over it without a temporal-dead-zone error.
-const { rpc } = vi.hoisted(() => ({ rpc: vi.fn(async () => ({ error: null })) }));
+const { rpc } = vi.hoisted(() => ({
+  rpc: vi.fn<(...args: unknown[]) => Promise<{ error: null }>>(async () => ({ error: null })),
+}));
 
 vi.mock('../../services/spolky/supabaseClient', () => ({
   supabase: { rpc: (...a: unknown[]) => rpc(...a) },
