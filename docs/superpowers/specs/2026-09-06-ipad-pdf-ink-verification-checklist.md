@@ -1,7 +1,20 @@
 # iPad PDF ink — device verification checklist
 
-**Status: not yet run on the device.** Fill in the device, iPadOS version and build, then
-tick each step with what was observed. The simulator run (plan Task 9 Step 2) covers finger
+**Status: simulator smoke PASSED 2026-09-06 (iPad Air 11-inch (M4) simulator, iPadOS 26.6,
+Debug build of commit 0eb8ad6e); device steps not yet run.** The simulator covered, with a
+finger (no Pencil is paired there, so `.default` lets a finger draw): the reader opening from a
+subject row with Apple's tool picker; a stroke rendering with the picker's undo enabling; Done;
+reopening the same file from the cache (the PDF's file time did not change, its `lastOpenedAt`
+did) with the stroke present; pixel-erasing everything and Done printing `PdfInk: ink deleted`
+with the `.ink` file gone. Container inspected: two PDFs plus `index.json` under
+`Library/NoCloud/pdf-ink`, the archive under `Library/pdf-ink`.
+
+**Found on the first device run, fixed in 0eb8ad6e:** drawing crashed the app (stack overflow —
+the PDF view's `undoManager` override recursed with PencilKit's responder-chain lookup), and the
+first laid-out page had no canvas so a finger scrolled instead of drawing (the overlay provider
+was assigned after the document). Both are covered by the simulator smoke above.
+
+Fill in the device, iPadOS version and build, then tick each step with what was observed. The simulator run (plan Task 9 Step 2) covers finger
 drawing only; everything about the Pencil needs the physical iPad (8th gen,
 `AAB487DD-1610-525F-A8E5-3E29666A8B90`).
 
