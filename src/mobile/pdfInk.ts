@@ -31,6 +31,10 @@ export interface PdfInkStrings {
   close: string;
   /** Title of the page-thumbnail sheet. */
   pages: string;
+  /** Find-in-document: the sheet's title, the word before a page number, the empty state. */
+  search: string;
+  page: string;
+  noMatches: string;
 }
 
 export interface PdfInkPlugin {

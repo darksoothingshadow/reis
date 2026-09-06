@@ -1133,7 +1133,10 @@
       "addPage": "Přidat stránku",
       "export": "Sdílet s poznámkami",
       "exportFailed": "Soubor ke sdílení se nepodařilo připravit.",
-      "pages": "Stránky"
+      "pages": "Stránky",
+      "search": "Hledat",
+      "page": "Strana",
+      "noMatches": "Nic nenalezeno"
     }
   },
   "session": {

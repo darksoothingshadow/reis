@@ -60,6 +60,8 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
     /// a way to say where you are and to get somewhere else.
     private lazy var pagesItem = UIBarButtonItem(
         title: "", style: .plain, target: self, action: #selector(pagesTapped))
+    private lazy var searchItem = UIBarButtonItem(
+        barButtonSystemItem: .search, target: self, action: #selector(searchTapped))
     private var saveTimer: Timer?
     private(set) var lastSaveError: Error?
 
@@ -84,9 +86,11 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         addPageItem.accessibilityLabel = strings.addPage
         shareItem.accessibilityLabel = strings.export
         pagesItem.accessibilityLabel = strings.pages
+        searchItem.accessibilityLabel = strings.search
         setBarItems(enabled: false)
-        // Share rightmost, as Notes and Files put it.
-        navigationItem.rightBarButtonItems = [shareItem, addPageItem, pagesItem]
+        // Share rightmost, as Notes and Files put it; the two ways of getting
+        // somewhere in the file sit together next to the title.
+        navigationItem.rightBarButtonItems = [shareItem, addPageItem, searchItem, pagesItem]
 
         // Provider and markup mode BEFORE any document: PDFView asks for overlays
         // as it lays pages out, and a page laid out with no provider never gets a
@@ -270,6 +274,7 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         addPageItem.isEnabled = enabled
         shareItem.isEnabled = enabled
         pagesItem.isEnabled = enabled
+        searchItem.isEnabled = enabled
         if !enabled { pagesItem.title = "" }
     }
 
@@ -291,12 +296,31 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
             updatePageItem()
         }
         grid.onDismiss = { [weak self] in self?.showToolPicker() }
-        let sheet = UINavigationController(rootViewController: grid)
+        present(inSheet: grid)
+    }
+
+    @objc private func searchTapped() {
+        guard let document else { return }
+        let search = SearchViewController(
+            document: document, title: strings.search, pageWord: strings.page,
+            noMatches: strings.noMatches)
+        search.onPick = { [weak self] match in
+            guard let self else { return }
+            pdfView.go(to: match)
+            pdfView.setCurrentSelection(match, animate: true)
+            updatePageItem()
+        }
+        search.onDismiss = { [weak self] in self?.showToolPicker() }
+        present(inSheet: search)
+    }
+
+    /// Sheets over the reader share one presentation: half height, and the
+    /// floating tool picker out of the way until they are gone.
+    private func present(inSheet controller: UIViewController) {
+        let sheet = UINavigationController(rootViewController: controller)
         sheet.modalPresentationStyle = .pageSheet
         sheet.sheetPresentationController?.detents = [.medium(), .large()]
         sheet.sheetPresentationController?.prefersGrabberVisible = true
-        // The picker floats in its own window above everything, sheets included,
-        // where it covers the bottom row of pages. It comes back on the way out.
         sheet.presentationController?.delegate = self
         toolPicker.setVisible(false, forFirstResponder: pdfView)
         present(sheet, animated: true)

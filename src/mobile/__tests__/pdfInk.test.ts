@@ -22,6 +22,9 @@ const STRINGS: PdfInkStrings = {
   exportFailed: 'ef',
   close: 'c',
   pages: 'p',
+  search: 's',
+  page: 'pg',
+  noMatches: 'nm',
 };
 const LINK = 'https://is.mendelu.cz/auth/dok_server/slozka.pl?download=359057;id=1';
 const LINK_B = 'https://is.mendelu.cz/auth/dok_server/slozka.pl?download=359058;id=1';

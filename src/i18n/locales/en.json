@@ -1133,7 +1133,10 @@
       "addPage": "Add a page",
       "export": "Share with notes",
       "exportFailed": "Couldn't prepare the file to share.",
-      "pages": "Pages"
+      "pages": "Pages",
+      "search": "Search",
+      "page": "Page",
+      "noMatches": "Nothing found"
     }
   },
   "session": {

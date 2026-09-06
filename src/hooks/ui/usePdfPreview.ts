@@ -81,6 +81,9 @@ export function usePdfPreview(courseCode?: string, subject?: PdfPreviewSubject) 
       exportFailed: t('mobile.pdfInk.exportFailed'),
       close: t('common.close'),
       pages: t('mobile.pdfInk.pages'),
+      search: t('mobile.pdfInk.search'),
+      page: t('mobile.pdfInk.page'),
+      noMatches: t('mobile.pdfInk.noMatches'),
     }),
     [t]
   );
