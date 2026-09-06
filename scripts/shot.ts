@@ -236,9 +236,35 @@ async function clickByTextOrLabel(page: Page, text: string, hasTouch: boolean): 
     throw new Error(`--click "${text}": no visible element with that text or accessible name`);
   }
   if (!hasTouch) return target.click();
+  // Tapping instead of clicking (see the doc comment above) drops Playwright's
+  // actionability/"not obscured" check, so a tap landing on an overlay
+  // (spinner, backdrop, mis-stacked z-index) would silently succeed. Restore
+  // that guard two ways without reintroducing the pointer-capture retargeting
+  // bug a real `.click()` would bring back:
+  // 1. A trial click runs the actionability + interception check only — no
+  //    event is dispatched — and throws "subtree intercepts pointer events"
+  //    if something covers the target. It also scrolls the target into view
+  //    as one of those checks, so the box used for the tap is read AFTER
+  //    this call, not before: a target below the fold (confirmed against the
+  //    housing form's consent checkbox) would otherwise hand the tap stale,
+  //    pre-scroll coordinates that land nowhere once the page has moved.
+  await target.click({ trial: true });
   const box = await target.boundingBox();
   if (!box) throw new Error(`--click "${text}": matched an element with no visible box`);
-  await page.touchscreen.tap(box.x + box.width / 2, box.y + box.height / 2);
+  const cx = box.x + box.width / 2;
+  const cy = box.y + box.height / 2;
+  // 2. elementFromPoint at the tap coordinates, captured BEFORE tapping: a
+  //    post-tap check alone isn't enough, since the tap can legitimately
+  //    change the DOM (e.g. open a form) and elementFromPoint would then be
+  //    answering for the wrong page state.
+  const tapHitsTarget = await target.evaluate(
+    (el, [x, y]) => el.contains(document.elementFromPoint(x, y)),
+    [cx, cy]
+  );
+  if (!tapHitsTarget) {
+    throw new Error(`--click "${text}": another element covers the tap point, not the matched target`);
+  }
+  await page.touchscreen.tap(cx, cy);
 }
 
 async function run(): Promise<number> {
