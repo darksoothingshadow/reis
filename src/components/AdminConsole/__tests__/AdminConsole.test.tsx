@@ -147,4 +147,14 @@ describe('AdminConsole', () => {
     expect(screen.queryByRole('tab', { name: /Návrhy/ })).toBeNull();
     expect(screen.queryByTestId('suggestions-badge')).toBeNull();
   });
+
+  // Same bug as MobileAdminConsole's tab bar (see MobileAdminConsole.test.tsx):
+  // DaisyUI's inactive-.tab default (base-content at 60% opacity) measured
+  // 3.37:1 by hand, below the 4.5:1 WCAG AA floor.
+  it('keeps the desktop pane-switcher inactive tab text at full opacity for AA contrast', () => {
+    loggedIn();
+    render(<AdminConsole />);
+    const inactive = screen.getByRole('tab', { name: /Účty/ });
+    expect(inactive.className).toContain('text-base-content');
+  });
 });
