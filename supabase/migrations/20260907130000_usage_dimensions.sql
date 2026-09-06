@@ -1,12 +1,8 @@
--- BEFORE APPLYING: list EVERY existing overload of track_daily_usage, not just (text):
---   select oid::regprocedure, pg_get_functiondef(oid) from pg_proc
---    where pronamespace = 'public'::regnamespace and proname = 'track_daily_usage';
--- Fold any logic beyond the (student_id, usage_date) upsert into the body below,
--- and confirm the column list: this migration inserts only
--- (student_id, usage_date, faculty, platform) and will fail on any other
--- NOT NULL column without a default. Also confirm daily_active_usage does not
--- already have a faculty/platform column: `add column if not exists` would skip
--- it AND skip its CHECK silently.
+-- APPLIED 2026-09-06 against the linked project after inspecting the deployed
+-- function: exactly one overload existed, track_daily_usage(text), whose body was
+-- an upsert on (student_id, usage_date) incrementing open_count. That logic is
+-- preserved below. daily_active_usage had columns student_id, usage_date,
+-- open_count (default 1) and neither faculty nor platform.
 
 -- Faculty and platform on the anonymous daily usage event, and an admin-only
 -- aggregate. Six faculties times four platforms is a coarse grouping of
@@ -49,11 +45,15 @@ declare
   v_faculty  text := case when upper(btrim(coalesce(p_faculty, ''))) in ('PEF','FRRMS','AF','ZF','LDF','ICV')
                       then upper(btrim(p_faculty)) end;
 begin
-  insert into public.daily_active_usage (student_id, usage_date, faculty, platform)
-  values (p_student_id, current_date, v_faculty, v_platform)
+  -- open_count is the deployed function's existing behaviour (verified with
+  -- pg_get_functiondef on 2026-09-06): one row per install per day, bumped on
+  -- every open. Kept exactly; the two group labels ride along.
+  insert into public.daily_active_usage (student_id, usage_date, open_count, faculty, platform)
+  values (p_student_id, current_date, 1, v_faculty, v_platform)
   on conflict (student_id, usage_date) do update
-    set faculty  = coalesce(excluded.faculty,  public.daily_active_usage.faculty),
-        platform = coalesce(excluded.platform, public.daily_active_usage.platform);
+    set open_count = public.daily_active_usage.open_count + 1,
+        faculty    = coalesce(excluded.faculty,  public.daily_active_usage.faculty),
+        platform   = coalesce(excluded.platform, public.daily_active_usage.platform);
 end $$;
 revoke all on function public.track_daily_usage(text, text, text) from public;
 grant execute on function public.track_daily_usage(text, text, text) to anon, authenticated;
