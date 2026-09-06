@@ -77,4 +77,25 @@ describe('useFileActions', () => {
         // 3 calls total: 2 for first file (fail + retry), 1 for second file
         expect(global.fetch).toHaveBeenCalledTimes(3); 
     });
+    describe('fetchPdfBlob / openPdfInline', () => {
+        it('fetchPdfBlob returns the bytes with credentials, null when IS refuses', async () => {
+            const { result } = renderHook(() => useFileActions());
+            const blob = await result.current.fetchPdfBlob('https://is.mendelu.cz/x.pdf');
+            expect(blob).toBeInstanceOf(Blob);
+            expect(global.fetch).toHaveBeenCalledWith('https://is.mendelu.cz/x.pdf', { credentials: 'include' });
+
+            (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({ ok: false });
+            expect(await result.current.fetchPdfBlob('https://is.mendelu.cz/x.pdf')).toBeNull();
+        });
+
+        it('openPdfInline is fetchPdfBlob plus a blob URL', async () => {
+            URL.createObjectURL = vi.fn(() => 'blob:one');
+            const { result } = renderHook(() => useFileActions());
+            expect(await result.current.openPdfInline('https://is.mendelu.cz/x.pdf')).toBe('blob:one');
+            expect(URL.createObjectURL).toHaveBeenCalledWith(expect.any(Blob));
+
+            (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({ ok: false });
+            expect(await result.current.openPdfInline('https://is.mendelu.cz/x.pdf')).toBeNull();
+        });
+    });
 });
