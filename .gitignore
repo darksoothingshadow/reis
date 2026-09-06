@@ -174,3 +174,8 @@ dist-web/
 # Raw IS pages saved by `scrape:real --dump-html` — one student's real record.
 # Outside public/ on purpose: publicDir is copied into the build output.
 .is-html/
+
+# Swift package build products inside the local Capacitor plugins (xcodebuild test / swift build leave these)
+native/*/Package.resolved
+native/*/.build/
+native/*/.swiftpm/
