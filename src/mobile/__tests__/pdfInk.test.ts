@@ -41,10 +41,12 @@ function harness(over: Partial<OpenPdfWithInkDeps> = {}) {
       return { remove };
     }
   );
+  const hasInk = vi.fn<(key: string) => Promise<boolean>>(async () => false);
   const deps: OpenPdfWithInkDeps = {
     plugin: { open, deliverFile, fileUnavailable, addListener },
     fs,
     inkUri: async (key) => `file:///lib-cloud/pdf-ink/${key}.ink`,
+    hasInk,
     now: () => 5000,
     ...over,
   };
@@ -63,7 +65,19 @@ function harness(over: Partial<OpenPdfWithInkDeps> = {}) {
     if (!needsFile) throw new Error('needsFile listener was never registered');
     return needsFile({ link });
   };
-  return { deps, input, open, deliverFile, fileUnavailable, remove, trigger, fetchPdf, fs, files };
+  return {
+    deps,
+    input,
+    open,
+    deliverFile,
+    fileUnavailable,
+    remove,
+    trigger,
+    fetchPdf,
+    hasInk,
+    fs,
+    files,
+  };
 }
 
 describe('pdfInkKey', () => {
@@ -133,6 +147,50 @@ describe('openPdfWithInk', () => {
       .files;
     expect(files.find((f) => f.link === LINK_B)?.pdfPath).toBe(`file:///lib/${pdfPath(keyB)}`);
     expect(files.find((f) => f.link === LINK_C)?.pdfPath).toBeNull();
+  });
+
+  it('keeps listing a copy on the device after IS stops offering the file', async () => {
+    const { deps, input, open, fs } = harness();
+    const gone = 'https://is.mendelu.cz/auth/dok_server/slozka.pl?download=111111;id=1';
+    const keyGone = await pdfInkKey(input.courseCode, gone);
+    await store(
+      fs,
+      keyGone,
+      pdf(),
+      { date: '05. 1. 2026', name: 'Zadání semestrálky', courseCode: 'EBC-MT', link: gone },
+      1000
+    );
+
+    await openPdfWithInk(deps, input);
+
+    const files = (open.mock.calls[0]?.[0] as { files: { link: string; pdfPath: string | null }[] })
+      .files;
+    // Last, never interleaved: the rest of the list is the drawer's order, and
+    // a kept file is precisely one the drawer no longer has.
+    expect(files.at(-1)).toEqual({
+      link: gone,
+      name: 'Zadání semestrálky',
+      date: '05. 1. 2026',
+      pdfPath: `file:///lib/${pdfPath(keyGone)}`,
+      inkPath: `file:///lib-cloud/pdf-ink/${keyGone}.ink`,
+    });
+  });
+
+  it("does not borrow another subject's cached files for this sidebar", async () => {
+    const { deps, input, open, fs } = harness();
+    const other = 'https://is.mendelu.cz/auth/dok_server/slozka.pl?download=222222;id=1';
+    await store(
+      fs,
+      await pdfInkKey('EBC-XY', other),
+      pdf(),
+      { date: 'd', name: 'Cizí přednáška', courseCode: 'EBC-XY', link: other },
+      1000
+    );
+
+    await openPdfWithInk(deps, input);
+
+    const files = (open.mock.calls[0]?.[0] as { files: { link: string }[] }).files;
+    expect(files.map((f) => f.link)).toEqual([LINK, LINK_B, LINK_C]);
   });
 
   it('lists the tapped file even when the subject list does not contain it', async () => {

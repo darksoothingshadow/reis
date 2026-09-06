@@ -117,5 +117,14 @@ export const nativePdfInkDeps: OpenPdfWithInkDeps = {
       await Filesystem.getUri({ path: `${PDF_CACHE_DIR}/${key}.ink`, directory: Directory.Library })
     ).uri;
   },
+  hasInk: async (key) => {
+    const { Filesystem, Directory } = await fsModule();
+    try {
+      await Filesystem.stat({ path: `${PDF_CACHE_DIR}/${key}.ink`, directory: Directory.Library });
+      return true;
+    } catch {
+      return false;
+    }
+  },
   now: () => Date.now(),
 };

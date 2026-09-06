@@ -52,6 +52,8 @@ export interface OpenPdfWithInkDeps {
   fs: PdfCacheFs;
   /** file:// URI of the ink archive for a key (Library, backed up — ink is irreplaceable). */
   inkUri(key: string): Promise<string>;
+  /** Whether an ink archive exists for a key; those PDFs are never swept. */
+  hasInk(key: string): Promise<boolean>;
   now(): number;
 }
 
@@ -109,11 +111,28 @@ export async function openPdfWithInk(
 
   // From here on every failure is the caller's `failed`: the hook must be
   // able to tell the student, so nothing below is allowed to throw past it.
-  const fileDeps = { fs: deps.fs, inkUri: deps.inkUri, keyFor, now: deps.now };
+  const fileDeps = {
+    fs: deps.fs,
+    inkUri: deps.inkUri,
+    keyFor,
+    courseCode: input.courseCode,
+    now: deps.now,
+  };
   let subscription: { remove(): Promise<void> } | null = null;
   try {
     if (blob) {
-      await store(deps.fs, key, blob, { date: input.date, name: input.name }, deps.now());
+      await store(
+        deps.fs,
+        key,
+        blob,
+        {
+          date: input.date,
+          name: input.name,
+          courseCode: input.courseCode,
+          link: input.fileLink,
+        },
+        deps.now()
+      );
     }
     const current = { link: input.fileLink, name: input.name, date: input.date };
     const entries = await buildFileEntries(fileDeps, current, input.files);
@@ -141,7 +160,8 @@ export async function openPdfWithInk(
     });
     const now = deps.now();
     for (const link of shown) await recordOpen(deps.fs, await keyFor(link), now);
-    await enforceCap(deps.fs);
+    // The sweep may not take an annotated file with it: see enforceCap.
+    await enforceCap(deps.fs, undefined, deps.hasInk);
     return { kind: 'shown', hasInk: false };
   } catch (error) {
     if (!isUnreadable(error)) return { kind: 'failed', error };

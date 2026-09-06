@@ -55,6 +55,21 @@ describe('pdfCache index', () => {
     });
   });
 
+  it('records the subject and the link, so a copy can be listed without IS', async () => {
+    const { fs } = memFs();
+    await store(
+      fs,
+      'k1',
+      pdf(),
+      { date: 'd', name: 'Slides', courseCode: 'EBC-MT', link: 'https://is/x' },
+      1000
+    );
+    expect((await readIndex(fs)).k1).toMatchObject({
+      courseCode: 'EBC-MT',
+      link: 'https://is/x',
+    });
+  });
+
   it('bumps lastOpenedAt on recordOpen and ignores unknown keys', async () => {
     const { fs } = memFs();
     await store(fs, 'k1', pdf(), { date: 'd', name: 'n' }, 1000);
@@ -115,6 +130,18 @@ describe('pdfCache.enforceCap', () => {
     expect(files.has(pdfPath('old'))).toBe(false);
     expect(files.has(pdfPath('mid'))).toBe(true);
     expect(Object.keys(await readIndex(fs)).sort()).toEqual(['mid', 'new']);
+  });
+
+  it('never evicts a file the student has drawn on, even if that leaves it over the cap', async () => {
+    const { fs, files } = memFs();
+    await store(fs, 'inked', pdf(), { date: 'd', name: 'inked' }, 1);
+    await store(fs, 'plain', pdf(), { date: 'd', name: 'plain' }, 2);
+    for (const k of ['inked', 'plain']) files.set(pdfPath(k), { size: 900 });
+
+    expect(await enforceCap(fs, 1000, async (key) => key === 'inked')).toEqual(['plain']);
+
+    expect(files.has(pdfPath('inked'))).toBe(true);
+    expect(Object.keys(await readIndex(fs))).toEqual(['inked']);
   });
 
   it('counts a PDF with no index entry as the oldest, and never touches other files', async () => {

@@ -24,6 +24,14 @@ export interface PdfCacheEntry {
   bytes: number;
   name: string;
   lastOpenedAt: number;
+  /**
+   * The subject and the IS link the copy came from. Written since 5.1.1 and
+   * absent on older entries, so both are optional. They exist so a copy on the
+   * device can be listed again from the device alone: without them a file the
+   * student has annotated is only reachable while IS still lists it.
+   */
+  courseCode?: string;
+  link?: string;
 }
 export type PdfCacheIndex = Record<string, PdfCacheEntry>;
 export type PdfCacheState = 'fresh' | 'stale' | 'absent';
@@ -93,12 +101,19 @@ export async function store(
   fs: PdfCacheFs,
   key: string,
   blob: Blob,
-  meta: { date: string; name: string },
+  meta: { date: string; name: string; courseCode?: string; link?: string },
   now: number
 ): Promise<void> {
   await fs.writeBase64(pdfPath(key), await blobToBase64(blob));
   await withIndex(fs, (index) => {
-    index[key] = { date: meta.date, bytes: blob.size, name: meta.name, lastOpenedAt: now };
+    index[key] = {
+      date: meta.date,
+      bytes: blob.size,
+      name: meta.name,
+      lastOpenedAt: now,
+      ...(meta.courseCode ? { courseCode: meta.courseCode } : {}),
+      ...(meta.link ? { link: meta.link } : {}),
+    };
   });
 }
 
@@ -117,10 +132,22 @@ export async function forget(fs: PdfCacheFs, key: string): Promise<void> {
   });
 }
 
-/** Evicts least-recently-opened `.pdf` files until the total is under the cap. Returns evicted keys. */
+/**
+ * Evicts least-recently-opened `.pdf` files until the total is under the cap.
+ * Returns evicted keys.
+ *
+ * `isProtected` is asked before every eviction and answers "the student drew on
+ * this one". Those copies are never evicted, so the cache can DELIBERATELY sit
+ * over the cap: ink is irreplaceable and it renders on the exact bytes it was
+ * drawn on, so dropping the PDF under it would leave strokes floating over a
+ * file that has to be refetched from IS — the annotated slide would be gone the
+ * first time the student is offline. Trimming that is not a fix; if the cap ever
+ * has to be enforced against ink, the ink goes with the PDF, on purpose.
+ */
 export async function enforceCap(
   fs: PdfCacheFs,
-  capBytes: number = PDF_CACHE_CAP_BYTES
+  capBytes: number = PDF_CACHE_CAP_BYTES,
+  isProtected: (key: string) => Promise<boolean> = async () => false
 ): Promise<string[]> {
   const pdfs = (await fs.list(PDF_CACHE_DIR)).filter((f) => f.name.endsWith('.pdf'));
   let total = pdfs.reduce((n, f) => n + f.size, 0);
@@ -135,6 +162,7 @@ export async function enforceCap(
     const evicted: string[] = [];
     for (const f of byAge) {
       if (total <= capBytes) break;
+      if (await isProtected(f.key)) continue;
       await fs.remove(`${PDF_CACHE_DIR}/${f.name}`);
       delete index[f.key];
       total -= f.size;

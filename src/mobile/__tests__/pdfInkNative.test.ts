@@ -136,4 +136,18 @@ describe('capacitorPdfCacheFs', () => {
       directory: 'LIBRARY',
     });
   });
+
+  it('reports ink for a key by the archive next to it in Library', async () => {
+    Filesystem.stat.mockResolvedValueOnce({ type: 'file', size: 12 });
+    expect(await nativePdfInkDeps.hasInk('k')).toBe(true);
+    expect(Filesystem.stat).toHaveBeenLastCalledWith({
+      path: 'pdf-ink/k.ink',
+      directory: 'LIBRARY',
+    });
+  });
+
+  it('reports no ink when the archive is not there', async () => {
+    Filesystem.stat.mockRejectedValueOnce(new Error('ENOENT'));
+    expect(await nativePdfInkDeps.hasInk('k')).toBe(false);
+  });
 });
