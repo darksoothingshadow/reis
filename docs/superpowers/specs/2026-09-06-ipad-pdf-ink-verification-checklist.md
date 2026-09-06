@@ -31,6 +31,23 @@ collapses the sidebar and moves to the reader's bar; Close dismisses and both sh
 files were fetched and a third displayed a few seconds after a single row tap, without further
 taps. Step 15 below covers it on the device.
 
+**Three follow-ups verified on the simulator 2026-09-07 (build of commit 0fd693c0):**
+
+- *Files must not disappear.* The reader's sidebar now lists this subject's cached files that
+  IS no longer offers, last in the list. Verified by seeding one index entry for EBC-AP with a
+  link the folder does not contain: it appeared at the bottom of the sidebar and opened straight
+  from the device (`select … cached=true`, no fetch). The other half — the LRU sweep never
+  evicting a PDF that has ink — is **unit-tested only**; a 300 MB cache is not producible here.
+  The boundary worth knowing: a kept file is reachable through the reader, which is reached from
+  a subject's file list, so if IS lists nothing at all for a subject there is no way in.
+- *Add a blank page.* "+" in the reader's bar inserted white paper after the page on screen and
+  scrolled to it; a stroke drawn there survived Close and reopen (`blank page added at 1`, and
+  the page came back with its ink). The file's existing ink, written by a version 1 archive,
+  loaded unchanged.
+- *A row tap opens the reader.* Already true for PDFs (re-checked); now also for rows IS gives
+  no type. A row IS types as something else (PPT) still goes to the share sheet, and the
+  `%PDF-` check that makes untyped rows safe is unit-tested — this subject has no untyped row.
+
 Fill in the device, iPadOS version and build, then tick each step with what was observed. The simulator run (plan Task 9 Step 2) covers finger
 drawing only; everything about the Pencil needs the physical iPad (8th gen,
 `AAB487DD-1610-525F-A8E5-3E29666A8B90`).
@@ -68,6 +85,11 @@ Device: ______ iPadOS: ______ Build: ______ Pencil: ______
         still on the current file and the pencil mark appears on it.
 17. [ ] Close with the X → back in the drawer; reopen the same file → strokes present, sidebar
         selection on it.
+18. [ ] Add a page with "+" mid-deck, draw on it with the Pencil, add a second one, switch files
+        and come back → both pages are where you put them and the ink is on them, not on their
+        neighbours.
+19. [ ] With ink on a file, put the iPad in flight mode and open the subject → the annotated file
+        is in the sidebar and opens; nothing is refetched.
 
 ## Report back
 
