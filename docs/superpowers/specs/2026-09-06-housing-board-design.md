@@ -31,9 +31,9 @@ Out of scope for v1: matching logic, chat, photos, landlords, other universities
 
 **What changes.** The `track_daily_usage` RPC (called from `src/api/feedback.ts`) gains two optional arguments, `p_faculty text` and `p_platform text`. The table behind it gains two nullable columns of the same meaning. The migration is additive: the old signature keeps working so released clients are unaffected.
 
-**Values.** `faculty` is the faculty code the store already holds as `facultyId` (`src/store/types.ts`), the same key `FACULTY_TO_ASSOCIATION` uses, or null when unknown. `platform` is one of `extension`, `ios`, `android`, `web`, derived from the platform layer (`src/platform/`), never from the user agent string.
+**Values.** `faculty` is the faculty acronym the store already holds as `userFaculty` (`src/store/types.ts`, sourced from `UserParams.facultyLabel`), the same key `FACULTY_TO_ASSOCIATION` uses, or null when unknown. `platform` is one of `extension`, `ios`, `android`, `web`, derived from the platform layer (`src/platform/`), never from the user agent string.
 
-**Why this is still anonymous.** Seven faculties times four platforms is a coarse grouping of thousands of installs. The row still carries only the random install id. Nothing about the person is added.
+**Why this is still anonymous.** Six faculties times four platforms is a coarse grouping of thousands of installs. The row still carries only the random install id. Nothing about the person is added.
 
 **Privacy text.** `PRIVACY.md`, `docs/privacy-policy-app.md` and the published gist gain one sentence: the daily count now carries faculty and platform, these are group labels, nothing else changed. No new file joins the guard's allow-list; `src/api/feedback.ts` is already on it and its comment is updated.
 

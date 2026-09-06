@@ -77,15 +77,14 @@ describe('HousingModerationPanel', () => {
     expect(del.querySelector('svg')?.getAttribute('class')).toMatch(/text-error/);
   });
 
-  // DaisyUI's error-content (white) on --color-error (#ef4444) is 3.76:1 in
-  // BOTH themes (the token pair is identical light/dark) — below the 4.5:1
-  // AA floor a small btn-xs label needs, and unlike the outline case above
-  // there is no icon to carry the colour instead: "Smazat?" IS the confirm
-  // action's whole readable content. Black text on the same red is 5.58:1.
+  // The contrast fix now lives in the theme tokens (index.css) —
+  // --color-error-content is #111827 (4.71:1 on --color-error) in both
+  // themes — so the component no longer needs a text-black override; the
+  // semantic btn-error class alone carries readable text.
   it('gives the armed confirm button readable text on its red fill', () => {
     render(<HousingModerationPanel />);
     fireEvent.click(screen.getByRole('button', { name: 'Smazat' }));
-    expect(screen.getByRole('button', { name: 'Smazat?' }).className).toMatch(/text-black/);
+    expect(screen.getByRole('button', { name: 'Smazat?' }).className).toMatch(/btn-error/);
   });
 
   // bg-base-200 on this row card sits directly on the console's bg-base-100

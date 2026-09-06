@@ -48,6 +48,9 @@ interface Options {
   clicks: string[];
   wait: number;
   onboarding: boolean;
+  height: number;
+  /** Fail the run if the other shell rendered. See assertShell(). */
+  expectShell?: 'desktop' | 'phone';
   /** Raw JSON object merged into the running app store via `window.__reisStore.setState`
    *  (see dev/storeHandle.ts). Covers state IndexedDB seeding can't reach — data
    *  normally fetched from a network this harness has no credentials for (housing
@@ -55,9 +58,6 @@ interface Options {
    *  Re-applied after every --click step too, so a click's own async refetch
    *  (e.g. the admin console's housing tab reloading its list) can't clobber it. */
   seedStore?: string;
-  height: number;
-  /** Fail the run if the other shell rendered. See assertShell(). */
-  expectShell?: 'desktop' | 'phone';
 }
 
 /**
@@ -125,9 +125,9 @@ function parseArgs(argv: string[]): Options {
     clicks,
     wait: Number(flags.get('wait') ?? 600),
     onboarding: flags.has('onboarding'),
-    seedStore: flags.get('seed-store'),
     height: parseHeight(flags.get('height')),
     expectShell: parseExpectShell(flags.get('expect-shell')),
+    seedStore: flags.get('seed-store'),
   };
 }
 
@@ -363,11 +363,6 @@ async function run(): Promise<number> {
       // fails on anything data-driven — the subject rows are painted from
       // IndexedDB, and every drawer run died with "no visible element" against
       // a screen that renders it perfectly a moment later.
-      //
-      // This settle also runs ahead of --seed-store, which needs the app booted
-      // far enough to have published `window.__reisStore` and throws when it has
-      // not. A run with no clicks keeps the original ordering (seed straight
-      // after the reload), which is what every --seed-store run so far has used.
       if (opts.clicks.length > 0) await page.waitForTimeout(opts.wait);
       if (opts.seedStore) await seedStoreState(page, opts.seedStore);
 

@@ -3,8 +3,15 @@ import { useAppStore } from '../../store/useAppStore';
 
 // Hoisted so the vi.mock factories below (which vitest hoists above these
 // imports) can close over it without a temporal-dead-zone error.
-const { rpc } = vi.hoisted(() => ({
+const { rpc, getUserParams } = vi.hoisted(() => ({
   rpc: vi.fn<(...args: unknown[]) => Promise<{ error: null }>>(async () => ({ error: null })),
+  // Real shape: `facultyId` is always '' (see src/utils/userParams/fetchers.ts);
+  // the faculty acronym ('PEF', 'AF', ...) lives in `facultyLabel`, optional
+  // exactly like the real UserParams type.
+  getUserParams: vi.fn<() => Promise<{ facultyLabel?: string; facultyId: string }>>(async () => ({
+    facultyLabel: 'PEF',
+    facultyId: '',
+  })),
 }));
 
 vi.mock('../../services/spolky/supabaseClient', () => ({
@@ -17,7 +24,7 @@ vi.mock('../../platform', () => ({
   getPlatform: () => ({ kind: 'extension' }),
 }));
 vi.mock('../../utils/userParams', () => ({
-  getUserParams: async () => ({ facultyId: 'PEF' }),
+  getUserParams,
 }));
 
 import { submitFeedback, trackDailyUsage } from '../feedback';
@@ -57,6 +64,21 @@ describe('feedback', () => {
     expect(rpc).toHaveBeenCalledWith('track_daily_usage', {
       p_student_id: 'install-1',
       p_faculty: 'PEF',
+      p_platform: 'extension',
+    });
+  });
+
+  // getUserParams()?.facultyId is always '' (see fetchers.ts); the acronym
+  // lives in facultyLabel. A student with no label yet (params not hydrated,
+  // or the field genuinely missing) must send NULL, never ''.
+  it('sends a null faculty when facultyLabel is missing', async () => {
+    getUserParams.mockResolvedValueOnce({ facultyId: '' });
+
+    await trackDailyUsage();
+
+    expect(rpc).toHaveBeenCalledWith('track_daily_usage', {
+      p_student_id: 'install-1',
+      p_faculty: null,
       p_platform: 'extension',
     });
   });

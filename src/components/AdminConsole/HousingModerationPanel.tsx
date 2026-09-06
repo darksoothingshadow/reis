@@ -67,15 +67,13 @@ export function HousingModerationPanel() {
               </button>
               {armedId === r.id ? (
                 <>
-                  {/* text-black: DaisyUI's error-content (white) on
-                      --color-error is 3.76:1 in both themes — below the
-                      4.5:1 AA floor a btn-xs label needs, and this button's
-                      own text IS the confirm action, so there is no icon to
-                      carry the colour instead (contrast the outline variant
-                      above). Black on the same red is 5.58:1. */}
+                  {/* --color-error-content is now #111827 in both themes
+                      (index.css), 4.71:1 on --color-error — the DaisyUI
+                      btn-error fill already carries readable text, no
+                      override needed. */}
                   <button
                     type="button"
-                    className="btn btn-error btn-xs text-black"
+                    className="btn btn-error btn-xs"
                     onClick={() => {
                       setArmedId(null);
                       void del(r.id);

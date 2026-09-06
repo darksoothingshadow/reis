@@ -10,19 +10,19 @@ export function AdminStatsPanel() {
   const under5 = t('admin.stats.under5');
   const label = (k: string) => (k === 'unknown' ? t('admin.stats.unknown') : k);
 
-  // DaisyUI's default alert-warning-content is white — 2.15:1 on the amber
-  // background in BOTH themes (the token pair is theme-invariant, same case
-  // as HousingModerationPanel's "Smazat?" confirm button). text-black clears
-  // AA at 8.26:1.
+  // --color-warning-content is now #111827 in both themes (index.css),
+  // 8.26:1 on --color-warning — the DaisyUI alert-warning fill already
+  // carries readable text, no override needed.
   if (!stats && !loading)
-    return (
-      <div className="alert alert-warning m-2 text-sm text-black">
-        {t('admin.stats.loadFailed')}
-      </div>
-    );
+    return <div className="alert alert-warning m-2 text-sm">{t('admin.stats.loadFailed')}</div>;
   if (!stats) return <span className="loading loading-dots loading-sm m-4" />;
 
   const weeklyMax = Math.max(1, ...stats.weekly.map((w) => w.installs));
+  // Width tracks the data instead of assuming the query returns exactly 12
+  // rows — a hardcoded "0 0 120 40" clipped the 13th bar whenever the
+  // backing window included a partial in-progress week alongside 12 full
+  // Monday-weeks.
+  const weeklyWidth = Math.max(1, stats.weekly.length) * 10;
   return (
     <div className="flex flex-col gap-4 p-3">
       <div className="stats stats-horizontal shadow-sm">
@@ -51,7 +51,7 @@ export function AdminStatsPanel() {
       <section>
         <h4 className="mb-1 text-sm font-semibold">{t('admin.stats.weekly')}</h4>
         <svg
-          viewBox="0 0 120 40"
+          viewBox={`0 0 ${weeklyWidth} 40`}
           className="h-24 w-full"
           role="img"
           aria-label={t('admin.stats.weekly')}
@@ -80,6 +80,7 @@ export function AdminStatsPanel() {
       <button
         type="button"
         className="btn btn-ghost btn-xs self-end"
+        aria-label={t('common.refresh')}
         onClick={() => void reload()}
         disabled={loading}
       >

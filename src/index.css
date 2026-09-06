@@ -118,12 +118,19 @@ body,
   /* Semantic colors */
   --color-info: #3b82f6;
   --color-info-content: #ffffff;
+  /* Dark ink instead of white: white-on-amber/red/green measured 2.15:1 /
+     3.76:1 / 2.28:1 in this theme pair (both themes use the same semantic
+     hexes), all under the 4.5:1 AA floor for text. #1f2937 clears warning
+     (6.83:1) and success (6.44:1) but only reaches 3.90:1 on error, so
+     #111827 — already this theme's base-content/base-200 tone — is used
+     uniformly across all three: warning 8.26:1, error 4.71:1, success
+     7.79:1. See the contrast script referenced in the fix commit. */
   --color-success: #22c55e;
-  --color-success-content: #ffffff;
+  --color-success-content: #111827;
   --color-warning: #f59e0b;
-  --color-warning-content: #ffffff;
+  --color-warning-content: #111827;
   --color-error: #ef4444;
-  --color-error-content: #ffffff;
+  --color-error-content: #111827;
 
   /* Border radius (px values for Shadow DOM consistency) */
   --radius-selector: 8px;
@@ -191,12 +198,19 @@ body,
   /* Semantic colors */
   --color-info: #3b82f6;
   --color-info-content: #ffffff;
+  /* Dark ink instead of white: white-on-amber/red/green measured 2.15:1 /
+     3.76:1 / 2.28:1 in this theme pair (both themes use the same semantic
+     hexes), all under the 4.5:1 AA floor for text. #1f2937 clears warning
+     (6.83:1) and success (6.44:1) but only reaches 3.90:1 on error, so
+     #111827 — already this theme's base-content/base-200 tone — is used
+     uniformly across all three: warning 8.26:1, error 4.71:1, success
+     7.79:1. See the contrast script referenced in the fix commit. */
   --color-success: #22c55e;
-  --color-success-content: #ffffff;
+  --color-success-content: #111827;
   --color-warning: #f59e0b;
-  --color-warning-content: #ffffff;
+  --color-warning-content: #111827;
   --color-error: #ef4444;
-  --color-error-content: #ffffff;
+  --color-error-content: #111827;
 
   /* Border radius (px values for Shadow DOM consistency) */
   --radius-selector: 8px;
