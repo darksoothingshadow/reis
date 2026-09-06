@@ -95,13 +95,19 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         pdfView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(pdfView)
         NSLayoutConstraint.activate([
-            pdfView.topAnchor.constraint(equalTo: view.topAnchor),
+            // Below the navigation bar, not under it. PDFView lays its pages out
+            // without honouring the automatic content inset a translucent bar adds,
+            // so UIKit decelerates toward -inset while PDFView pushes toward its own
+            // top: the offset oscillated and settled 37pt short, hiding the page top
+            // under the bar (traced 2026-09-06). With no inset there is no fight.
+            pdfView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             pdfView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             pdfView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             pdfView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
         ])
 
         toolPicker.showsDrawingPolicyControls = true
+        toolPicker.colorUserInterfaceStyle = .light
         toolPicker.setVisible(true, forFirstResponder: pdfView)
 
         NotificationCenter.default.addObserver(
@@ -124,6 +130,9 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         canvas.tag = index
         canvas.backgroundColor = .clear
         canvas.isOpaque = false
+        // PDF paper is white in any appearance. Without this PencilKit inverts
+        // the ink for dark mode and the default pen draws white on white.
+        canvas.overrideUserInterfaceStyle = .light
         canvas.drawingPolicy = .default
         canvas.drawing = drawings[index] ?? PKDrawing()
         canvas.tool = toolPicker.selectedTool

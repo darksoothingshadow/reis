@@ -14,6 +14,13 @@ the PDF view's `undoManager` override recursed with PencilKit's responder-chain 
 first laid-out page had no canvas so a finger scrolled instead of drawing (the overlay provider
 was assigned after the document). Both are covered by the simulator smoke above.
 
+**Found on the second device run, fixed in the following commit:** the default pen drew white
+(PencilKit inverts ink for dark mode; the canvases and picker are now forced light, since PDF
+paper is white in any appearance — reproduced with the simulator in dark appearance), and
+scrolling to the top fought and stopped 37pt short (PDFView ignores the translucent bar's
+automatic content inset; the PDF view is now pinned to the safe area — traced with an offset
+log: oscillating −48…−67 before, monotonic −26→0 after).
+
 Fill in the device, iPadOS version and build, then tick each step with what was observed. The simulator run (plan Task 9 Step 2) covers finger
 drawing only; everything about the Pencil needs the physical iPad (8th gen,
 `AAB487DD-1610-525F-A8E5-3E29666A8B90`).

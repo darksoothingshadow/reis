@@ -149,7 +149,15 @@ by the native side only, so drawing data never crosses the bridge.
   until the stack overflowed (found on the first device run).
 - Navigation bar: title (the file name) and a system Done button, which iOS localises.
   Nothing else.
-- Appearance follows the system; the PDF renders as-is in dark mode.
+- Appearance follows the system for the chrome; the paper does not. Every canvas has
+  `overrideUserInterfaceStyle = .light` and the picker `colorUserInterfaceStyle = .light`,
+  because PencilKit otherwise inverts ink for dark mode and the default pen drew white on a
+  white page (found on the first device run). Ink data is unaffected; only rendering.
+- The PDF view is pinned to the safe area, below the navigation bar, never under it.
+  PDFView lays its pages out without honouring the automatic content inset a translucent
+  bar adds, so UIKit's deceleration (toward the inset) and PDFView's layout (toward its own
+  top) fought at the top edge and the page rested 37pt under the bar. Traced with an
+  offset log on 2026-09-06; with no inset the rubber-band is monotonic.
 
 ### Persistence of ink
 
