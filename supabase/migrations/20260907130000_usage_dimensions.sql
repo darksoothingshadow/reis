@@ -1,11 +1,12 @@
--- BEFORE APPLYING: run
---   select pg_get_functiondef('public.track_daily_usage(text)'::regprocedure);
--- on the target database and fold any logic beyond the (student_id, usage_date)
--- upsert into the body below. This migration was authored without database
--- access (no local Docker/psql available) and assumes the existing function
--- is a plain upsert on (student_id, usage_date); repo evidence for that
--- assumption is recorded in the task report, not verified against the live
--- function definition.
+-- BEFORE APPLYING: list EVERY existing overload of track_daily_usage, not just (text):
+--   select oid::regprocedure, pg_get_functiondef(oid) from pg_proc
+--    where pronamespace = 'public'::regnamespace and proname = 'track_daily_usage';
+-- Fold any logic beyond the (student_id, usage_date) upsert into the body below,
+-- and confirm the column list: this migration inserts only
+-- (student_id, usage_date, faculty, platform) and will fail on any other
+-- NOT NULL column without a default. Also confirm daily_active_usage does not
+-- already have a faculty/platform column: `add column if not exists` would skip
+-- it AND skip its CHECK silently.
 
 -- Faculty and platform on the anonymous daily usage event, and an admin-only
 -- aggregate. Seven faculties times four platforms is a coarse grouping of
@@ -18,7 +19,17 @@ alter table public.daily_active_usage
 
 -- One function with defaults, so the old one-argument call keeps working and
 -- PostgREST has no overload to disambiguate. Drop the old signature first.
-drop function if exists public.track_daily_usage(text);
+-- One function must remain: two overloads would make PostgREST's named-argument
+-- dispatch ambiguous for the one-argument call released clients still make.
+do $$
+declare r record;
+begin
+  for r in select oid::regprocedure as sig from pg_proc
+            where pronamespace = 'public'::regnamespace and proname = 'track_daily_usage'
+  loop
+    execute format('drop function %s', r.sig);
+  end loop;
+end $$;
 
 create or replace function public.track_daily_usage(
   p_student_id text,
@@ -36,6 +47,7 @@ begin
     set faculty  = coalesce(excluded.faculty,  public.daily_active_usage.faculty),
         platform = coalesce(excluded.platform, public.daily_active_usage.platform);
 end $$;
+revoke all on function public.track_daily_usage(text, text, text) from public;
 grant execute on function public.track_daily_usage(text, text, text) to anon, authenticated;
 
 -- The aggregate. Groups of 1-4 installs are reported as -1 ("under 5") so a
