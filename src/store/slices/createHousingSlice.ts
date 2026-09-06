@@ -16,6 +16,9 @@ export interface HousingSlice {
   housingMineIds: string[];
   /** Bumped by openHousingBoard; the desktop shell switches view when it changes. */
   housingOpenRequest: number;
+  /** This device's own IS login, read via getUserParams — shown on the form so
+   * the poster sees what will be published, not a static placeholder string. */
+  housingPosterLogin: string | null;
   loadHousing: () => Promise<void>;
   publishHousing: (draft: HousingDraft) => Promise<'ok' | 'refused' | 'failed'>;
   closeHousing: (id: string) => Promise<boolean>;
@@ -54,12 +57,20 @@ export const createHousingSlice: AppSlice<HousingSlice> = (set, get) => ({
   housingLoaded: false,
   housingMineIds: [],
   housingOpenRequest: 0,
+  housingPosterLogin: null,
 
   loadHousing: async () => {
     if (inflight) return inflight;
     inflight = (async () => {
       set({ housingLoading: true });
       try {
+        try {
+          const p = await getUserParams();
+          set({ housingPosterLogin: p?.username ?? null });
+        } catch (err) {
+          logError('HousingSlice.loadHousing.posterLogin', err);
+          set({ housingPosterLogin: null });
+        }
         const res = await fetchHousingPosts();
         // Read own-post ids only after the fetch settles, so a close() that
         // completes while this load was in flight (server delete, state

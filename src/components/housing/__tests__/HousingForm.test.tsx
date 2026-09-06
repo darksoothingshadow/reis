@@ -11,7 +11,12 @@ describe('HousingForm', () => {
   const publishHousing = vi.fn<(draft: HousingDraft) => Promise<'ok'>>(async () => 'ok');
   beforeEach(() => {
     publishHousing.mockClear();
-    useAppStore.setState({ language: 'cz', publishHousing } as never);
+    useAppStore.setState({ language: 'cz', publishHousing, housingPosterLogin: 'xnovak' } as never);
+  });
+
+  it('renders the poster\'s own IS login instead of a static placeholder', () => {
+    render(<HousingForm onDone={() => {}} />);
+    expect(screen.getByText('xnovak')).toBeInTheDocument();
   });
 
   it('keeps Publish disabled until required fields and consent are set', async () => {

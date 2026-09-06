@@ -9,6 +9,7 @@ import { HOUSING_KINDS, HOUSING_LIMITS, HOUSING_ROOM_TYPES, type HousingDraft, t
 export function HousingForm({ onDone }: { onDone: () => void }) {
   const { t } = useTranslation();
   const publishHousing = useAppStore((s) => s.publishHousing);
+  const posterLogin = useAppStore((s) => s.housingPosterLogin);
   const [kind, setKind] = useState<HousingKind>('offer');
   const [roomType, setRoomType] = useState<HousingRoomType>('room_private');
   const [district, setDistrict] = useState('');
@@ -87,7 +88,7 @@ export function HousingForm({ onDone }: { onDone: () => void }) {
         <textarea id="h-note" className="textarea textarea-bordered textarea-sm" rows={3} maxLength={HOUSING_LIMITS.note} placeholder={t('housing.form.notePlaceholder')} value={note} onChange={(e) => setNote(e.target.value)} />)}
       {field('h-contact', t('housing.form.contact'),
         <input id="h-contact" className="input input-bordered input-sm" maxLength={HOUSING_LIMITS.contact} placeholder={t('housing.form.contactPlaceholder')} value={contact} onChange={(e) => setContact(e.target.value)} />)}
-      <div className="text-xs opacity-70">{t('housing.form.loginLabel')}</div>
+      <div className="text-xs opacity-70">{t('housing.form.loginLabel')}: <span className="font-mono">{posterLogin ?? '…'}</span></div>
       <label className="flex cursor-pointer items-start gap-2 text-sm">
         <input type="checkbox" className="checkbox checkbox-sm mt-0.5" checked={consent} onChange={(e) => setConsent(e.target.checked)} />
         <span>{t('housing.form.consent')}</span>
