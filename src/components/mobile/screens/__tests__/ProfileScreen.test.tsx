@@ -91,4 +91,10 @@ describe('the profile tab', () => {
     render(<BottomNav />);
     expect(screen.getAllByRole('button')).toHaveLength(5);
   });
+
+  it('opens the housing board from the settings list', () => {
+    render(<ProfileScreen />);
+    fireEvent.click(screen.getByText('Bydlení'));
+    expect(useAppStore.getState().mobileSheets).toEqual([{ kind: 'housing' }]);
+  });
 });
