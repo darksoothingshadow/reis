@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X } from 'lucide-react';
+import { Trash2, X } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
 import { useTranslation } from '../../hooks/useTranslation';
 
@@ -28,7 +28,11 @@ export function HousingModerationPanel() {
       </div>
       {rows.length === 0 && !loading && <div className="text-sm opacity-70">{t('housing.empty')}</div>}
       {rows.map((r) => (
-        <div key={r.id} className={`card card-compact bg-base-200 ${r.hidden_by_admin ? 'opacity-60' : ''}`}>
+        // border-base-content/10: bg-base-200 sits directly on the base-100
+        // wrapper (desktop aside and the mobile housing pane both) — 1.03:1
+        // in the light theme, effectively invisible (same case fixed on
+        // HousingBoard's tabs-box and MyHousingPosts elsewhere in this PR).
+        <div key={r.id} className={`card card-compact border border-base-content/10 bg-base-200 ${r.hidden_by_admin ? 'opacity-60' : ''}`}>
           <div className="card-body gap-1 text-sm">
             <div className="flex justify-between">
               <span className="font-medium">{t(`housing.kind.${r.kind}`)} · {r.district}</span>
@@ -42,9 +46,15 @@ export function HousingModerationPanel() {
               </button>
               {armedId === r.id ? (
                 <>
+                  {/* text-black: DaisyUI's error-content (white) on
+                      --color-error is 3.76:1 in both themes — below the
+                      4.5:1 AA floor a btn-xs label needs, and this button's
+                      own text IS the confirm action, so there is no icon to
+                      carry the colour instead (contrast the outline variant
+                      above). Black on the same red is 5.58:1. */}
                   <button
                     type="button"
-                    className="btn btn-error btn-xs"
+                    className="btn btn-error btn-xs text-black"
                     onClick={() => { setArmedId(null); void del(r.id); }}
                   >
                     {t('admin.housingDelete')}?
@@ -59,7 +69,14 @@ export function HousingModerationPanel() {
                   </button>
                 </>
               ) : (
-                <button type="button" className="btn btn-error btn-outline btn-xs" onClick={() => setArmedId(r.id)}>
+                // btn-outline btn-error colours the LABEL red too — #ef4444
+                // on base-100 is 3.90:1 in the light theme, below the 4.5:1
+                // AA floor (see the comment on the test above). The danger
+                // cue moves to the icon; the label itself stays full-opacity
+                // base-content, which is what the outline border alone
+                // cannot signal on its own but the icon does.
+                <button type="button" className="btn btn-outline btn-xs gap-1" onClick={() => setArmedId(r.id)}>
+                  <Trash2 size={12} className="text-error" aria-hidden="true" />
                   {t('admin.housingDelete')}
                 </button>
               )}

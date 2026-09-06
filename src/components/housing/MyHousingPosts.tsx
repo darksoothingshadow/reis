@@ -8,8 +8,11 @@ export function MyHousingPosts() {
   const closeHousing = useAppStore((s) => s.closeHousing);
   const mine = posts.filter((p) => mineIds.includes(p.id));
   if (mineIds.length === 0) return null;
+  // border-base-content/10: bg-base-200 sits directly on the sheet's
+  // base-100 backdrop — 1.03:1 in the light theme, effectively invisible
+  // (same case as HousingBoard's tabs-box, see the comment there).
   return (
-    <div className="rounded-box bg-base-200 p-3">
+    <div className="rounded-box border border-base-content/10 bg-base-200 p-3">
       <div className="mb-2 text-xs font-bold uppercase tracking-wider opacity-60">{t('housing.mine')}</div>
       {mine.length === 0 && <div className="text-sm opacity-70">{t('housing.noMine')}</div>}
       {mine.map((p) => (

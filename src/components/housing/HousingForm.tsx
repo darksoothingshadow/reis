@@ -46,8 +46,13 @@ export function HousingForm({ onDone }: { onDone: () => void }) {
     setMessage(t(result === 'refused' ? 'housing.form.refused' : 'housing.form.failed'));
   };
 
+  // `form-control` is DaisyUI 4 — this project is on daisyui@5, which does not
+  // define the class at all, so it was a no-op and the label (default
+  // `display: inline`) let its span and the control share one line box: the
+  // input's border ran straight through the label text instead of sitting
+  // below it. `flex flex-col` is the real stacking rule.
   const field = (id: string, label: string, input: React.ReactNode) => (
-    <label className="form-control w-full" htmlFor={id}>
+    <label className="flex w-full flex-col" htmlFor={id}>
       <span className="label-text mb-1 text-sm">{label}</span>
       {input}
     </label>
@@ -56,10 +61,12 @@ export function HousingForm({ onDone }: { onDone: () => void }) {
   return (
     <div className="flex flex-col gap-3 p-3">
       <h3 className="text-lg font-semibold">{t('housing.form.title')}</h3>
-      <div role="tablist" className="tabs tabs-box tabs-sm">
+      {/* Same tabs-box contrast fix as HousingBoard's offer/request tabs —
+          see the comment there. */}
+      <div role="tablist" className="tabs tabs-box tabs-sm border border-base-content/10">
         {HOUSING_KINDS.map((k) => (
           <button key={k} type="button" role="tab" aria-selected={kind === k}
-            className={`tab flex-1 ${kind === k ? 'tab-active font-semibold' : ''}`} onClick={() => setKind(k)}>
+            className={`tab flex-1 ${kind === k ? 'tab-active font-semibold' : 'text-base-content'}`} onClick={() => setKind(k)}>
             {t(`housing.kind.${k}`)}
           </button>
         ))}

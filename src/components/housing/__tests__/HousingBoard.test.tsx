@@ -39,4 +39,24 @@ describe('HousingBoard', () => {
     fireEvent.click(screen.getByRole('tab', { name: 'Hledám' }));
     expect(screen.getByText('Zatím tu nic není. Buď první.')).toBeInTheDocument();
   });
+
+  // DaisyUI's default inactive-tab colour is base-content at 60% opacity,
+  // which measures 3.37:1 against tabs-box's base-200 background in the
+  // mendelu (light) theme — below the 4.5:1 AA floor. Full-opacity text
+  // clears it comfortably. Caught by scripts/shot.ts (contrast-text) on the
+  // housing sheet, light theme, all three phone widths.
+  it('gives the inactive tab full-opacity text, not the faded DaisyUI default', () => {
+    render(<HousingBoard onVerify={() => {}} />);
+    const inactive = screen.getByRole('tab', { name: 'Hledám' });
+    expect(inactive.className).toMatch(/(^|\s)text-base-content(\s|$)/);
+  });
+
+  // tabs-box's own background (base-200) sits directly on the sheet's
+  // base-100 backdrop — 1.03:1, effectively invisible (the exact case
+  // documented for the light theme in the verify-ui skill). A hairline
+  // border keeps the control legible without depending on the tone.
+  it('gives the tablist a hairline border so it reads against its backdrop', () => {
+    render(<HousingBoard onVerify={() => {}} />);
+    expect(screen.getByRole('tablist').className).toMatch(/border-base-content\/10/);
+  });
 });

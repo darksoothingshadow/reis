@@ -62,4 +62,38 @@ describe('HousingModerationPanel', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Smazat' }));
     expect(useAppStore.getState().deleteAdminHousing).not.toHaveBeenCalled();
   });
+
+  // `btn-outline btn-error` colours BOTH the border and the label text with
+  // DaisyUI's error token — text-error (#ef4444) on base-100 measures 3.90:1
+  // in the mendelu (light) theme, below the 4.5:1 AA floor, and no font
+  // weight at this size rescues it (documented in the verify-ui skill). The
+  // danger cue moves to a small icon instead — an SVG has no text node, so it
+  // is outside what the WCAG text-contrast check (or a screen reader's label)
+  // evaluates — while the button's own label stays full-opacity base-content.
+  it('keeps the unarmed delete label at full-opacity text, colouring only its icon red', () => {
+    render(<HousingModerationPanel />);
+    const del = screen.getByRole('button', { name: 'Smazat' });
+    expect(del.className).not.toMatch(/text-error/);
+    expect(del.querySelector('svg')?.getAttribute('class')).toMatch(/text-error/);
+  });
+
+  // DaisyUI's error-content (white) on --color-error (#ef4444) is 3.76:1 in
+  // BOTH themes (the token pair is identical light/dark) — below the 4.5:1
+  // AA floor a small btn-xs label needs, and unlike the outline case above
+  // there is no icon to carry the colour instead: "Smazat?" IS the confirm
+  // action's whole readable content. Black text on the same red is 5.58:1.
+  it('gives the armed confirm button readable text on its red fill', () => {
+    render(<HousingModerationPanel />);
+    fireEvent.click(screen.getByRole('button', { name: 'Smazat' }));
+    expect(screen.getByRole('button', { name: 'Smazat?' }).className).toMatch(/text-black/);
+  });
+
+  // bg-base-200 on this row card sits directly on the console's bg-base-100
+  // wrapper (desktop aside and MobileAdminConsole's housing pane both) —
+  // 1.03:1 in the light theme, the same documented case as the tabs-box and
+  // MyHousingPosts fixes elsewhere in this branch.
+  it('gives each row card a hairline border so it reads against its backdrop', () => {
+    render(<HousingModerationPanel />);
+    expect(screen.getByText(/Královo Pole/).closest('.card')?.className).toMatch(/border-base-content\/10/);
+  });
 });
