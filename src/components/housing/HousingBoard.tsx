@@ -25,9 +25,10 @@ export function HousingBoard({ onVerify }: { onVerify: (post: HousingPost) => vo
 
   useEffect(() => { void loadHousing(); }, [loadHousing]);
 
-  const report = async (post: HousingPost) => {
+  const report = async (post: HousingPost): Promise<boolean> => {
     // Moderation reuses the suggestions inbox: no new plumbing, admins already read it.
-    await submitSuggestion({ type: 'other', title: `[housing] ${post.id}`, body: `${post.kind} · ${post.district} · ${post.isLogin}` });
+    const res = await submitSuggestion({ type: 'other', title: `[housing] ${post.id}`, body: `${post.kind} · ${post.district} · ${post.isLogin}` });
+    return res.ok;
   };
 
   if (adding) return <HousingForm onDone={() => setAdding(false)} />;

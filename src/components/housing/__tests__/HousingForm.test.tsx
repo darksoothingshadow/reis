@@ -43,4 +43,22 @@ describe('HousingForm', () => {
     await screen.findByText('Teď to nejde: nejvíc 3 aktivní inzeráty a 5 pokusů za hodinu.');
     expect(onDone).not.toHaveBeenCalled();
   });
+
+  it('clamps an over-limit price and publishes null for a non-numeric price', async () => {
+    render(<HousingForm onDone={() => {}} />);
+    fireEvent.change(screen.getByLabelText('Čtvrť'), { target: { value: 'Brno' } });
+    fireEvent.change(screen.getByLabelText('Volné od'), { target: { value: '2026-09-15' } });
+    fireEvent.change(screen.getByLabelText('Kontakt pro zájemce'), { target: { value: 'x' } });
+    fireEvent.click(screen.getByRole('checkbox'));
+    fireEvent.change(screen.getByLabelText('Cena (Kč/měsíc)'), { target: { value: '250000' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Zveřejnit' }));
+    await waitFor(() => expect(publishHousing).toHaveBeenCalledTimes(1));
+    expect(publishHousing.mock.calls[0]![0]).toMatchObject({ priceCzk: 100000 });
+
+    publishHousing.mockClear();
+    fireEvent.change(screen.getByLabelText('Cena (Kč/měsíc)'), { target: { value: 'abc' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Zveřejnit' }));
+    await waitFor(() => expect(publishHousing).toHaveBeenCalledTimes(1));
+    expect(publishHousing.mock.calls[0]![0]).toMatchObject({ priceCzk: null });
+  });
 });

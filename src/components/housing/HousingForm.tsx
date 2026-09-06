@@ -27,10 +27,14 @@ export function HousingForm({ onDone }: { onDone: () => void }) {
     if (!ready) return;
     setBusy(true);
     setMessage(null);
+    const parsedPrice = Number(price);
+    const priceCzk = price.trim() === '' || !Number.isFinite(parsedPrice)
+      ? null
+      : Math.min(100000, Math.max(0, Math.round(parsedPrice)));
     const draft: HousingDraft = {
       kind, roomType,
       district: district.trim(),
-      priceCzk: price.trim() === '' ? null : Math.max(0, Math.round(Number(price))),
+      priceCzk,
       freeFrom,
       freeUntil: freeUntil || null,
       note: note.trim(),
