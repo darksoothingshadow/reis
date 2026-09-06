@@ -88,7 +88,10 @@ export const capacitorPdfCacheFs: PdfCacheFs = {
   async list(dir) {
     const { Filesystem, Directory } = await fsModule();
     try {
-      const { files } = await Filesystem.readdir({ path: dir, directory: Directory.LibraryNoCloud });
+      const { files } = await Filesystem.readdir({
+        path: dir,
+        directory: Directory.LibraryNoCloud,
+      });
       return files.filter((f) => f.type === 'file').map((f) => ({ name: f.name, size: f.size }));
     } catch {
       return [];

@@ -80,7 +80,10 @@ export function SubjectDrawerSheet({ sheet, onClose }: SubjectDrawerSheetProps) 
   // in the drawer's grouped order, so both lists read the same.
   const { previewUrl, viewPdf, closePreview, openFile, downloadSingle } = usePdfPreview(
     courseCode,
-    { title: courseName || courseCode, files: listSubjectPdfs(groupedFiles.flatMap((g) => g.files)) }
+    {
+      title: courseName || courseCode,
+      files: listSubjectPdfs(groupedFiles.flatMap((g) => g.files)),
+    }
   );
   const { classmates } = useClassmates(courseCode);
   const pushSheet = useAppStore((s) => s.pushSheet);

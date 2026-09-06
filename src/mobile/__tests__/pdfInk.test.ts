@@ -35,10 +35,12 @@ function harness(over: Partial<OpenPdfWithInkDeps> = {}) {
   const fileUnavailable = vi.fn(async () => {});
   const remove = vi.fn(async () => {});
   let needsFile: ((e: { link: string }) => Promise<void>) | null = null;
-  const addListener = vi.fn(async (_event: 'needsFile', cb: (e: { link: string }) => Promise<void>) => {
-    needsFile = cb;
-    return { remove };
-  });
+  const addListener = vi.fn(
+    async (_event: 'needsFile', cb: (e: { link: string }) => Promise<void>) => {
+      needsFile = cb;
+      return { remove };
+    }
+  );
   const deps: OpenPdfWithInkDeps = {
     plugin: { open, deliverFile, fileUnavailable, addListener },
     fs,
@@ -127,7 +129,8 @@ describe('openPdfWithInk', () => {
 
     await openPdfWithInk(deps, input);
 
-    const files = (open.mock.calls[0]?.[0] as { files: { link: string; pdfPath: string | null }[] }).files;
+    const files = (open.mock.calls[0]?.[0] as { files: { link: string; pdfPath: string | null }[] })
+      .files;
     expect(files.find((f) => f.link === LINK_B)?.pdfPath).toBe(`file:///lib/${pdfPath(keyB)}`);
     expect(files.find((f) => f.link === LINK_C)?.pdfPath).toBeNull();
   });
@@ -197,7 +200,10 @@ describe('openPdfWithInk', () => {
     await openPdfWithInk(deps, input);
 
     expect(fetchPdf).toHaveBeenCalledWith(LINK_C);
-    expect(deliverFile).toHaveBeenCalledWith({ link: LINK_C, pdfPath: `file:///lib/${pdfPath(keyC)}` });
+    expect(deliverFile).toHaveBeenCalledWith({
+      link: LINK_C,
+      pdfPath: `file:///lib/${pdfPath(keyC)}`,
+    });
     expect((await readIndex(fs))[keyC]).toMatchObject({ date: '01. 2. 2026', name: 'Skripta' });
   });
 

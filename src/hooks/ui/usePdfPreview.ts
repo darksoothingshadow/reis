@@ -43,14 +43,8 @@ export interface PdfPreviewSubject {
  * same anchors) falls back to the download rather than opening an empty viewer.
  */
 export function usePdfPreview(courseCode?: string, subject?: PdfPreviewSubject) {
-  const {
-    openFile,
-    openPdfInline,
-    fetchPdfBlob,
-    downloadSingle,
-    isDownloading,
-    downloadProgress,
-  } = useFileActions();
+  const { openFile, openPdfInline, fetchPdfBlob, downloadSingle, isDownloading, downloadProgress } =
+    useFileActions();
   const { t } = useTranslation();
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewFile, setPreviewFile] = useState<PdfPreviewFile | null>(null);
