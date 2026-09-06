@@ -60,6 +60,27 @@ async function writeIndex(fs: PdfCacheFs, index: PdfCacheIndex): Promise<void> {
   await fs.writeText(PDF_CACHE_INDEX, JSON.stringify(index));
 }
 
+// Every change to the index is a read-modify-write of one JSON file. Two of
+// them overlapping (the sidebar asking for two files in quick succession, a
+// store racing the cap sweep) would each read the same index and the second
+// write would drop the first's entry — leaving a PDF on disk that `resolve`
+// calls stale and the sweep calls oldest. So they queue.
+let indexQueue: Promise<unknown> = Promise.resolve();
+
+function withIndex<T>(
+  fs: PdfCacheFs,
+  mutate: (index: PdfCacheIndex) => Promise<T> | T
+): Promise<T> {
+  const run = indexQueue.then(async () => {
+    const index = await readIndex(fs);
+    const result = await mutate(index);
+    await writeIndex(fs, index);
+    return result;
+  });
+  indexQueue = run.catch(() => undefined);
+  return run;
+}
+
 export async function resolve(fs: PdfCacheFs, key: string, date: string): Promise<PdfCacheState> {
   const entry = (await readIndex(fs))[key];
   const present = await fs.exists(pdfPath(key));
@@ -76,27 +97,24 @@ export async function store(
   now: number
 ): Promise<void> {
   await fs.writeBase64(pdfPath(key), await blobToBase64(blob));
-  const index = await readIndex(fs);
-  index[key] = { date: meta.date, bytes: blob.size, name: meta.name, lastOpenedAt: now };
-  await writeIndex(fs, index);
+  await withIndex(fs, (index) => {
+    index[key] = { date: meta.date, bytes: blob.size, name: meta.name, lastOpenedAt: now };
+  });
 }
 
 export async function recordOpen(fs: PdfCacheFs, key: string, now: number): Promise<void> {
-  const index = await readIndex(fs);
-  const entry = index[key];
-  if (!entry) return;
-  index[key] = { ...entry, lastOpenedAt: now };
-  await writeIndex(fs, index);
+  await withIndex(fs, (index) => {
+    const entry = index[key];
+    if (entry) index[key] = { ...entry, lastOpenedAt: now };
+  });
 }
 
 /** Drop a copy PDFKit could not open, so the next open fetches afresh. */
 export async function forget(fs: PdfCacheFs, key: string): Promise<void> {
   await fs.remove(pdfPath(key)).catch(() => {});
-  const index = await readIndex(fs);
-  if (key in index) {
+  await withIndex(fs, (index) => {
     delete index[key];
-    await writeIndex(fs, index);
-  }
+  });
 }
 
 /** Evicts least-recently-opened `.pdf` files until the total is under the cap. Returns evicted keys. */
@@ -107,21 +125,21 @@ export async function enforceCap(
   const pdfs = (await fs.list(PDF_CACHE_DIR)).filter((f) => f.name.endsWith('.pdf'));
   let total = pdfs.reduce((n, f) => n + f.size, 0);
   if (total <= capBytes) return [];
-  const index = await readIndex(fs);
-  const byAge = pdfs
-    .map((f) => {
-      const key = f.name.slice(0, -'.pdf'.length);
-      return { ...f, key, lastOpenedAt: index[key]?.lastOpenedAt ?? 0 };
-    })
-    .sort((a, b) => a.lastOpenedAt - b.lastOpenedAt);
-  const evicted: string[] = [];
-  for (const f of byAge) {
-    if (total <= capBytes) break;
-    await fs.remove(`${PDF_CACHE_DIR}/${f.name}`);
-    delete index[f.key];
-    total -= f.size;
-    evicted.push(f.key);
-  }
-  await writeIndex(fs, index);
-  return evicted;
+  return withIndex(fs, async (index) => {
+    const byAge = pdfs
+      .map((f) => {
+        const key = f.name.slice(0, -'.pdf'.length);
+        return { ...f, key, lastOpenedAt: index[key]?.lastOpenedAt ?? 0 };
+      })
+      .sort((a, b) => a.lastOpenedAt - b.lastOpenedAt);
+    const evicted: string[] = [];
+    for (const f of byAge) {
+      if (total <= capBytes) break;
+      await fs.remove(`${PDF_CACHE_DIR}/${f.name}`);
+      delete index[f.key];
+      total -= f.size;
+      evicted.push(f.key);
+    }
+    return evicted;
+  });
 }

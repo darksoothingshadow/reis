@@ -59,23 +59,29 @@ export async function buildFileEntries(
 export type ServeFileResult = { kind: 'delivered'; pdfPath: string } | { kind: 'unavailable' };
 
 /**
- * Answer to the reader's `needsFile`: fetch, cache, hand back a path. Anything
- * that goes wrong is "unavailable" — the reader says so and keeps the file in
- * the list; there is nothing else a student could do about it from there.
+ * Answer to the reader's `needsFile`: fetch, cache, hand back a path. When IS
+ * cannot be reached (or serves a page instead of the file) and an older copy is
+ * on the device, that copy is delivered — stale-if-error, the same as the file
+ * the student tapped first. Only a file with nothing on disk is "unavailable";
+ * the reader says so and keeps it in the list.
  */
 export async function serveFile(
   deps: PdfInkFileDeps,
   file: SubjectPdfInput,
   fetchPdf: (link: string) => Promise<Blob | null>
 ): Promise<ServeFileResult> {
+  const key = await deps.keyFor(file.link);
   try {
     const blob = await fetchPdf(file.link);
-    if (!blob) return { kind: 'unavailable' };
-    const key = await deps.keyFor(file.link);
-    await store(deps.fs, key, blob, { date: file.date, name: file.name }, deps.now());
-    return { kind: 'delivered', pdfPath: await deps.fs.uri(pdfPath(key)) };
+    if (blob) {
+      await store(deps.fs, key, blob, { date: file.date, name: file.name }, deps.now());
+      return { kind: 'delivered', pdfPath: await deps.fs.uri(pdfPath(key)) };
+    }
   } catch (error) {
     logError('PdfInk.serveFile', error);
-    return { kind: 'unavailable' };
   }
+  if (await deps.fs.exists(pdfPath(key))) {
+    return { kind: 'delivered', pdfPath: await deps.fs.uri(pdfPath(key)) };
+  }
+  return { kind: 'unavailable' };
 }

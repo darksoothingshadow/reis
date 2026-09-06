@@ -445,15 +445,18 @@ import PencilKit
 import UIKit
 
 /**
- * A PDFView that can be first responder — so the tool picker has something to be
- * visible for between pages — and that routes undo/redo to the canvas the student
- * last drew on, which is where the picker's undo buttons look.
+ * A PDFView that can be first responder, so the tool picker has something to be
+ * visible for between pages.
+ *
+ * Deliberately NO `undoManager` override. PencilKit registers each stroke's undo
+ * by walking the responder chain from the canvas; an override here that asked the
+ * canvas back recursed until the stack overflowed (the first device crash). Left
+ * alone, every canvas and this view reach the window's undo manager, which is
+ * also what the picker's undo/redo buttons act on.
  */
 @available(iOS 16.0, *)
 final class InkPDFView: PDFView {
-    weak var activeCanvas: PKCanvasView?
     override var canBecomeFirstResponder: Bool { true }
-    override var undoManager: UndoManager? { activeCanvas?.undoManager ?? super.undoManager }
 }
 
 /**
@@ -576,16 +579,11 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         if let canvas = overlayView as? PKCanvasView {
             drawings[index] = canvas.drawing
             toolPicker.removeObserver(canvas)
-            if pdfView.activeCanvas === canvas { pdfView.activeCanvas = nil }
         }
         canvases[index] = nil
     }
 
     // MARK: - PKCanvasViewDelegate
-
-    func canvasViewDidBeginUsingTool(_ canvasView: PKCanvasView) {
-        pdfView.activeCanvas = canvasView
-    }
 
     func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
         drawings[canvasView.tag] = canvasView.drawing

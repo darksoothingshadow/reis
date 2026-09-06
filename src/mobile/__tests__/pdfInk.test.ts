@@ -224,6 +224,51 @@ describe('openPdfWithInk', () => {
     expect(fileUnavailable).toHaveBeenCalledWith({ link: LINK_C });
   });
 
+  it('delivers a stale cached copy of a sidebar file when IS is unreachable or serves a page', async () => {
+    const { deps, input, open, deliverFile, fileUnavailable, trigger, fetchPdf, fs } = harness();
+    const keyB = await pdfInkKey(input.courseCode, LINK_B);
+    const keyC = await pdfInkKey(input.courseCode, LINK_C);
+    await store(fs, keyB, pdf(), { date: 'old date', name: 'Přednáška 10' }, 1000);
+    await store(fs, keyC, pdf(), { date: 'old date', name: 'Skripta' }, 1000);
+    open.mockImplementationOnce(async () => {
+      fetchPdf.mockRejectedValueOnce(new Error('offline'));
+      await trigger(LINK_B);
+      fetchPdf.mockResolvedValueOnce(null);
+      await trigger(LINK_C);
+      return { shown: [LINK] };
+    });
+
+    await openPdfWithInk(deps, input);
+
+    expect(fileUnavailable).not.toHaveBeenCalled();
+    expect(deliverFile).toHaveBeenCalledWith({
+      link: LINK_B,
+      pdfPath: `file:///lib/${pdfPath(keyB)}`,
+    });
+    expect(deliverFile).toHaveBeenCalledWith({
+      link: LINK_C,
+      pdfPath: `file:///lib/${pdfPath(keyC)}`,
+    });
+    // The stale entries keep their old date so the next online open refetches.
+    expect((await readIndex(fs))[keyB]?.date).toBe('old date');
+  });
+
+  it('reports a failed cache write as failed instead of throwing', async () => {
+    const { deps, input, open } = harness();
+    deps.fs.writeBase64 = async () => {
+      throw new Error('disk full');
+    };
+    const result = await openPdfWithInk(deps, input);
+    expect(result.kind).toBe('failed');
+    expect(open).not.toHaveBeenCalled();
+  });
+
+  it('keeps its result when removing the listener fails', async () => {
+    const { deps, input, remove } = harness();
+    remove.mockRejectedValueOnce(new Error('bridge gone'));
+    expect(await openPdfWithInk(deps, input)).toEqual({ kind: 'shown', hasInk: false });
+  });
+
   it('records lastOpenedAt for every shown file, then stops listening', async () => {
     const { deps, input, open, remove, trigger, fs } = harness({ now: () => 7000 });
     const key = await pdfInkKey(input.courseCode, input.fileLink);

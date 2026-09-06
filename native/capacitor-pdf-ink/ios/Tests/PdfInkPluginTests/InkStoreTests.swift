@@ -33,6 +33,19 @@ final class InkStoreTests: XCTestCase {
             FileManager.default.fileExists(atPath: url.appendingPathExtension("bad").path))
     }
 
+    func testSecondQuarantineKeepsTheFirstCopy() throws {
+        let url = dir.appendingPathComponent("twice.ink")
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        try Data("garbage one".utf8).write(to: url)
+        XCTAssertNil(InkStore.load(from: url))
+        try Data("garbage two".utf8).write(to: url)
+        XCTAssertNil(InkStore.load(from: url))
+        let quarantined = try FileManager.default.contentsOfDirectory(atPath: dir.path)
+            .filter { $0.hasPrefix("twice.ink.bad") }
+        XCTAssertEqual(quarantined.count, 2)
+        XCTAssertFalse(FileManager.default.fileExists(atPath: url.path))
+    }
+
     func testDeleteRemovesTheFile() throws {
         let url = dir.appendingPathComponent("gone.ink")
         try InkStore.save(InkArchive(pageCount: 1, pages: [0: Data([1])]), to: url)

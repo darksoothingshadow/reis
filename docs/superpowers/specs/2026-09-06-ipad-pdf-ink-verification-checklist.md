@@ -41,7 +41,8 @@ Build and install (see memory `ipad-device-build-install`):
     xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Debug \
       -destination 'id=<xcodebuild-udid>' -allowProvisioningUpdates DEVELOPMENT_TEAM=RG38V3SV8X build
     xcrun devicectl device install app --device <core-device-id> <path to App.app>
-    xcrun devicectl device process launch --device <core-device-id> --console cz.reis.app 2>&1 | grep PdfInk
+    xcrun devicectl device process launch --device <core-device-id> --console cz.reis.app 2>&1 | tee pdfink-device.log
+    grep PdfInk pdfink-device.log    # in a second terminal, or afterwards — launch errors stay visible in the first
 
 Device: ______ iPadOS: ______ Build: ______ Pencil: ______
 
@@ -54,7 +55,7 @@ Device: ______ iPadOS: ______ Build: ______ Pencil: ______
 7. [ ] Draw, background the app mid-session, return → nothing lost.
 8. [ ] Wi-Fi off, reopen the same file → opens instantly from the cache.
 9. [ ] Re-upload: the app container is not editable on the device, so use a file whose IS document date changed between two opens (a teacher re-uploaded, or a document you control). Reopen online → the console shows a fetch and the copy is replaced. If no such file exists during the run, record "not exercised" — `refetches once when the IS document date changed` covers it in vitest.
-10. [ ] Corrupt PDF: not producible on the device without container access. Record "unit-tested only" — `refetches for the web viewer when a FRESH copy turns out unreadable` covers it.
+10. [ ] Corrupt PDF: not producible on the device without container access. Record "unit-tested only" — the native guard (`InkDocument.open` returns nil for junk and for a missing file, a real page opens) is covered by `InkDocumentTests`, and the JS fallback by `refetches for the web viewer when a FRESH copy turns out unreadable`. Neither drives `PdfInkPlugin.open` through the bridge; that path is verified only by the simulator smoke.
 11. [ ] iPhone (simulator is fine) → the web viewer opens as before.
 12. [ ] A 100+ page deck with ink on a dozen pages scrolls smoothly.
 13. [ ] Light and dark system appearance both readable.

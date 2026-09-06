@@ -73,6 +73,20 @@ describe('pdfCache index', () => {
     expect(await readIndex(fs)).toEqual({});
   });
 
+  it('keeps every entry when two stores overlap (index writes are serialised)', async () => {
+    const { fs } = memFs();
+    await Promise.all([
+      store(fs, 'a', pdf(), { date: 'd', name: 'a' }, 1),
+      store(fs, 'b', pdf(), { date: 'd', name: 'b' }, 2),
+      store(fs, 'c', pdf(), { date: 'd', name: 'c' }, 3),
+    ]);
+    const index = await readIndex(fs);
+    expect(Object.keys(index).sort()).toEqual(['a', 'b', 'c']);
+    expect([index.a?.lastOpenedAt, index.b?.lastOpenedAt, index.c?.lastOpenedAt]).toEqual([
+      1, 2, 3,
+    ]);
+  });
+
   it('forget removes the file and the entry', async () => {
     const { fs, files } = memFs();
     await store(fs, 'k1', pdf(), { date: 'd', name: 'n' }, 1000);

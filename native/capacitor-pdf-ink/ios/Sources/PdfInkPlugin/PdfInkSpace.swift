@@ -8,6 +8,10 @@ import UIKit
  * cached file loads at once; anything else is requested from the app through
  * `onNeedsFile` and shown when `deliver` arrives. Closing persists first and
  * reports every link that was displayed.
+ *
+ * `currentLink` is the file the reader is actually showing — "" while it shows
+ * a spinner or a message — and only becomes a link once that file has loaded,
+ * so a pick that fails can simply be tapped again.
  */
 @available(iOS 16.0, *)
 final class PdfInkSpace: NSObject {
@@ -27,14 +31,13 @@ final class PdfInkSpace: NSObject {
     private let list: FileListViewController
     private let strings: PdfInkStrings
     private var files: [File]
-    private var currentLink: String
+    private var currentLink = ""
     private var pendingLink: String?
     private var shown: [String] = []
     private var closed = false
 
     init(courseTitle: String, files: [File], currentLink: String, strings: PdfInkStrings) {
         self.files = files
-        self.currentLink = currentLink
         self.strings = strings
         reader = PdfInkViewController(strings: strings)
         list = FileListViewController(
@@ -45,6 +48,7 @@ final class PdfInkSpace: NSObject {
                     hasInk: FileManager.default.fileExists(atPath: $0.inkURL.path))
             })
         super.init()
+        pendingLink = currentLink
 
         // Opens on the page alone: a student who tapped a file wants to read it,
         // and the sidebar is one tap away on Apple's toggle. Picking another
@@ -64,8 +68,11 @@ final class PdfInkSpace: NSObject {
 
     /// Shows the initial file; the plugin has already proved PDFKit can open it.
     func start(with document: PDFDocument) {
-        guard let file = files.first(where: { $0.link == currentLink }) else { return }
+        guard let link = pendingLink, let file = files.first(where: { $0.link == link }) else { return }
+        pendingLink = nil
+        // Nothing is loaded yet, so this cannot be refused.
         reader.load(document: document, inkURL: file.inkURL, title: file.name)
+        currentLink = file.link
         shown.append(file.link)
         list.select(link: file.link)
     }
@@ -81,33 +88,61 @@ final class PdfInkSpace: NSObject {
     func unavailable(link: String) {
         guard link == pendingLink else { return }
         pendingLink = nil
-        reader.showMessage(strings.openFailed)
+        transition { [reader, strings] discard in reader.showMessage(strings.openFailed, discardingUnsaved: discard) }
     }
 
     private func select(link: String) {
-        guard link != currentLink, let file = files.first(where: { $0.link == link }) else { return }
+        guard link != currentLink, link != pendingLink,
+            let file = files.first(where: { $0.link == link })
+        else { return }
         NSLog("PdfInk: select \(file.name) cached=\(file.pdfURL != nil)")
-        let previous = currentLink
-        currentLink = link
-        pendingLink = nil
         split.preferredDisplayMode = .secondaryOnly
         if let url = file.pdfURL {
             show(file, from: url)
-        } else {
-            reader.showLoading(title: file.name)
-            pendingLink = link
-            onNeedsFile?(link)
+            return
         }
-        refreshInkMark(for: previous)
+        transition { [weak self] discard in
+            guard let self, reader.showLoading(title: file.name, discardingUnsaved: discard) else {
+                return false
+            }
+            let previous = currentLink
+            currentLink = ""
+            pendingLink = link
+            refreshInkMark(for: previous)
+            onNeedsFile?(link)
+            return true
+        }
     }
 
     private func show(_ file: File, from url: URL) {
-        guard let document = PDFDocument(url: url), document.pageCount > 0 else {
-            reader.showMessage(strings.openFailed)
+        guard let document = InkDocument.open(at: url) else {
+            transition { [reader, strings] discard in
+                reader.showMessage(strings.openFailed, discardingUnsaved: discard)
+            }
             return
         }
-        reader.load(document: document, inkURL: file.inkURL, title: file.name)
-        if !shown.contains(file.link) { shown.append(file.link) }
+        transition { [weak self] discard in
+            guard let self,
+                reader.load(
+                    document: document, inkURL: file.inkURL, title: file.name,
+                    discardingUnsaved: discard)
+            else { return false }
+            let previous = currentLink
+            currentLink = file.link
+            if !shown.contains(file.link) { shown.append(file.link) }
+            refreshInkMark(for: previous)
+            return true
+        }
+    }
+
+    /**
+     * Runs a reader transition. The reader refuses one when the current file's
+     * ink cannot be saved (disk full); then the student decides — keep editing,
+     * or discard those strokes and go ahead. Nothing is ever dropped silently.
+     */
+    private func transition(_ attempt: @escaping (_ discardingUnsaved: Bool) -> Bool) {
+        if attempt(false) { return }
+        presentSaveFailed { _ = attempt(true) }
     }
 
     private func refreshInkMark(for link: String) {
@@ -116,20 +151,21 @@ final class PdfInkSpace: NSObject {
     }
 
     private func closeTapped() {
-        reader.persistNow()
-        guard let error = reader.lastSaveError else {
+        if reader.persistNow() {
             finish()
-            return
+        } else {
+            presentSaveFailed { [weak self] in self?.finish() }
         }
+    }
+
+    private func presentSaveFailed(discard: @escaping () -> Void) {
+        let detail = reader.lastSaveError?.localizedDescription ?? ""
         let alert = UIAlertController(
             title: strings.saveFailedTitle,
-            message: "\(strings.saveFailedMessage)\n\n\(error.localizedDescription)",
+            message: "\(strings.saveFailedMessage)\n\n\(detail)",
             preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: strings.keepEditing, style: .cancel))
-        alert.addAction(
-            UIAlertAction(title: strings.discard, style: .destructive) { [weak self] _ in
-                self?.finish()
-            })
+        alert.addAction(UIAlertAction(title: strings.discard, style: .destructive) { _ in discard() })
         split.present(alert, animated: true)
     }
 

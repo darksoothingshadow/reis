@@ -76,7 +76,7 @@ public class PdfInkPlugin: CAPPlugin, CAPBridgedPlugin {
                 call.reject("currentLink is not in files, or has no cached pdfPath", "badArguments")
                 return
             }
-            guard let document = PDFDocument(url: pdfURL), document.pageCount > 0 else {
+            guard let document = InkDocument.open(at: pdfURL) else {
                 call.reject("PDFKit could not open \(pdfURL.lastPathComponent)", "unreadable")
                 return
             }

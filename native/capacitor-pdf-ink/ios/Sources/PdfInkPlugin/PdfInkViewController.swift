@@ -114,7 +114,7 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         toolPicker.setVisible(true, forFirstResponder: pdfView)
 
         NotificationCenter.default.addObserver(
-            self, selector: #selector(persistNow),
+            self, selector: #selector(persistOnResignActive),
             name: UIApplication.willResignActiveNotification, object: nil)
     }
 
@@ -125,16 +125,22 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
 
     // MARK: - Files
 
-    /// Persists the current file's ink, then shows another file with its ink.
-    func load(document: PDFDocument, inkURL: URL, title: String) {
+    /**
+     * Persists the current file's ink, then shows another file with its ink.
+     * Returns false — and changes nothing — when the current ink could not be
+     * saved, so a switch never silently throws strokes away; the space then asks
+     * the student and calls again with `discardingUnsaved: true` if they choose so.
+     */
+    @discardableResult
+    func load(document: PDFDocument, inkURL: URL, title: String, discardingUnsaved: Bool = false)
+        -> Bool
+    {
         // The space loads the first file before presenting anything. The view
         // must exist first: viewDidLoad attaches the overlay provider, and a
         // document laid out without it gets no canvases — the first file could
         // not be drawn on until a switch reloaded it (found 2026-09-06).
         loadViewIfNeeded()
-        persistNow()
-        drawings = [:]
-        canvases = [:]
+        guard leaveCurrentFile(discardingUnsaved: discardingUnsaved) else { return false }
         self.document = document
         self.inkURL = inkURL
         self.title = title
@@ -147,32 +153,44 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         message.isHidden = true
         pdfView.document = document
         pdfView.becomeFirstResponder()
+        return true
     }
 
-    /// Blank page and a spinner while the app fetches the bytes.
-    func showLoading(title: String) {
-        clear(title: title)
+    /// Blank page and a spinner while the app fetches the bytes. Same contract as `load`.
+    func showLoading(title: String, discardingUnsaved: Bool = false) -> Bool {
+        guard clear(title: title, discardingUnsaved: discardingUnsaved) else { return false }
         spinner.startAnimating()
+        return true
     }
 
-    /// Blank page and one sentence; the file stays in the list.
-    func showMessage(_ text: String) {
-        clear(title: title ?? "")
+    /// Blank page and one sentence; the file stays in the list. Same contract as `load`.
+    func showMessage(_ text: String, discardingUnsaved: Bool = false) -> Bool {
+        guard clear(title: title ?? "", discardingUnsaved: discardingUnsaved) else { return false }
         message.text = text
         message.isHidden = false
+        return true
     }
 
-    private func clear(title: String) {
+    private func clear(title: String, discardingUnsaved: Bool) -> Bool {
         loadViewIfNeeded()
-        persistNow()
-        drawings = [:]
-        canvases = [:]
+        guard leaveCurrentFile(discardingUnsaved: discardingUnsaved) else { return false }
         document = nil
         inkURL = nil
         self.title = title
         pdfView.document = nil
         spinner.stopAnimating()
         message.isHidden = true
+        return true
+    }
+
+    /// Saves and drops the current file's state, or refuses (keeping everything)
+    /// when the save fails and the caller has not chosen to discard.
+    private func leaveCurrentFile(discardingUnsaved: Bool) -> Bool {
+        if !persistNow() && !discardingUnsaved { return false }
+        drawings = [:]
+        canvases = [:]
+        lastSaveError = nil
+        return true
     }
 
     func willClose() {
@@ -238,10 +256,13 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         return InkArchive(pageCount: document.pageCount, pages: pages)
     }
 
-    @objc func persistNow() {
+    /// Writes the current file's ink. False means the strokes are still only in
+    /// memory and `lastSaveError` says why.
+    @discardableResult
+    func persistNow() -> Bool {
         saveTimer?.invalidate()
         saveTimer = nil
-        guard let inkURL, let archive = currentArchive() else { return }
+        guard let inkURL, let archive = currentArchive() else { return true }
         do {
             if archive.pages.isEmpty {
                 InkStore.delete(at: inkURL)
@@ -249,9 +270,15 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
                 try InkStore.save(archive, to: inkURL)
             }
             lastSaveError = nil
+            return true
         } catch {
             lastSaveError = error
             NSLog("PdfInk: save failed: \(error)")
+            return false
         }
+    }
+
+    @objc private func persistOnResignActive() {
+        persistNow()
     }
 }

@@ -28,9 +28,13 @@ enum InkStore {
         NSLog("PdfInk: ink deleted for \(url.lastPathComponent)")
     }
 
+    /// `<name>.ink.bad`, or `<name>.ink.bad.<uuid>` when an earlier quarantine
+    /// copy already sits there — a second corruption must not erase the first.
     private static func quarantine(_ url: URL) {
-        let bad = url.appendingPathExtension("bad")
-        try? FileManager.default.removeItem(at: bad)
+        var bad = url.appendingPathExtension("bad")
+        if FileManager.default.fileExists(atPath: bad.path) {
+            bad = url.appendingPathExtension("bad.\(UUID().uuidString)")
+        }
         try? FileManager.default.moveItem(at: url, to: bad)
     }
 }

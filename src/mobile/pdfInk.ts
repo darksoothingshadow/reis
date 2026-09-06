@@ -104,33 +104,35 @@ export async function openPdfWithInk(
       // Stale-if-error: IS is unreachable, but the student has a copy.
       logError('PdfInk.staleIfError', error);
     }
-    if (blob) {
-      await store(deps.fs, key, blob, { date: input.date, name: input.name }, deps.now());
-    } else if (state === 'absent') {
-      return { kind: 'notPdf' };
-    }
+    if (!blob && state === 'absent') return { kind: 'notPdf' };
   }
 
+  // From here on every failure is the caller's `failed`: the hook must be
+  // able to tell the student, so nothing below is allowed to throw past it.
   const fileDeps = { fs: deps.fs, inkUri: deps.inkUri, keyFor, now: deps.now };
-  const current = { link: input.fileLink, name: input.name, date: input.date };
-  const entries = await buildFileEntries(fileDeps, current, input.files);
-  const byLink = new Map(entries.map((e) => [e.link, e]));
-
-  // The sidebar asks for files it does not have; each answer goes through the
-  // same fetch → cache path the tapped file took.
-  const subscription = await deps.plugin.addListener('needsFile', async ({ link }) => {
-    const file = byLink.get(link);
-    const served = file
-      ? await serveFile(fileDeps, file, input.fetchPdf)
-      : ({ kind: 'unavailable' } as const);
-    if (served.kind === 'delivered') {
-      await deps.plugin.deliverFile({ link, pdfPath: served.pdfPath });
-    } else {
-      await deps.plugin.fileUnavailable({ link });
-    }
-  });
-
+  let subscription: { remove(): Promise<void> } | null = null;
   try {
+    if (blob) {
+      await store(deps.fs, key, blob, { date: input.date, name: input.name }, deps.now());
+    }
+    const current = { link: input.fileLink, name: input.name, date: input.date };
+    const entries = await buildFileEntries(fileDeps, current, input.files);
+    const byLink = new Map(entries.map((e) => [e.link, e]));
+
+    // The sidebar asks for files it does not have; each answer goes through the
+    // same fetch → cache path the tapped file took.
+    subscription = await deps.plugin.addListener('needsFile', async ({ link }) => {
+      const file = byLink.get(link);
+      const served = file
+        ? await serveFile(fileDeps, file, input.fetchPdf)
+        : ({ kind: 'unavailable' } as const);
+      if (served.kind === 'delivered') {
+        await deps.plugin.deliverFile({ link, pdfPath: served.pdfPath });
+      } else {
+        await deps.plugin.fileUnavailable({ link });
+      }
+    });
+
     const { shown } = await deps.plugin.open({
       courseTitle: input.courseTitle,
       currentLink: input.fileLink,
@@ -151,6 +153,7 @@ export async function openPdfWithInk(
     const fallback = blob ?? (await input.fetchPdf(input.fileLink).catch(() => null));
     return fallback ? { kind: 'unreadable', blob: fallback } : { kind: 'failed', error };
   } finally {
-    await subscription.remove();
+    // Cleanup must never replace the result: a failed removal is logged, not thrown.
+    await subscription?.remove().catch((e: unknown) => logError('PdfInk.removeListener', e));
   }
 }
