@@ -94,6 +94,16 @@ export function useFileActions(): UseFileActionsResult {
     [t]
   );
 
+  /**
+   * IS serves viewer pages, and Office files, under anchors that look the same
+   * as a document download — and reports no usable type for many of them. The
+   * bytes are the only reliable answer, so a copy that is not a PDF is null and
+   * the caller downloads it instead. It also keeps non-PDF bytes out of the iPad
+   * reader's cache, which stores what it is given under a `.pdf` name.
+   */
+  const looksLikePdf = async (blob: Blob): Promise<boolean> =>
+    (await blob.slice(0, 1024).text()).includes('%PDF-');
+
   const fetchPdfBlob = useCallback(async (link: string): Promise<Blob | null> => {
     const fullUrl = normalizeFileUrl(link);
     try {
@@ -108,13 +118,16 @@ export function useFileActions(): UseFileActionsResult {
           httpGet: (o) => CapacitorHttp.get(o),
         });
         // A viewer page is not a PDF — null lets the caller fall back to its
-        // normal "can't preview" path.
-        return result.kind === 'binary' ? result.blob : null;
+        // normal "can't preview" path. Neither are the Office files IS serves
+        // through the same anchors, hence the byte check.
+        if (result.kind !== 'binary') return null;
+        return (await looksLikePdf(result.blob)) ? result.blob : null;
       }
       assertNotDemo();
       const response = await fetch(fullUrl, { credentials: 'include' });
       if (!response.ok) return null;
-      return await response.blob();
+      const blob = await response.blob();
+      return (await looksLikePdf(blob)) ? blob : null;
     } catch (e) {
       log.error('Failed to fetch PDF inline', e);
       return null;

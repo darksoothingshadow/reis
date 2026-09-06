@@ -43,7 +43,8 @@ describe('useFileActions', () => {
     vi.clearAllMocks();
     global.fetch = vi.fn().mockResolvedValue({
       ok: true,
-      blob: async () => new Blob(['test content']),
+      // %PDF- because fetchPdfBlob now checks it; the other paths do not care.
+      blob: async () => new Blob(['%PDF-1.4 test content']),
       headers: new Map([['content-disposition', 'attachment; filename="test.pdf"']]),
     });
   });
@@ -89,6 +90,15 @@ describe('useFileActions', () => {
 
       (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({ ok: false });
       expect(await result.current.fetchPdfBlob('https://is.mendelu.cz/x.pdf')).toBeNull();
+    });
+
+    it('is null for bytes that are not a PDF — the caller downloads instead', async () => {
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+        ok: true,
+        blob: async () => new Blob(['PK\u0003\u0004 a docx, not a PDF']),
+      });
+      const { result } = renderHook(() => useFileActions());
+      expect(await result.current.fetchPdfBlob('https://is.mendelu.cz/x')).toBeNull();
     });
 
     it('openPdfInline is fetchPdfBlob plus a blob URL', async () => {

@@ -11,7 +11,7 @@ import { useTranslation } from '../../hooks/useTranslation';
 import { DocumentNoteEditor } from './DocumentNoteEditor';
 import { NOTES_ENABLED } from '../../config/featureFlags';
 import { FileTypeBadge } from './fileRowBits';
-import { isPdfFile } from './utils/isPdfFile';
+import { isPdfFile, opensInReader } from './utils/isPdfFile';
 import type { PdfRowMeta } from './types';
 
 export interface FileListItemProps {
@@ -63,7 +63,7 @@ export function FileListItem({
     if (ignoreClickRef.current) return;
     if (e.ctrlKey || e.metaKey) {
       onToggleSelect(subFile.link, e);
-    } else if (isPdfFile(subFile) && onViewPdf) {
+    } else if (onViewPdf && opensInReader(subFile)) {
       onViewPdf(subFile.link, { name: displayName, date });
     } else {
       onOpenFile(subFile.link);

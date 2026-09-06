@@ -64,6 +64,48 @@ describe('FileList', () => {
     expect(onViewPdf).toHaveBeenCalledWith(DOWNLOAD, { name: 'Přednáška 09', date: '12. 3. 2026' });
   });
 
+  it('opens a row IS gave no type in the reader too — IS labels plenty of PDFs "unknown"', async () => {
+    const onViewPdf = vi.fn();
+    const onOpenFile = vi.fn();
+    renderList({
+      onViewPdf,
+      onOpenFile,
+      groups: groups([
+        {
+          file_name: 'Skripta',
+          date: '01. 2. 2026',
+          files: [{ name: 'Skripta', type: 'unknown', link: DOWNLOAD }],
+        },
+      ] as unknown as FileGroup['files']),
+    });
+
+    await userEvent.click(screen.getByText('Skripta'));
+
+    expect(onViewPdf).toHaveBeenCalledWith(DOWNLOAD, { name: 'Skripta', date: '01. 2. 2026' });
+    expect(onOpenFile).not.toHaveBeenCalled();
+  });
+
+  it('still downloads a row IS says is not a PDF', async () => {
+    const onViewPdf = vi.fn();
+    const onOpenFile = vi.fn();
+    renderList({
+      onViewPdf,
+      onOpenFile,
+      groups: groups([
+        {
+          file_name: 'Tabulka',
+          date: '01. 2. 2026',
+          files: [{ name: 'Tabulka', type: 'xlsx', link: DOWNLOAD }],
+        },
+      ] as unknown as FileGroup['files']),
+    });
+
+    await userEvent.click(screen.getByText('Tabulka'));
+
+    expect(onOpenFile).toHaveBeenCalledWith(DOWNLOAD);
+    expect(onViewPdf).not.toHaveBeenCalled();
+  });
+
   it('shows the empty state when there is nothing to list', () => {
     renderList({ groups: [] });
     expect(screen.queryByText('Přednáška 09')).toBeNull();
