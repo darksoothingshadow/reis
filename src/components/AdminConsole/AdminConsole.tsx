@@ -12,6 +12,7 @@ import { SuggestionsInbox } from './SuggestionsInbox';
 import { SocietyAccountsPanel } from './SocietyAccountsPanel';
 import { ChangeMyPasswordForm } from './ChangeMyPasswordForm';
 import { HousingModerationPanel } from './HousingModerationPanel';
+import { AdminStatsPanel } from './AdminStatsPanel';
 
 /**
  * The admin surface, reached only through "Spravovat spolky" in the profile
@@ -33,7 +34,8 @@ export function AdminConsole() {
   const isReisAdmin = useAppStore((s) => s.adminRole === 'reis_admin');
   const unread = useAppStore((s) => s.suggestionsUnread);
   const loadAdminHousing = useAppStore((s) => s.loadAdminHousing);
-  const [pane, setPane] = useState<'events' | 'suggestions' | 'accounts' | 'housing'>('events');
+  const loadAdminStats = useAppStore((s) => s.loadAdminStats);
+  const [pane, setPane] = useState<'events' | 'suggestions' | 'accounts' | 'housing' | 'stats'>('events');
   const { t } = useTranslation();
 
   if (!session) {
@@ -103,6 +105,20 @@ export function AdminConsole() {
                 {t('admin.housingTab')}
               </button>
             )}
+            {isReisAdmin && (
+              <button
+                type="button"
+                role="tab"
+                aria-selected={pane === 'stats'}
+                onClick={() => {
+                  void loadAdminStats();
+                  setPane('stats');
+                }}
+                className={`tab flex-1 ${pane === 'stats' ? 'tab-active font-semibold' : ''}`}
+              >
+                {t('admin.statsTab')}
+              </button>
+            )}
             <button
               type="button"
               role="tab"
@@ -116,6 +132,7 @@ export function AdminConsole() {
           <div className="min-h-0 flex-1 overflow-y-auto p-2">
             {isReisAdmin && pane === 'suggestions' && <SuggestionsInbox />}
             {isReisAdmin && pane === 'housing' && <HousingModerationPanel />}
+            {isReisAdmin && pane === 'stats' && <AdminStatsPanel />}
             {pane === 'accounts' && (
               <div className="flex flex-col gap-6">
                 {isReisAdmin && <SocietyAccountsPanel />}

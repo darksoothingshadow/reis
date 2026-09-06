@@ -962,7 +962,20 @@
     "housingHide": "Hide",
     "housingUnhide": "Unhide",
     "housingDelete": "Delete",
-    "housingHidden": "hidden"
+    "housingHidden": "hidden",
+    "statsTab": "Statistics",
+    "stats": {
+      "today": "Today",
+      "d7": "7 days",
+      "d30": "30 days",
+      "byFaculty": "By faculty (30 days)",
+      "byPlatform": "By platform (30 days)",
+      "weekly": "Weekly active installs (12 weeks)",
+      "installsNote": "We count installs, not people: a student on a phone and a laptop counts twice.",
+      "under5": "under 5",
+      "unknown": "unknown",
+      "loadFailed": "Could not load statistics."
+    }
   },
   "mobile": {
     "header": {
