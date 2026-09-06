@@ -635,6 +635,7 @@ export type AppState = ScheduleSlice &
   import('./slices/createRsvpSlice').RsvpSlice &
   import('./slices/createHousingSlice').HousingSlice &
   import('./slices/createHousingAdminSlice').HousingAdminSlice &
+  import('./slices/createAdminStatsSlice').AdminStatsSlice &
   import('./slices/createAdminSlice').AdminSlice &
   import('./slices/createSuggestionsSlice').SuggestionsSlice &
   DemoSlice;
