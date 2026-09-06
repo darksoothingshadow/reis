@@ -8,8 +8,9 @@ vi.mock('../../../api/housing', () => ({
   submitHousingPost: (...a: unknown[]) => submitHousingPost(...a),
   closeHousingPost: (...a: unknown[]) => closeHousingPost(...a),
 }));
+const getUserParams = vi.fn();
 vi.mock('../../../utils/userParams', () => ({
-  getUserParams: async () => ({ username: 'xnovak', studentId: '123456' }),
+  getUserParams: (...a: unknown[]) => getUserParams(...a),
 }));
 const idb = new Map<string, unknown>();
 vi.mock('../../../services/storage', () => ({
@@ -31,6 +32,11 @@ const draft: HousingDraft = {
 };
 const post = { ...draft, id: 'p1', isLogin: 'xnovak', personId: '123456', createdAt: 'c', expiresAt: 'e' };
 
+/** Flush every pending microtask (any number of chained `await`s). */
+async function flushMicrotasks() {
+  await new Promise((resolve) => setTimeout(resolve, 0));
+}
+
 describe('createHousingSlice', () => {
   let state: HousingSlice & {
     pushSheet: ReturnType<typeof vi.fn>;
@@ -46,6 +52,7 @@ describe('createHousingSlice', () => {
     fetchHousingPosts.mockReset().mockResolvedValue({ posts: [post], ok: true });
     submitHousingPost.mockReset().mockResolvedValue('p1');
     closeHousingPost.mockReset().mockResolvedValue(true);
+    getUserParams.mockReset().mockResolvedValue({ username: 'xnovak', studentId: '123456' });
     set = vi.fn((u) => { const p = typeof u === 'function' ? u(state) : u; state = { ...state, ...p }; });
     get = vi.fn(() => state);
     state = {
@@ -86,6 +93,18 @@ describe('createHousingSlice', () => {
     expect(await state.publishHousing(draft)).toBe('refused');
   });
 
+  it('reports failed and never calls submitHousingPost when the IS identity is missing', async () => {
+    getUserParams.mockResolvedValue(null);
+    expect(await state.publishHousing(draft)).toBe('failed');
+    expect(submitHousingPost).not.toHaveBeenCalled();
+  });
+
+  it('reports failed and never calls submitHousingPost when the identity is incomplete', async () => {
+    getUserParams.mockResolvedValue({ username: '', studentId: '1' });
+    expect(await state.publishHousing(draft)).toBe('failed');
+    expect(submitHousingPost).not.toHaveBeenCalled();
+  });
+
   it('closes a post, forgets the id, and drops it from the list', async () => {
     idb.set('housing_posts_mine', ['p1']);
     await state.loadHousing();
@@ -108,5 +127,51 @@ describe('createHousingSlice', () => {
     state.openHousingBoard();
     expect(state.housingOpenRequest).toBe(1);
     expect(state.pushSheet).not.toHaveBeenCalled();
+  });
+
+  it('resets housingLoading and clears the in-flight slot when the fetch throws', async () => {
+    fetchHousingPosts.mockRejectedValueOnce(new Error('boom'));
+    await expect(state.loadHousing()).rejects.toThrow('boom');
+    expect(state.housingLoading).toBe(false);
+
+    // the in-flight slot must have been cleared, so the next load really re-fetches
+    fetchHousingPosts.mockResolvedValue({ posts: [post], ok: true });
+    await state.loadHousing();
+    expect(fetchHousingPosts).toHaveBeenCalledTimes(2);
+    expect(state.housingLoaded).toBe(true);
+  });
+
+  it('shares the in-flight load instead of no-oping, and never lets a stale mine-ids snapshot erase a concurrent publish', async () => {
+    let resolveFetch!: (v: { posts: (typeof post)[]; ok: boolean }) => void;
+    const deferred = new Promise<{ posts: (typeof post)[]; ok: boolean }>((resolve) => {
+      resolveFetch = resolve;
+    });
+    fetchHousingPosts.mockReturnValue(deferred);
+
+    // Load A starts; its fetch never settles until we resolve it below.
+    const loadA = state.loadHousing();
+    await flushMicrotasks();
+    expect(fetchHousingPosts).toHaveBeenCalledTimes(1);
+
+    // Publish while load A is still in flight: it writes housingMineIds
+    // itself, then calls loadHousing() again internally — that call must
+    // share load A's promise rather than starting (or no-oping past) a
+    // second fetch.
+    const publishPromise = state.publishHousing(draft);
+    await flushMicrotasks();
+    expect(state.housingMineIds).toEqual(['p1']);
+    expect(fetchHousingPosts).toHaveBeenCalledTimes(1);
+
+    // An explicit second call while one is pending must also not re-fetch.
+    const loadB = state.loadHousing();
+    expect(fetchHousingPosts).toHaveBeenCalledTimes(1);
+
+    resolveFetch({ posts: [post], ok: true });
+    await loadA;
+    await publishPromise;
+    await loadB;
+
+    expect(fetchHousingPosts).toHaveBeenCalledTimes(1);
+    expect(state.housingMineIds).toContain('p1');
   });
 });

@@ -33,6 +33,21 @@ async function readMine(): Promise<string[]> {
   }
 }
 
+/** Union two id lists, preserving the order of `a` then any new ids from `b`. */
+function unionIds(a: string[], b: string[]): string[] {
+  const merged = [...a];
+  for (const id of b) {
+    if (!merged.includes(id)) merged.push(id);
+  }
+  return merged;
+}
+
+// Dedup: while a load is in flight, later calls share its promise instead of
+// no-oping — a no-op call could otherwise resolve *before* the in-flight
+// fetch and let a caller (e.g. publishHousing) move on believing state is
+// current when it isn't yet.
+let inflight: Promise<void> | null = null;
+
 export const createHousingSlice: AppSlice<HousingSlice> = (set, get) => ({
   housingPosts: [],
   housingLoading: false,
@@ -41,14 +56,28 @@ export const createHousingSlice: AppSlice<HousingSlice> = (set, get) => ({
   housingOpenRequest: 0,
 
   loadHousing: async () => {
-    if (get().housingLoading) return;
-    set({ housingLoading: true });
-    const [res, mine] = await Promise.all([fetchHousingPosts(), readMine()]);
-    set({
-      housingLoading: false,
-      housingMineIds: mine,
-      ...(res.ok ? { housingPosts: res.posts, housingLoaded: true } : {}),
-    });
+    if (inflight) return inflight;
+    inflight = (async () => {
+      set({ housingLoading: true });
+      try {
+        const [res, mine] = await Promise.all([fetchHousingPosts(), readMine()]);
+        // `mine` is a snapshot of IDB taken when this fetch started. Another
+        // caller may have published in the meantime and already merged the
+        // new id into housingMineIds — never clobber that with this stale
+        // snapshot, union with whatever is current instead.
+        set({
+          housingMineIds: unionIds(get().housingMineIds, mine),
+          ...(res.ok ? { housingPosts: res.posts, housingLoaded: true } : {}),
+        });
+      } finally {
+        set({ housingLoading: false });
+      }
+    })();
+    try {
+      return await inflight;
+    } finally {
+      inflight = null;
+    }
   },
 
   publishHousing: async (draft) => {
