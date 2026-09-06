@@ -2546,3 +2546,29 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 - [ ] **Step 5: Hand the device build to the developer**
 
 Build and install on the cabled iPad exactly as the checklist's header says, then stop: the Pencil steps are the developer's to run. Report which steps the simulator already covered (finger drawing, persistence across reopen, Done, delete-on-empty) and which remain.
+
+---
+
+## Addendum: Tasks 10–12 — Notes-style subject space (spec addendum 2026-09-06)
+
+Research summary that drove this: iOS 26 draws system Done as a blue circle+checkmark
+(`UIBarButtonItem.Style.done` → `.prominent`); HIG: Done = task complete; every reference
+iPad drawing app leaves a document via a top-left control to a collection and none has a Done.
+Notes = `UISplitViewController` sidebar list + document + Apple's sidebar toggle.
+
+### Task 10: TypeScript — file list payload, on-demand delivery, `listSubjectPdfs`
+
+Files: `src/mobile/pdfInk.ts`, `src/mobile/pdfInkNative.ts`, `src/hooks/ui/usePdfPreview.ts`,
+`src/components/mobile/sheets/SubjectDrawerSheet.tsx`,
+`src/components/SubjectFileDrawer/utils/listSubjectPdfs.ts`, locales (`mobile.pdfInk.openFailed`).
+Tests: `src/mobile/__tests__/pdfInk.test.ts`, `src/mobile/__tests__/pdfInkNative.test.ts`,
+`src/hooks/ui/__tests__/usePdfPreview.test.tsx`,
+`src/components/SubjectFileDrawer/utils/__tests__/listSubjectPdfs.test.ts`.
+Test first; `npx vitest run src/mobile src/hooks/ui src/components/SubjectFileDrawer`.
+
+### Task 11: Swift — `FileListViewController`, `PdfInkSpace`, reader `load`, plugin v2
+
+Files: `native/capacitor-pdf-ink/ios/Sources/PdfInkPlugin/{FileListViewController,PdfInkSpace,PdfInkViewController,PdfInkPlugin,PdfInkStrings}.swift`.
+Compile via the simulator app build; Swift package tests still pass.
+
+### Task 12: Verify on the simulator (switch files, spinner path, Close) and hand the iPad build over

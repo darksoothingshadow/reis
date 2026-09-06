@@ -4,6 +4,7 @@ import { useFileActions } from './useFileActions';
 import { useTranslation } from '../useTranslation';
 import { logError } from '../../utils/reportError';
 import { openPdfWithInk, type PdfInkStrings } from '../../mobile/pdfInk';
+import type { SubjectPdfInput } from '../../mobile/pdfInkFiles';
 import { isPdfInkAvailable, nativePdfInkDeps } from '../../mobile/pdfInkNative';
 
 export interface PdfPreviewFile {
@@ -17,16 +18,23 @@ export interface PdfPreviewMeta {
   date?: string;
 }
 
+/** The subject the reader's sidebar lists: its display title and every PDF it has. */
+export interface PdfPreviewSubject {
+  title: string;
+  files: SubjectPdfInput[];
+}
+
 /**
  * "Tap to look, press to save" for a file row.
  *
  * Two readers sit behind `viewPdf`:
  *
  * - On an iPad with the PdfInk plugin (native/capacitor-pdf-ink) and a known
- *   course, the PDF opens in the native PencilKit reader. Ink and the PDF bytes
- *   persist on the device; nothing here needs state while it is up, because it
- *   covers the whole screen. `courseCode` is what keys the ink and the cache, so
- *   without one the web viewer is used.
+ *   course, the PDF opens in the native PencilKit reader, with the subject's
+ *   other PDFs in its sidebar. Ink and the PDF bytes persist on the device;
+ *   nothing here needs state while it is up, because it covers the whole
+ *   screen. `courseCode` is what keys the ink and the cache, so without one the
+ *   web viewer is used.
  * - Everywhere else — desktop, iPhone, Android, a PDF PDFKit rejects — the blob
  *   goes to the inline pdf.js viewer exactly as before. A fallback from the
  *   native path reuses the bytes it already fetched.
@@ -34,7 +42,7 @@ export interface PdfPreviewMeta {
  * A file that turns out not to be a real PDF (IS serves viewer pages under the
  * same anchors) falls back to the download rather than opening an empty viewer.
  */
-export function usePdfPreview(courseCode?: string) {
+export function usePdfPreview(courseCode?: string, subject?: PdfPreviewSubject) {
   const {
     openFile,
     openPdfInline,
@@ -73,6 +81,7 @@ export function usePdfPreview(courseCode?: string) {
       saveFailedMessage: t('mobile.pdfInk.saveFailedMessage'),
       keepEditing: t('mobile.pdfInk.keepEditing'),
       discard: t('mobile.pdfInk.discard'),
+      openFailed: t('mobile.pdfInk.openFailed'),
     }),
     [t]
   );
@@ -90,11 +99,13 @@ export function usePdfPreview(courseCode?: string) {
     ): Promise<{ kind: 'handled' } | { kind: 'viewer'; blobUrl: string | null }> => {
       const result = await openPdfWithInk(nativePdfInkDeps, {
         courseCode: courseCode ?? '',
+        courseTitle: subject?.title ?? courseCode ?? '',
         fileLink: link,
         name,
         date: meta?.date ?? '',
+        files: subject?.files ?? [],
         strings: inkStrings(),
-        fetchPdf: () => fetchPdfBlob(link),
+        fetchPdf: (target) => fetchPdfBlob(target),
       });
       if (result.kind === 'shown') return { kind: 'handled' };
       if (result.kind === 'unreadable') {
@@ -107,7 +118,7 @@ export function usePdfPreview(courseCode?: string) {
       }
       return { kind: 'viewer', blobUrl: null };
     },
-    [courseCode, inkStrings, fetchPdfBlob, t]
+    [courseCode, subject, inkStrings, fetchPdfBlob, t]
   );
 
   const viewPdf = useCallback(

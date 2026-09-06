@@ -16,30 +16,52 @@ const STRINGS: PdfInkStrings = {
   saveFailedMessage: 'm',
   keepEditing: 'k',
   discard: 'd',
+  openFailed: 'o',
 };
 const LINK = 'https://is.mendelu.cz/auth/dok_server/slozka.pl?download=359057;id=1';
+const LINK_B = 'https://is.mendelu.cz/auth/dok_server/slozka.pl?download=359058;id=1';
+const LINK_C = 'https://is.mendelu.cz/auth/dok_server/slozka.pl?download=359059;id=1';
+const FILES = [
+  { link: LINK, name: 'Přednáška 09', date: '12. 3. 2026' },
+  { link: LINK_B, name: 'Přednáška 10', date: '19. 3. 2026' },
+  { link: LINK_C, name: 'Skripta', date: '01. 2. 2026' },
+];
 const pdf = () => new Blob(['%PDF-1.4 fake'], { type: 'application/pdf' });
 
 function harness(over: Partial<OpenPdfWithInkDeps> = {}) {
   const { fs, files } = memFs();
-  const open = vi.fn(async () => ({ hasInk: true }));
+  const open = vi.fn<(o: unknown) => Promise<{ shown: string[] }>>(async () => ({ shown: [LINK] }));
+  const deliverFile = vi.fn(async () => {});
+  const fileUnavailable = vi.fn(async () => {});
+  const remove = vi.fn(async () => {});
+  let needsFile: ((e: { link: string }) => Promise<void>) | null = null;
+  const addListener = vi.fn(async (_event: 'needsFile', cb: (e: { link: string }) => Promise<void>) => {
+    needsFile = cb;
+    return { remove };
+  });
   const deps: OpenPdfWithInkDeps = {
-    plugin: { open },
+    plugin: { open, deliverFile, fileUnavailable, addListener },
     fs,
     inkUri: async (key) => `file:///lib-cloud/pdf-ink/${key}.ink`,
     now: () => 5000,
     ...over,
   };
-  const fetchPdf = vi.fn(async (): Promise<Blob | null> => pdf());
+  const fetchPdf = vi.fn<(link: string) => Promise<Blob | null>>(async () => pdf());
   const input: OpenPdfWithInkInput = {
     courseCode: 'EBC-MT',
+    courseTitle: 'Matematika',
     fileLink: LINK,
     name: 'Přednáška 09',
     date: '12. 3. 2026',
+    files: FILES,
     strings: STRINGS,
     fetchPdf,
   };
-  return { deps, input, open, fetchPdf, fs, files };
+  const trigger = (link: string) => {
+    if (!needsFile) throw new Error('needsFile listener was never registered');
+    return needsFile({ link });
+  };
+  return { deps, input, open, deliverFile, fileUnavailable, remove, trigger, fetchPdf, fs, files };
 }
 
 describe('pdfInkKey', () => {
@@ -54,25 +76,67 @@ describe('pdfInkKey', () => {
 describe('openPdfWithInk', () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it('fetches, stores and opens when nothing is cached', async () => {
+  it('fetches, stores and opens the tapped file with the subject list', async () => {
     const { deps, input, open, fetchPdf, fs } = harness();
     const key = await pdfInkKey(input.courseCode, input.fileLink);
+    const keyB = await pdfInkKey(input.courseCode, LINK_B);
+    const keyC = await pdfInkKey(input.courseCode, LINK_C);
 
     const result = await openPdfWithInk(deps, input);
 
-    expect(result).toEqual({ kind: 'shown', hasInk: true });
+    expect(result).toEqual({ kind: 'shown', hasInk: false });
     expect(fetchPdf).toHaveBeenCalledTimes(1);
+    expect(fetchPdf).toHaveBeenCalledWith(LINK);
     expect(open).toHaveBeenCalledWith({
-      pdfPath: `file:///lib/${pdfPath(key)}`,
-      inkPath: `file:///lib-cloud/pdf-ink/${key}.ink`,
-      title: 'Přednáška 09',
+      courseTitle: 'Matematika',
+      currentLink: LINK,
+      files: [
+        {
+          link: LINK,
+          name: 'Přednáška 09',
+          date: '12. 3. 2026',
+          pdfPath: `file:///lib/${pdfPath(key)}`,
+          inkPath: `file:///lib-cloud/pdf-ink/${key}.ink`,
+        },
+        {
+          link: LINK_B,
+          name: 'Přednáška 10',
+          date: '19. 3. 2026',
+          pdfPath: null,
+          inkPath: `file:///lib-cloud/pdf-ink/${keyB}.ink`,
+        },
+        {
+          link: LINK_C,
+          name: 'Skripta',
+          date: '01. 2. 2026',
+          pdfPath: null,
+          inkPath: `file:///lib-cloud/pdf-ink/${keyC}.ink`,
+        },
+      ],
       strings: STRINGS,
     });
-    expect((await readIndex(fs))[key]).toMatchObject({
-      date: '12. 3. 2026',
-      name: 'Přednáška 09',
-      lastOpenedAt: 5000,
-    });
+    expect((await readIndex(fs))[key]).toMatchObject({ date: '12. 3. 2026', lastOpenedAt: 5000 });
+  });
+
+  it('gives the sidebar a cached path only for copies that are fresh for their date', async () => {
+    const { deps, input, open, fs } = harness();
+    const keyB = await pdfInkKey(input.courseCode, LINK_B);
+    const keyC = await pdfInkKey(input.courseCode, LINK_C);
+    await store(fs, keyB, pdf(), { date: '19. 3. 2026', name: 'Přednáška 10' }, 1000);
+    await store(fs, keyC, pdf(), { date: 'older date', name: 'Skripta' }, 1000);
+
+    await openPdfWithInk(deps, input);
+
+    const files = (open.mock.calls[0]?.[0] as { files: { link: string; pdfPath: string | null }[] }).files;
+    expect(files.find((f) => f.link === LINK_B)?.pdfPath).toBe(`file:///lib/${pdfPath(keyB)}`);
+    expect(files.find((f) => f.link === LINK_C)?.pdfPath).toBeNull();
+  });
+
+  it('lists the tapped file even when the subject list does not contain it', async () => {
+    const { deps, input, open } = harness();
+    await openPdfWithInk(deps, { ...input, files: [FILES[1]!] });
+    const files = (open.mock.calls[0]?.[0] as { files: { link: string }[] }).files;
+    expect(files.map((f) => f.link)).toEqual([LINK, LINK_B]);
   });
 
   it('opens a fresh copy without touching the network', async () => {
@@ -104,32 +168,75 @@ describe('openPdfWithInk', () => {
     await store(fs, key, pdf(), { date: 'old date', name: input.name }, 1000);
     fetchPdf.mockRejectedValueOnce(new Error('offline'));
 
-    const result = await openPdfWithInk(deps, input);
-
-    expect(result.kind).toBe('shown');
+    expect((await openPdfWithInk(deps, input)).kind).toBe('shown');
     expect(open).toHaveBeenCalledTimes(1);
   });
 
   it('fails without opening when nothing is cached and the fetch throws', async () => {
     const { deps, input, open, fetchPdf } = harness();
     fetchPdf.mockRejectedValueOnce(new Error('offline'));
-
-    const result = await openPdfWithInk(deps, input);
-
-    expect(result.kind).toBe('failed');
+    expect((await openPdfWithInk(deps, input)).kind).toBe('failed');
     expect(open).not.toHaveBeenCalled();
   });
 
   it('reports notPdf when IS served a viewer page and nothing is cached', async () => {
     const { deps, input, open, fetchPdf } = harness();
     fetchPdf.mockResolvedValueOnce(null);
-
     expect(await openPdfWithInk(deps, input)).toEqual({ kind: 'notPdf' });
     expect(open).not.toHaveBeenCalled();
   });
 
+  it('answers needsFile by fetching, caching and delivering that file', async () => {
+    const { deps, input, open, deliverFile, trigger, fetchPdf, fs } = harness();
+    const keyC = await pdfInkKey(input.courseCode, LINK_C);
+    open.mockImplementationOnce(async () => {
+      await trigger(LINK_C);
+      return { shown: [LINK, LINK_C] };
+    });
+
+    await openPdfWithInk(deps, input);
+
+    expect(fetchPdf).toHaveBeenCalledWith(LINK_C);
+    expect(deliverFile).toHaveBeenCalledWith({ link: LINK_C, pdfPath: `file:///lib/${pdfPath(keyC)}` });
+    expect((await readIndex(fs))[keyC]).toMatchObject({ date: '01. 2. 2026', name: 'Skripta' });
+  });
+
+  it('reports a file IS will not serve, or cannot fetch, as unavailable', async () => {
+    const { deps, input, open, deliverFile, fileUnavailable, trigger, fetchPdf } = harness();
+    open.mockImplementationOnce(async () => {
+      fetchPdf.mockResolvedValueOnce(null);
+      await trigger(LINK_B);
+      fetchPdf.mockRejectedValueOnce(new Error('offline'));
+      await trigger(LINK_C);
+      return { shown: [LINK] };
+    });
+
+    await openPdfWithInk(deps, input);
+
+    expect(deliverFile).not.toHaveBeenCalled();
+    expect(fileUnavailable).toHaveBeenCalledWith({ link: LINK_B });
+    expect(fileUnavailable).toHaveBeenCalledWith({ link: LINK_C });
+  });
+
+  it('records lastOpenedAt for every shown file, then stops listening', async () => {
+    const { deps, input, open, remove, trigger, fs } = harness({ now: () => 7000 });
+    const key = await pdfInkKey(input.courseCode, input.fileLink);
+    const keyC = await pdfInkKey(input.courseCode, LINK_C);
+    open.mockImplementationOnce(async () => {
+      await trigger(LINK_C);
+      return { shown: [LINK, LINK_C] };
+    });
+
+    await openPdfWithInk(deps, input);
+
+    const index = await readIndex(fs);
+    expect(index[key]?.lastOpenedAt).toBe(7000);
+    expect(index[keyC]?.lastOpenedAt).toBe(7000);
+    expect(remove).toHaveBeenCalledTimes(1);
+  });
+
   it('hands the same bytes back for the web viewer when PDFKit cannot read them, and forgets the copy', async () => {
-    const { deps, input, open, fetchPdf, fs, files } = harness();
+    const { deps, input, open, fetchPdf, fs, files, remove } = harness();
     const key = await pdfInkKey(input.courseCode, input.fileLink);
     open.mockRejectedValueOnce(Object.assign(new Error('bad pdf'), { code: 'unreadable' }));
 
@@ -139,6 +246,7 @@ describe('openPdfWithInk', () => {
     expect(fetchPdf).toHaveBeenCalledTimes(1);
     expect(files.has(pdfPath(key))).toBe(false);
     expect(await readIndex(fs)).toEqual({});
+    expect(remove).toHaveBeenCalledTimes(1);
   });
 
   it('refetches for the web viewer when a FRESH copy turns out unreadable', async () => {
@@ -147,9 +255,7 @@ describe('openPdfWithInk', () => {
     await store(fs, key, pdf(), { date: input.date, name: input.name }, 1000);
     open.mockRejectedValueOnce(Object.assign(new Error('bad pdf'), { code: 'unreadable' }));
 
-    const result = await openPdfWithInk(deps, input);
-
-    expect(result.kind).toBe('unreadable');
+    expect((await openPdfWithInk(deps, input)).kind).toBe('unreadable');
     expect(fetchPdf).toHaveBeenCalledTimes(1);
   });
 
@@ -162,9 +268,7 @@ describe('openPdfWithInk', () => {
   it('enforces the cache cap after a successful open', async () => {
     const { deps, input, files } = harness();
     files.set('pdf-ink/orphan.pdf', { size: 301 * 1024 * 1024 });
-
     await openPdfWithInk(deps, input);
-
     expect(files.has('pdf-ink/orphan.pdf')).toBe(false);
   });
 });

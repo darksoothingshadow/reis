@@ -329,3 +329,57 @@ of the train and are not affected.
 - Nutrient pricing and deprecated Ionic wrapper: https://www.nutrient.io/sdk/pricing/ ·
   https://www.nutrient.io/guides/android/ionic/ · Apryse Cordova status:
   https://docs.apryse.com/documentation/ios/guides/cordova/
+
+## Addendum 2026-09-06: the reader is a Notes-style space for one subject
+
+Approved after the first device run. Research (in the plan's Task 10 notes): iOS 26 renders
+every system Done button as a filled tinted circle with a checkmark; the HIG reserves Done
+for "the task is complete"; Notes, Freeform, GoodNotes, Notability, Procreate and Files
+markup all autosave and leave a document through a top-left control back to a collection.
+
+### Composition (all Apple components)
+
+- `UISplitViewController(style: .doubleColumn)`, presented full screen.
+  `preferredDisplayMode = .oneBesideSecondary`, `preferredSplitBehavior = .tile`,
+  `primaryBackgroundStyle = .sidebar`, `displayModeButtonVisibility = .automatic` (Apple's
+  sidebar toggle appears in the reader's bar), `presentsWithGesture = true`.
+- Primary column: `FileListViewController`, a `UICollectionView` list with the `.sidebar`
+  appearance listing the subject's PDF files: name, IS document date, and a pencil glyph
+  accessory when an ink archive exists for the file. Title is the subject name. Its left bar
+  item is a system **Close** — iOS renders it as a glass X glyph; it is the HIG control for a
+  presented space. There is no Done anywhere.
+- Secondary column: the existing `PdfInkViewController`, now able to `load` another file:
+  it persists the current ink, drops canvases and drawings, swaps the `PDFDocument`, loads
+  the new archive and re-takes first responder so the tool picker stays visible.
+- `PdfInkSpace` coordinates the two: selection → load (cached) or ask the app for the bytes
+  (spinner over the reader until they arrive); Close → persist, alert on a failed save as
+  before, otherwise dismiss and resolve `open` with the links that were shown.
+
+### Plugin API v2
+
+```ts
+open(o: {
+  courseTitle: string;
+  currentLink: string;
+  files: { link: string; name: string; date: string; pdfPath: string | null; inkPath: string }[];
+  strings: PdfInkStrings; // + openFailed
+}): Promise<{ shown: string[] }>;          // links displayed, for lastOpenedAt + the cap
+deliverFile(o: { link: string; pdfPath: string }): Promise<void>;
+fileUnavailable(o: { link: string }): Promise<void>;
+// event 'needsFile' { link } — the app fetches + caches, then calls deliverFile
+```
+
+`pdfPath` is the cached copy's URI when the copy is fresh for the file's date, else null.
+Native decides `hasInk` itself from `inkPath`. A file PDFKit cannot open shows
+`strings.openFailed` in the reader and stays in the list; the initial file keeps today's
+fallback to the web viewer.
+
+### TypeScript
+
+`openPdfWithInk` gains `courseTitle` and `files` (the subject's PDF attachments: link, name,
+date) and `fetchPdf(link)`. It resolves the initial file as before, builds the payload from
+one index read, subscribes to `needsFile`, answers each with the same fetch → store path and
+`deliverFile` (or `fileUnavailable`), and on resolve records `lastOpenedAt` for every shown
+link and enforces the cap. `usePdfPreview(courseCode, subject)` receives
+`{ title, files }` from the sheet; `listSubjectPdfs(files)` flattens the drawer's
+`ParsedFile[]` into that list.

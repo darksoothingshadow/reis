@@ -1,4 +1,4 @@
-import { lazy, Suspense, useRef, useState } from 'react';
+import { lazy, Suspense, useRef, useState, useMemo } from 'react';
 import type { SyntheticEvent } from 'react';
 import { ExternalLink } from 'lucide-react';
 import { Sheet } from '../primitives/Sheet';
@@ -17,6 +17,7 @@ import { useSubjects } from '../../../hooks/data/useSubjects';
 import { useSchedule } from '../../../hooks/data/useSchedule';
 import { useSyncStatus } from '../../../hooks/data/useSyncStatus';
 import { usePdfPreview } from '../../../hooks/ui/usePdfPreview';
+import { listSubjectPdfs } from '../../SubjectFileDrawer/utils/listSubjectPdfs';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { useAppStore } from '../../../store/useAppStore';
 
@@ -69,13 +70,20 @@ export function SubjectDrawerSheet({ sheet, onClose }: SubjectDrawerSheetProps) 
   // Tapping a PDF opens it in the reader rather than exporting it: on iOS the
   // download path is the share sheet, so "just let me read page 3" meant saving
   // the file out of the app first. The row's own download button is untouched.
-  // The course is what keys the iPad reader's ink and PDF cache (see usePdfPreview).
-  const { previewUrl, viewPdf, closePreview, openFile, downloadSingle } = usePdfPreview(courseCode);
-
   const resolvedCourseId =
     courseId || schedule.find((s) => s.courseCode === courseCode && s.courseId)?.courseId || '';
 
   const { files, isLoading: isFilesLoading } = useFiles(courseCode);
+  // The course keys the iPad reader's ink and PDF cache, and its PDFs fill the
+  // reader's sidebar so a student can switch files without coming back here.
+  const readerSubject = useMemo(
+    () => ({ title: courseName || courseCode, files: listSubjectPdfs(files) }),
+    [courseName, courseCode, files]
+  );
+  const { previewUrl, viewPdf, closePreview, openFile, downloadSingle } = usePdfPreview(
+    courseCode,
+    readerSubject
+  );
   const { classmates } = useClassmates(courseCode);
   const pushSheet = useAppStore((s) => s.pushSheet);
   const { data: zaznamnikData } = useZaznamnik(courseCode);

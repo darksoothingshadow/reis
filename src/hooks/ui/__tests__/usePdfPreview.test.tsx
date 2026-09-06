@@ -89,9 +89,13 @@ describe('usePdfPreview', () => {
   describe('on an iPad with the PdfInk plugin', () => {
     beforeEach(() => isPdfInkAvailable.mockResolvedValue(true));
 
-    it('opens the native reader with the course, link, name and date, and mounts no web viewer', async () => {
+    it('opens the native reader with the course, its PDF list, link, name and date, and mounts no web viewer', async () => {
       openPdfWithInk.mockResolvedValue({ kind: 'shown', hasInk: true });
-      const { result } = renderHook(() => usePdfPreview('EBC-MT'));
+      const subject = {
+        title: 'Matematika',
+        files: [{ link: '/y.pdf', name: 'Other', date: '1. 1. 2026' }],
+      };
+      const { result } = renderHook(() => usePdfPreview('EBC-MT', subject));
       await act(
         async () =>
           void (await result.current.viewPdf('/x.pdf', { name: 'Slides', date: '12. 3. 2026' }))
@@ -100,10 +104,15 @@ describe('usePdfPreview', () => {
         { tag: 'native-deps' },
         expect.objectContaining({
           courseCode: 'EBC-MT',
+          courseTitle: 'Matematika',
+          files: subject.files,
           fileLink: '/x.pdf',
           name: 'Slides',
           date: '12. 3. 2026',
-          strings: expect.objectContaining({ discard: expect.any(String) }),
+          strings: expect.objectContaining({
+            discard: expect.any(String),
+            openFailed: expect.any(String),
+          }),
           fetchPdf: expect.any(Function),
         })
       );
@@ -116,9 +125,16 @@ describe('usePdfPreview', () => {
       openPdfWithInk.mockResolvedValue({ kind: 'shown', hasInk: false });
       const { result } = renderHook(() => usePdfPreview('EBC-MT'));
       await act(async () => void (await result.current.viewPdf('/x.pdf', { date: 'd' })));
-      const input = openPdfWithInk.mock.calls[0]?.[1] as { fetchPdf: () => Promise<Blob | null> };
-      await input.fetchPdf();
-      expect(fetchPdfBlob).toHaveBeenCalledWith('/x.pdf');
+      const input = openPdfWithInk.mock.calls[0]?.[1] as {
+        fetchPdf: (link: string) => Promise<Blob | null>;
+        courseTitle: string;
+        files: unknown[];
+      };
+      await input.fetchPdf('/other.pdf');
+      expect(fetchPdfBlob).toHaveBeenCalledWith('/other.pdf');
+      // Without a subject the course code stands in as the title and the list is empty.
+      expect(input.courseTitle).toBe('EBC-MT');
+      expect(input.files).toEqual([]);
     });
 
     it('mounts the web viewer from the same bytes when PDFKit cannot read them', async () => {

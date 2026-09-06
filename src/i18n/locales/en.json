@@ -1103,7 +1103,8 @@
       "saveFailedTitle": "Your ink couldn't be saved",
       "saveFailedMessage": "There may be no space left on this iPad. Keep editing and try again, or discard the changes.",
       "keepEditing": "Keep editing",
-      "discard": "Discard"
+      "discard": "Discard",
+      "openFailed": "Couldn't open this file."
     }
   },
   "session": {
