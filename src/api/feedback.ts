@@ -45,14 +45,14 @@ export async function submitFeedback(
 }
 
 /**
- * Faculty and platform are GROUP labels (seven faculties, four platforms) on
+ * Faculty and platform are GROUP labels (six faculties, four platforms) on
  * the same random install id — a count, not a record. Disclosed in
  * PRIVACY.md ("Daily Usage & NPS Feedback").
  */
 export async function trackDailyUsage(): Promise<void> {
   if (isDemoMode()) return;
 
-  const faculty = (await getUserParams())?.facultyId ?? null;
+  const faculty = (await getUserParams())?.facultyLabel ?? null;
   const kind = getPlatform().kind;
   // @capacitor/core imported lazily, and only on the capacitor branch, so the
   // extension bundle never pulls it in — the same reason client.ts's
