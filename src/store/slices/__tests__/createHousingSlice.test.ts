@@ -72,6 +72,17 @@ describe('createHousingSlice', () => {
     expect(state.housingMineIds).toEqual(['p1']);
   });
 
+  it('reads the poster\'s own IS login from getUserParams while loading', async () => {
+    await state.loadHousing();
+    expect(state.housingPosterLogin).toBe('xnovak');
+  });
+
+  it('leaves the poster login null when getUserParams fails', async () => {
+    getUserParams.mockRejectedValueOnce(new Error('boom'));
+    await state.loadHousing();
+    expect(state.housingPosterLogin).toBeNull();
+  });
+
   it('keeps housingLoaded false when the load fails', async () => {
     fetchHousingPosts.mockResolvedValue({ posts: [], ok: false });
     await state.loadHousing();
