@@ -49,6 +49,11 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
     private var inkURL: URL?
     private var drawings: [Int: PKDrawing] = [:]
     private var canvases: [Int: PKCanvasView] = [:]
+    /// Where the blank pages the student added sit in the document on screen.
+    private var insertedPages: [Int] = []
+    private lazy var addPageItem = UIBarButtonItem(
+        image: UIImage(systemName: "plus.rectangle.portrait"), style: .plain, target: self,
+        action: #selector(addPageTapped))
     private var saveTimer: Timer?
     private(set) var lastSaveError: Error?
 
@@ -67,6 +72,12 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
+
+        // Notes and GoodNotes both put "add a page" in the top bar of the page
+        // itself; the sidebar toggle owns the other corner.
+        addPageItem.accessibilityLabel = strings.addPage
+        addPageItem.isEnabled = false
+        navigationItem.rightBarButtonItem = addPageItem
 
         // Provider and markup mode BEFORE any document: PDFView asks for overlays
         // as it lays pages out, and a page laid out with no provider never gets a
@@ -145,6 +156,10 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         self.inkURL = inkURL
         self.title = title
         if let archive = InkStore.load(from: inkURL) {
+            insertedPages = archive.insertedPages
+            // Before the document reaches the view: the ink indices below are
+            // indices in the document WITH the added pages back in it.
+            InkPages.apply(inserts: insertedPages, to: document)
             for (index, data) in archive.pages {
                 if let drawing = try? PKDrawing(data: data) { drawings[index] = drawing }
             }
@@ -152,6 +167,7 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         spinner.stopAnimating()
         message.isHidden = true
         pdfView.document = document
+        addPageItem.isEnabled = true
         pdfView.becomeFirstResponder()
         return true
     }
@@ -178,6 +194,7 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         inkURL = nil
         self.title = title
         pdfView.document = nil
+        addPageItem.isEnabled = false
         spinner.stopAnimating()
         message.isHidden = true
         return true
@@ -189,8 +206,45 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         if !persistNow() && !discardingUnsaved { return false }
         drawings = [:]
         canvases = [:]
+        insertedPages = []
         lastSaveError = nil
         return true
+    }
+
+    // MARK: - Adding a page
+
+    /**
+     * Adds a blank page after the one on screen, the size of that page, and
+     * saves at once — an empty page is the only thing an archive may hold, so
+     * it survives even if the student never draws on it.
+     *
+     * The canvases PDFKit is holding are keyed to the page numbers as they were,
+     * so their drawings are harvested and the document is handed back to the view
+     * from scratch; PDFKit then asks for overlays again against the new numbering.
+     */
+    @discardableResult
+    func addBlankPage() -> Bool {
+        guard let document, let current = pdfView.currentPage else { return false }
+        let at = document.index(for: current) + 1
+        for (index, canvas) in canvases {
+            drawings[index] = canvas.drawing
+            toolPicker.removeObserver(canvas)
+        }
+        canvases = [:]
+        drawings = InkPages.shifted(drawings, insertingAt: at)
+        insertedPages = InkPages.shifted(insertedPages, insertingAt: at)
+        document.insert(InkPages.blank(size: current.bounds(for: .mediaBox).size), at: at)
+        pdfView.document = nil
+        pdfView.document = document
+        if let page = document.page(at: at) { pdfView.go(to: page) }
+        pdfView.becomeFirstResponder()
+        NSLog("PdfInk: blank page added at \(at)")
+        persistNow()
+        return true
+    }
+
+    @objc private func addPageTapped() {
+        addBlankPage()
     }
 
     func willClose() {
@@ -253,7 +307,8 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         for (index, canvas) in canvases { drawings[index] = canvas.drawing }
         let pages = drawings.filter { !$0.value.strokes.isEmpty }
             .mapValues { $0.dataRepresentation() }
-        return InkArchive(pageCount: document.pageCount, pages: pages)
+        return InkArchive(
+            pageCount: document.pageCount, pages: pages, insertedPages: insertedPages)
     }
 
     /// Writes the current file's ink. False means the strokes are still only in
@@ -264,7 +319,7 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         saveTimer = nil
         guard let inkURL, let archive = currentArchive() else { return true }
         do {
-            if archive.pages.isEmpty {
+            if archive.pages.isEmpty && archive.insertedPages.isEmpty {
                 InkStore.delete(at: inkURL)
             } else {
                 try InkStore.save(archive, to: inkURL)

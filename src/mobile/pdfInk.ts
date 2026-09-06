@@ -22,6 +22,8 @@ export interface PdfInkStrings {
   keepEditing: string;
   discard: string;
   openFailed: string;
+  /** The reader's "add a blank page" bar button. */
+  addPage: string;
 }
 
 export interface PdfInkPlugin {

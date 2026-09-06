@@ -1129,7 +1129,8 @@
       "saveFailedMessage": "There may be no space left on this iPad. Keep editing and try again, or discard the changes.",
       "keepEditing": "Keep editing",
       "discard": "Discard",
-      "openFailed": "Couldn't open this file."
+      "openFailed": "Couldn't open this file.",
+      "addPage": "Add a page"
     }
   },
   "session": {

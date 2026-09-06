@@ -1129,7 +1129,8 @@
       "saveFailedMessage": "Na iPadu možná není místo. Pokračujte v úpravách a zkuste to znovu, nebo změny zahoďte.",
       "keepEditing": "Pokračovat v úpravách",
       "discard": "Zahodit",
-      "openFailed": "Soubor se nepodařilo otevřít."
+      "openFailed": "Soubor se nepodařilo otevřít.",
+      "addPage": "Přidat stránku"
     }
   },
   "session": {

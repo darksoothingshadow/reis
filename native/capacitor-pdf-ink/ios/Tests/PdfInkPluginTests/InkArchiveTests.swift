@@ -19,6 +19,24 @@ final class InkArchiveTests: XCTestCase {
         }
     }
 
+    func testRoundTripsThePagesTheStudentAdded() throws {
+        let archive = InkArchive(pageCount: 3, pages: [:], insertedPages: [1, 2])
+        let decoded = try InkArchive.decode(archive.encoded())
+        XCTAssertEqual(decoded.insertedPages, [1, 2])
+        XCTAssertEqual(decoded.version, 2)
+    }
+
+    /// Version 1 files predate added pages and have no such key; they must still
+    /// open, with no added pages.
+    func testReadsAVersionOneArchiveAsHavingNoAddedPages() throws {
+        let v1: [String: Any] = ["version": 1, "pageCount": 4, "pages": [String: Data]()]
+        let data = try PropertyListSerialization.data(
+            fromPropertyList: v1, format: .binary, options: 0)
+        let decoded = try InkArchive.decode(data)
+        XCTAssertEqual(decoded.pageCount, 4)
+        XCTAssertEqual(decoded.insertedPages, [])
+    }
+
     func testRejectsJunk() {
         XCTAssertThrowsError(try InkArchive.decode(Data("not a plist".utf8)))
     }

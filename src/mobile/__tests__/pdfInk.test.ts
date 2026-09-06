@@ -17,6 +17,7 @@ const STRINGS: PdfInkStrings = {
   keepEditing: 'k',
   discard: 'd',
   openFailed: 'o',
+  addPage: 'a',
 };
 const LINK = 'https://is.mendelu.cz/auth/dok_server/slozka.pl?download=359057;id=1';
 const LINK_B = 'https://is.mendelu.cz/auth/dok_server/slozka.pl?download=359058;id=1';
