@@ -35,7 +35,9 @@ export function AdminConsole() {
   const unread = useAppStore((s) => s.suggestionsUnread);
   const loadAdminHousing = useAppStore((s) => s.loadAdminHousing);
   const loadAdminStats = useAppStore((s) => s.loadAdminStats);
-  const [pane, setPane] = useState<'events' | 'suggestions' | 'accounts' | 'housing' | 'stats'>('events');
+  const [pane, setPane] = useState<'events' | 'suggestions' | 'accounts' | 'housing' | 'stats'>(
+    'events'
+  );
   const { t } = useTranslation();
 
   if (!session) {

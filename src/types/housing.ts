@@ -2,7 +2,11 @@ export type HousingKind = 'offer' | 'request';
 export type HousingRoomType = 'bed_shared' | 'room_private' | 'flat';
 
 export const HOUSING_KINDS: readonly HousingKind[] = ['offer', 'request'];
-export const HOUSING_ROOM_TYPES: readonly HousingRoomType[] = ['bed_shared', 'room_private', 'flat'];
+export const HOUSING_ROOM_TYPES: readonly HousingRoomType[] = [
+  'bed_shared',
+  'room_private',
+  'flat',
+];
 export const HOUSING_LIMITS = { district: 60, note: 500, contact: 120 } as const;
 
 /** What the student types. Dates are ISO `YYYY-MM-DD`. */

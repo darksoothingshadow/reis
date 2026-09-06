@@ -27,10 +27,23 @@ import { createHousingSlice, type HousingSlice } from '../createHousingSlice';
 import type { HousingDraft } from '../../../types/housing';
 
 const draft: HousingDraft = {
-  kind: 'offer', roomType: 'room_private', district: 'Brno', priceCzk: 7000,
-  freeFrom: '2026-09-15', freeUntil: null, note: '', contact: 'ja@example.com',
+  kind: 'offer',
+  roomType: 'room_private',
+  district: 'Brno',
+  priceCzk: 7000,
+  freeFrom: '2026-09-15',
+  freeUntil: null,
+  note: '',
+  contact: 'ja@example.com',
 };
-const post = { ...draft, id: 'p1', isLogin: 'xnovak', personId: '123456', createdAt: 'c', expiresAt: 'e' };
+const post = {
+  ...draft,
+  id: 'p1',
+  isLogin: 'xnovak',
+  personId: '123456',
+  createdAt: 'c',
+  expiresAt: 'e',
+};
 
 /** Flush every pending microtask (any number of chained `await`s). */
 async function flushMicrotasks() {
@@ -53,7 +66,10 @@ describe('createHousingSlice', () => {
     submitHousingPost.mockReset().mockResolvedValue('p1');
     closeHousingPost.mockReset().mockResolvedValue(true);
     getUserParams.mockReset().mockResolvedValue({ username: 'xnovak', studentId: '123456' });
-    set = vi.fn((u) => { const p = typeof u === 'function' ? u(state) : u; state = { ...state, ...p }; });
+    set = vi.fn((u) => {
+      const p = typeof u === 'function' ? u(state) : u;
+      state = { ...state, ...p };
+    });
     get = vi.fn(() => state);
     state = {
       ...createHousingSlice(set as never, get as never, {} as never),
@@ -64,7 +80,7 @@ describe('createHousingSlice', () => {
     } as never;
   });
 
-  it('loads posts and this install\'s own ids from IDB', async () => {
+  it("loads posts and this install's own ids from IDB", async () => {
     idb.set('housing_posts_mine', ['p1']);
     await state.loadHousing();
     expect(state.housingPosts).toEqual([post]);
@@ -72,7 +88,7 @@ describe('createHousingSlice', () => {
     expect(state.housingMineIds).toEqual(['p1']);
   });
 
-  it('reads the poster\'s own IS login from getUserParams while loading', async () => {
+  it("reads the poster's own IS login from getUserParams while loading", async () => {
     await state.loadHousing();
     expect(state.housingPosterLogin).toBe('xnovak');
   });
@@ -93,7 +109,10 @@ describe('createHousingSlice', () => {
   it('publishes with the IS identity, remembers the id, and reloads', async () => {
     const result = await state.publishHousing(draft);
     expect(result).toBe('ok');
-    expect(submitHousingPost).toHaveBeenCalledWith(draft, { isLogin: 'xnovak', personId: '123456' });
+    expect(submitHousingPost).toHaveBeenCalledWith(draft, {
+      isLogin: 'xnovak',
+      personId: '123456',
+    });
     expect(state.housingMineIds).toEqual(['p1']);
     expect(idb.get('housing_posts_mine')).toEqual(['p1']);
     expect(fetchHousingPosts).toHaveBeenCalled();
@@ -189,7 +208,12 @@ describe('createHousingSlice', () => {
   it('a post closed while a load is in flight does not come back', async () => {
     idb.set('housing_posts_mine', ['p1']);
     let resolveFetch!: (v: { posts: (typeof post)[]; ok: boolean }) => void;
-    fetchHousingPosts.mockImplementationOnce(() => new Promise((r) => { resolveFetch = r; }));
+    fetchHousingPosts.mockImplementationOnce(
+      () =>
+        new Promise((r) => {
+          resolveFetch = r;
+        })
+    );
     const load = state.loadHousing(); // snapshot would be taken now in the old code
     await flushMicrotasks(); // let readMine (old code) run
     expect(await state.closeHousing('p1')).toBe(true);

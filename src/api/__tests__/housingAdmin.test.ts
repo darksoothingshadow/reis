@@ -1,11 +1,21 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-const chain = { select: vi.fn(), order: vi.fn(), gt: vi.fn(), limit: vi.fn(), update: vi.fn(), eq: vi.fn(), delete: vi.fn() };
+const chain = {
+  select: vi.fn(),
+  order: vi.fn(),
+  gt: vi.fn(),
+  limit: vi.fn(),
+  update: vi.fn(),
+  eq: vi.fn(),
+  delete: vi.fn(),
+};
 const from = vi.fn((...args: unknown[]) => {
   void args;
   return chain;
 });
-vi.mock('@/services/admin/authClient', () => ({ adminAuthClient: { from: (...a: unknown[]) => from(...a) } }));
+vi.mock('@/services/admin/authClient', () => ({
+  adminAuthClient: { from: (...a: unknown[]) => from(...a) },
+}));
 vi.mock('@/utils/mock/devSociety', () => ({ DEV_SOCIETY: false }));
 
 import { listAllHousingPosts, setHousingHidden, deleteHousingPost } from '../housingAdmin';

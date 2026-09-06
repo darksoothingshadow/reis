@@ -89,7 +89,10 @@ export function MobileAdminConsole() {
     >
       <AdminConsoleHeader compact />
       {!placing && (
-        <div role="tablist" className="tabs tabs-box tabs-sm m-1 mb-0 shrink-0 flex-nowrap overflow-x-auto">
+        <div
+          role="tablist"
+          className="tabs tabs-box tabs-sm m-1 mb-0 shrink-0 flex-nowrap overflow-x-auto"
+        >
           {tabBtn('list', t('admin.listTab') as string)}
           {tabBtn('map', t('admin.mapTab') as string)}
           {isReisAdmin && tabBtn('suggestions', t('admin.suggestionsTab') as string, unread)}
@@ -103,7 +106,11 @@ export function MobileAdminConsole() {
             desktop aside: EventComposer's bg-base-200/60 header is a tint meant
             for base-100 and measures 1.005:1 (invisible) on base-200. */}
         <div
-          className={showMap || showSuggestions || showAccounts || showHousing || showStats ? 'hidden' : 'h-full bg-base-100'}
+          className={
+            showMap || showSuggestions || showAccounts || showHousing || showStats
+              ? 'hidden'
+              : 'h-full bg-base-100'
+          }
         >
           <AdminEventList />
         </div>

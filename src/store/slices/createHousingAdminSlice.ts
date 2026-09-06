@@ -1,5 +1,10 @@
 import type { AppSlice } from '../types';
-import { listAllHousingPosts, setHousingHidden, deleteHousingPost, type HousingAdminRow } from '../../api/housingAdmin';
+import {
+  listAllHousingPosts,
+  setHousingHidden,
+  deleteHousingPost,
+  type HousingAdminRow,
+} from '../../api/housingAdmin';
 
 export interface HousingAdminSlice {
   adminHousing: HousingAdminRow[];
@@ -19,7 +24,11 @@ export const createHousingAdminSlice: AppSlice<HousingAdminSlice> = (set, get) =
   },
   hideAdminHousing: async (id, hidden) => {
     if (!(await setHousingHidden(id, hidden))) return;
-    set({ adminHousing: get().adminHousing.map((r) => (r.id === id ? { ...r, hidden_by_admin: hidden } : r)) });
+    set({
+      adminHousing: get().adminHousing.map((r) =>
+        r.id === id ? { ...r, hidden_by_admin: hidden } : r
+      ),
+    });
   },
   deleteAdminHousing: async (id) => {
     if (!(await deleteHousingPost(id))) return;

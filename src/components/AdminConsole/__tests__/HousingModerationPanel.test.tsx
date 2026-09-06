@@ -94,6 +94,8 @@ describe('HousingModerationPanel', () => {
   // MyHousingPosts fixes elsewhere in this branch.
   it('gives each row card a hairline border so it reads against its backdrop', () => {
     render(<HousingModerationPanel />);
-    expect(screen.getByText(/Královo Pole/).closest('.card')?.className).toMatch(/border-base-content\/10/);
+    expect(screen.getByText(/Královo Pole/).closest('.card')?.className).toMatch(
+      /border-base-content\/10/
+    );
   });
 });

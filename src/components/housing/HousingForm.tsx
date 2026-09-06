@@ -1,7 +1,14 @@
 import { useState } from 'react';
 import { useAppStore } from '../../store/useAppStore';
 import { useTranslation } from '../../hooks/useTranslation';
-import { HOUSING_KINDS, HOUSING_LIMITS, HOUSING_ROOM_TYPES, type HousingDraft, type HousingKind, type HousingRoomType } from '../../types/housing';
+import {
+  HOUSING_KINDS,
+  HOUSING_LIMITS,
+  HOUSING_ROOM_TYPES,
+  type HousingDraft,
+  type HousingKind,
+  type HousingRoomType,
+} from '../../types/housing';
 
 // No <form> submit: the extension iframe is sandboxed (same reason as
 // EventComposer). Publish is a button gated on the required fields AND the
@@ -29,11 +36,13 @@ export function HousingForm({ onDone }: { onDone: () => void }) {
     setBusy(true);
     setMessage(null);
     const parsedPrice = Number(price);
-    const priceCzk = price.trim() === '' || !Number.isFinite(parsedPrice)
-      ? null
-      : Math.min(100000, Math.max(0, Math.round(parsedPrice)));
+    const priceCzk =
+      price.trim() === '' || !Number.isFinite(parsedPrice)
+        ? null
+        : Math.min(100000, Math.max(0, Math.round(parsedPrice)));
     const draft: HousingDraft = {
-      kind, roomType,
+      kind,
+      roomType,
       district: district.trim(),
       priceCzk,
       freeFrom,
@@ -43,7 +52,10 @@ export function HousingForm({ onDone }: { onDone: () => void }) {
     };
     const result = await publishHousing(draft);
     setBusy(false);
-    if (result === 'ok') { onDone(); return; }
+    if (result === 'ok') {
+      onDone();
+      return;
+    }
     setMessage(t(result === 'refused' ? 'housing.form.refused' : 'housing.form.failed'));
   };
 
@@ -66,37 +78,133 @@ export function HousingForm({ onDone }: { onDone: () => void }) {
           see the comment there. */}
       <div role="tablist" className="tabs tabs-box tabs-sm border border-base-content/10">
         {HOUSING_KINDS.map((k) => (
-          <button key={k} type="button" role="tab" aria-selected={kind === k}
-            className={`tab flex-1 ${kind === k ? 'tab-active font-semibold' : 'text-base-content'}`} onClick={() => setKind(k)}>
+          <button
+            key={k}
+            type="button"
+            role="tab"
+            aria-selected={kind === k}
+            className={`tab flex-1 ${kind === k ? 'tab-active font-semibold' : 'text-base-content'}`}
+            onClick={() => setKind(k)}
+          >
             {t(`housing.kind.${k}`)}
           </button>
         ))}
       </div>
-      {field('h-type', t('housing.form.roomType'),
-        <select id="h-type" className="select select-bordered select-sm" value={roomType} onChange={(e) => setRoomType(e.target.value as HousingRoomType)}>
-          {HOUSING_ROOM_TYPES.map((r) => <option key={r} value={r}>{t(`housing.roomType.${r}`)}</option>)}
-        </select>)}
-      {field('h-district', t('housing.form.district'),
-        <input id="h-district" className="input input-bordered input-sm" maxLength={HOUSING_LIMITS.district} placeholder={t('housing.form.districtPlaceholder')} value={district} onChange={(e) => setDistrict(e.target.value)} />)}
-      {field('h-price', t('housing.form.price'),
-        <input id="h-price" type="number" inputMode="numeric" min={0} max={100000} className="input input-bordered input-sm" value={price} onChange={(e) => setPrice(e.target.value)} />)}
-      {field('h-from', t('housing.form.freeFrom'),
-        <input id="h-from" type="date" className="input input-bordered input-sm" value={freeFrom} onChange={(e) => setFreeFrom(e.target.value)} />)}
-      {field('h-until', t('housing.form.freeUntil'),
-        <input id="h-until" type="date" className="input input-bordered input-sm" min={freeFrom || undefined} value={freeUntil} onChange={(e) => setFreeUntil(e.target.value)} />)}
-      {field('h-note', t('housing.form.note'),
-        <textarea id="h-note" className="textarea textarea-bordered textarea-sm" rows={3} maxLength={HOUSING_LIMITS.note} placeholder={t('housing.form.notePlaceholder')} value={note} onChange={(e) => setNote(e.target.value)} />)}
-      {field('h-contact', t('housing.form.contact'),
-        <input id="h-contact" className="input input-bordered input-sm" maxLength={HOUSING_LIMITS.contact} placeholder={t('housing.form.contactPlaceholder')} value={contact} onChange={(e) => setContact(e.target.value)} />)}
-      <div className="text-xs opacity-70">{t('housing.form.loginLabel')}: <span className="font-mono">{posterLogin ?? '…'}</span></div>
+      {field(
+        'h-type',
+        t('housing.form.roomType'),
+        <select
+          id="h-type"
+          className="select select-bordered select-sm"
+          value={roomType}
+          onChange={(e) => setRoomType(e.target.value as HousingRoomType)}
+        >
+          {HOUSING_ROOM_TYPES.map((r) => (
+            <option key={r} value={r}>
+              {t(`housing.roomType.${r}`)}
+            </option>
+          ))}
+        </select>
+      )}
+      {field(
+        'h-district',
+        t('housing.form.district'),
+        <input
+          id="h-district"
+          className="input input-bordered input-sm"
+          maxLength={HOUSING_LIMITS.district}
+          placeholder={t('housing.form.districtPlaceholder')}
+          value={district}
+          onChange={(e) => setDistrict(e.target.value)}
+        />
+      )}
+      {field(
+        'h-price',
+        t('housing.form.price'),
+        <input
+          id="h-price"
+          type="number"
+          inputMode="numeric"
+          min={0}
+          max={100000}
+          className="input input-bordered input-sm"
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
+        />
+      )}
+      {field(
+        'h-from',
+        t('housing.form.freeFrom'),
+        <input
+          id="h-from"
+          type="date"
+          className="input input-bordered input-sm"
+          value={freeFrom}
+          onChange={(e) => setFreeFrom(e.target.value)}
+        />
+      )}
+      {field(
+        'h-until',
+        t('housing.form.freeUntil'),
+        <input
+          id="h-until"
+          type="date"
+          className="input input-bordered input-sm"
+          min={freeFrom || undefined}
+          value={freeUntil}
+          onChange={(e) => setFreeUntil(e.target.value)}
+        />
+      )}
+      {field(
+        'h-note',
+        t('housing.form.note'),
+        <textarea
+          id="h-note"
+          className="textarea textarea-bordered textarea-sm"
+          rows={3}
+          maxLength={HOUSING_LIMITS.note}
+          placeholder={t('housing.form.notePlaceholder')}
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+        />
+      )}
+      {field(
+        'h-contact',
+        t('housing.form.contact'),
+        <input
+          id="h-contact"
+          className="input input-bordered input-sm"
+          maxLength={HOUSING_LIMITS.contact}
+          placeholder={t('housing.form.contactPlaceholder')}
+          value={contact}
+          onChange={(e) => setContact(e.target.value)}
+        />
+      )}
+      <div className="text-xs opacity-70">
+        {t('housing.form.loginLabel')}: <span className="font-mono">{posterLogin ?? '…'}</span>
+      </div>
       <label className="flex cursor-pointer items-start gap-2 text-sm">
-        <input type="checkbox" className="checkbox checkbox-sm mt-0.5" checked={consent} onChange={(e) => setConsent(e.target.checked)} />
+        <input
+          type="checkbox"
+          className="checkbox checkbox-sm mt-0.5"
+          checked={consent}
+          onChange={(e) => setConsent(e.target.checked)}
+        />
         <span>{t('housing.form.consent')}</span>
       </label>
       {message && <div className="alert alert-warning py-2 text-sm">{message}</div>}
       <div className="flex justify-end gap-2">
-        <button type="button" className="btn btn-ghost btn-sm" onClick={onDone}>{t('housing.form.cancel')}</button>
-        <button type="button" className="btn btn-primary btn-sm" disabled={!ready} onClick={publish}>{t('housing.form.publish')}</button>
+        <button type="button" className="btn btn-ghost btn-sm" onClick={onDone}>
+          {t('housing.form.cancel')}
+        </button>
+        <button
+          type="button"
+          className="btn btn-primary btn-sm"
+          disabled={!ready}
+          onClick={publish}
+        >
+          {t('housing.form.publish')}
+        </button>
       </div>
     </div>
   );

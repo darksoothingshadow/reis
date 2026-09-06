@@ -25,7 +25,11 @@ export function HousingSheet({ onClose }: HousingSheetProps) {
   return (
     <Sheet size="full" onClose={onClose}>
       <div className="flex min-h-0 flex-1 flex-col">
-        <SheetHeader title={t('housing.title')} subtitle={t('housing.subtitle')} onClose={onClose} />
+        <SheetHeader
+          title={t('housing.title')}
+          subtitle={t('housing.subtitle')}
+          onClose={onClose}
+        />
         <div className="min-h-0 flex-1 overflow-hidden">
           <HousingBoard
             onVerify={(post) =>

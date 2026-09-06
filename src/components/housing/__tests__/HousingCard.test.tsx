@@ -5,9 +5,19 @@ import { HousingCard } from '../HousingCard';
 import type { HousingPost } from '../../../types/housing';
 
 const post: HousingPost = {
-  id: 'o1', kind: 'offer', roomType: 'room_private', district: 'Královo Pole', priceCzk: 7500,
-  freeFrom: '2026-09-15', freeUntil: null, note: 'Klidný pokoj', contact: 'ja@example.com',
-  isLogin: 'xnovak', personId: '123456', createdAt: '2026-09-06T10:00:00Z', expiresAt: '2026-09-20T10:00:00Z',
+  id: 'o1',
+  kind: 'offer',
+  roomType: 'room_private',
+  district: 'Královo Pole',
+  priceCzk: 7500,
+  freeFrom: '2026-09-15',
+  freeUntil: null,
+  note: 'Klidný pokoj',
+  contact: 'ja@example.com',
+  isLogin: 'xnovak',
+  personId: '123456',
+  createdAt: '2026-09-06T10:00:00Z',
+  expiresAt: '2026-09-20T10:00:00Z',
 };
 
 describe('HousingCard', () => {
@@ -28,7 +38,9 @@ describe('HousingCard', () => {
     render(<HousingCard post={post} onVerify={() => {}} onReport={onReport} />);
     fireEvent.click(screen.getByRole('button', { name: /Nahlásit/ }));
     await screen.findByText(/Odeslání se nepovedlo\. Zkus to znovu\./);
-    expect(screen.getByRole('button', { name: /Odeslání se nepovedlo\. Zkus to znovu\./ })).toBeEnabled();
+    expect(
+      screen.getByRole('button', { name: /Odeslání se nepovedlo\. Zkus to znovu\./ })
+    ).toBeEnabled();
   });
 
   it('calls onVerify with the post when the login button is clicked', () => {

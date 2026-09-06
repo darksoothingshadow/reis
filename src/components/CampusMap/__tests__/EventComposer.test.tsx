@@ -391,7 +391,6 @@ describe('EventComposer — a start time is required', () => {
   });
 });
 
-
 /**
  * `url` is optional, but when it's filled in it becomes an <a href> in
  * EventDetailCard and openExternal — a `javascript:` scheme there would run
@@ -412,9 +411,12 @@ describe('EventComposer — url validation', () => {
     fillRequired();
     expect(screen.getByRole('button', { name: 'Zveřejnit akci' })).toBeEnabled();
 
-    fireEvent.change(screen.getByPlaceholderText('https://… nebo reis://housing pro otevření nástěnky bydlení'), {
-      target: { value: 'javascript:alert(1)' },
-    });
+    fireEvent.change(
+      screen.getByPlaceholderText('https://… nebo reis://housing pro otevření nástěnky bydlení'),
+      {
+        target: { value: 'javascript:alert(1)' },
+      }
+    );
 
     expect(screen.getByRole('button', { name: 'Zveřejnit akci' })).toBeDisabled();
     expect(screen.getByText('Zadej odkaz https:// nebo reis://housing')).toBeInTheDocument();
@@ -424,9 +426,12 @@ describe('EventComposer — url validation', () => {
     render(<EventComposer onDone={() => {}} />);
     fillRequired();
 
-    fireEvent.change(screen.getByPlaceholderText('https://… nebo reis://housing pro otevření nástěnky bydlení'), {
-      target: { value: 'reis://housing' },
-    });
+    fireEvent.change(
+      screen.getByPlaceholderText('https://… nebo reis://housing pro otevření nástěnky bydlení'),
+      {
+        target: { value: 'reis://housing' },
+      }
+    );
 
     expect(screen.getByRole('button', { name: 'Zveřejnit akci' })).toBeEnabled();
     expect(screen.queryByText('Zadej odkaz https:// nebo reis://housing')).toBeNull();
