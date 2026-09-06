@@ -10,11 +10,10 @@ export function AdminStatsPanel() {
   const under5 = t('admin.stats.under5');
   const label = (k: string) => (k === 'unknown' ? t('admin.stats.unknown') : k);
 
-  // DaisyUI's default alert-warning-content is white — 2.15:1 on the amber
-  // background in BOTH themes (the token pair is theme-invariant, same case
-  // as HousingModerationPanel's "Smazat?" confirm button). text-black clears
-  // AA at 8.26:1.
-  if (!stats && !loading) return <div className="alert alert-warning m-2 text-sm text-black">{t('admin.stats.loadFailed')}</div>;
+  // --color-warning-content is now #111827 in both themes (index.css),
+  // 8.26:1 on --color-warning — the DaisyUI alert-warning fill already
+  // carries readable text, no override needed.
+  if (!stats && !loading) return <div className="alert alert-warning m-2 text-sm">{t('admin.stats.loadFailed')}</div>;
   if (!stats) return <span className="loading loading-dots loading-sm m-4" />;
 
   const weeklyMax = Math.max(1, ...stats.weekly.map((w) => w.installs));

@@ -20,21 +20,14 @@ describe('AdminStatsPanel', () => {
     expect(screen.getByText(/Počítáme instalace, ne lidi/)).toBeInTheDocument();
   });
 
-  // Same low-contrast bug as StatsBars' suppressed groups (see StatsBars.test.tsx):
-  // the weekly chart drew a suppressed week with the same green-at-30%-opacity
-  // rect, measured at 1.77:1 (dark) / 1.27:1 (light) against its backdrop —
-  // both under the 3:1 WCAG non-text-contrast floor, and unreachable by any
-  // opacity of this green in the light theme (2.29:1 fully opaque).
-  // verify-ui measured this alert-warning by hand (again, SVG/colour-token
-  // math the automated probe's text check DOES cover here, but flagged as a
-  // warn not a blocker): DaisyUI's default white alert-warning-content on the
-  // amber background is 2.15:1 in BOTH themes (the token pair is
-  // theme-invariant, like HousingModerationPanel's "Smazat?" button — see
-  // that fix). text-black clears it: 8.26:1.
+  // The contrast fix now lives in the theme tokens (index.css) —
+  // --color-warning-content is #111827 (8.26:1 on --color-warning) in both
+  // themes — so the component no longer needs a text-black override; the
+  // semantic alert-warning class alone carries readable text.
   it('keeps the load-failed alert readable — no white-on-amber', () => {
     useAppStore.setState({ adminStats: null, adminStatsLoading: false } as never);
     render(<AdminStatsPanel />);
-    expect(screen.getByText('Statistiky se nepodařilo načíst.').className).toContain('text-black');
+    expect(screen.getByText('Statistiky se nepodařilo načíst.').className).toContain('alert-warning');
   });
 
   it('paints a suppressed week in the weekly chart with a base-content fill, not the low-contrast primary-at-0.3', () => {
