@@ -70,7 +70,7 @@ export function MobileAdminConsole() {
       type="button"
       role="tab"
       aria-selected={tab === key}
-      className={`tab flex-1 ${tab === key ? 'tab-active font-semibold' : ''}`}
+      className={`tab flex-1 px-1 ${tab === key ? 'tab-active font-semibold' : 'text-base-content'}`}
       onClick={() => {
         if (key === 'housing') void loadAdminHousing();
         if (key === 'stats') void loadAdminStats();
@@ -89,7 +89,7 @@ export function MobileAdminConsole() {
     >
       <AdminConsoleHeader compact />
       {!placing && (
-        <div role="tablist" className="tabs tabs-box tabs-sm m-1 mb-0 shrink-0 flex-nowrap">
+        <div role="tablist" className="tabs tabs-box tabs-sm m-1 mb-0 shrink-0 flex-nowrap overflow-x-auto">
           {tabBtn('list', t('admin.listTab') as string)}
           {tabBtn('map', t('admin.mapTab') as string)}
           {isReisAdmin && tabBtn('suggestions', t('admin.suggestionsTab') as string, unread)}
