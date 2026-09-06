@@ -66,7 +66,10 @@ const SUPABASE_CALLERS = new Set([
   'src/api/housing.ts',
   // Random install id only. Reads take no identity argument at all.
   'src/api/eventRsvp.ts',
-  // Random install id only, since the privacy refactor.
+  // Random install id only, since the privacy refactor. Since September 2026
+  // the daily-usage event also carries two GROUP labels (faculty, platform) —
+  // counts over thousands of installs, not per-student data. Disclosed in
+  // PRIVACY.md ("Daily Usage & NPS Feedback") and docs/privacy-policy-app.md.
   'src/api/feedback.ts',
   // Society post view/click counters; sends a post row id and nothing else.
   'src/services/spolky/spolkyService.ts',

@@ -1,6 +1,9 @@
 import { supabase } from '../services/spolky/supabaseClient';
 import { isDemoMode } from '../errors/demoMode';
 import { getInstallId } from '../services/identity/installId';
+import { getPlatform } from '../platform';
+import { getUserParams } from '../utils/userParams';
+import { usagePlatform, type UsagePlatform } from '../utils/usagePlatform';
 
 /**
  * Both writes here identify the DEVICE, never the student.
@@ -41,11 +44,31 @@ export async function submitFeedback(
   return true;
 }
 
+/**
+ * Faculty and platform are GROUP labels (seven faculties, four platforms) on
+ * the same random install id — a count, not a record. Disclosed in
+ * PRIVACY.md ("Daily Usage & NPS Feedback").
+ */
 export async function trackDailyUsage(): Promise<void> {
   if (isDemoMode()) return;
 
+  const faculty = (await getUserParams())?.facultyId ?? null;
+  const kind = getPlatform().kind;
+  // @capacitor/core imported lazily, and only on the capacitor branch, so the
+  // extension bundle never pulls it in — the same reason client.ts's
+  // fetchWithAuth does the same dynamic import.
+  let platform: UsagePlatform;
+  if (kind === 'capacitor') {
+    const { Capacitor } = await import('@capacitor/core');
+    platform = usagePlatform(kind, () => Capacitor.getPlatform());
+  } else {
+    platform = usagePlatform(kind, () => 'web');
+  }
+
   const { error } = await supabase.rpc('track_daily_usage', {
     p_student_id: await getInstallId(),
+    p_faculty: faculty,
+    p_platform: platform,
   });
   if (error) return;
 }
