@@ -127,6 +127,11 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
 
     /// Persists the current file's ink, then shows another file with its ink.
     func load(document: PDFDocument, inkURL: URL, title: String) {
+        // The space loads the first file before presenting anything. The view
+        // must exist first: viewDidLoad attaches the overlay provider, and a
+        // document laid out without it gets no canvases — the first file could
+        // not be drawn on until a switch reloaded it (found 2026-09-06).
+        loadViewIfNeeded()
         persistNow()
         drawings = [:]
         canvases = [:]
@@ -158,6 +163,7 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
     }
 
     private func clear(title: String) {
+        loadViewIfNeeded()
         persistNow()
         drawings = [:]
         canvases = [:]

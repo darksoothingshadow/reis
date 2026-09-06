@@ -340,7 +340,9 @@ markup all autosave and leave a document through a top-left control back to a co
 ### Composition (all Apple components)
 
 - `UISplitViewController(style: .doubleColumn)`, presented full screen.
-  `preferredDisplayMode = .oneBesideSecondary`, `preferredSplitBehavior = .tile`,
+  `preferredDisplayMode = .secondaryOnly` — the space opens on the page alone and picking a
+  file hides the sidebar again; Apple's toggle is the only way it appears (a student who tapped
+  a file wants to read it). `preferredSplitBehavior = .tile`,
   `primaryBackgroundStyle = .sidebar`, `displayModeButtonVisibility = .automatic` (Apple's
   sidebar toggle appears in the reader's bar), `presentsWithGesture = true`.
 - Primary column: `FileListViewController`, a `UICollectionView` list with the `.sidebar`

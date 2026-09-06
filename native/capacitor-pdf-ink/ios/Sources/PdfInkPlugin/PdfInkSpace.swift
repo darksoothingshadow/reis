@@ -46,7 +46,10 @@ final class PdfInkSpace: NSObject {
             })
         super.init()
 
-        split.preferredDisplayMode = .oneBesideSecondary
+        // Opens on the page alone: a student who tapped a file wants to read it,
+        // and the sidebar is one tap away on Apple's toggle. Picking another
+        // file hides it again for the same reason (see select).
+        split.preferredDisplayMode = .secondaryOnly
         split.preferredSplitBehavior = .tile
         split.primaryBackgroundStyle = .sidebar
         split.displayModeButtonVisibility = .automatic
@@ -87,6 +90,7 @@ final class PdfInkSpace: NSObject {
         let previous = currentLink
         currentLink = link
         pendingLink = nil
+        split.preferredDisplayMode = .secondaryOnly
         if let url = file.pdfURL {
             show(file, from: url)
         } else {
