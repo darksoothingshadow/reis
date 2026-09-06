@@ -36,10 +36,15 @@ export function HousingBoard({ onVerify }: { onVerify: (post: HousingPost) => vo
   const visible = posts.filter((p) => p.kind === tab);
   return (
     <div className="relative flex h-full flex-col gap-3 p-3">
-      <div role="tablist" className="tabs tabs-box tabs-sm shrink-0">
+      {/* border-base-content/10: tabs-box's own base-200 background sits
+          directly on this sheet's base-100 backdrop — 1.03:1 in the light
+          theme, effectively invisible. text-base-content on the inactive tab
+          overrides DaisyUI's default 60%-opacity label, which measures
+          3.37:1 there (below the 4.5:1 AA floor). */}
+      <div role="tablist" className="tabs tabs-box tabs-sm shrink-0 border border-base-content/10">
         {(['offer', 'request'] as const).map((k) => (
           <button key={k} type="button" role="tab" aria-selected={tab === k}
-            className={`tab flex-1 ${tab === k ? 'tab-active font-semibold' : ''}`} onClick={() => setTab(k)}>
+            className={`tab flex-1 ${tab === k ? 'tab-active font-semibold' : 'text-base-content'}`} onClick={() => setTab(k)}>
             {t(k === 'offer' ? 'housing.tabOffer' : 'housing.tabRequest')}
           </button>
         ))}
