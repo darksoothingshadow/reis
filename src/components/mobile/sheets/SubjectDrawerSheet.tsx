@@ -1,4 +1,4 @@
-import { lazy, Suspense, useRef, useState, useMemo } from 'react';
+import { lazy, Suspense, useRef, useState } from 'react';
 import type { SyntheticEvent } from 'react';
 import { ExternalLink } from 'lucide-react';
 import { Sheet } from '../primitives/Sheet';
@@ -74,22 +74,18 @@ export function SubjectDrawerSheet({ sheet, onClose }: SubjectDrawerSheetProps) 
     courseId || schedule.find((s) => s.courseCode === courseCode && s.courseId)?.courseId || '';
 
   const { files, isLoading: isFilesLoading } = useFiles(courseCode);
+  const groupedFiles = groupAndSortFiles(files, courseCode, t);
   // The course keys the iPad reader's ink and PDF cache, and its PDFs fill the
-  // reader's sidebar so a student can switch files without coming back here.
-  const readerSubject = useMemo(
-    () => ({ title: courseName || courseCode, files: listSubjectPdfs(files) }),
-    [courseName, courseCode, files]
-  );
+  // reader's sidebar so a student can switch files without coming back here —
+  // in the drawer's grouped order, so both lists read the same.
   const { previewUrl, viewPdf, closePreview, openFile, downloadSingle } = usePdfPreview(
     courseCode,
-    readerSubject
+    { title: courseName || courseCode, files: listSubjectPdfs(groupedFiles.flatMap((g) => g.files)) }
   );
   const { classmates } = useClassmates(courseCode);
   const pushSheet = useAppStore((s) => s.pushSheet);
   const { data: zaznamnikData } = useZaznamnik(courseCode);
   const syllabusResult = useSyllabus(courseCode, resolvedCourseId, courseName);
-
-  const groupedFiles = groupAndSortFiles(files, courseCode, t);
 
   const filesCount = files?.reduce((acc, f) => acc + f.files.length, 0) ?? 0;
   const zaznamnikCount = zaznamnikData

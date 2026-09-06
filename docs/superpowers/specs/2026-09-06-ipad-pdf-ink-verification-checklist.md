@@ -21,6 +21,16 @@ scrolling to the top fought and stopped 37pt short (PDFView ignores the transluc
 automatic content inset; the PDF view is now pinned to the safe area — traced with an offset
 log: oscillating −48…−67 before, monotonic −26→0 after).
 
+**Subject space (split view) smoke PASSED on the simulator 2026-09-06:** the space opens with the
+subject title, a system Close and Apple's sidebar toggle; the list follows the drawer's grouped
+order with a pencil mark on inked files; tapping an uncached file shows the reader empty, the
+app fetches and caches it (`needsFile` → `deliverFile`), and the page and title swap; the toggle
+collapses the sidebar and moves to the reader's bar; Close dismisses and both shown files get
+`lastOpenedAt` at the close time. **Observed once, not reproduced:** in the first run (before
+`clearsSelectionOnViewWillAppear = false` and the selection-preserving `setHasInk`), two lecture
+files were fetched and a third displayed a few seconds after a single row tap, without further
+taps. Step 15 below covers it on the device.
+
 Fill in the device, iPadOS version and build, then tick each step with what was observed. The simulator run (plan Task 9 Step 2) covers finger
 drawing only; everything about the Pencil needs the physical iPad (8th gen,
 `AAB487DD-1610-525F-A8E5-3E29666A8B90`).
@@ -35,7 +45,7 @@ Build and install (see memory `ipad-device-build-install`):
 
 Device: ______ iPadOS: ______ Build: ______ Pencil: ______
 
-1. [ ] Open a subject PDF, draw on pages 1 and 3 with the Pencil, tap Done, reopen → strokes on both pages.
+1. [ ] Open a subject PDF, draw on pages 1 and 3 with the Pencil, tap Close, reopen → strokes on both pages.
 2. [ ] With a Pencil paired and "Draw with Finger" OFF in the tool picker: a finger scrolls, a resting palm draws nothing.
 3. [ ] Turn "Draw with Finger" ON in the tool picker: a finger draws. Turn it OFF: a finger scrolls again. (This is the system-wide Notes setting.)
 4. [ ] Pinch to the maximum zoom PDFView allows; inspect stroke edges. Record soft/crisp either way (Apple forum 792941).
@@ -48,7 +58,15 @@ Device: ______ iPadOS: ______ Build: ______ Pencil: ______
 11. [ ] iPhone (simulator is fine) → the web viewer opens as before.
 12. [ ] A 100+ page deck with ink on a dozen pages scrolls smoothly.
 13. [ ] Light and dark system appearance both readable.
-14. [ ] Erase every stroke, Done → console prints `PdfInk: ink deleted`.
+14. [ ] Erase every stroke, Close → console prints `PdfInk: ink deleted`.
+15. [ ] Sidebar: tap three different files in turn, including one not yet cached (spinner, then
+        the page). The reader must only ever show the file you tapped; the console prints
+        `PdfInk: sidebar tapped row …` once per tap and `PdfInk: select …` for each. Any
+        `select` without a matching tap is the unreproduced finding above — report it.
+16. [ ] Hide the sidebar with Apple's toggle, draw, show it again → the selection highlight is
+        still on the current file and the pencil mark appears on it.
+17. [ ] Close with the X → back in the drawer; reopen the same file → strokes present, sidebar
+        selection on it.
 
 ## Report back
 

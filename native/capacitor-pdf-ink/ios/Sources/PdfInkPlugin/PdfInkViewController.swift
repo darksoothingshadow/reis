@@ -31,41 +31,30 @@ final class InkPDFView: PDFView {
  *   PDFKit asks for overlays as pages scroll in and releases them as they scroll
  *   out, so a 200-page deck holds 200 small drawings and a handful of canvases.
  *
- * Saving is Notes-like: 1 s after the last stroke, on Done, and when the app
- * resigns active. Empty ink deletes the file.
+ * Saving is Notes-like: 1 s after the last stroke, before switching files, on
+ * Close, and when the app resigns active. Empty ink deletes the file. The reader
+ * shows one file at a time; `PdfInkSpace` decides which.
  */
 @available(iOS 16.0, *)
 final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
     PKCanvasViewDelegate
 {
-    private let document: PDFDocument
-    private let inkURL: URL
     private let strings: PdfInkStrings
-    private let onDismiss: (Bool) -> Void
-
     private let pdfView = InkPDFView()
     private let toolPicker = PKToolPicker()
+    private let spinner = UIActivityIndicatorView(style: .large)
+    private let message = UILabel()
+
+    private var document: PDFDocument?
+    private var inkURL: URL?
     private var drawings: [Int: PKDrawing] = [:]
     private var canvases: [Int: PKCanvasView] = [:]
     private var saveTimer: Timer?
-    private var lastSaveError: Error?
-    private var finished = false
+    private(set) var lastSaveError: Error?
 
-    init(
-        document: PDFDocument, inkURL: URL, title: String, strings: PdfInkStrings,
-        onDismiss: @escaping (Bool) -> Void
-    ) {
-        self.document = document
-        self.inkURL = inkURL
+    init(strings: PdfInkStrings) {
         self.strings = strings
-        self.onDismiss = onDismiss
         super.init(nibName: nil, bundle: nil)
-        self.title = title
-        if let archive = InkStore.load(from: inkURL) {
-            for (index, data) in archive.pages {
-                if let drawing = try? PKDrawing(data: data) { drawings[index] = drawing }
-            }
-        }
     }
 
     required init?(coder: NSCoder) { fatalError("PdfInkViewController is code-only") }
@@ -78,11 +67,8 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
-        // A system item: iOS localises "Done" itself.
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .done, target: self, action: #selector(doneTapped))
 
-        // Provider and markup mode BEFORE the document: PDFView asks for overlays
+        // Provider and markup mode BEFORE any document: PDFView asks for overlays
         // as it lays pages out, and a page laid out with no provider never gets a
         // canvas — the touch then scrolls the page instead of drawing on it.
         pdfView.pageOverlayViewProvider = self
@@ -94,6 +80,17 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         pdfView.document = document
         pdfView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(pdfView)
+
+        spinner.hidesWhenStopped = true
+        spinner.translatesAutoresizingMaskIntoConstraints = false
+        message.textAlignment = .center
+        message.textColor = .secondaryLabel
+        message.numberOfLines = 0
+        message.isHidden = true
+        message.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(spinner)
+        view.addSubview(message)
+
         NSLayoutConstraint.activate([
             // Below the navigation bar, not under it. PDFView lays its pages out
             // without honouring the automatic content inset a translucent bar adds,
@@ -104,6 +101,12 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
             pdfView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             pdfView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             pdfView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            spinner.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            spinner.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            message.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            message.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            message.leadingAnchor.constraint(greaterThanOrEqualTo: view.leadingAnchor, constant: 32),
+            message.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor, constant: -32),
         ])
 
         toolPicker.showsDrawingPolicyControls = true
@@ -120,9 +123,60 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         pdfView.becomeFirstResponder()
     }
 
+    // MARK: - Files
+
+    /// Persists the current file's ink, then shows another file with its ink.
+    func load(document: PDFDocument, inkURL: URL, title: String) {
+        persistNow()
+        drawings = [:]
+        canvases = [:]
+        self.document = document
+        self.inkURL = inkURL
+        self.title = title
+        if let archive = InkStore.load(from: inkURL) {
+            for (index, data) in archive.pages {
+                if let drawing = try? PKDrawing(data: data) { drawings[index] = drawing }
+            }
+        }
+        spinner.stopAnimating()
+        message.isHidden = true
+        pdfView.document = document
+        pdfView.becomeFirstResponder()
+    }
+
+    /// Blank page and a spinner while the app fetches the bytes.
+    func showLoading(title: String) {
+        clear(title: title)
+        spinner.startAnimating()
+    }
+
+    /// Blank page and one sentence; the file stays in the list.
+    func showMessage(_ text: String) {
+        clear(title: title ?? "")
+        message.text = text
+        message.isHidden = false
+    }
+
+    private func clear(title: String) {
+        persistNow()
+        drawings = [:]
+        canvases = [:]
+        document = nil
+        inkURL = nil
+        self.title = title
+        pdfView.document = nil
+        spinner.stopAnimating()
+        message.isHidden = true
+    }
+
+    func willClose() {
+        toolPicker.setVisible(false, forFirstResponder: pdfView)
+    }
+
     // MARK: - PDFPageOverlayViewProvider
 
     func pdfView(_ view: PDFView, overlayViewFor page: PDFPage) -> UIView? {
+        guard let document else { return nil }
         let index = document.index(for: page)
         if let canvas = canvases[index] { return canvas }
         let canvas = PKCanvasView()
@@ -146,17 +200,21 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
     func pdfView(
         _ view: PDFView, willEndDisplayingOverlayView overlayView: UIView, for page: PDFPage
     ) {
-        let index = document.index(for: page)
-        if let canvas = overlayView as? PKCanvasView {
-            drawings[index] = canvas.drawing
-            toolPicker.removeObserver(canvas)
-        }
+        // Matched by identity, not page index: after a file switch PDFKit may
+        // still release the previous document's overlays, whose indices would
+        // otherwise collide with the new file's canvases.
+        guard let canvas = overlayView as? PKCanvasView,
+            let index = canvases.first(where: { $0.value === canvas })?.key
+        else { return }
+        drawings[index] = canvas.drawing
+        toolPicker.removeObserver(canvas)
         canvases[index] = nil
     }
 
     // MARK: - PKCanvasViewDelegate
 
     func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
+        guard canvases[canvasView.tag] === canvasView else { return }
         drawings[canvasView.tag] = canvasView.drawing
         saveTimer?.invalidate()
         saveTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) {
@@ -166,17 +224,18 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
 
     // MARK: - Saving
 
-    private func currentArchive() -> InkArchive {
+    private func currentArchive() -> InkArchive? {
+        guard let document else { return nil }
         for (index, canvas) in canvases { drawings[index] = canvas.drawing }
         let pages = drawings.filter { !$0.value.strokes.isEmpty }
             .mapValues { $0.dataRepresentation() }
         return InkArchive(pageCount: document.pageCount, pages: pages)
     }
 
-    @objc private func persistNow() {
+    @objc func persistNow() {
         saveTimer?.invalidate()
         saveTimer = nil
-        let archive = currentArchive()
+        guard let inkURL, let archive = currentArchive() else { return }
         do {
             if archive.pages.isEmpty {
                 InkStore.delete(at: inkURL)
@@ -188,31 +247,5 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
             lastSaveError = error
             NSLog("PdfInk: save failed: \(error)")
         }
-    }
-
-    @objc private func doneTapped() {
-        persistNow()
-        guard let error = lastSaveError else {
-            finish()
-            return
-        }
-        let alert = UIAlertController(
-            title: strings.saveFailedTitle,
-            message: "\(strings.saveFailedMessage)\n\n\(error.localizedDescription)",
-            preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: strings.keepEditing, style: .cancel))
-        alert.addAction(
-            UIAlertAction(title: strings.discard, style: .destructive) { [weak self] _ in
-                self?.finish()
-            })
-        present(alert, animated: true)
-    }
-
-    private func finish() {
-        guard !finished else { return }
-        finished = true
-        let hasInk = !currentArchive().pages.isEmpty
-        toolPicker.setVisible(false, forFirstResponder: pdfView)
-        dismiss(animated: true) { [onDismiss] in onDismiss(hasInk) }
     }
 }
