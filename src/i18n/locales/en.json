@@ -958,6 +958,7 @@
     "housingTab": "Housing",
     "urlLabel": "Link (optional)",
     "urlHint": "https://… or reis://housing to open the housing board",
+    "urlInvalid": "Enter an https:// link or reis://housing",
     "housingHide": "Hide",
     "housingUnhide": "Unhide",
     "housingDelete": "Delete",
