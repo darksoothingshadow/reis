@@ -60,11 +60,14 @@ export const createHousingSlice: AppSlice<HousingSlice> = (set, get) => ({
     inflight = (async () => {
       set({ housingLoading: true });
       try {
-        const [res, mine] = await Promise.all([fetchHousingPosts(), readMine()]);
-        // `mine` is a snapshot of IDB taken when this fetch started. Another
-        // caller may have published in the meantime and already merged the
-        // new id into housingMineIds — never clobber that with this stale
-        // snapshot, union with whatever is current instead.
+        const res = await fetchHousingPosts();
+        // Read own-post ids only after the fetch settles, so a close() that
+        // completes while this load was in flight (server delete, state
+        // filter, IDB write) is reflected here instead of being undone by a
+        // snapshot taken back when the load started. Union with whatever is
+        // current in state, since another caller may have published in the
+        // meantime and already merged its new id into housingMineIds.
+        const mine = await readMine();
         set({
           housingMineIds: unionIds(get().housingMineIds, mine),
           ...(res.ok ? { housingPosts: res.posts, housingLoaded: true } : {}),
