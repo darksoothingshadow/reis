@@ -36,6 +36,8 @@ const IDENTIFYING = [
   'rodneCislo',
   'personalNumber',
   'studiumId',
+  'personId',
+  'isLogin',
 ];
 
 /**
@@ -77,6 +79,22 @@ const SUPABASE_CALLERS = new Set([
  * identifier: PKCE verifiers and image fingerprints.
  */
 const DIGEST_CALLERS = new Set(['src/utils/pkce.ts', 'src/services/notes/imageNormalize.ts']);
+
+/**
+ * (file path) -> identifying names THAT SPECIFIC FILE is allowed to send to
+ * Supabase, because a reviewer read the file and confirmed the reason below.
+ * Unlike SUPABASE_CALLERS this exempts individual names, not the whole file:
+ * a new identifying field appearing in an already-exempted file still has to
+ * be argued for and added here explicitly.
+ */
+const IDENTIFYING_EXCEPTIONS: Record<string, string[]> = {
+  // Housing board. isLogin and personId are the poster's IS login and IS
+  // person id, sent ONLY after the consent tick on the housing form, shown
+  // to every reIS user so a reader can verify the poster in IS, and deleted
+  // with the post. Disclosed in PRIVACY.md ("Housing board") and
+  // docs/privacy-policy-app.md.
+  'src/api/housing.ts': ['isLogin', 'personId'],
+};
 
 function walk(dir: string, out: string[] = []): string[] {
   for (const entry of readdirSync(dir)) {
@@ -173,9 +191,15 @@ describe('no student data leaves the device', () => {
         const near = lines.slice(Math.max(0, i - 2), i + 14).join('\n');
         if (!/\bsupabase\s*\.\s*(rpc|from)\s*\(/.test(near)) return;
         for (const name of IDENTIFYING) {
+          if (IDENTIFYING_EXCEPTIONS[f.path]?.includes(name)) continue;
           // `p_student_id:` is the column name on legacy tables; flag only when
-          // an identifying VALUE is being passed, not the parameter name.
-          const re = new RegExp(`:\\s*[^,\\n]*\\b${name}\\b`);
+          // an identifying VALUE is being passed, not the parameter name. The
+          // second alternative catches the ES2015 shorthand property
+          // (`{ personId }`), which carries the identifying value with no
+          // colon at all.
+          const re = new RegExp(
+            `:\\s*[^,\\n]*\\b${name}\\b|[{,]\\s*${name}\\s*[,}]`
+          );
           if (re.test(line) && !line.trim().startsWith('//') && !line.trim().startsWith('*')) {
             offences.push(`${f.path}:${i + 1}  ${line.trim()}`);
           }
