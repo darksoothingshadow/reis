@@ -7,6 +7,7 @@ import { PersonSheet } from './PersonSheet';
 import { PersonPhotoSheet } from './PersonPhotoSheet';
 import { EduroamSheet } from './EduroamSheet';
 import { DocsSheet } from './DocsSheet';
+import { HousingSheet } from './HousingSheet';
 import { SearchSheet } from './SearchSheet';
 import { BulletinSheet } from './BulletinSheet';
 import { MenuSheet } from './MenuSheet';
@@ -45,6 +46,8 @@ export function SheetHost() {
             return <EduroamSheet key={index} onClose={popSheet} />;
           case 'docs':
             return <DocsSheet key={index} onClose={popSheet} />;
+          case 'housing':
+            return <HousingSheet key={index} onClose={popSheet} />;
           case 'bulletin':
             return <BulletinSheet key={index} onClose={popSheet} />;
           case 'venue':
