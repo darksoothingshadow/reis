@@ -35,6 +35,7 @@ import { createMapSlice } from './slices/createMapSlice';
 import { createRsvpSlice } from './slices/createRsvpSlice';
 import { createHousingSlice } from './slices/createHousingSlice';
 import { createAdminSlice } from './slices/createAdminSlice';
+import { createHousingAdminSlice } from './slices/createHousingAdminSlice';
 import { createSuggestionsSlice } from './slices/createSuggestionsSlice';
 import { createDemoSlice } from './slices/createDemoSlice';
 import { syncService } from '../services/sync';
@@ -81,6 +82,7 @@ export const useAppStore = create<AppState>()((...a) => ({
   ...createRsvpSlice(...a),
   ...createHousingSlice(...a),
   ...createAdminSlice(...a),
+  ...createHousingAdminSlice(...a),
   ...createSuggestionsSlice(...a),
   ...createDemoSlice(...a),
 }));

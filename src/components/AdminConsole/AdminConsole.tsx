@@ -11,6 +11,7 @@ import { MobileAdminConsole } from './MobileAdminConsole';
 import { SuggestionsInbox } from './SuggestionsInbox';
 import { SocietyAccountsPanel } from './SocietyAccountsPanel';
 import { ChangeMyPasswordForm } from './ChangeMyPasswordForm';
+import { HousingModerationPanel } from './HousingModerationPanel';
 
 /**
  * The admin surface, reached only through "Spravovat spolky" in the profile
@@ -31,7 +32,8 @@ export function AdminConsole() {
   // nothing else — it has no business reading another society's students.
   const isReisAdmin = useAppStore((s) => s.adminRole === 'reis_admin');
   const unread = useAppStore((s) => s.suggestionsUnread);
-  const [pane, setPane] = useState<'events' | 'suggestions' | 'accounts'>('events');
+  const loadAdminHousing = useAppStore((s) => s.loadAdminHousing);
+  const [pane, setPane] = useState<'events' | 'suggestions' | 'accounts' | 'housing'>('events');
   const { t } = useTranslation();
 
   if (!session) {
@@ -87,6 +89,20 @@ export function AdminConsole() {
                 )}
               </button>
             )}
+            {isReisAdmin && (
+              <button
+                type="button"
+                role="tab"
+                aria-selected={pane === 'housing'}
+                onClick={() => {
+                  void loadAdminHousing();
+                  setPane('housing');
+                }}
+                className={`tab flex-1 ${pane === 'housing' ? 'tab-active font-semibold' : ''}`}
+              >
+                {t('admin.housingTab')}
+              </button>
+            )}
             <button
               type="button"
               role="tab"
@@ -99,6 +115,7 @@ export function AdminConsole() {
           </div>
           <div className="min-h-0 flex-1 overflow-y-auto p-2">
             {isReisAdmin && pane === 'suggestions' && <SuggestionsInbox />}
+            {isReisAdmin && pane === 'housing' && <HousingModerationPanel />}
             {pane === 'accounts' && (
               <div className="flex flex-col gap-6">
                 {isReisAdmin && <SocietyAccountsPanel />}
