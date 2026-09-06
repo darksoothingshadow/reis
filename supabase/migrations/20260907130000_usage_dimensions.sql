@@ -60,12 +60,15 @@ grant execute on function public.track_daily_usage(text, text, text) to anon, au
 
 -- The aggregate. Groups of 1-4 installs are reported as -1 ("under 5") so a
 -- tiny faculty on a rare platform can never be narrowed to a person.
+-- p_days bounds ONLY this breakdown window (by_faculty/by_platform, via
+-- `win` below); `today`/`d7`/`d30` and `weekly` below all use fixed windows
+-- regardless of what the caller passes.
 create or replace function public.usage_stats_unchecked(p_days int)
 returns json
 language sql stable security definer set search_path = public as $$
   with win as (
     select * from public.daily_active_usage
-     where usage_date >= current_date - greatest(1, least(p_days, 365)) + 1
+     where usage_date >= current_date - greatest(1, least(coalesce(p_days, 30), 365)) + 1
   ),
   supp as (
     select key, count(distinct student_id) as n from (
@@ -110,3 +113,8 @@ begin
 end $$;
 revoke all on function public.usage_stats(int) from public, anon;
 grant execute on function public.usage_stats(int) to authenticated;
+
+-- PostgREST caches the function signatures it saw at boot; without this,
+-- a released one-argument client can 404 against track_daily_usage during
+-- the drop/create window above until the schema cache next reloads on its own.
+notify pgrst, 'reload schema';

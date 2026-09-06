@@ -60,4 +60,11 @@ describe('AdminStatsPanel', () => {
     expect(svg.getAttribute('viewBox')).toBe('0 0 130 40');
     expect(container.querySelectorAll('svg[aria-label] rect').length).toBe(13);
   });
+
+  // The refresh button's only content is the "↻" glyph, unreadable to a
+  // screen reader without a real label.
+  it('labels the refresh button for screen readers', () => {
+    render(<AdminStatsPanel />);
+    expect(screen.getByRole('button', { name: 'Obnovit' })).toBeInTheDocument();
+  });
 });

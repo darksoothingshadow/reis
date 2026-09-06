@@ -94,7 +94,8 @@
     "copiedToClipboard": "Email byl zkopírován do schránky",
     "czk": "Kč",
     "download": "Stáhnout",
-    "errorGeneric": "Něco se nepovedlo. Zkuste to prosím znovu."
+    "errorGeneric": "Něco se nepovedlo. Zkuste to prosím znovu.",
+    "refresh": "Obnovit"
   },
   "search": {
     "placeholder": "Hledej předměty, lidi, stránky... ({shortcut}K)",

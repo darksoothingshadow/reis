@@ -59,7 +59,7 @@ export function AdminStatsPanel() {
           })}
         </svg>
       </section>
-      <button type="button" className="btn btn-ghost btn-xs self-end" onClick={() => void reload()} disabled={loading}>↻</button>
+      <button type="button" className="btn btn-ghost btn-xs self-end" aria-label={t('common.refresh')} onClick={() => void reload()} disabled={loading}>↻</button>
     </div>
   );
 }

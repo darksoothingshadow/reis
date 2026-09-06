@@ -226,7 +226,8 @@
     "copiedToClipboard": "Email copied to clipboard",
     "czk": "CZK",
     "download": "Download",
-    "errorGeneric": "Something went wrong. Please try again."
+    "errorGeneric": "Something went wrong. Please try again.",
+    "refresh": "Refresh"
   },
   "search": {
     "placeholder": "Search subjects, people, pages... ({shortcut}K)",
