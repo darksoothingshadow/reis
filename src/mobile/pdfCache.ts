@@ -117,10 +117,31 @@ export async function store(
   });
 }
 
-export async function recordOpen(fs: PdfCacheFs, key: string, now: number): Promise<void> {
+/**
+ * Bumps `lastOpenedAt`, and fills in the subject and link when the entry
+ * predates them.
+ *
+ * A copy that is already fresh is never stored again, so without this backfill
+ * an entry written by an older build would stay anonymous for as long as IS
+ * keeps serving the same bytes — and an anonymous entry can never be listed
+ * once IS stops. Neither name nor date is touched: those describe the bytes on
+ * disk, and only `store` has new bytes to describe.
+ */
+export async function recordOpen(
+  fs: PdfCacheFs,
+  key: string,
+  now: number,
+  identity?: { courseCode: string; link: string }
+): Promise<void> {
   await withIndex(fs, (index) => {
     const entry = index[key];
-    if (entry) index[key] = { ...entry, lastOpenedAt: now };
+    if (!entry) return;
+    index[key] = {
+      ...entry,
+      lastOpenedAt: now,
+      courseCode: entry.courseCode ?? identity?.courseCode,
+      link: entry.link ?? identity?.link,
+    };
   });
 }
 

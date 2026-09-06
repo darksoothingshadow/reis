@@ -161,7 +161,9 @@ export async function openPdfWithInk(
       strings: input.strings,
     });
     const now = deps.now();
-    for (const link of shown) await recordOpen(deps.fs, await keyFor(link), now);
+    for (const link of shown) {
+      await recordOpen(deps.fs, await keyFor(link), now, { courseCode: input.courseCode, link });
+    }
     // The sweep may not take an annotated file with it: see enforceCap.
     await enforceCap(deps.fs, undefined, deps.hasInk);
     return { kind: 'shown', hasInk: false };

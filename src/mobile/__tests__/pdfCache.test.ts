@@ -109,6 +109,28 @@ describe('pdfCache index', () => {
     expect(files.has(pdfPath('k1'))).toBe(false);
     expect(await readIndex(fs)).toEqual({});
   });
+  it('fills in the subject and link an older entry never recorded', async () => {
+    const { fs } = memFs();
+    await store(fs, 'k1', pdf(), { date: 'd', name: 'n' }, 1000);
+    await recordOpen(fs, 'k1', 2000, { courseCode: 'EBC-MT', link: 'https://is/x' });
+    expect((await readIndex(fs)).k1).toMatchObject({
+      lastOpenedAt: 2000,
+      courseCode: 'EBC-MT',
+      link: 'https://is/x',
+    });
+  });
+
+  it('leaves the name and date alone — only new bytes may change those', async () => {
+    const { fs } = memFs();
+    await store(fs, 'k1', pdf(), { date: 'd', name: 'Slides', courseCode: 'A', link: 'l' }, 1000);
+    await recordOpen(fs, 'k1', 2000, { courseCode: 'B', link: 'other' });
+    expect((await readIndex(fs)).k1).toMatchObject({
+      name: 'Slides',
+      date: 'd',
+      courseCode: 'A',
+      link: 'l',
+    });
+  });
 });
 
 describe('pdfCache.enforceCap', () => {
