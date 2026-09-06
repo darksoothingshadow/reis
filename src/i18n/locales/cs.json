@@ -962,7 +962,20 @@
     "housingHide": "Skrýt",
     "housingUnhide": "Zobrazit",
     "housingDelete": "Smazat",
-    "housingHidden": "skryto"
+    "housingHidden": "skryto",
+    "statsTab": "Statistiky",
+    "stats": {
+      "today": "Dnes",
+      "d7": "7 dní",
+      "d30": "30 dní",
+      "byFaculty": "Podle fakulty (30 dní)",
+      "byPlatform": "Podle platformy (30 dní)",
+      "weekly": "Týdně aktivní instalace (12 týdnů)",
+      "installsNote": "Počítáme instalace, ne lidi: student s telefonem i notebookem je dvakrát.",
+      "under5": "méně než 5",
+      "unknown": "neznámo",
+      "loadFailed": "Statistiky se nepodařilo načíst."
+    }
   },
   "mobile": {
     "header": {

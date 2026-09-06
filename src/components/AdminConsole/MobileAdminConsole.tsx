@@ -8,6 +8,7 @@ import { SocietyAccountsPanel } from './SocietyAccountsPanel';
 import { ChangeMyPasswordForm } from './ChangeMyPasswordForm';
 import { AdminConsoleMap } from './AdminConsoleMap';
 import { HousingModerationPanel } from './HousingModerationPanel';
+import { AdminStatsPanel } from './AdminStatsPanel';
 
 /**
  * A phone has no room for the desktop's side-by-side list and map, so they share
@@ -31,7 +32,7 @@ import { HousingModerationPanel } from './HousingModerationPanel';
  * `placingEvent` forces the map and hides the toggle: that flow has its own
  * instruction banner and Cancel, so a second way out would just be ambiguous.
  */
-type Tab = 'list' | 'map' | 'suggestions' | 'accounts' | 'housing';
+type Tab = 'list' | 'map' | 'suggestions' | 'accounts' | 'housing' | 'stats';
 
 export function MobileAdminConsole() {
   const placing = useAppStore((s) => s.placingEvent);
@@ -41,6 +42,7 @@ export function MobileAdminConsole() {
   const isReisAdmin = useAppStore((s) => s.adminRole === 'reis_admin');
   const unread = useAppStore((s) => s.suggestionsUnread);
   const loadAdminHousing = useAppStore((s) => s.loadAdminHousing);
+  const loadAdminStats = useAppStore((s) => s.loadAdminStats);
   const [tab, setTab] = useState<Tab>('list');
   const draftFocus = useAppStore((s) => s.draftFocusRequest);
   // "Ukázat na mapě" has to bring the map forward as well as move the camera —
@@ -58,6 +60,7 @@ export function MobileAdminConsole() {
   const showMap = placing || tab === 'map';
   const showSuggestions = !placing && isReisAdmin && tab === 'suggestions';
   const showHousing = !placing && isReisAdmin && tab === 'housing';
+  const showStats = !placing && isReisAdmin && tab === 'stats';
   // Every account gets the accounts tab — a society needs it to change its own
   // password; only a reIS admin additionally sees the reset panel inside it.
   const showAccounts = !placing && tab === 'accounts';
@@ -70,6 +73,7 @@ export function MobileAdminConsole() {
       className={`tab flex-1 ${tab === key ? 'tab-active font-semibold' : ''}`}
       onClick={() => {
         if (key === 'housing') void loadAdminHousing();
+        if (key === 'stats') void loadAdminStats();
         setTab(key);
       }}
     >
@@ -90,6 +94,7 @@ export function MobileAdminConsole() {
           {tabBtn('map', t('admin.mapTab') as string)}
           {isReisAdmin && tabBtn('suggestions', t('admin.suggestionsTab') as string, unread)}
           {isReisAdmin && tabBtn('housing', t('admin.housingTab') as string)}
+          {isReisAdmin && tabBtn('stats', t('admin.statsTab') as string)}
           {tabBtn('accounts', t('admin.accountsTab') as string)}
         </div>
       )}
@@ -98,7 +103,7 @@ export function MobileAdminConsole() {
             desktop aside: EventComposer's bg-base-200/60 header is a tint meant
             for base-100 and measures 1.005:1 (invisible) on base-200. */}
         <div
-          className={showMap || showSuggestions || showAccounts || showHousing ? 'hidden' : 'h-full bg-base-100'}
+          className={showMap || showSuggestions || showAccounts || showHousing || showStats ? 'hidden' : 'h-full bg-base-100'}
         >
           <AdminEventList />
         </div>
@@ -118,6 +123,11 @@ export function MobileAdminConsole() {
         {showHousing && (
           <div className="h-full overflow-y-auto bg-base-100 p-2">
             <HousingModerationPanel />
+          </div>
+        )}
+        {showStats && (
+          <div className="h-full overflow-y-auto bg-base-100">
+            <AdminStatsPanel />
           </div>
         )}
         {showMap && (
