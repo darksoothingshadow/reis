@@ -1098,6 +1098,12 @@
       "title": "Data se nepodařilo načíst",
       "body": "Zkontroluj připojení k internetu a zkus to znovu.",
       "retry": "Zkusit znovu"
+    },
+    "pdfInk": {
+      "saveFailedTitle": "Poznámky se nepodařilo uložit",
+      "saveFailedMessage": "Na iPadu možná není místo. Pokračujte v úpravách a zkuste to znovu, nebo změny zahoďte.",
+      "keepEditing": "Pokračovat v úpravách",
+      "discard": "Zahodit"
     }
   },
   "session": {
