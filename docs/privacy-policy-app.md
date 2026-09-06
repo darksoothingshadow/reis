@@ -32,6 +32,7 @@ platform.
 | Feedback | you press send | your message, any contact detail you type, the screen name, app version, browser, window size |
 | In-app survey, event RSVP | you answer / RSVP | the same random install identifier |
 | Society post view or click | you open one | a post id |
+| Housing board posts you publish | when you publish a post | the fields you fill in (offer/request, room type, district, price, dates, note, contact) plus your IS login and IS person id, attached only after you tick the consent box. Shown to every reIS user for 14 days or until you close the post. Two administrators can hide or delete posts. Nothing about who reads the board is recorded. |
 
 Nothing else. Feedback is read by the developers and passed to nobody.
 
