@@ -1,6 +1,6 @@
 # Privacy Policy for reIS
 
-**Last Updated: September 4, 2026**
+**Last Updated: September 6, 2026**
 
 ## Introduction
 reIS ("we", "our", or "us") is a Chrome extension designed to modernize and enhance the user experience of the Mendel University Information System (IS Mendelu). We are committed to protecting your privacy and ensuring the security of your data.
@@ -26,7 +26,7 @@ We collect anonymous usage data to improve the extension:
 
 ### 3. Daily Usage & NPS Feedback
 To understand how actively reIS is used, we record:
-- **Daily Usage**: Each day you open reIS, a **random identifier generated on your device** is sent to our Supabase backend to record one usage event. This identifier is a random UUID created the first time you use the app and stored locally. It is **not derived from your student ID, your name, or anything else about you**, and it cannot be linked back to you.
+- **Daily Usage**: Each day you open reIS, a **random identifier generated on your device** is sent to our Supabase backend to record one usage event. This identifier is a random UUID created the first time you use the app and stored locally. It is **not derived from your student ID, your name, or anything else about you**, and it cannot be linked back to you. Since September 2026 the event also carries two group labels: your faculty and the platform (extension, iOS, Android or web). These describe a group of thousands of installs, not you; nothing else about the event changed.
 - **NPS Rating (Voluntary)**: Once per semester you may be shown a satisfaction prompt. If you choose to rate, the same random identifier and your rating are sent. You can dismiss the prompt without sending anything.
 
 **What this means for our numbers**: because the identifier belongs to an installation rather than to a person, these figures count **installations, not people**. If you use reIS on a phone and a laptop, you are counted twice.
