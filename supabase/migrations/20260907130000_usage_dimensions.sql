@@ -77,10 +77,15 @@ language sql stable security definer set search_path = public as $$
       select coalesce(platform, 'unknown') as key, student_id from win
     ) s group by key
   ),
+  -- Exactly 12 Monday-weeks including the current (partial) one, aligned to
+  -- week boundaries so the row count the client charts is stable regardless
+  -- of which weekday the query runs on. `current_date - 12 * 7` drifted: on
+  -- a Sunday it could span all of a 13th week, clipping the client's chart
+  -- (see AdminStatsPanel.tsx's viewBox fix).
   weeks as (
     select date_trunc('week', usage_date)::date as week_start, count(distinct student_id) as n
       from public.daily_active_usage
-     where usage_date >= current_date - 12 * 7
+     where usage_date >= date_trunc('week', current_date)::date - 7 * 11
      group by 1 order by 1
   )
   select json_build_object(

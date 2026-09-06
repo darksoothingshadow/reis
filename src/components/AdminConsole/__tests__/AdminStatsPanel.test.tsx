@@ -49,4 +49,22 @@ describe('AdminStatsPanel', () => {
     expect(rect.getAttribute('class') ?? '').toContain('fill-base-content/50');
     expect(rect.getAttribute('fill')).not.toBe('currentColor');
   });
+
+  // The SVG's viewBox was a hardcoded "0 0 120 40" (room for 12 bars at 10
+  // units each). The backing query can return 12 Monday-weeks PLUS whatever
+  // partial week is in progress — 13 rows — clipping the 13th bar. Width
+  // must track the data, not a guess at the query's row count.
+  it('sizes the weekly chart viewBox from the data, so no bar clips', () => {
+    const weekly = Array.from({ length: 13 }, (_, i) => ({
+      weekStart: `2026-06-${String(i + 1).padStart(2, '0')}`,
+      installs: 10 + i,
+    }));
+    useAppStore.setState({
+      adminStats: { today: 1, d7: 1, d30: 1, byFaculty: [], byPlatform: [], weekly },
+    } as never);
+    const { container } = render(<AdminStatsPanel />);
+    const svg = container.querySelector('svg[aria-label]')!;
+    expect(svg.getAttribute('viewBox')).toBe('0 0 130 40');
+    expect(container.querySelectorAll('svg[aria-label] rect').length).toBe(13);
+  });
 });

@@ -18,6 +18,11 @@ export function AdminStatsPanel() {
   if (!stats) return <span className="loading loading-dots loading-sm m-4" />;
 
   const weeklyMax = Math.max(1, ...stats.weekly.map((w) => w.installs));
+  // Width tracks the data instead of assuming the query returns exactly 12
+  // rows — a hardcoded "0 0 120 40" clipped the 13th bar whenever the
+  // backing window included a partial in-progress week alongside 12 full
+  // Monday-weeks.
+  const weeklyWidth = Math.max(1, stats.weekly.length) * 10;
   return (
     <div className="flex flex-col gap-4 p-3">
       <div className="stats stats-horizontal shadow-sm">
@@ -33,7 +38,7 @@ export function AdminStatsPanel() {
       <section><h4 className="mb-1 text-sm font-semibold">{t('admin.stats.byPlatform')}</h4><StatsBars groups={stats.byPlatform} labelFor={label} under5={under5} /></section>
       <section>
         <h4 className="mb-1 text-sm font-semibold">{t('admin.stats.weekly')}</h4>
-        <svg viewBox="0 0 120 40" className="h-24 w-full" role="img" aria-label={t('admin.stats.weekly')}>
+        <svg viewBox={`0 0 ${weeklyWidth} 40`} className="h-24 w-full" role="img" aria-label={t('admin.stats.weekly')}>
           {stats.weekly.map((w, i) => {
             const suppressed = w.installs < 0;
             const h = suppressed ? 2 : Math.max(1, Math.round((w.installs / weeklyMax) * 36));
