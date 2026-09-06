@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import { X } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
 import { useTranslation } from '../../hooks/useTranslation';
 
@@ -9,6 +11,14 @@ export function HousingModerationPanel() {
   const hide = useAppStore((s) => s.hideAdminHousing);
   const del = useAppStore((s) => s.deleteAdminHousing);
   const reload = useAppStore((s) => s.loadAdminHousing);
+
+  // Delete is a two-step, in-row arm/commit, same as AdminEventList: the
+  // panel renders inside a sandboxed iframe (see src/injector/iframeManager.ts)
+  // whose sandbox has no allow-modals, so a native browser dialog is silently
+  // a no-op there and can never gate the delete. `armedId` tracks which row's
+  // delete button was tapped once; a second tap on that same row commits,
+  // tapping delete on any other row (or cancelling) disarms it.
+  const [armedId, setArmedId] = useState<string | null>(null);
 
   return (
     <div className="flex flex-col gap-2 p-2">
@@ -30,9 +40,29 @@ export function HousingModerationPanel() {
               <button type="button" className="btn btn-outline btn-xs" onClick={() => void hide(r.id, !r.hidden_by_admin)}>
                 {t(r.hidden_by_admin ? 'admin.housingUnhide' : 'admin.housingHide')}
               </button>
-              <button type="button" className="btn btn-error btn-outline btn-xs" onClick={() => { if (window.confirm(t('admin.housingDelete') + '?')) void del(r.id); }}>
-                {t('admin.housingDelete')}
-              </button>
+              {armedId === r.id ? (
+                <>
+                  <button
+                    type="button"
+                    className="btn btn-error btn-xs"
+                    onClick={() => { setArmedId(null); void del(r.id); }}
+                  >
+                    {t('admin.housingDelete')}?
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-ghost btn-xs px-1.5"
+                    aria-label={t('common.cancel')}
+                    onClick={() => setArmedId(null)}
+                  >
+                    <X size={14} />
+                  </button>
+                </>
+              ) : (
+                <button type="button" className="btn btn-error btn-outline btn-xs" onClick={() => setArmedId(r.id)}>
+                  {t('admin.housingDelete')}
+                </button>
+              )}
             </div>
           </div>
         </div>
