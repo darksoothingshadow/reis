@@ -69,7 +69,8 @@ export function SubjectDrawerSheet({ sheet, onClose }: SubjectDrawerSheetProps) 
   // Tapping a PDF opens it in the reader rather than exporting it: on iOS the
   // download path is the share sheet, so "just let me read page 3" meant saving
   // the file out of the app first. The row's own download button is untouched.
-  const { previewUrl, viewPdf, closePreview, openFile, downloadSingle } = usePdfPreview();
+  // The course is what keys the iPad reader's ink and PDF cache (see usePdfPreview).
+  const { previewUrl, viewPdf, closePreview, openFile, downloadSingle } = usePdfPreview(courseCode);
 
   const resolvedCourseId =
     courseId || schedule.find((s) => s.courseCode === courseCode && s.courseId)?.courseId || '';

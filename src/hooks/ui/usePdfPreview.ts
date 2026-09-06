@@ -1,5 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
 import { useFileActions } from './useFileActions';
+import { useTranslation } from '../useTranslation';
+import { logError } from '../../utils/reportError';
+import { openPdfWithInk, type PdfInkStrings } from '../../mobile/pdfInk';
+import { isPdfInkAvailable, nativePdfInkDeps } from '../../mobile/pdfInkNative';
 
 export interface PdfPreviewFile {
   link: string;
@@ -15,18 +20,30 @@ export interface PdfPreviewMeta {
 /**
  * "Tap to look, press to save" for a file row.
  *
- * The phone/tablet drawer used to hand every tap straight to `openFile`, which
- * on Capacitor means fetch → write → the iOS share sheet: the student had to
- * export a document out of the app before they could read a single page of it.
- * The inline path already existed for desktop, so this packages the state it
- * needs — the blob URL, which file it belongs to, and the revoke — for reuse.
+ * Two readers sit behind `viewPdf`:
+ *
+ * - On an iPad with the PdfInk plugin (native/capacitor-pdf-ink) and a known
+ *   course, the PDF opens in the native PencilKit reader. Ink and the PDF bytes
+ *   persist on the device; nothing here needs state while it is up, because it
+ *   covers the whole screen. `courseCode` is what keys the ink and the cache, so
+ *   without one the web viewer is used.
+ * - Everywhere else — desktop, iPhone, Android, a PDF PDFKit rejects — the blob
+ *   goes to the inline pdf.js viewer exactly as before. A fallback from the
+ *   native path reuses the bytes it already fetched.
  *
  * A file that turns out not to be a real PDF (IS serves viewer pages under the
  * same anchors) falls back to the download rather than opening an empty viewer.
  */
-export function usePdfPreview() {
-  const { openFile, openPdfInline, downloadSingle, isDownloading, downloadProgress } =
-    useFileActions();
+export function usePdfPreview(courseCode?: string) {
+  const {
+    openFile,
+    openPdfInline,
+    fetchPdfBlob,
+    downloadSingle,
+    isDownloading,
+    downloadProgress,
+  } = useFileActions();
+  const { t } = useTranslation();
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewFile, setPreviewFile] = useState<PdfPreviewFile | null>(null);
   const [isPreviewLoading, setIsPreviewLoading] = useState(false);
@@ -50,13 +67,63 @@ export function usePdfPreview() {
     };
   }, []);
 
+  const inkStrings = useCallback(
+    (): PdfInkStrings => ({
+      saveFailedTitle: t('mobile.pdfInk.saveFailedTitle'),
+      saveFailedMessage: t('mobile.pdfInk.saveFailedMessage'),
+      keepEditing: t('mobile.pdfInk.keepEditing'),
+      discard: t('mobile.pdfInk.discard'),
+    }),
+    [t]
+  );
+
+  /**
+   * Native reader first. `handled` means the tap is done (shown, or failed and
+   * told); `viewer` hands the web viewer a blob URL, or null to fall back to the
+   * download (IS served a viewer page).
+   */
+  const tryNativeReader = useCallback(
+    async (
+      link: string,
+      name: string,
+      meta?: PdfPreviewMeta
+    ): Promise<{ kind: 'handled' } | { kind: 'viewer'; blobUrl: string | null }> => {
+      const result = await openPdfWithInk(nativePdfInkDeps, {
+        courseCode: courseCode ?? '',
+        fileLink: link,
+        name,
+        date: meta?.date ?? '',
+        strings: inkStrings(),
+        fetchPdf: () => fetchPdfBlob(link),
+      });
+      if (result.kind === 'shown') return { kind: 'handled' };
+      if (result.kind === 'unreadable') {
+        return { kind: 'viewer', blobUrl: URL.createObjectURL(result.blob) };
+      }
+      if (result.kind === 'failed') {
+        logError('usePdfPreview.nativeReader', result.error);
+        toast.error(t('course.file.openFailed'));
+        return { kind: 'handled' };
+      }
+      return { kind: 'viewer', blobUrl: null };
+    },
+    [courseCode, inkStrings, fetchPdfBlob, t]
+  );
+
   const viewPdf = useCallback(
     async (link: string, meta?: PdfPreviewMeta) => {
       if (isPreviewLoading) return;
       setIsPreviewLoading(true);
       const name = meta?.name ?? 'PDF';
       try {
-        const blobUrl = await openPdfInline(link);
+        let blobUrl: string | null;
+        if (courseCode && (await isPdfInkAvailable())) {
+          const outcome = await tryNativeReader(link, name, meta);
+          if (outcome.kind === 'handled') return;
+          blobUrl = outcome.blobUrl;
+        } else {
+          blobUrl = await openPdfInline(link);
+        }
         if (!alive.current) {
           // Nobody is left to show it to, and nobody is left to revoke it.
           if (blobUrl) URL.revokeObjectURL(blobUrl);
@@ -72,7 +139,7 @@ export function usePdfPreview() {
         if (alive.current) setIsPreviewLoading(false);
       }
     },
-    [openPdfInline, openFile, isPreviewLoading]
+    [courseCode, tryNativeReader, openPdfInline, openFile, isPreviewLoading]
   );
 
   const closePreview = useCallback(() => {
