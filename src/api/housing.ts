@@ -92,6 +92,7 @@ export async function submitHousingPost(
 }
 
 export async function closeHousingPost(id: string): Promise<boolean> {
+  if (isDemoMode()) return false;
   try {
     const { data, error } = await supabase.rpc('close_housing_post', {
       p_id: id,

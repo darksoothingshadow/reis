@@ -1,8 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 const rpc = vi.fn();
+const demo = vi.fn(() => false);
 vi.mock('../../services/spolky/supabaseClient', () => ({ supabase: { rpc: (...a: unknown[]) => rpc(...a) } }));
-vi.mock('../../errors/demoMode', () => ({ isDemoMode: () => false }));
+vi.mock('../../errors/demoMode', () => ({ isDemoMode: () => demo() }));
 vi.mock('../../services/identity/installId', () => ({ getInstallId: async () => 'install-1' }));
 
 import { fetchHousingPosts, submitHousingPost, closeHousingPost } from '../housing';
@@ -14,7 +15,10 @@ const row = {
 };
 
 describe('housing api', () => {
-  beforeEach(() => rpc.mockReset());
+  beforeEach(() => {
+    rpc.mockReset();
+    demo.mockReset().mockReturnValue(false);
+  });
 
   it('maps rows to camelCase posts and drops malformed rows', async () => {
     rpc.mockResolvedValue({ data: [row, { id: 'bad' }], error: null });
@@ -60,5 +64,11 @@ describe('housing api', () => {
     rpc.mockResolvedValue({ data: true, error: null });
     expect(await closeHousingPost('p1')).toBe(true);
     expect(rpc).toHaveBeenCalledWith('close_housing_post', { p_id: 'p1', p_install_id: 'install-1' });
+  });
+
+  it('does not close anything in demo mode', async () => {
+    demo.mockReturnValue(true);
+    expect(await closeHousingPost('p1')).toBe(false);
+    expect(rpc).not.toHaveBeenCalled();
   });
 });
