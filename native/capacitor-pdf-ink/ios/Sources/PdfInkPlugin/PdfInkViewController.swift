@@ -54,6 +54,8 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
     private lazy var addPageItem = UIBarButtonItem(
         image: UIImage(systemName: "plus.rectangle.portrait"), style: .plain, target: self,
         action: #selector(addPageTapped))
+    private lazy var shareItem = UIBarButtonItem(
+        barButtonSystemItem: .action, target: self, action: #selector(shareTapped))
     private var saveTimer: Timer?
     private(set) var lastSaveError: Error?
 
@@ -76,8 +78,10 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         // Notes and GoodNotes both put "add a page" in the top bar of the page
         // itself; the sidebar toggle owns the other corner.
         addPageItem.accessibilityLabel = strings.addPage
-        addPageItem.isEnabled = false
-        navigationItem.rightBarButtonItem = addPageItem
+        shareItem.accessibilityLabel = strings.export
+        setBarItems(enabled: false)
+        // Share rightmost, as Notes and Files put it.
+        navigationItem.rightBarButtonItems = [shareItem, addPageItem]
 
         // Provider and markup mode BEFORE any document: PDFView asks for overlays
         // as it lays pages out, and a page laid out with no provider never gets a
@@ -167,7 +171,7 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         spinner.stopAnimating()
         message.isHidden = true
         pdfView.document = document
-        addPageItem.isEnabled = true
+        setBarItems(enabled: true)
         pdfView.becomeFirstResponder()
         return true
     }
@@ -200,7 +204,7 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         inkURL = nil
         self.title = title
         pdfView.document = nil
-        addPageItem.isEnabled = false
+        setBarItems(enabled: false)
         spinner.stopAnimating()
         message.isHidden = true
         return true
@@ -251,6 +255,45 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
 
     @objc private func addPageTapped() {
         addBlankPage()
+    }
+
+    private func setBarItems(enabled: Bool) {
+        addPageItem.isEnabled = enabled
+        shareItem.isEnabled = enabled
+    }
+
+    // MARK: - Export
+
+    /**
+     * Hands the share sheet a copy of the PDF with the ink baked into the pages
+     * — the only form the notes take outside reIS.
+     *
+     * `persistNow` first: it harvests the canvases that are on screen into
+     * `drawings`, so a stroke made inside the save debounce is in the export
+     * rather than a second late.
+     */
+    @objc private func shareTapped() {
+        guard let document else { return }
+        persistNow()
+        let url = FileManager.default.temporaryDirectory
+            .appendingPathComponent(InkExport.fileName(for: title ?? ""))
+        do {
+            try? FileManager.default.removeItem(at: url)
+            try InkExport.flatten(document, drawings: drawings, to: url)
+        } catch {
+            NSLog("PdfInk: export failed: \(error)")
+            let alert = UIAlertController(
+                title: strings.exportFailed, message: error.localizedDescription,
+                preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: strings.close, style: .cancel))
+            present(alert, animated: true)
+            return
+        }
+        NSLog("PdfInk: exported \(url.lastPathComponent)")
+        let share = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+        // An iPad presents this as a popover and needs the anchor, or it traps.
+        share.popoverPresentationController?.barButtonItem = shareItem
+        present(share, animated: true)
     }
 
     func willClose() {

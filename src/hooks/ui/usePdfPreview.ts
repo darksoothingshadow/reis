@@ -77,6 +77,9 @@ export function usePdfPreview(courseCode?: string, subject?: PdfPreviewSubject) 
       discard: t('mobile.pdfInk.discard'),
       openFailed: t('mobile.pdfInk.openFailed'),
       addPage: t('mobile.pdfInk.addPage'),
+      export: t('mobile.pdfInk.export'),
+      exportFailed: t('mobile.pdfInk.exportFailed'),
+      close: t('common.close'),
     }),
     [t]
   );

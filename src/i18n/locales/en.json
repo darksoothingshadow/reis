@@ -1130,7 +1130,9 @@
       "keepEditing": "Keep editing",
       "discard": "Discard",
       "openFailed": "Couldn't open this file.",
-      "addPage": "Add a page"
+      "addPage": "Add a page",
+      "export": "Share with notes",
+      "exportFailed": "Couldn't prepare the file to share."
     }
   },
   "session": {

@@ -24,6 +24,11 @@ export interface PdfInkStrings {
   openFailed: string;
   /** The reader's "add a blank page" bar button. */
   addPage: string;
+  /** The reader's share button, which exports the PDF with the ink in it. */
+  export: string;
+  exportFailed: string;
+  /** Dismisses the export failure; the app's generic Close. */
+  close: string;
 }
 
 export interface PdfInkPlugin {

@@ -1130,7 +1130,9 @@
       "keepEditing": "Pokračovat v úpravách",
       "discard": "Zahodit",
       "openFailed": "Soubor se nepodařilo otevřít.",
-      "addPage": "Přidat stránku"
+      "addPage": "Přidat stránku",
+      "export": "Sdílet s poznámkami",
+      "exportFailed": "Soubor ke sdílení se nepodařilo připravit."
     }
   },
   "session": {

@@ -44,6 +44,11 @@ taps. Step 15 below covers it on the device.
   scrolled to it; a stroke drawn there survived Close and reopen (`blank page added at 1`, and
   the page came back with its ink). The file's existing ink, written by a version 1 archive,
   loaded unchanged.
+- *Export with the notes.* The reader's share button writes a copy with the ink baked into the
+  pages and hands it to the share sheet. Verified by pulling the produced file out of the
+  simulator container: all four pages there, the strokes exactly where they were drawn, the page
+  text still extractable (`PDFPage.string`), 585 KB. Placement is what the unit test guards —
+  it asserts ink at the point the stroke was drawn and white in a corner that was not.
 - *A row tap opens the reader.* Already true for PDFs (re-checked); now also for rows IS gives
   no type. A row IS types as something else (PPT) still goes to the share sheet, and the
   `%PDF-` check that makes untyped rows safe is unit-tested — this subject has no untyped row.
@@ -90,6 +95,9 @@ Device: ______ iPadOS: ______ Build: ______ Pencil: ______
         neighbours.
 19. [ ] With ink on a file, put the iPad in flight mode and open the subject → the annotated file
         is in the sidebar and opens; nothing is refetched.
+20. [ ] Share (the bar's export button) on a file with ink → the sheet names the file; save it to
+        Files and open it in Apple's Preview: the ink is in the pages, added pages included, and
+        the text is still selectable. Print the same file and check the ink is on the paper.
 
 ## Known edge, not fixed
 

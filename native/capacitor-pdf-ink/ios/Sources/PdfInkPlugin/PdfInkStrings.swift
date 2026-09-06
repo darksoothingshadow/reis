@@ -13,6 +13,9 @@ struct PdfInkStrings {
     let discard: String
     let openFailed: String
     let addPage: String
+    let export: String
+    let exportFailed: String
+    let close: String
 
     init(_ object: JSObject?) {
         saveFailedTitle = object?["saveFailedTitle"] as? String ?? "Your ink couldn't be saved"
@@ -23,5 +26,8 @@ struct PdfInkStrings {
         discard = object?["discard"] as? String ?? "Discard"
         openFailed = object?["openFailed"] as? String ?? "Couldn't open this file."
         addPage = object?["addPage"] as? String ?? "Add a page"
+        export = object?["export"] as? String ?? "Share with notes"
+        exportFailed = object?["exportFailed"] as? String ?? "Couldn't prepare the file to share."
+        close = object?["close"] as? String ?? "Close"
     }
 }
