@@ -31,6 +31,7 @@ export async function listAllHousingPosts(): Promise<HousingAdminRow[] | null> {
   const { data, error } = await adminAuthClient
     .from('housing_posts')
     .select(COLUMNS)
+    .gt('expires_at', new Date().toISOString())
     .order('created_at', { ascending: false })
     .limit(500);
   if (error) {

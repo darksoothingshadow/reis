@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-const chain = { select: vi.fn(), order: vi.fn(), limit: vi.fn(), update: vi.fn(), eq: vi.fn(), delete: vi.fn() };
+const chain = { select: vi.fn(), order: vi.fn(), gt: vi.fn(), limit: vi.fn(), update: vi.fn(), eq: vi.fn(), delete: vi.fn() };
 const from = vi.fn((...args: unknown[]) => {
   void args;
   return chain;
@@ -22,6 +22,14 @@ describe('housingAdmin api', () => {
     expect(from).toHaveBeenCalledWith('housing_posts');
     expect(chain.order).toHaveBeenCalledWith('created_at', { ascending: false });
     expect(rows).toEqual([{ id: 'a', hidden_by_admin: true }]);
+  });
+
+  it('excludes expired-but-unswept rows from the admin list', async () => {
+    chain.limit.mockResolvedValue({ data: [], error: null });
+    await listAllHousingPosts();
+    expect(chain.gt).toHaveBeenCalledWith('expires_at', expect.any(String));
+    const [, gtValue] = chain.gt.mock.calls[0]!;
+    expect(new Date(gtValue as string).toString()).not.toBe('Invalid Date');
   });
 
   it('returns null on a failed read', async () => {

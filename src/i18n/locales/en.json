@@ -1171,7 +1171,7 @@
       "contact": "Contact for replies",
       "contactPlaceholder": "email, phone or Instagram",
       "loginLabel": "Your IS login will be shown",
-      "consent": "I agree that my IS login and the contact I typed are visible to other reIS users until this post expires (14 days) or I close it.",
+      "consent": "I agree that my IS login, a link to my IS profile, and the contact I typed are visible to anyone using reIS until this post expires (14 days) or I close it.",
       "publish": "Publish",
       "published": "Your post is live.",
       "refused": "Not now: at most 3 live posts and 5 attempts per hour.",
