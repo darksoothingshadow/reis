@@ -10,8 +10,8 @@ import { describe, expect, it } from 'vitest';
  * where the lesson was. The room stays reachable on the map — the control is
  * the room itself now, as it already was for Q rooms.
  *
- * Both halves are pinned here. The phone sheet keeps its button (a sheet has
- * room for it, and touch has no hover affordance to replace it), and so does
+ * Both halves are pinned here. The phone keeps its button — a pin on every
+ * agenda row, since touch has no hover affordance to replace it — and so does
  * the admin console's event composer, where it previews an unpublished event's
  * pin and is the whole point of the screen. A later "let's just reuse this
  * component" is exactly how the desktop one comes back.
@@ -28,7 +28,7 @@ describe('showOnMap placement', () => {
   });
 
   it.each([
-    'components/mobile/sheets/EventDetailSheet.tsx',
+    'components/mobile/screens/calendar/AgendaEvent.tsx',
     'components/CampusMap/EventComposer.tsx',
   ])('%s still does', (file) => {
     expect(read(file)).toContain('showOnMap');

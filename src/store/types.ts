@@ -437,7 +437,6 @@ export type MobileSheet =
   // `dayIso` disambiguates the occurrence: the store holds the whole semester
   // and IS reuses a lesson id across the weeks it repeats, so the id alone does
   // not identify which one was tapped.
-  | { kind: 'eventDetail'; eventId: string; dayIso?: string }
   | { kind: 'subjectDrawer'; courseCode: string; courseName?: string; courseId?: string }
   | { kind: 'studyPlan' }
   | { kind: 'person'; personId: string; personName?: string }

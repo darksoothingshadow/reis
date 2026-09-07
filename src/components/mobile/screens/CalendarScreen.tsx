@@ -11,6 +11,7 @@ import { getCzechHoliday } from '../../../utils/holidays';
 import { isOutsideTeaching } from '../../../utils/mobile/teachingPeriod';
 import { semesterStart } from '../../../utils/mobile/semesterStart';
 import { toIso } from '../../../utils/mobile/weekDays';
+import { roomCodeFor, subjectSheetFor } from '../../../utils/mobile/lessonActions';
 import { ScreenHeader } from './calendar/ScreenHeader';
 import { NowNextCard } from './calendar/NowNextCard';
 import { DayChips } from './calendar/DayChips';
@@ -138,9 +139,8 @@ export function CalendarScreen() {
 
   const openRoute = () => {
     if (!nowNext?.next) return;
-    const room = nowNext.next.room.replace(/\s*\([^)]*\)\s*$/, '').trim();
     setMobileTab('map');
-    focusRoomByCode(room);
+    focusRoomByCode(roomCodeFor(nowNext.next));
   };
 
   return shell(
@@ -176,11 +176,13 @@ export function CalendarScreen() {
         ) : (
           <DayAgenda
             rows={agenda}
-            // The day travels with the id: a lesson that repeats weekly shares
-            // one id across the whole semester the store holds.
-            onOpenEvent={(eventId) =>
-              pushSheet({ kind: 'eventDetail', eventId, dayIso: selectedIso })
-            }
+            // The row hands over the day's own lesson object, so there is no
+            // id to look up and no week to disambiguate.
+            onOpenSubject={(lesson) => pushSheet(subjectSheetFor(lesson))}
+            onShowOnMap={(lesson) => {
+              setMobileTab('map');
+              focusRoomByCode(roomCodeFor(lesson));
+            }}
           />
         )}
         {/* Under the day's agenda, inside the scroller: lunch is what you look

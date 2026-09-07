@@ -32,9 +32,8 @@ function initials(name: string): string {
  * than rebuilding them — only the row layout around them is phone-specific.
  *
  * `HiddenItemsSection` is the same component the desktop sidebar profile
- * uses, so an event `EventDetailSheet` hides shows up here already —
- * restoring it calls the same `unhideEvent` action that removes it from the
- * store's `hiddenItems`.
+ * uses, so a hidden event shows up here already — restoring it calls the same
+ * `unhideEvent` action that removes it from the store's `hiddenItems`.
  */
 export function ProfileScreen() {
   const { t } = useTranslation();

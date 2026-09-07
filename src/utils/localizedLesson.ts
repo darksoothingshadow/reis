@@ -8,7 +8,7 @@
  * field. Uses `||`, not `??`, so an empty-string localized value falls through
  * too, and — critically — an English-mode lesson with no `*En` translation
  * still falls back to `*Cs` rather than skipping straight to the (Czech) base
- * field. Shared by mobile (`AgendaEvent`, `NowNextCard`, `EventDetailSheet`)
+ * field. Shared by mobile (`AgendaEvent`, `NowNextCard`)
  * so the predicate can't drift into three subtly different copies again.
  */
 export interface LocalizedLessonFields {
