@@ -138,6 +138,14 @@ reader. The subject's own file drawer is still listed live: with no IS session e
 Seen on the simulator on 2026-09-07 once its session expired. Closing this properly means the
 drawer falling back to what is cached, the same stale-if-error rule `serveFile` already follows.
 
+## 26. The tint is the app's, in both appearances
+
+Open the reader in light: the bar glyphs, the page indicator and the file list's selection are
+MENDELU navy, not the system blue. Switch the iPad to dark and reopen: they are #3b82f6, which is
+close enough to systemBlue that the point is only that nothing has gone grey or invisible. Open the
+page grid in both — the current page's ring and its number must be the same colour as each other.
+The tool picker, the share sheet and the paper are Apple's and must not have changed at all.
+
 ## Report back
 
 Record any finding not in the design here, with the step number.

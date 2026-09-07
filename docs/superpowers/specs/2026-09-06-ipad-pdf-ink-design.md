@@ -429,3 +429,37 @@ What is left of it, and why:
 
 The whole design of the covers is in this file's history if it is ever wanted
 back.
+
+## Addendum 2026-09-07: the chrome carries the theme accent
+
+Everything in the reader was system-coloured, so it read as an iPad app the student had opened
+from inside reIS rather than as part of it. `open` now takes a `tint` and `PdfInkSpace.applyTint`
+puts it on `split.view`, which is the whole space: bar glyphs, the file list's selection, the page
+grid's current page.
+
+This is the one deliberate exception to "everything the student touches is Apple's", and it is a
+narrow one — `tintColor` moves and nothing else. `PKToolPicker`, the share sheet and the context
+menus have no styling API; the paper stays white because the canvases are forced `.light` and
+PencilKit would invert the ink otherwise.
+
+**Two hexes, not one.** `PdfInkTint.dynamic` builds a `UIColor(dynamicProvider:)` from the theme's
+`--color-accent` in both appearances (`src/mobile/pdfInkTint.ts`): #00548f on the light bar,
+#3b82f6 on the dark one. One colour cannot serve both — the bar behind it is white in one and
+near-black in the other.
+
+**Not the lime.** #79be15 on a white bar is 2.29:1, the number `src/index.css` already records
+where the same finding moved `--color-primary-content` off white. A bar button the student has to
+find and tap owes 3:1 (WCAG 1.4.11), and the system blue it would replace clears ~4:1 — tinting
+lime would have been a regression, not a brand. The navy measures 7.9:1 and the blue 4.6:1.
+
+Anything that does not parse means no tint at all: half a brand — one appearance ours, the other
+Apple's — is worse than Apple's.
+
+Two things worth knowing. Presented things are not inside `split.view` and inherit nothing, so the
+sheets and both alerts are tinted by hand. And the page grid's current-page ring was drawing
+`UIColor.tintColor.cgColor`, which resolves outside any view and always came out the system blue —
+it now takes the cell's own tint and redraws on `tintColorDidChange`.
+
+Measured on the simulator by rendering the space and sampling the page indicator: #0088ff → #00548f
+in light, #0091ff → #3a81f5 in dark. In dark the accent sits a shade off systemBlue, so the visible
+change is light mode's; the two hexes in `pdfInkTint.ts` are the only place a colour is named.
