@@ -1,4 +1,3 @@
-import { useEffect, useRef } from 'react';
 import type { AppView } from '../types/app';
 import { AppHeader } from './AppHeader';
 import { WeeklyCalendar } from './WeeklyCalendar/index';
@@ -8,7 +7,6 @@ import { StudyPlanPage } from './SubjectsPanel/StudyPlanPage';
 import { ErasmusPanel } from './ErasmusPanel';
 import { CampusMapView } from './CampusMap/CampusMapView';
 import { NpsBanner } from './Feedback/NpsBanner';
-import { useAppStore } from '../store/useAppStore';
 
 interface AppMainProps {
   currentView: AppView;

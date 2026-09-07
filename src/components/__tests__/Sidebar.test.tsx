@@ -28,5 +28,4 @@ describe('Sidebar', () => {
     fireEvent.click(logoButton);
     expect(onViewChange).toHaveBeenCalledWith('calendar');
   });
-
 });

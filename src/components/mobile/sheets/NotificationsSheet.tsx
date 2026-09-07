@@ -47,7 +47,6 @@ export function NotificationsSheet({ onClose }: NotificationsSheetProps) {
   const focusEventById = useAppStore((s) => s.focusEventById);
   const setMobileTab = useAppStore((s) => s.setMobileTab);
   const markNotificationsRead = useAppStore((s) => s.markNotificationsRead);
-  const pushSheet = useAppStore((s) => s.pushSheet);
 
   /**
    * Opening this sheet IS reading the feed — so the sheet marks it read.

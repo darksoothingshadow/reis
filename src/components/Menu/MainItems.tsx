@@ -9,7 +9,6 @@ import {
   Wifi,
   Map,
   FileText,
-  BedDouble,
 } from 'lucide-react';
 import type { MenuItem } from '../menuConfig';
 

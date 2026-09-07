@@ -410,10 +410,9 @@ describe('EventComposer — url validation', () => {
     fillRequired();
     expect(screen.getByRole('button', { name: 'Zveřejnit akci' })).toBeEnabled();
 
-    fireEvent.change(
-      screen.getByPlaceholderText('https://…'),
-      { target: { value: 'javascript:alert(1)' } }
-    );
+    fireEvent.change(screen.getByPlaceholderText('https://…'), {
+      target: { value: 'javascript:alert(1)' },
+    });
 
     expect(screen.getByRole('button', { name: 'Zveřejnit akci' })).toBeDisabled();
     expect(screen.getByText('Zadej odkaz https://')).toBeInTheDocument();

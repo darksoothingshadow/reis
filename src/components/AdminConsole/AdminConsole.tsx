@@ -33,9 +33,7 @@ export function AdminConsole() {
   const isReisAdmin = useAppStore((s) => s.adminRole === 'reis_admin');
   const unread = useAppStore((s) => s.suggestionsUnread);
   const loadAdminStats = useAppStore((s) => s.loadAdminStats);
-  const [pane, setPane] = useState<'events' | 'suggestions' | 'accounts' | 'stats'>(
-    'events'
-  );
+  const [pane, setPane] = useState<'events' | 'suggestions' | 'accounts' | 'stats'>('events');
   const { t } = useTranslation();
 
   if (!session) {

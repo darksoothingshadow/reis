@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Wifi, FileText, BedDouble, MessageSquarePlus, LogOut, User } from 'lucide-react';
+import { Wifi, FileText, MessageSquarePlus, LogOut, User } from 'lucide-react';
 import { useAppStore } from '../../../store/useAppStore';
 import { useSpolkySettings } from '../../../hooks/useSpolkySettings';
 import { useStudyPlan } from '../../../hooks/useStudyPlan';

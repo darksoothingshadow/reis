@@ -8,7 +8,6 @@ import { useTranslation } from '../../hooks/useTranslation';
 import type { SpolekNotification } from '../../services/spolky';
 import type { DeadlineAlert } from '../../hooks/useDeadlineAlerts';
 import { useIsMobile } from '../../hooks/ui/useIsMobile';
-import { useAppStore } from '../../store/useAppStore';
 
 interface NotificationDropdownProps {
   notifications: SpolekNotification[];

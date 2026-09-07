@@ -160,8 +160,7 @@ export function EventDetailCard({ event, flush = false }: { event: MapEvent; flu
           // event.url is data from Supabase, not something the app typed —
           // a `javascript:` or other non-external scheme must never reach an
           // <a href>. Same validator openExternal itself uses before opening.
-          event.url &&
-            validateExternalUrl(event.url) && (
+          event.url && validateExternalUrl(event.url) && (
             <a
               href={event.url}
               target="_blank"
@@ -171,7 +170,7 @@ export function EventDetailCard({ event, flush = false }: { event: MapEvent; flu
             >
               {t('map.moreInfo')} <ExternalLink size={13} />
             </a>
-            )
+          )
         }
       </div>
     </div>

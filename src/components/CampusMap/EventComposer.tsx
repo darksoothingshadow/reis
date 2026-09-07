@@ -78,8 +78,7 @@ export function EventComposer({ onDone }: { onDone: () => void }) {
   // openExternal will actually open — the same rule EventDetailCard
   // enforces on the way OUT.
   const trimmedUrl = url.trim();
-  const urlInvalid =
-    trimmedUrl !== '' && !validateExternalUrl(trimmedUrl);
+  const urlInvalid = trimmedUrl !== '' && !validateExternalUrl(trimmedUrl);
   // Time is required, not optional. A `time: null` row has no start, so it has
   // no "two hours before" and silently got no reminder at all — and the
   // composer is the only place these rows come from (the map reads

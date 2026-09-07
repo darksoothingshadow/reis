@@ -91,5 +91,4 @@ describe('the profile tab', () => {
     render(<BottomNav />);
     expect(screen.getAllByRole('button')).toHaveLength(5);
   });
-
 });
