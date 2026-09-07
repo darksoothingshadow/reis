@@ -40,8 +40,10 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
     PKCanvasViewDelegate, UIAdaptivePresentationControllerDelegate
 {
     private let strings: PdfInkStrings
+    /// Shared with every other reader on screen: one picker means one pen, one
+    /// colour and one undo stack no matter which half of a split you draw in.
+    private let toolPicker: PKToolPicker
     private let pdfView = InkPDFView()
-    private let toolPicker = PKToolPicker()
     private let spinner = UIActivityIndicatorView(style: .large)
     private let message = UILabel()
 
@@ -62,11 +64,26 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         title: "", style: .plain, target: self, action: #selector(pagesTapped))
     private lazy var searchItem = UIBarButtonItem(
         barButtonSystemItem: .search, target: self, action: #selector(searchTapped))
+    /// Opens a second half beside this one, or closes the half it sits in. Which
+    /// of the two — or neither — is the space's call; see `setSplitControl`.
+    private lazy var splitItem = UIBarButtonItem(
+        image: UIImage(systemName: "rectangle.split.2x1"), style: .plain, target: self,
+        action: #selector(splitTapped))
+    private lazy var closePaneItem = UIBarButtonItem(
+        image: UIImage(systemName: "xmark"), style: .plain, target: self,
+        action: #selector(closePaneTapped))
+    private var splitControl = SplitControl.none
     private var saveTimer: Timer?
+    private var laidOutWidth: CGFloat = 0
     private(set) var lastSaveError: Error?
+    var onSplitOpen: (() -> Void)?
+    var onSplitClose: (() -> Void)?
 
-    init(strings: PdfInkStrings) {
+    enum SplitControl { case none, open, close }
+
+    init(strings: PdfInkStrings, toolPicker: PKToolPicker) {
         self.strings = strings
+        self.toolPicker = toolPicker
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -87,10 +104,10 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         shareItem.accessibilityLabel = strings.export
         pagesItem.accessibilityLabel = strings.pages
         searchItem.accessibilityLabel = strings.search
+        splitItem.accessibilityLabel = strings.openAlongside
+        closePaneItem.accessibilityLabel = strings.closePane
         setBarItems(enabled: false)
-        // Share rightmost, as Notes and Files put it; the two ways of getting
-        // somewhere in the file sit together next to the title.
-        navigationItem.rightBarButtonItems = [shareItem, addPageItem, searchItem, pagesItem]
+        applyBarItems()
 
         // Provider and markup mode BEFORE any document: PDFView asks for overlays
         // as it lays pages out, and a page laid out with no provider never gets a
@@ -133,8 +150,6 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
             message.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor, constant: -32),
         ])
 
-        toolPicker.showsDrawingPolicyControls = true
-        toolPicker.colorUserInterfaceStyle = .light
         toolPicker.setVisible(true, forFirstResponder: pdfView)
 
         NotificationCenter.default.addObserver(
@@ -147,6 +162,24 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         pdfView.becomeFirstResponder()
+    }
+
+    /**
+     * Keeps the page at the same size relative to the half it is in.
+     *
+     * PDFKit fits a page to the view when the document is set and never again,
+     * so a half that narrows in a split kept the wide zoom and drew the page at
+     * a third of its width. The fitted scale is proportional to the view's
+     * width, so scaling by the same ratio leaves a fitted page fitted — and a
+     * page the student pinched into stays pinched by as much as it was.
+     */
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        let width = pdfView.bounds.width
+        guard width > 0 else { return }
+        defer { laidOutWidth = width }
+        guard laidOutWidth > 0, width != laidOutWidth, document != nil else { return }
+        pdfView.scaleFactor *= width / laidOutWidth
     }
 
     // MARK: - Files
@@ -182,6 +215,11 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         spinner.stopAnimating()
         message.isHidden = true
         pdfView.document = document
+        // Fit the new file to whatever width this half currently has. Writing
+        // `scaleFactor` on a width change (viewDidLayoutSubviews) switches
+        // PDFKit's auto-fit off, and without this the next file opened in a
+        // narrowed half kept the wide file's zoom and hung off the edge.
+        pdfView.autoScales = true
         setBarItems(enabled: true)
         updatePageItem()
         pdfView.becomeFirstResponder()
@@ -301,11 +339,70 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         return true
     }
 
+    // MARK: - Splitting
+
+    /**
+     * Which split button this half carries: one to open a second half, one to
+     * close itself, or none.
+     *
+     * The button is absent rather than disabled when there is no room to split.
+     * A disabled button is a promise the reader cannot keep; an absent one asks
+     * nothing of the student.
+     */
+    func setSplitControl(_ control: SplitControl) {
+        guard control != splitControl else { return }
+        splitControl = control
+        loadViewIfNeeded()
+        applyBarItems()
+    }
+
+    /**
+     * The split button goes on the far LEFT of the trailing group, so adding it
+     * leaves every other button exactly where the student's thumb learned it —
+     * a bar that reshuffles is how a page got added to a file by mistake once.
+     */
+    private func applyBarItems() {
+        // Share rightmost, as Notes and Files put it; the two ways of getting
+        // somewhere in the file sit together next to the title.
+        var items = [shareItem, addPageItem, searchItem, pagesItem]
+        switch splitControl {
+        case .none: break
+        case .open: items.append(splitItem)
+        case .close: items.append(closePaneItem)
+        }
+        navigationItem.rightBarButtonItems = items
+    }
+
+    /**
+     * In a split, the half that is not taking the sidebar's picks greys its
+     * title. Nothing else changes: both halves stay live, and touching one moves
+     * the focus to it.
+     */
+    func setFocused(_ focused: Bool) {
+        loadViewIfNeeded()
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithDefaultBackground()
+        appearance.titleTextAttributes = [
+            .foregroundColor: focused ? UIColor.label : UIColor.tertiaryLabel
+        ]
+        navigationItem.standardAppearance = appearance
+        navigationItem.scrollEdgeAppearance = appearance
+    }
+
+    @objc private func splitTapped() { onSplitOpen?() }
+
+    @objc private func closePaneTapped() { onSplitClose?() }
+
+    /// The split buttons stay live with no file: an empty half must be closable,
+    /// and a half whose file failed to open can still be split away from.
     private func setBarItems(enabled: Bool) {
         addPageItem.isEnabled = enabled
         shareItem.isEnabled = enabled
         pagesItem.isEnabled = enabled
         searchItem.isEnabled = enabled
+        // The counter is a pill around a number. With no file open there is no
+        // number, and an empty pill reads as a button that lost its label.
+        pagesItem.isHidden = !enabled
         if !enabled { pagesItem.title = "" }
     }
 

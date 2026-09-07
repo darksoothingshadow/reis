@@ -1137,7 +1137,10 @@
       "search": "Hledat",
       "page": "Strana",
       "noMatches": "Nic nenalezeno",
-      "removePage": "Odstranit stránku"
+      "removePage": "Odstranit stránku",
+      "openAlongside": "Otevřít další soubor vedle",
+      "closePane": "Zavřít tuto polovinu",
+      "pickFile": "Vyber soubor ze seznamu."
     }
   },
   "session": {

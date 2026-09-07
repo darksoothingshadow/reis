@@ -74,6 +74,13 @@ final class FileListViewController: UICollectionViewController {
             at: IndexPath(item: row, section: 0), animated: false, scrollPosition: [])
     }
 
+    /// No row highlighted: the half in focus is empty and waiting for a pick.
+    func clearSelection() {
+        for path in collectionView.indexPathsForSelectedItems ?? [] {
+            collectionView.deselectItem(at: path, animated: false)
+        }
+    }
+
     func setHasInk(link: String, _ hasInk: Bool) {
         guard let row = items.firstIndex(where: { $0.link == link }), items[row].hasInk != hasInk
         else { return }

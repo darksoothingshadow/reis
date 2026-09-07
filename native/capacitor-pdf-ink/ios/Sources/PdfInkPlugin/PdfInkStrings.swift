@@ -22,6 +22,9 @@ struct PdfInkStrings {
     let noMatches: String
     let removePage: String
     let cancel: String
+    let openAlongside: String
+    let closePane: String
+    let pickFile: String
 
     init(_ object: JSObject?) {
         saveFailedTitle = object?["saveFailedTitle"] as? String ?? "Your ink couldn't be saved"
@@ -41,5 +44,8 @@ struct PdfInkStrings {
         noMatches = object?["noMatches"] as? String ?? "Nothing found"
         removePage = object?["removePage"] as? String ?? "Remove page"
         cancel = object?["cancel"] as? String ?? "Cancel"
+        openAlongside = object?["openAlongside"] as? String ?? "Open another file beside this one"
+        closePane = object?["closePane"] as? String ?? "Close this half"
+        pickFile = object?["pickFile"] as? String ?? "Pick a file from the list."
     }
 }

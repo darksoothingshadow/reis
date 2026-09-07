@@ -113,6 +113,18 @@ Device: ______ iPadOS: ______ Build: ______ Pencil: ______
 23. [ ] Share (the bar's export button) on a file with ink → the sheet names the file; save it to
         Files and open it in Apple's Preview: the ink is in the pages, added pages included, and
         the text is still selectable. Print the same file and check the ink is on the paper.
+24. [ ] Two files side by side: the split button (left of the page counter) opens an empty half
+        that says "Pick a file from the list" and reveals the sidebar; pick a file and both halves
+        show their own file, title, page counter and ink.
+25. [ ] Tap the file the OTHER half is showing → the highlight moves to it and nothing loads twice;
+        the half keeps the file it had. Then touch each half in turn → the title of the half you
+        touched goes black and the other greys.
+26. [ ] Draw in both halves, close the right one with its X, reopen it on the same file → the
+        strokes are there. The left half re-fits its page to the full width when the split closes.
+27. [ ] Put the app in Split View or Slide Over against another app until reIS is under 700pt wide
+        → the split folds back to one half (strokes saved first) and the split button disappears;
+        widen it again and the button returns. This is the one step the iPad Air cannot show at
+        full screen — it is 820pt across in portrait — so it needs Stage Manager or Slide Over.
 
 ## Known edge, not fixed
 
