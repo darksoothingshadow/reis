@@ -19,6 +19,8 @@ const isPdfInkAvailable = vi.fn(async () => false);
 vi.mock('../../../mobile/pdfInkNative', () => ({
   isPdfInkAvailable: () => isPdfInkAvailable(),
   nativePdfInkDeps: { tag: 'native-deps' },
+  // The recent-files slice reads the index through this after every open.
+  capacitorPdfCacheFs: { readText: async () => '{}' },
 }));
 
 const openPdfWithInk = vi.fn();
@@ -31,6 +33,7 @@ const toast = vi.hoisted(() => ({ error: vi.fn(), success: vi.fn() }));
 vi.mock('sonner', () => ({ toast }));
 
 import { usePdfPreview } from '../usePdfPreview';
+import { useAppStore } from '../../../store/useAppStore';
 
 describe('usePdfPreview', () => {
   beforeEach(() => {
@@ -170,5 +173,17 @@ describe('usePdfPreview', () => {
       expect(openPdfWithInk).not.toHaveBeenCalled();
       expect(result.current.previewUrl).toBe('blob:abc');
     });
+  });
+
+  it('refreshes the recently-opened list after the native reader closes', async () => {
+    isPdfInkAvailable.mockResolvedValue(true);
+    openPdfWithInk.mockResolvedValue({ kind: 'shown', hasInk: false });
+    const refreshRecentPdfs = vi.fn(async () => undefined);
+    useAppStore.setState({ refreshRecentPdfs } as never);
+
+    const { result } = renderHook(() => usePdfPreview('EBC-AP'));
+    await act(async () => void (await result.current.viewPdf('/x.pdf', { name: 'Notes' })));
+
+    expect(refreshRecentPdfs).toHaveBeenCalledTimes(1);
   });
 });
