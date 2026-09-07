@@ -78,7 +78,10 @@ export const createRecentPdfsSlice: AppSlice<RecentPdfsSlice> = (set, get) => ({
 
   dismissRecentPdf: async (key) => {
     const dismissed = { ...get().dismissedRecentPdfs, [key]: Date.now() };
-    set({ dismissedRecentPdfs: dismissed, recentPdfs: visibleRecentPdfs(get().cachedPdfs, dismissed) });
+    set({
+      dismissedRecentPdfs: dismissed,
+      recentPdfs: visibleRecentPdfs(get().cachedPdfs, dismissed),
+    });
     try {
       await IndexedDBService.set('meta', DISMISSED_KEY, dismissed);
     } catch (error) {

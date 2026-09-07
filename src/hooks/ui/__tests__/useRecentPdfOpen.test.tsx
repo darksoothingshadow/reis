@@ -102,7 +102,9 @@ describe('useRecentPdfOpen', () => {
   it('falls back to the course code for the title when the subject is not in the store', async () => {
     const { result } = renderHook(() => useRecentPdfOpen());
     await act(async () => void (await result.current.openRecentPdf(row('a', 'EBC-AP', 'A'))));
-    expect((openPdfWithInk.mock.calls[0]?.[1] as { courseTitle: string }).courseTitle).toBe('EBC-AP');
+    expect((openPdfWithInk.mock.calls[0]?.[1] as { courseTitle: string }).courseTitle).toBe(
+      'EBC-AP'
+    );
   });
 
   it('uses the subject display name when it is known', async () => {
