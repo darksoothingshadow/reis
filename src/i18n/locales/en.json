@@ -956,7 +956,7 @@
     "displayName": "Display name",
     "urlLabel": "Link (optional)",
     "urlHint": "https://…",
-    "urlInvalid": "Enter an https:// link",
+    "urlInvalid": "Enter an http:// or https:// link",
     "statsTab": "Statistics",
     "stats": {
       "today": "Today",

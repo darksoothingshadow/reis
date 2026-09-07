@@ -3,9 +3,12 @@
 > **Withdrawn — never released.** The housing board was merged to `test` but
 > pulled before any release: it was the only reIS feature that asked a student
 > to attach their IS login and IS person id to something published to every
-> other install. The code, the Supabase tables and RPCs, and the privacy-policy
-> paragraphs were all removed. `housing_posts` held 0 rows when it was dropped,
-> so no student identity was ever collected. Kept for the record only.
+> other install. The code, the Supabase tables and RPCs, and the housing
+> paragraph in this repository's `PRIVACY.md` and `docs/privacy-policy-app.md`
+> were all removed. The **published privacy-policy gist is not in this
+> repository and still carries that paragraph** — it needs the same edit by
+> hand. `housing_posts` held 0 rows when it was dropped, so no student identity
+> was ever collected. Kept for the record only.
 >
 > **The housing board only.** The anonymous usage dimensions and admin
 > statistics described in this same document shipped and remain in place —

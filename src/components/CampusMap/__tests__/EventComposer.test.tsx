@@ -415,7 +415,7 @@ describe('EventComposer — url validation', () => {
     });
 
     expect(screen.getByRole('button', { name: 'Zveřejnit akci' })).toBeDisabled();
-    expect(screen.getByText('Zadej odkaz https://')).toBeInTheDocument();
+    expect(screen.getByText('Zadej odkaz http:// nebo https://')).toBeInTheDocument();
   });
 
   it('leaves publish enabled when the url field is left empty', () => {

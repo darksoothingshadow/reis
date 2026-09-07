@@ -956,7 +956,7 @@
     "displayName": "Zobrazovaný název",
     "urlLabel": "Odkaz (nepovinný)",
     "urlHint": "https://…",
-    "urlInvalid": "Zadej odkaz https://",
+    "urlInvalid": "Zadej odkaz http:// nebo https://",
     "statsTab": "Statistiky",
     "stats": {
       "today": "Dnes",
