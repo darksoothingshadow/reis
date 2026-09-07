@@ -87,6 +87,9 @@ export function AgendaEvent({ lesson, onOpenSubject, onShowOnMap }: AgendaEventP
           {teacher && ` · ${teacher}`}
         </span>
       </button>
+      {/* A split button, not a decoration: the hairline and the filled circle
+          are what tell a thumb this is its own control. On the device the bare
+          glyph read as part of the card and nobody would have found the map. */}
       <button
         type="button"
         aria-label={t('mobile.sheet.showOnMap')}
@@ -94,9 +97,11 @@ export function AgendaEvent({ lesson, onOpenSubject, onShowOnMap }: AgendaEventP
           e.stopPropagation();
           onShowOnMap();
         }}
-        className="flex min-h-11 min-w-11 flex-shrink-0 cursor-pointer items-center justify-center pr-1 text-content-secondary"
+        className="my-1.5 flex min-h-11 min-w-11 flex-shrink-0 cursor-pointer items-center justify-center border-l border-content-primary/10 px-1.5"
       >
-        <MapPin size={18} />
+        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-content-primary/10 text-content-primary">
+          <MapPin size={16} />
+        </span>
       </button>
     </div>
   );
