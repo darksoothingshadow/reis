@@ -388,7 +388,7 @@ link and enforces the cap. `usePdfPreview(courseCode, subject)` receives
 
 ## Addendum 2026-09-07: what the branch grew past the design
 
-The design describes one reader over one file. Five features were added after it,
+The design describes one reader over one file. Four features were added after it,
 each on the same principle — Apple's control, no mode, nothing rewritten in the PDF:
 
 - **Add and remove a page.** Blank pages are recorded in the archive
@@ -399,25 +399,6 @@ each on the same principle — Apple's control, no mode, nothing rewritten in th
   one is up because it floats in its own window.
 - **Share with notes.** `InkExport` redraws each page and stamps the `PKDrawing`
   over it, so the text stays text.
-- **Two files side by side.** The split view's secondary is a
-  `ReaderStackViewController` holding one or two `ReaderPane`s, each a reader in
-  its own navigation controller. One `PKToolPicker` is shared by both, so there
-  is one pen and one colour no matter which half is drawn in.
-
-The split rules that are not obvious from the code:
-
-- **A file is never open in both halves.** Two readers over one ink archive would
-  both save it and the second write would take the first one's strokes. Tapping a
-  file the other half holds moves the focus there instead (`SpacePanes.holding`).
-- **The pane is the addressee.** Both halves can have a download in flight;
-  `SpacePanes.awaiting` routes a delivery to the half that asked and drops one
-  nobody is waiting for.
-- **700pt or no split** (`SpacePanes.minimumSplitWidth`), giving each half 350pt.
-  The narrowest iPad reIS runs on is 810pt across in portrait, so both
-  orientations split. Below the threshold the button is absent rather than
-  disabled, and an open split folds back after persisting.
-- **Focus is the half you last touched** — a `TouchObserver` on each pane, so the
-  start of a stroke counts, not just a tap. The unfocused half greys its title.
 
 ## Addendum 2026-09-07: covering an answer
 

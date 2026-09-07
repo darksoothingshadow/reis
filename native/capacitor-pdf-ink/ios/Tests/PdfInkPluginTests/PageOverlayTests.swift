@@ -27,7 +27,7 @@ final class PageOverlayTests: XCTestCase {
     }
 
     func testTheDrawingIsKeptWhenPdfkitGivesThePageBack() throws {
-        let reader = PdfInkViewController(strings: PdfInkStrings(nil), toolPicker: PKToolPicker())
+        let reader = PdfInkViewController(strings: PdfInkStrings(nil))
         let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 820, height: 1000))
         window.rootViewController = reader
         window.isHidden = false
@@ -53,7 +53,7 @@ final class PageOverlayTests: XCTestCase {
     }
 
     func testTheSamePageAsksForTheSameOverlay() throws {
-        let reader = PdfInkViewController(strings: PdfInkStrings(nil), toolPicker: PKToolPicker())
+        let reader = PdfInkViewController(strings: PdfInkStrings(nil))
         reader.loadViewIfNeeded()
         let document = try page(CGSize(width: 200, height: 200))
         let inkURL = FileManager.default.temporaryDirectory
@@ -70,7 +70,7 @@ final class PageOverlayTests: XCTestCase {
     /// The point of covers: they are still there next time, and they are shut.
     /// Which ones were open is a fact about one sitting, not about the file.
     func testACoverComesBackAndComesBackShut() throws {
-        let reader = PdfInkViewController(strings: PdfInkStrings(nil), toolPicker: PKToolPicker())
+        let reader = PdfInkViewController(strings: PdfInkStrings(nil))
         reader.loadViewIfNeeded()
         let document = try page(CGSize(width: 200, height: 200))
         let inkURL = FileManager.default.temporaryDirectory
@@ -86,8 +86,7 @@ final class PageOverlayTests: XCTestCase {
         XCTAssertEqual(overlay.coverLayer.revealed, [0], "tapping it did not open it")
 
         // Away and back, the way closing the file and opening it again goes.
-        let reopened = PdfInkViewController(
-            strings: PdfInkStrings(nil), toolPicker: PKToolPicker())
+        let reopened = PdfInkViewController(strings: PdfInkStrings(nil))
         reopened.loadViewIfNeeded()
         let again = try page(CGSize(width: 200, height: 200))
         XCTAssertTrue(reopened.load(document: again, inkURL: inkURL, title: "test"))
@@ -102,7 +101,7 @@ final class PageOverlayTests: XCTestCase {
 
     /// A cover is the only thing in the file: it still has to be worth a file.
     func testAFileWithOnlyCoversIsNotThrownAway() throws {
-        let reader = PdfInkViewController(strings: PdfInkStrings(nil), toolPicker: PKToolPicker())
+        let reader = PdfInkViewController(strings: PdfInkStrings(nil))
         reader.loadViewIfNeeded()
         let document = try page(CGSize(width: 200, height: 200))
         let inkURL = FileManager.default.temporaryDirectory

@@ -88,7 +88,7 @@ final class ReaderScaleTests: XCTestCase {
     /// A reader in a half of its own, the way the stack holds one: the screen
     /// stays the same size and the half is what narrows.
     private func show(width: CGFloat) throws -> PdfInkViewController {
-        let reader = PdfInkViewController(strings: PdfInkStrings(nil), toolPicker: PKToolPicker())
+        let reader = PdfInkViewController(strings: PdfInkStrings(nil))
         let window = UIWindow(frame: CGRect(x: 0, y: 0, width: full, height: 1000))
         let host = UIViewController()
         window.rootViewController = host
@@ -162,7 +162,7 @@ final class ReaderBarTests: XCTestCase {
     }
 
     func testTheSidebarToggleKeepsItsPlaceWithCloseBesideIt() throws {
-        let reader = PdfInkViewController(strings: PdfInkStrings(nil), toolPicker: PKToolPicker())
+        let reader = PdfInkViewController(strings: PdfInkStrings(nil))
         let split = split(reader)
         // Vended fresh on every read, so it has to be held to be compared.
         let toggle = split.displayModeButtonItem
@@ -176,7 +176,7 @@ final class ReaderBarTests: XCTestCase {
     }
 
     func testCloseReportsToTheSpace() throws {
-        let reader = PdfInkViewController(strings: PdfInkStrings(nil), toolPicker: PKToolPicker())
+        let reader = PdfInkViewController(strings: PdfInkStrings(nil))
         let split = split(reader)
         var closed = false
         reader.onCloseSpace = { closed = true }

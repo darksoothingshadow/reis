@@ -113,18 +113,23 @@ Device: ______ iPadOS: ______ Build: ______ Pencil: ______
 23. [ ] Share (the bar's export button) on a file with ink → the sheet names the file; save it to
         Files and open it in Apple's Preview: the ink is in the pages, added pages included, and
         the text is still selectable. Print the same file and check the ink is on the paper.
-24. [ ] Two files side by side: the split button (left of the page counter) opens an empty half
-        that says "Pick a file from the list" and reveals the sidebar; pick a file and both halves
-        show their own file, title, page counter and ink.
-25. [ ] Tap the file the OTHER half is showing → the highlight moves to it and nothing loads twice;
-        the half keeps the file it had. Then touch each half in turn → the title of the half you
-        touched goes black and the other greys.
-26. [ ] Draw in both halves, close the right one with its X, reopen it on the same file → the
-        strokes are there. The left half re-fits its page to the full width when the split closes.
-27. [ ] Put the app in Split View or Slide Over against another app until reIS is under 700pt wide
-        → the split folds back to one half (strokes saved first) and the split button disappears;
-        widen it again and the button returns. This is the one step the iPad Air cannot show at
-        full screen — it is 820pt across in portrait — so it needs Stage Manager or Slide Over.
+24. [ ] The reader's own Close (beside the sidebar toggle) leaves the subject without opening the
+        sidebar first, and the toggle beside it still opens the sidebar. The toggle is placed by
+        hand rather than by the split view, and neither its wiring nor its appearance can be
+        checked without a device — if it ever stops working, a swipe from the left edge still
+        brings the sidebar out.
+25. [ ] Covers: turn the cover tool on (the button fills in and the tool picker goes), drag a
+        block over an answer, turn the tool off. Tap the block → the answer shows through with a
+        dashed outline left behind; tap again → hidden. Close the file and reopen it → the block
+        is there and it is shut.
+26. [ ] With the tool on, drag a small block on top of a big one → a new block, not a deletion.
+        Tap a block with the tool on → it goes.
+27. [ ] Draw with the Pencil next to a cover → the ink goes down normally; the covered patch
+        itself does not take ink. Scrolling past a covered page and back keeps the block.
+28. [ ] A file whose only content is covers: no strokes at all, close and reopen → the covers are
+        still there (an empty archive used to be deleted).
+29. [ ] Share a file that has covers → the exported PDF shows the answers. Covers are a study aid
+        and deliberately do not travel with the file.
 
 ## Known edge, not fixed
 
@@ -134,23 +139,6 @@ it was drawn at, so the blank page comes back empty and those strokes are held b
 Nothing is destroyed, and it needs both a shortened re-upload and an added page beyond the new
 end. Fixing it means shifting the ink keys by the same clamp delta — a larger change than this
 branch should carry.
-28. [ ] The reader's own Close (beside the sidebar toggle) leaves the subject without opening the
-        sidebar first, and the toggle beside it still opens the sidebar. The toggle is now placed
-        by hand rather than by the split view, and neither its wiring nor its appearance can be
-        checked without a device — if it ever stops working, a swipe from the left edge still
-        brings the sidebar out.
-29. [ ] Covers: turn the cover tool on (the button fills in and the tool picker goes), drag a
-        block over an answer, turn the tool off. Tap the block → the answer shows through with a
-        dashed outline left behind; tap again → hidden. Close the file and reopen it → the block
-        is there and it is shut.
-30. [ ] With the tool on, drag a small block on top of a big one → a new block, not a deletion.
-        Tap a block with the tool on → it goes.
-31. [ ] Draw with the Pencil next to a cover → the ink goes down normally; the covered patch
-        itself does not take ink. Scrolling past a covered page and back keeps the block.
-32. [ ] A file whose only content is covers: no strokes at all, close and reopen → the covers are
-        still there (an empty archive used to be deleted).
-33. [ ] Share a file that has covers → the exported PDF shows the answers. Covers are a study aid
-        and deliberately do not travel with the file.
 
 ## Still open: the drawer itself is tied to reaching IS
 

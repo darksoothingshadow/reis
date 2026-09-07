@@ -27,9 +27,6 @@ const STRINGS: PdfInkStrings = {
   noMatches: 'nm',
   removePage: 'rp',
   cancel: 'ca',
-  openAlongside: 'oa',
-  closePane: 'cp',
-  pickFile: 'pf',
   cover: 'cv',
 };
 const LINK = 'https://is.mendelu.cz/auth/dok_server/slozka.pl?download=359057;id=1';

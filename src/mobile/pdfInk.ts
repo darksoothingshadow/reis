@@ -38,11 +38,6 @@ export interface PdfInkStrings {
   /** Taking back a page the student added, and the generic Cancel beside it. */
   removePage: string;
   cancel: string;
-  /** Two files side by side: the button that opens a half, and the one that closes it. */
-  openAlongside: string;
-  closePane: string;
-  /** The empty half, before the student has picked what goes in it. */
-  pickFile: string;
   /** The tool that blocks out an answer so it can be recalled before looking. */
   cover: string;
 }
