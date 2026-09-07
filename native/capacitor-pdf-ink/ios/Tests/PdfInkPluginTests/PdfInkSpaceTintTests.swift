@@ -116,7 +116,13 @@ final class PdfInkSpaceTintTests: XCTestCase {
             let controller = try XCTUnwrap(space.split.viewController(for: column))
             let item = ((controller as? UINavigationController)?.topViewController ?? controller)
                 .navigationItem
-            let buttons = (item.leftBarButtonItems ?? []) + (item.rightBarButtonItems ?? [])
+            // The groups explicitly: the reader's exit lives in
+            // `leadingItemGroups`, and whether `leftBarButtonItems` surfaces
+            // group items is UIKit's business, not something to rely on.
+            let buttons =
+                (item.leftBarButtonItems ?? []) + (item.rightBarButtonItems ?? [])
+                + item.leadingItemGroups.flatMap(\.barButtonItems)
+                + item.trailingItemGroups.flatMap(\.barButtonItems)
             XCTAssertFalse(buttons.isEmpty, "\(column) has no bar buttons to tint")
             for button in buttons {
                 let tint = try XCTUnwrap(button.tintColor, "an untinted bar button stays monochrome")

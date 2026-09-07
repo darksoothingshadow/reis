@@ -39,11 +39,17 @@ enum PdfInkTint {
     }
 
     /// Bar buttons are the one place an inherited tint is not enough; see
-    /// `PdfInkSpace.applyTint`.
+    /// `PdfInkSpace.applyTint`. The item GROUPS are walked as well as the flat
+    /// arrays: the reader's exit is installed through `leadingItemGroups`, and
+    /// `leftBarButtonItems` does not surface it — the exit shipped monochrome
+    /// once while the test over the flat arrays stayed green.
     static func apply(_ tint: UIColor, toBarItemsOf item: UINavigationItem) {
-        for button in (item.leftBarButtonItems ?? []) + (item.rightBarButtonItems ?? []) {
-            button.tintColor = tint
+        var buttons = (item.leftBarButtonItems ?? []) + (item.rightBarButtonItems ?? [])
+        if #available(iOS 16.0, *) {
+            buttons += item.leadingItemGroups.flatMap(\.barButtonItems)
+            buttons += item.trailingItemGroups.flatMap(\.barButtonItems)
         }
+        for button in buttons { button.tintColor = tint }
     }
 
     /// A colour that resolves per appearance, or nil when either hex is missing

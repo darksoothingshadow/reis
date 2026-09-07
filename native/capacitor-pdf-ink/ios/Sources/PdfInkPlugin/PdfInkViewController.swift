@@ -75,8 +75,9 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
     /// sidebar is open (the toggle goes to the sidebar's own header then).
     ///
     /// `xmark`, not a chevron: this dismisses a full-screen modal, and the
-    /// sidebar's control for the same act is already an X. Colour cannot help —
-    /// iPadOS 26 bar buttons are monochrome glass and ignore `tintColor`.
+    /// sidebar's control for the same act is already an X. It takes the theme
+    /// tint like every other bar item — set on the item itself, since iPadOS 26
+    /// bar buttons ignore an inherited one (see PdfInkTint.apply).
     private lazy var exitItem = UIBarButtonItem(
         image: UIImage(systemName: "xmark"), style: .plain, target: self,
         action: #selector(exitTapped))
