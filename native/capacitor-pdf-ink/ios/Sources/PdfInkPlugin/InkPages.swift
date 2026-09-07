@@ -27,6 +27,20 @@ enum InkPages {
         (inserts.map { $0 >= at ? $0 + 1 : $0 } + [at]).sorted()
     }
 
+    /// Everything below `at` moves one page back; whatever was on the page
+    /// itself goes with it.
+    static func shifted<Value>(_ pages: [Int: Value], removingAt at: Int) -> [Int: Value] {
+        var moved: [Int: Value] = [:]
+        for (index, value) in pages where index != at {
+            moved[index > at ? index - 1 : index] = value
+        }
+        return moved
+    }
+
+    static func shifted(_ inserts: [Int], removingAt at: Int) -> [Int] {
+        inserts.filter { $0 != at }.map { $0 > at ? $0 - 1 : $0 }.sorted()
+    }
+
     static func blank(size: CGSize) -> PDFPage { BlankPage(size: size) }
 
     /**

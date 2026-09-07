@@ -35,6 +35,9 @@ export interface PdfInkStrings {
   search: string;
   page: string;
   noMatches: string;
+  /** Taking back a page the student added, and the generic Cancel beside it. */
+  removePage: string;
+  cancel: string;
 }
 
 export interface PdfInkPlugin {

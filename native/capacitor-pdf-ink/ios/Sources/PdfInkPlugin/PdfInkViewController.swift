@@ -270,6 +270,37 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         addBlankPage()
     }
 
+    /**
+     * Removes a page the STUDENT added, and the ink on it.
+     *
+     * Only their own pages: the PDF itself is never rewritten, so a page of the
+     * teacher's file would be back on the next open — the archive records the
+     * pages that were added, not the ones that were taken away.
+     */
+    @discardableResult
+    func removeAddedPage(at index: Int) -> Bool {
+        guard let document, insertedPages.contains(index), document.pageCount > 1 else {
+            return false
+        }
+        for (page, canvas) in canvases {
+            drawings[page] = canvas.drawing
+            toolPicker.removeObserver(canvas)
+        }
+        canvases = [:]
+        drawings = InkPages.shifted(drawings, removingAt: index)
+        insertedPages = InkPages.shifted(insertedPages, removingAt: index)
+        document.removePage(at: index)
+        pdfView.document = nil
+        pdfView.document = document
+        if let page = document.page(at: min(index, document.pageCount - 1)) {
+            pdfView.go(to: page)
+        }
+        NSLog("PdfInk: blank page removed at \(index)")
+        persistNow()
+        updatePageItem()
+        return true
+    }
+
     private func setBarItems(enabled: Bool) {
         addPageItem.isEnabled = enabled
         shareItem.isEnabled = enabled
@@ -289,12 +320,15 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         guard let document, let page = pdfView.currentPage else { return }
         let grid = PageGridViewController(
             document: document, title: strings.pages, current: document.index(for: page),
-            inked: { [weak self] index in self?.hasInk(onPage: index) ?? false })
+            strings: strings,
+            inked: { [weak self] index in self?.hasInk(onPage: index) ?? false },
+            added: { [weak self] index in self?.insertedPages.contains(index) ?? false })
         grid.onPick = { [weak self] index in
             guard let self, let target = self.document?.page(at: index) else { return }
             pdfView.go(to: target)
             updatePageItem()
         }
+        grid.onRemove = { [weak self] index in self?.removeAddedPage(at: index) ?? false }
         grid.onDismiss = { [weak self] in self?.showToolPicker() }
         present(inSheet: grid)
     }

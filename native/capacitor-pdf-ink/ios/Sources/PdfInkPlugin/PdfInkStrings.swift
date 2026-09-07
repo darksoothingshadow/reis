@@ -20,6 +20,8 @@ struct PdfInkStrings {
     let search: String
     let page: String
     let noMatches: String
+    let removePage: String
+    let cancel: String
 
     init(_ object: JSObject?) {
         saveFailedTitle = object?["saveFailedTitle"] as? String ?? "Your ink couldn't be saved"
@@ -37,5 +39,7 @@ struct PdfInkStrings {
         search = object?["search"] as? String ?? "Search"
         page = object?["page"] as? String ?? "Page"
         noMatches = object?["noMatches"] as? String ?? "Nothing found"
+        removePage = object?["removePage"] as? String ?? "Remove page"
+        cancel = object?["cancel"] as? String ?? "Cancel"
     }
 }

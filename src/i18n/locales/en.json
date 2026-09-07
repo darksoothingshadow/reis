@@ -1136,7 +1136,8 @@
       "pages": "Pages",
       "search": "Search",
       "page": "Page",
-      "noMatches": "Nothing found"
+      "noMatches": "Nothing found",
+      "removePage": "Remove page"
     }
   },
   "session": {

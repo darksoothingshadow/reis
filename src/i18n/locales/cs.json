@@ -1136,7 +1136,8 @@
       "pages": "Stránky",
       "search": "Hledat",
       "page": "Strana",
-      "noMatches": "Nic nenalezeno"
+      "noMatches": "Nic nenalezeno",
+      "removePage": "Odstranit stránku"
     }
   },
   "session": {

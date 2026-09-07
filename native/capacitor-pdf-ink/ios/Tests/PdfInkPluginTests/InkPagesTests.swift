@@ -23,6 +23,22 @@ final class InkPagesTests: XCTestCase {
         XCTAssertEqual(InkPages.shifted([3], insertingAt: 1), [1, 4])
     }
 
+    func testRemovingAPageTakesItsInkAndPullsTheRestBack() {
+        let drawings = [0: "a", 1: "b", 2: "c"]
+        XCTAssertEqual(InkPages.shifted(drawings, removingAt: 1), [0: "a", 1: "c"])
+    }
+
+    func testRemovingAnAddedPageForgetsItAndPullsLaterOnesBack() {
+        XCTAssertEqual(InkPages.shifted([1, 4], removingAt: 1), [3])
+    }
+
+    func testAddingThenRemovingTheSamePageIsANoOp() {
+        let drawings = [0: "a", 3: "d"]
+        let added = InkPages.shifted(drawings, insertingAt: 2)
+        XCTAssertEqual(InkPages.shifted(added, removingAt: 2), drawings)
+        XCTAssertEqual(InkPages.shifted(InkPages.shifted([], insertingAt: 2), removingAt: 2), [])
+    }
+
     func testBlankPageIsTheSizeItWasAskedFor() {
         let page = InkPages.blank(size: CGSize(width: 400, height: 900))
         XCTAssertEqual(page.bounds(for: .mediaBox), CGRect(x: 0, y: 0, width: 400, height: 900))

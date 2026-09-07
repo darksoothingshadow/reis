@@ -19,15 +19,24 @@ final class PageGridViewController: UICollectionViewController {
     /// Called for every way out of the sheet that the sheet itself knows about;
     /// a swipe down is the presenting controller's to notice.
     var onDismiss: (() -> Void)?
+    /// Answers whether the page went away, so the grid knows to redraw itself.
+    var onRemove: ((Int) -> Bool)?
 
     private let document: PDFDocument
     private let inked: (Int) -> Bool
-    private let current: Int
+    private let added: (Int) -> Bool
+    private let strings: PdfInkStrings
+    private var current: Int
     private var thumbnails: [Int: UIImage] = [:]
 
-    init(document: PDFDocument, title: String, current: Int, inked: @escaping (Int) -> Bool) {
+    init(
+        document: PDFDocument, title: String, current: Int, strings: PdfInkStrings,
+        inked: @escaping (Int) -> Bool, added: @escaping (Int) -> Bool
+    ) {
         self.document = document
         self.inked = inked
+        self.added = added
+        self.strings = strings
         self.current = current
         // A third of the ROW each, not of the group: an item sized to the full
         // width lays three pages on top of one another and shows one.
@@ -84,6 +93,53 @@ final class PageGridViewController: UICollectionViewController {
         onPick?(indexPath.item)
         onDismiss?()
         dismiss(animated: true)
+    }
+
+    /**
+     * Long press a page the student added to take it away again — the
+     * counterpart of "+", and where GoodNotes and Notes put page actions too.
+     * Pages of the teacher's file have no such menu: the PDF is never rewritten,
+     * so removing one could not survive the next open.
+     */
+    override func collectionView(
+        _ collectionView: UICollectionView,
+        contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint
+    ) -> UIContextMenuConfiguration? {
+        let index = indexPath.item
+        guard added(index), document.pageCount > 1 else { return nil }
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { [weak self] _ in
+            guard let self else { return nil }
+            let remove = UIAction(
+                title: strings.removePage, image: UIImage(systemName: "trash"),
+                attributes: .destructive
+            ) { [weak self] _ in self?.confirmRemove(index) }
+            return UIMenu(children: [remove])
+        }
+    }
+
+    /// Asking only when there is something to lose: an empty page the student
+    /// just added is not worth a dialog, ink on it is.
+    private func confirmRemove(_ index: Int) {
+        guard inked(index) else {
+            remove(index)
+            return
+        }
+        let alert = UIAlertController(
+            title: strings.removePage, message: nil, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: strings.cancel, style: .cancel))
+        alert.addAction(
+            UIAlertAction(title: strings.removePage, style: .destructive) { [weak self] _ in
+                self?.remove(index)
+            })
+        present(alert, animated: true)
+    }
+
+    private func remove(_ index: Int) {
+        guard onRemove?(index) == true else { return }
+        // Every page after it has a new number, so no cached picture is trustworthy.
+        thumbnails.removeAll()
+        current = min(current, document.pageCount - 1)
+        collectionView.reloadData()
     }
 
     private func thumbnail(for index: Int) -> UIImage? {
