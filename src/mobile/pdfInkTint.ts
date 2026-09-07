@@ -1,8 +1,13 @@
 /**
- * The accent the native reader paints its chrome with: bar glyphs, the file
- * list's selection, the page grid's current page. Everything else in there
- * stays Apple's — `PKToolPicker`, the share sheet and the paper have no styling
- * API, and the ink would be wrong on anything but white paper.
+ * The accent the native reader paints its chrome with. What it reaches depends
+ * on the iPadOS version, and this is worth knowing before expecting much:
+ * everything drawn from `tintColor` follows it (the page grid's current-page
+ * ring and number), but on **iPadOS 26 the bar buttons are monochrome glass and
+ * ignore the tint entirely** — measured on the simulator, the bar has no
+ * coloured pixel with or without this. On iPadOS 16–18, where bar glyphs still
+ * take the tint, it reaches them too. Everything else stays Apple's:
+ * `PKToolPicker`, the share sheet and the paper have no styling API, and the ink
+ * would be wrong on anything but white paper.
  *
  * Two hexes because the theme has two: `--color-accent` in `src/index.css`,
  * light and dark. iPadOS picks per appearance (`PdfInkTint.dynamic`), which the

@@ -434,8 +434,7 @@ back.
 
 Everything in the reader was system-coloured, so it read as an iPad app the student had opened
 from inside reIS rather than as part of it. `open` now takes a `tint` and `PdfInkSpace.applyTint`
-puts it on `split.view`, which is the whole space: bar glyphs, the file list's selection, the page
-grid's current page.
+puts it on `split.view`, which is the whole space.
 
 This is the one deliberate exception to "everything the student touches is Apple's", and it is a
 narrow one — `tintColor` moves and nothing else. `PKToolPicker`, the share sheet and the context
@@ -460,11 +459,21 @@ sheets and both alerts are tinted by hand. And the page grid's current-page ring
 `UIColor.tintColor.cgColor`, which resolves outside any view and always came out the system blue —
 it now takes the cell's own tint and redraws on `tintColorDidChange`.
 
-Measured on the simulator by rendering the space and sampling the page indicator: #0088ff → #00548f
-in light, #0091ff → #3a81f5 in dark. In dark the accent sits a shade off systemBlue, so the visible
-change is light mode's; the two hexes in `pdfInkTint.ts` are the only place a colour is named.
+**How much of this a student actually sees, measured rather than assumed.** The reader was hosted
+in a throwaway app on an iPad Air 11-inch simulator (iPadOS 26.5) and screenshotted with and
+without the tint:
 
-What that proves and what it does not: the reader's own view and the grid's ring are asserted in
-`PdfInkSpaceTintTests`, and the page indicator is pixel-sampled. The bar glyphs are SF Symbols,
-which do not draw in a headless render — they inherit `split.view`'s tint by the same route the
-indicator does, but nobody has looked at them. Checklist step 26 is what closes that.
+- **The page grid's current page: #0088ff → #00548f**, ring and number both. Same pixel counts
+  either side, so nothing else moved.
+- **The bar — no change at all.** On iPadOS 26 bar buttons are monochrome glass; the whole bar
+  region has no coloured pixel in either run. `tintColor` does not reach them, and making them
+  prominent enough to take a colour would be fighting the platform, which this reader does not do.
+- On **iPadOS 16–18** bar glyphs do take `tintColor`, so there the change should be the bars as
+  well — expectation, not measurement: only the 26.5 runtime is installed on this machine, and the
+  physical-iPad pass (step 26) is where that gets confirmed.
+
+So the honest summary is that on a current iPad this is a small change — the grid — and the tint is
+mostly insurance that the reader is the app's rather than the system's wherever iPadOS still lets a
+colour through. An earlier headless render suggested the bars changed; it was wrong, because a
+headless render does not apply the glass bar styling. The two hexes in `pdfInkTint.ts` are still
+the only place a colour is named.

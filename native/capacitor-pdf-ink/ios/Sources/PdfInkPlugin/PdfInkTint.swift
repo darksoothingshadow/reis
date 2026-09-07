@@ -2,8 +2,12 @@ import UIKit
 
 /**
  * The reader's accent, handed over by the app with `open` so the chrome around
- * Apple's reader carries the reIS theme instead of the system blue: the bar
- * glyphs, the file list's selection, the page grid's current page.
+ * Apple's reader carries the reIS theme instead of the system blue.
+ *
+ * How far it reaches is the iPadOS version's call. Anything drawn from
+ * `tintColor` follows it — the page grid's current-page ring and number do, and
+ * were measured going #0088ff → #00548f. On iPadOS 26 the bar buttons are
+ * monochrome glass and ignore a tint completely; on iPadOS 16–18 they take it.
  *
  * This is the one deliberate exception to "everything the student touches is
  * Apple's". It moves `tintColor` and nothing else — `PKToolPicker`, the share

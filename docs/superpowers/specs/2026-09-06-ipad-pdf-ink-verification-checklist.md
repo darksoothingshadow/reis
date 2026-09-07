@@ -140,10 +140,16 @@ drawer falling back to what is cached, the same stale-if-error rule `serveFile` 
 
 ## 26. The tint is the app's, in both appearances
 
-Open the reader in light: the bar glyphs, the page indicator and the file list's selection are
-MENDELU navy, not the system blue. Switch the iPad to dark and reopen: they are #3b82f6, which is
-close enough to systemBlue that the point is only that nothing has gone grey or invisible. Open the
-page grid in both — the current page's ring and its number must be the same colour as each other.
+Open the page grid in light: the current page's ring and its number are MENDELU navy (#00548f),
+the same colour as each other, and no other cell is ringed. Switch the iPad to dark and look again:
+#3b82f6, close enough to systemBlue that the only thing being checked is that nothing went grey or
+invisible.
+
+What the bar does depends on the iPad's iPadOS. On 26 the glyphs are monochrome glass and the tint
+does not reach them — that is expected, not a bug. On 16–18 they should be navy in light. Record
+which version the device is running next to what you saw, because that is the one part of this
+nobody has been able to measure here.
+
 The tool picker, the share sheet and the paper are Apple's and must not have changed at all.
 
 ## Report back
