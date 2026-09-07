@@ -2,6 +2,12 @@ version: 2
 updates:
   - package-ecosystem: "npm"
     directory: "/"
+    # Bumps go through the release train like everything else: feature → test →
+    # main. Without this Dependabot targets the default branch, main, which only
+    # ever accepts the test → main release PR — so every bump PR sat BLOCKED on
+    # the release gate and had to be retargeted by hand (#299/#300, 2026-09-07),
+    # and Dependabot refuses to rebase a PR whose base someone changed for it.
+    target-branch: "test"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
@@ -55,5 +61,6 @@ updates:
 
   - package-ecosystem: "github-actions"
     directory: "/"
+    target-branch: "test"
     schedule:
       interval: "weekly"
