@@ -46,11 +46,45 @@ describe('useRecentPdfOpen', () => {
     useAppStore.setState({
       refreshRecentPdfs,
       subjects: null,
+      files: {},
       cachedPdfs: [row('a', 'EBC-AP', 'A'), row('b', 'EBC-AP', 'B'), row('m', 'EBC-MAN', 'M')],
     } as never);
   });
 
-  it("opens the row with the subject's other cached files as the sidebar, and no IS listing", async () => {
+  // Dominik, on the device: the sidebar said "Architektura počítačů" but listed
+  // nine files where the subject has seventeen — only the cached ones. The
+  // header promised the subject; the list has to be the subject's listing.
+  it("fills the sidebar from the subject's file listing in the store, not just the cached copies", async () => {
+    const parsed = (name: string, link: string) => ({
+      subfolder: '',
+      file_name: name,
+      file_comment: '',
+      author: '',
+      date: '1. 1. 2026',
+      files: [{ name: `${name}.pdf`, type: 'pdf', link }],
+    });
+    useAppStore.setState({
+      files: {
+        'EBC-AP': [
+          parsed('Lecture 1', 'https://is/a'),
+          parsed('Lecture 2', 'https://is/b'),
+          parsed('Lecture 3', 'https://is/not-cached'),
+        ],
+      },
+    } as never);
+
+    const { result } = renderHook(() => useRecentPdfOpen());
+    await act(async () => void (await result.current.openRecentPdf(row('a', 'EBC-AP', 'A'))));
+
+    const input = openPdfWithInk.mock.calls[0]?.[1] as { files: { link: string }[] };
+    expect(input.files.map((f) => f.link).sort()).toEqual([
+      'https://is/a',
+      'https://is/b',
+      'https://is/not-cached',
+    ]);
+  });
+
+  it("falls back to the subject's cached copies when the store has no listing for it", async () => {
     const { result } = renderHook(() => useRecentPdfOpen());
     await act(async () => void (await result.current.openRecentPdf(row('a', 'EBC-AP', 'A'))));
 
