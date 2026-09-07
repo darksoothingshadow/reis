@@ -140,8 +140,22 @@ describe('openPdfWithInk', () => {
         },
       ],
       strings: STRINGS,
+      tint: { light: '#00548f', dark: '#3b82f6' },
     });
     expect((await readIndex(fs))[key]).toMatchObject({ date: '12. 3. 2026', lastOpenedAt: 5000 });
+  });
+
+  it('tints the reader with the theme accent, one hex per appearance', async () => {
+    const { deps, input, open } = harness();
+
+    await openPdfWithInk(deps, input);
+
+    // --color-accent in src/index.css, light and dark. Not the lime: #79be15 on
+    // a white bar is 2.29:1, under the 3:1 floor a tappable glyph has to clear.
+    expect((open.mock.calls[0]?.[0] as { tint: unknown }).tint).toEqual({
+      light: '#00548f',
+      dark: '#3b82f6',
+    });
   });
 
   it('gives the sidebar a cached path only for copies that are fresh for their date', async () => {

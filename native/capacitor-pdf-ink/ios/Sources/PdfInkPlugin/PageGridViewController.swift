@@ -169,6 +169,7 @@ private final class PageCell: UICollectionViewCell {
     private let thumbnail = UIImageView()
     private let number = UILabel()
     private let mark = UIImageView(image: UIImage(systemName: "pencil.tip"))
+    private var isCurrent = false
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -198,15 +199,27 @@ private final class PageCell: UICollectionViewCell {
 
     required init?(coder: NSCoder) { fatalError("PageCell is code-only") }
 
+    /// `UIColor.tintColor.cgColor` resolves outside any view and comes out the
+    /// system blue, so the ring is drawn from this cell's own inherited tint —
+    /// and redrawn whenever that changes, because a cgColor does not follow.
+    override func tintColorDidChange() {
+        super.tintColorDidChange()
+        applyBorder()
+    }
+
     func show(number pageNumber: Int, thumbnail image: UIImage?, hasInk: Bool, isCurrent: Bool) {
         thumbnail.image = image
         number.text = "\(pageNumber)"
         number.textColor = isCurrent ? .tintColor : .secondaryLabel
-        thumbnail.layer.borderColor =
-            isCurrent ? UIColor.tintColor.cgColor : UIColor.separator.cgColor
-        thumbnail.layer.borderWidth = isCurrent ? 2 : 1
+        self.isCurrent = isCurrent
+        applyBorder()
         mark.isHidden = !hasInk
         isAccessibilityElement = true
         accessibilityLabel = "\(pageNumber)"
+    }
+
+    private func applyBorder() {
+        thumbnail.layer.borderColor = isCurrent ? tintColor.cgColor : UIColor.separator.cgColor
+        thumbnail.layer.borderWidth = isCurrent ? 2 : 1
     }
 }

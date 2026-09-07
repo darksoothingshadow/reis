@@ -51,6 +51,9 @@ public class PdfInkPlugin: CAPPlugin, CAPBridgedPlugin {
         }
         let courseTitle = call.getString("courseTitle") ?? ""
         let strings = PdfInkStrings(call.getObject("strings"))
+        let tintObject = call.getObject("tint")
+        let tint = PdfInkTint.dynamic(
+            light: tintObject?["light"] as? String, dark: tintObject?["dark"] as? String)
 
         DispatchQueue.main.async {
             // `supported` already proved this; the guard is for the compiler.
@@ -85,7 +88,8 @@ public class PdfInkPlugin: CAPPlugin, CAPBridgedPlugin {
                 return
             }
             let space = PdfInkSpace(
-                courseTitle: courseTitle, files: files, currentLink: currentLink, strings: strings)
+                courseTitle: courseTitle, files: files, currentLink: currentLink, strings: strings,
+                tint: tint)
             space.onNeedsFile = { [weak self] link in
                 self?.notifyListeners("needsFile", data: ["link": link])
             }
@@ -95,6 +99,10 @@ public class PdfInkPlugin: CAPPlugin, CAPBridgedPlugin {
             }
             self.space = space
             space.start(with: document)
+            // Immediately before the present that loads the split's view anyway:
+            // tinting earlier would force that load sooner, and load order in
+            // this reader has already cost two bugs.
+            space.applyTint()
             host.present(space.split, animated: true)
         }
     }

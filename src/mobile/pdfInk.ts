@@ -6,6 +6,7 @@ import {
   type PdfInkFileEntry,
   type SubjectPdfInput,
 } from './pdfInkFiles';
+import { PDF_INK_TINT, type PdfInkTintHexes } from './pdfInkTint';
 
 /**
  * The JS half of the `PdfInk` plugin (native/capacitor-pdf-ink): types, the
@@ -54,6 +55,8 @@ export interface PdfInkPlugin {
     currentLink: string;
     files: PdfInkFileEntry[];
     strings: PdfInkStrings;
+    /** The app's accent for the reader's chrome; see pdfInkTint.ts. */
+    tint: PdfInkTintHexes;
   }): Promise<{ shown: string[] }>;
   /** Answer to a `needsFile` event. */
   deliverFile(o: { link: string; pdfPath: string }): Promise<void>;
@@ -174,6 +177,7 @@ export async function openPdfWithInk(
       currentLink: input.fileLink,
       files: entries,
       strings: input.strings,
+      tint: PDF_INK_TINT,
     });
     const now = deps.now();
     for (const link of shown) {
