@@ -1114,6 +1114,21 @@
       "title": "Couldn't load your data",
       "body": "Check your connection and try again.",
       "retry": "Try again"
+    },
+    "pdfInk": {
+      "saveFailedTitle": "Your ink couldn't be saved",
+      "saveFailedMessage": "There may be no space left on this iPad. Keep editing and try again, or discard the changes.",
+      "keepEditing": "Keep editing",
+      "discard": "Discard",
+      "openFailed": "Couldn't open this file.",
+      "addPage": "Add a page",
+      "export": "Share with notes",
+      "exportFailed": "Couldn't prepare the file to share.",
+      "pages": "Pages",
+      "search": "Search",
+      "page": "Page",
+      "noMatches": "Nothing found",
+      "removePage": "Remove page"
     }
   },
   "session": {

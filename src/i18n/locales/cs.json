@@ -1114,6 +1114,21 @@
       "title": "Data se nepodařilo načíst",
       "body": "Zkontroluj připojení k internetu a zkus to znovu.",
       "retry": "Zkusit znovu"
+    },
+    "pdfInk": {
+      "saveFailedTitle": "Poznámky se nepodařilo uložit",
+      "saveFailedMessage": "Na iPadu možná není místo. Pokračujte v úpravách a zkuste to znovu, nebo změny zahoďte.",
+      "keepEditing": "Pokračovat v úpravách",
+      "discard": "Zahodit",
+      "openFailed": "Soubor se nepodařilo otevřít.",
+      "addPage": "Přidat stránku",
+      "export": "Sdílet s poznámkami",
+      "exportFailed": "Soubor ke sdílení se nepodařilo připravit.",
+      "pages": "Stránky",
+      "search": "Hledat",
+      "page": "Strana",
+      "noMatches": "Nic nenalezeno",
+      "removePage": "Odstranit stránku"
     }
   },
   "session": {

@@ -72,9 +72,16 @@ const SUPABASE_CALLERS = new Set([
 
 /**
  * Files permitted to call crypto.subtle.digest. None of these hash a student
- * identifier: PKCE verifiers and image fingerprints.
+ * identifier: PKCE verifiers, image fingerprints, and the iPad reader's on-device
+ * filename for a subject PDF (`courseCode:fileLink` — a course code and an IS
+ * document URL, hashed only because a URL is not a filename; the result is a
+ * path in the app sandbox and is never transmitted).
  */
-const DIGEST_CALLERS = new Set(['src/utils/pkce.ts', 'src/services/notes/imageNormalize.ts']);
+const DIGEST_CALLERS = new Set([
+  'src/utils/pkce.ts',
+  'src/services/notes/imageNormalize.ts',
+  'src/mobile/pdfInk.ts',
+]);
 
 /**
  * (file path) -> identifying names THAT SPECIFIC FILE is allowed to send to
