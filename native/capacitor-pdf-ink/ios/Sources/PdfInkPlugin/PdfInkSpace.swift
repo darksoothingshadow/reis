@@ -4,8 +4,8 @@ import UIKit
 /**
  * One subject's PDFs in a Notes-style space: Apple's split view with the file
  * list on the left and the reader on the right, the system sidebar toggle in the
- * reader's bar, and a system Close on the list — the one way out, since the
- * reader has no Close of its own. The space owns switching: a cached file loads
+ * reader's bar, a system Close on the list and an X in the reader's own bar —
+ * two doors into the same `closeTapped()`. The space owns switching: a cached file loads
  * at once; anything else is requested from the app through `onNeedsFile` and
  * shown when `deliver` arrives. Closing persists first and reports every link
  * that was displayed.
@@ -57,9 +57,11 @@ final class PdfInkSpace: NSObject {
         split.preferredDisplayMode = .secondaryOnly
         split.preferredSplitBehavior = .tile
         split.primaryBackgroundStyle = .sidebar
-        // Automatic, and left well alone. Placing the toggle by hand — the only
-        // way to get a button of our own beside it — hands out an item with no
-        // glyph and no action: an empty circle where the sidebar used to be.
+        // Automatic, and left well alone. A toggle placed BY HAND (fetching
+        // `displayModeButtonItem` and putting it in the bar ourselves) is an
+        // item with no glyph and no action — the empty circle the iPad showed
+        // once. A group of our own beside the automatic toggle is fine; that is
+        // how the reader's exit is installed (see PdfInkViewController.exitItem).
         split.displayModeButtonVisibility = .automatic
         split.presentsWithGesture = true
         split.modalPresentationStyle = .fullScreen
@@ -67,7 +69,9 @@ final class PdfInkSpace: NSObject {
         split.setViewController(UINavigationController(rootViewController: reader), for: .secondary)
 
         list.onSelect = { [weak self] link in self?.select(link: link) }
+        // Two doors, one path: both persist first and share the save-failed alert.
         list.onClose = { [weak self] in self?.closeTapped() }
+        reader.onCloseSpace = { [weak self] in self?.closeTapped() }
     }
 
     /// Shows the initial file; the plugin has already proved PDFKit can open it.

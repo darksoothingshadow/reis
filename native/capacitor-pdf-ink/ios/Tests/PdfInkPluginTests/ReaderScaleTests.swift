@@ -141,24 +141,40 @@ final class ReaderScaleTests: XCTestCase {
 /**
  * The reader's bar.
  *
- * Four tools and nothing else: share, add a page, search, and the page counter.
- * The reader had a Close of its own and a cover tool beside it; both were
- * withdrawn, and leaving is the sidebar's Close.
- *
- * The leading edge is left entirely to the split view. Placing a button of our
- * own beside the sidebar toggle means placing the toggle by hand, and a
- * hand-placed toggle is an empty circle that does nothing — seen on the iPad,
- * which is why the leading items are asserted to stay untouched.
+ * Trailing: share, add a page, search, page counter — and nothing else.
+ * Leading: our exit, as a `leadingItemGroups` group. UIKit ADDS groups beside
+ * the split view's automatic sidebar toggle (proven on the simulator
+ * 2026-09-07: the glyph draws, the action fires, the toggle survives), where a
+ * hand-placed toggle is a dead empty circle — which is why `leftBarButtonItems`
+ * and `displayModeButtonItem` are never touched. The toggle itself is injected
+ * at render time and never appears in `navigationItem`, so its survival is the
+ * device checklist's to prove, not this file's.
  */
 @available(iOS 16.0, *)
 final class ReaderBarTests: XCTestCase {
-    func testTheLeadingEdgeIsLeftToTheSplitView() {
+    func testTheExitSitsInTheLeadingGroupAndNothingElseDoes() throws {
+        let strings = PdfInkStrings(nil)
+        let reader = PdfInkViewController(strings: strings)
+        reader.loadViewIfNeeded()
+
+        let groups = reader.navigationItem.leadingItemGroups
+        XCTAssertEqual(groups.count, 1, "one group: ours. A second would crowd the toggle")
+        XCTAssertEqual(
+            groups.first?.barButtonItems.map(\.accessibilityLabel),
+            [strings.close],
+            "the leading group is the exit and only the exit")
+    }
+
+    /// `setBarItems(enabled: false)` has run by now (no file is loaded). The
+    /// exit must not be among the items it disables: a student whose file is
+    /// still loading, or failed to open, needs the door most of all.
+    func testTheExitWorksWhileNoFileIsLoaded() throws {
         let reader = PdfInkViewController(strings: PdfInkStrings(nil))
         reader.loadViewIfNeeded()
 
-        XCTAssertTrue(
-            reader.navigationItem.leftBarButtonItems?.isEmpty ?? true,
-            "a leading item of ours displaces the sidebar toggle and it never comes back")
+        let exit = try XCTUnwrap(reader.navigationItem.leadingItemGroups.first?.barButtonItems.first)
+        XCTAssertTrue(exit.isEnabled)
+        XCTAssertNotNil(exit.image, "an exit with no glyph is the empty circle again")
     }
 
     func testTheBarCarriesTheFourFileToolsAndNothingElse() throws {
@@ -177,36 +193,24 @@ final class ReaderBarTests: XCTestCase {
             [strings.export, strings.addPage, strings.search, strings.pages],
             "the reader's bar gained or lost a tool")
     }
-
-    /// The withdrawn Close carried an accessibility label, so its absence is
-    /// checkable by name. `close` is still a string — the save-failed alert and
-    /// the sidebar's own Close both use it.
-    func testTheReadersOwnCloseIsNotBack() throws {
-        let strings = PdfInkStrings(nil)
-        let reader = PdfInkViewController(strings: strings)
-        reader.loadViewIfNeeded()
-
-        let trailing = try XCTUnwrap(reader.navigationItem.rightBarButtonItems)
-        XCTAssertFalse(
-            trailing.contains { $0.accessibilityLabel == strings.close },
-            "the reader's own Close is back; leaving is the sidebar's Close")
-    }
 }
 
 /**
- * The way out of the space.
+ * The way out of the space — two buttons, one path.
  *
- * The reader's own Close was withdrawn, so the sidebar's X is the only one left
- * and its wiring is the whole exit. It is one assignment in `PdfInkSpace.init`
- * and the sort of line a refactor drops silently, which is why it is asserted
- * here rather than left to the device checklist.
+ * The sidebar's X and the reader's own exit both end in
+ * `PdfInkSpace.closeTapped()`: persist first, the save-failed alert if that
+ * refuses, `finish()` otherwise. Each wiring is one assignment in
+ * `PdfInkSpace.init`, the sort of line a refactor drops silently — which is why
+ * both are fired here rather than left to the device checklist. Each of these
+ * was checked to FAIL with its wiring commented out before it was committed.
  */
 @available(iOS 16.0, *)
 final class SpaceExitTests: XCTestCase {
-    func testTheSidebarsCloseClosesTheSpace() throws {
+    private func makeSpace() -> PdfInkSpace {
         let ink = FileManager.default.temporaryDirectory
             .appendingPathComponent("\(UUID().uuidString).ink")
-        let space = PdfInkSpace(
+        return PdfInkSpace(
             courseTitle: "EBC-AP",
             files: [
                 .init(
@@ -214,6 +218,10 @@ final class SpaceExitTests: XCTestCase {
             ],
             currentLink: "l1",
             strings: PdfInkStrings(nil))
+    }
+
+    func testTheSidebarsCloseClosesTheSpace() throws {
+        let space = makeSpace()
         var closed = false
         space.onClose = { _ in closed = true }
 
@@ -223,6 +231,21 @@ final class SpaceExitTests: XCTestCase {
         let close = try XCTUnwrap(list.navigationItem.leftBarButtonItem)
         _ = try XCTUnwrap(close.target).perform(try XCTUnwrap(close.action), with: close)
 
-        XCTAssertTrue(closed, "the sidebar's Close did not close the space — there is no way out")
+        XCTAssertTrue(closed, "the sidebar's Close did not close the space")
+    }
+
+    func testTheReadersExitClosesTheSpace() throws {
+        let space = makeSpace()
+        var closed = false
+        space.onClose = { _ in closed = true }
+
+        let nav = try XCTUnwrap(
+            space.split.viewController(for: .secondary) as? UINavigationController)
+        let reader = try XCTUnwrap(nav.topViewController as? PdfInkViewController)
+        reader.loadViewIfNeeded()
+        let exit = try XCTUnwrap(reader.navigationItem.leadingItemGroups.first?.barButtonItems.first)
+        _ = try XCTUnwrap(exit.target).perform(try XCTUnwrap(exit.action), with: exit)
+
+        XCTAssertTrue(closed, "the reader's exit did not close the space")
     }
 }

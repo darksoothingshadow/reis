@@ -63,9 +63,27 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         title: "", style: .plain, target: self, action: #selector(pagesTapped))
     private lazy var searchItem = UIBarButtonItem(
         barButtonSystemItem: .search, target: self, action: #selector(searchTapped))
+    /// The way out, in the reader's own bar. Installed through
+    /// `leadingItemGroups`, which UIKit ADDS beside the split view's automatic
+    /// sidebar toggle — proven on the simulator 2026-09-07: the glyph draws,
+    /// the action fires, the toggle survives. `leftBarButtonItems` or a
+    /// hand-placed `displayModeButtonItem` is the dead empty circle the iPad
+    /// showed once; neither is used. UIKit injects its toggle first, so this
+    /// lands to the toggle's right, and moves to the leading edge when the
+    /// sidebar is open (the toggle goes to the sidebar's own header then).
+    ///
+    /// `xmark`, not a chevron: this dismisses a full-screen modal, and the
+    /// sidebar's control for the same act is already an X. Colour cannot help —
+    /// iPadOS 26 bar buttons are monochrome glass and ignore `tintColor`.
+    private lazy var exitItem = UIBarButtonItem(
+        image: UIImage(systemName: "xmark"), style: .plain, target: self,
+        action: #selector(exitTapped))
     private var saveTimer: Timer?
     private var laidOutWidth: CGFloat = 0
     private(set) var lastSaveError: Error?
+    /// Fired by the bar's exit. The space wires it to the same `closeTapped()`
+    /// the sidebar's X uses, so both doors persist first and share one alert.
+    var onCloseSpace: (() -> Void)?
 
     /// How big the page is drawn, and how big it would be if it just fitted.
     /// `ReaderScaleTests` is the only way the zoom behaviour of a half that
@@ -100,11 +118,15 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         shareItem.accessibilityLabel = strings.export
         pagesItem.accessibilityLabel = strings.pages
         searchItem.accessibilityLabel = strings.search
+        exitItem.accessibilityLabel = strings.close
         setBarItems(enabled: false)
         // Right to left: Share on the edge, as Notes and Files put it, then the
-        // two ways of getting somewhere in the file. Leaving is the sidebar's
-        // Close — nothing here does it.
+        // two ways of getting somewhere in the file.
         navigationItem.rightBarButtonItems = [shareItem, addPageItem, searchItem, pagesItem]
+        // The exit, as a group: see `exitItem`. Not `leftBarButtonItems`.
+        navigationItem.leadingItemGroups = [
+            UIBarButtonItemGroup(barButtonItems: [exitItem], representativeItem: nil)
+        ]
 
         // Provider and markup mode BEFORE any document: PDFView asks for overlays
         // as it lays pages out, and a page laid out with no provider never gets a
@@ -352,7 +374,12 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         return true
     }
 
+    // MARK: - Leaving
+
+    @objc private func exitTapped() { onCloseSpace?() }
+
     private func setBarItems(enabled: Bool) {
+        // Not the exit: a student whose file is loading or failed needs it most.
         addPageItem.isEnabled = enabled
         shareItem.isEnabled = enabled
         pagesItem.isEnabled = enabled
