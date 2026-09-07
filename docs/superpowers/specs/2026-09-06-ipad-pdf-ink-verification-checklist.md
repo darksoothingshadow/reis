@@ -96,9 +96,9 @@ Device: ______ iPadOS: ______ Build: ______ Pencil: ______
         `select` without a matching tap is the unreproduced finding above — report it.
 16. [ ] Hide the sidebar with Apple's toggle, draw, show it again → the selection highlight is
         still on the current file and the pencil mark appears on it.
-17. [ ] Show the sidebar with Apple's toggle and Close with the X there → back in the drawer;
-        reopen the same file → strokes present, sidebar selection on it. That X is the only way
-        out: the reader has no Close of its own.
+17. [ ] Close with the X in the reader's bar → back in the drawer; reopen the same file → strokes
+        present, sidebar selection on it. Then the other door: show the sidebar with Apple's
+        toggle, Close with the X there → the same. Both persist first.
 18. [ ] Add a page with "+" mid-deck, draw on it with the Pencil, add a second one, switch files
         and come back → both pages are where you put them and the ink is on them, not on their
         neighbours.
@@ -114,11 +114,13 @@ Device: ______ iPadOS: ______ Build: ______ Pencil: ______
 23. [ ] Share (the bar's export button) on a file with ink → the sheet names the file; save it to
         Files and open it in Apple's Preview: the ink is in the pages, added pages included, and
         the text is still selectable. Print the same file and check the ink is on the paper.
-24. [ ] The reader's bar carries four buttons and no more: share, add a page, search and the
-        page counter. No X and no cover tool — the reader's own Close and the cover tool were
-        both withdrawn from this branch. Apple's sidebar toggle is on the leading edge and it
-        still opens the sidebar; if it ever stops working, a swipe from the left edge still
-        brings the sidebar out.
+24. [ ] The reader's bar, sidebar hidden: Apple's sidebar toggle on the leading edge, our X
+        directly to its RIGHT, then the title; trailing: share, add a page, search, page counter.
+        Tap the toggle → the sidebar opens and the toggle moves into the sidebar's own header,
+        leaving our X leftmost in the reader's bar. Tap the X in either state → the space
+        closes. The toggle is injected by UIKit at render time and cannot be unit-tested, so this
+        step is what proves it survived beside our group. If it ever stops working, a swipe from
+        the left edge still brings the sidebar out.
 
 ## Known edge, not fixed
 

@@ -422,10 +422,11 @@ What is left of it, and why:
   canvas exactly the size of the page, and a `PKDrawing`'s coordinates are the
   canvas's coordinates — an inset of one point moves the ink in every archive on
   the device. Unwrapping touches that for no gain, so it does not get touched.
-- **Leaving is the sidebar's Close.** The reader's bar is four buttons: share,
-  add a page, search, page counter. Apple's sidebar toggle is one tap away on the
-  leading edge, and the Close is on the sidebar behind it. That is one tap more
-  than the withdrawn X — recorded here so it is a known cost and not a surprise.
+- **Leaving is either X.** The reader's own Close came back the same day, on
+  2026-09-07, installed through `navigationItem.leadingItemGroups` — which UIKit
+  adds BESIDE the split view's automatic toggle. The earlier "dead empty circle"
+  was a toggle placed by hand, a different thing. Ours lands to the toggle's
+  right; accepted. Spec: `2026-09-07-ipad-reader-exit-design.md`.
 
 The whole design of the covers is in this file's history if it is ever wanted
 back.
