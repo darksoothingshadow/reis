@@ -49,6 +49,14 @@ taps. Step 15 below covers it on the device.
   simulator container: all four pages there, the strokes exactly where they were drawn, the page
   text still extractable (`PDFPage.string`), 585 KB. Placement is what the unit test guards —
   it asserts ink at the point the stroke was drawn and white in a corner that was not.
+- *Getting around a deck (2026-09-07).* The bar shows "5/64" and opens a thumbnail grid; picking
+  a page goes there. A sheet, not an edge strip: the palm-jump complaint is what every app with a
+  scrubber collects. Search finds "cviceni" in "CVIČENÍ" (diacritic- and case-insensitive) and
+  lands on the page with the match selected. An added page can be taken back by long-pressing it
+  in the grid — verified on a page a mis-tap had added: 65 pages back to 64, archive back to no
+  added pages, the existing ink untouched. **A synthetic tap cannot select a UIKit context-menu
+  item**, so that last step needed a human finger; anything driving this from a script will hit
+  the same wall.
 - *A row tap opens the reader.* Already true for PDFs (re-checked); now also for rows IS gives
   no type. A row IS types as something else (PPT) still goes to the share sheet, and the
   `%PDF-` check that makes untyped rows safe is unit-tested — this subject has no untyped row.
@@ -95,7 +103,14 @@ Device: ______ iPadOS: ______ Build: ______ Pencil: ______
         neighbours.
 19. [ ] With ink on a file, put the iPad in flight mode and open the subject → the annotated file
         is in the sidebar and opens; nothing is refetched.
-20. [ ] Share (the bar's export button) on a file with ink → the sheet names the file; save it to
+20. [ ] Pages: the bar reads "n/total" and opens the thumbnail grid; picking a page goes there,
+        inked pages carry the pencil mark, and resting a palm anywhere on the page never changes
+        the page (the reason this is a sheet and not an edge strip).
+21. [ ] Search: a Czech word typed WITHOUT accents finds the accented one; picking a result lands
+        on its page with the match selected.
+22. [ ] Long-press an added page in the grid → Remove; with ink on it, the confirmation appears
+        first. A page of the teacher's file offers no menu.
+23. [ ] Share (the bar's export button) on a file with ink → the sheet names the file; save it to
         Files and open it in Apple's Preview: the ink is in the pages, added pages included, and
         the text is still selectable. Print the same file and check the ink is on the paper.
 
