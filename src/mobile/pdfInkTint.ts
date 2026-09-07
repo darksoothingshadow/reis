@@ -9,15 +9,13 @@
  * `PKToolPicker`, the share sheet and the paper have no styling API, and the ink
  * would be wrong on anything but white paper.
  *
- * Two hexes because the theme has two: `--color-accent` in `src/index.css`,
- * light and dark. iPadOS picks per appearance (`PdfInkTint.dynamic`), which the
- * app cannot do with one colour — the bar behind it is white in one and
- * near-black in the other.
- *
- * Deliberately not the lime. #79be15 on a white bar is 2.29:1 — measured in
- * `src/index.css`, where the same finding moved `--color-primary-content` to
- * ink — and a bar button the student has to find and tap owes 3:1 (WCAG 1.4.11).
- * The navy clears 7.9:1 and the blue 4.6:1 on their own bars.
+ * MENDELU green, one hex per appearance because no single one works on both
+ * bars. The dark bar gets the brand lime itself, #79be15, which clears 7.5:1 on
+ * it. The light bar cannot: the lime on white is 2.29:1 — measured in
+ * `src/index.css`, where the same finding moved `--color-primary-content` to ink
+ * — against the 3:1 a control the student has to find and tap owes (WCAG
+ * 1.4.11). So light gets the same hue darkened, #4a7a0d, at 5.2:1. Both read as
+ * the brand green; only one of them is the brand hex.
  *
  * Swap these two hexes and the whole reader follows; nothing else names a colour.
  */
@@ -26,4 +24,4 @@ export interface PdfInkTintHexes {
   dark: string;
 }
 
-export const PDF_INK_TINT: PdfInkTintHexes = { light: '#00548f', dark: '#3b82f6' };
+export const PDF_INK_TINT: PdfInkTintHexes = { light: '#4a7a0d', dark: '#79be15' };

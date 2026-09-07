@@ -413,7 +413,11 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         sheet.sheetPresentationController?.detents = [.medium(), .large()]
         sheet.sheetPresentationController?.prefersGrabberVisible = true
         sheet.presentationController?.delegate = self
-        if let tint { sheet.view.tintColor = tint }
+        if let tint {
+            sheet.view.tintColor = tint
+            controller.loadViewIfNeeded()
+            PdfInkTint.apply(tint, toBarItemsOf: controller.navigationItem)
+        }
         toolPicker.setVisible(false, forFirstResponder: pdfView)
         present(sheet, animated: true)
     }

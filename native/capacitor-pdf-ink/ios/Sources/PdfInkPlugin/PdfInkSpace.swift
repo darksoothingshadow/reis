@@ -83,6 +83,14 @@ final class PdfInkSpace: NSObject {
     func applyTint() {
         guard let tint else { return }
         split.view.tintColor = tint
+        // iPadOS 26 draws bar buttons as monochrome glass and ignores a tint
+        // inherited from a parent view: measured on the simulator, the whole bar
+        // had no coloured pixel. A tint set on the item itself does get through,
+        // and is what iPadOS 16-18 would have taken from the view anyway.
+        for controller in [list as UIViewController, reader] {
+            controller.loadViewIfNeeded()
+            PdfInkTint.apply(tint, toBarItemsOf: controller.navigationItem)
+        }
     }
 
     /// Shows the initial file; the plugin has already proved PDFKit can open it.

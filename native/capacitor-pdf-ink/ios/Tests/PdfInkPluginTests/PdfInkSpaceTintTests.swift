@@ -62,13 +62,13 @@ final class PdfInkSpaceTintTests: XCTestCase {
     }
 
     func testTheReaderTakesTheAccentInLight() throws {
-        let space = try show(tint: PdfInkTint.dynamic(light: "#00548f", dark: "#3b82f6"), style: .light)
-        XCTAssertEqual(try readerTint(of: space), [0, 0x54, 0x8f, 255])
+        let space = try show(tint: PdfInkTint.dynamic(light: "#4a7a0d", dark: "#79be15"), style: .light)
+        XCTAssertEqual(try readerTint(of: space), [0x4a, 0x7a, 0x0d, 255])
     }
 
     func testTheReaderTakesTheOtherHexInDark() throws {
-        let space = try show(tint: PdfInkTint.dynamic(light: "#00548f", dark: "#3b82f6"), style: .dark)
-        XCTAssertEqual(try readerTint(of: space), [0x3b, 0x82, 0xf6, 255])
+        let space = try show(tint: PdfInkTint.dynamic(light: "#4a7a0d", dark: "#79be15"), style: .dark)
+        XCTAssertEqual(try readerTint(of: space), [0x79, 0xbe, 0x15, 255])
     }
 
     /**
@@ -91,7 +91,7 @@ final class PdfInkSpaceTintTests: XCTestCase {
             strings: PdfInkStrings(nil), inked: { _ in false }, added: { _ in false })
         let sheet = UINavigationController(rootViewController: grid)
         // Exactly what PdfInkViewController.present(inSheet:) does.
-        sheet.view.tintColor = PdfInkTint.dynamic(light: "#00548f", dark: "#3b82f6")
+        sheet.view.tintColor = PdfInkTint.dynamic(light: "#4a7a0d", dark: "#79be15")
 
         let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 700, height: 900))
         window.overrideUserInterfaceStyle = .light
@@ -103,12 +103,31 @@ final class PdfInkSpaceTintTests: XCTestCase {
 
         let cell = try XCTUnwrap(grid.collectionView.cellForItem(at: IndexPath(item: 1, section: 0)))
         let ring = try XCTUnwrap(cell.contentView.subviews.first { $0.layer.borderWidth == 2 })
-        XCTAssertEqual(rgb(UIColor(cgColor: try XCTUnwrap(ring.layer.borderColor))), [0, 0x54, 0x8f, 255])
+        XCTAssertEqual(rgb(UIColor(cgColor: try XCTUnwrap(ring.layer.borderColor))), [0x4a, 0x7a, 0x0d, 255])
+    }
+
+    /**
+     * iPadOS 26 draws bar buttons monochrome and ignores a tint inherited from a
+     * parent view — only one set on the item itself gets through. Both bars.
+     */
+    func testEveryBarButtonCarriesTheTintItself() throws {
+        let space = try show(tint: PdfInkTint.dynamic(light: "#4a7a0d", dark: "#79be15"), style: .light)
+        for column in [UISplitViewController.Column.primary, .secondary] {
+            let controller = try XCTUnwrap(space.split.viewController(for: column))
+            let item = ((controller as? UINavigationController)?.topViewController ?? controller)
+                .navigationItem
+            let buttons = (item.leftBarButtonItems ?? []) + (item.rightBarButtonItems ?? [])
+            XCTAssertFalse(buttons.isEmpty, "\(column) has no bar buttons to tint")
+            for button in buttons {
+                let tint = try XCTUnwrap(button.tintColor, "an untinted bar button stays monochrome")
+                XCTAssertEqual(rgb(tint.resolvedColor(with: .init(userInterfaceStyle: .light))), [0x4a, 0x7a, 0x0d, 255])
+            }
+        }
     }
 
     /// No tint from the app leaves iPadOS's, rather than a colour of our choosing.
     func testWithoutATintTheReaderIsLeftOnTheSystemOne() throws {
         let space = try show(tint: nil, style: .light)
-        XCTAssertNotEqual(try readerTint(of: space), [0, 0x54, 0x8f, 255])
+        XCTAssertNotEqual(try readerTint(of: space), [0x4a, 0x7a, 0x0d, 255])
     }
 }

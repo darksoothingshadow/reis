@@ -4,10 +4,10 @@ import UIKit
  * The reader's accent, handed over by the app with `open` so the chrome around
  * Apple's reader carries the reIS theme instead of the system blue.
  *
- * How far it reaches is the iPadOS version's call. Anything drawn from
- * `tintColor` follows it — the page grid's current-page ring and number do, and
- * were measured going #0088ff → #00548f. On iPadOS 26 the bar buttons are
- * monochrome glass and ignore a tint completely; on iPadOS 16–18 they take it.
+ * Everything drawn from `tintColor` follows an inherited tint. Bar buttons do
+ * not, on iPadOS 26: they are monochrome glass and ignore a tint set on any
+ * parent view, so `apply(_:toBarItemsOf:)` puts it on each item instead, which
+ * is what the older versions would have inherited anyway.
  *
  * This is the one deliberate exception to "everything the student touches is
  * Apple's". It moves `tintColor` and nothing else — `PKToolPicker`, the share
@@ -36,6 +36,14 @@ enum PdfInkTint {
             green: CGFloat((value >> 8) & 0xff) / 255,
             blue: CGFloat(value & 0xff) / 255,
             alpha: 1)
+    }
+
+    /// Bar buttons are the one place an inherited tint is not enough; see
+    /// `PdfInkSpace.applyTint`.
+    static func apply(_ tint: UIColor, toBarItemsOf item: UINavigationItem) {
+        for button in (item.leftBarButtonItems ?? []) + (item.rightBarButtonItems ?? []) {
+            button.tintColor = tint
+        }
     }
 
     /// A colour that resolves per appearance, or nil when either hex is missing
