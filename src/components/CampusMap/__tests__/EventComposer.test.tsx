@@ -390,3 +390,65 @@ describe('EventComposer — a start time is required', () => {
     expect(createPost.mock.calls[0][0].time).toBe('19:30');
   });
 });
+
+/**
+ * `url` is optional, but when it's filled in it becomes an <a href> in
+ * EventDetailCard and openExternal — a `javascript:` scheme there would run
+ * in the page. Only http(s) links validateExternalUrl accepts get through.
+ */
+describe('EventComposer — url validation', () => {
+  const fillRequired = () => {
+    useAppStore.setState({ draftCoord: [16.61, 49.21] });
+    fireEvent.change(screen.getByPlaceholderText('Název akce'), { target: { value: 'Kvíz' } });
+    fireEvent.click(screen.getByText('Vyberte datum'));
+    fireEvent.click(screen.getByRole('button', { name: '15' }));
+    fireEvent.change(screen.getByRole('combobox', { name: 'Čas' }), { target: { value: '1930' } });
+  };
+
+  it('disables publish and shows an inline error for a javascript: url', () => {
+    render(<EventComposer onDone={() => {}} />);
+    fillRequired();
+    expect(screen.getByRole('button', { name: 'Zveřejnit akci' })).toBeEnabled();
+
+    fireEvent.change(screen.getByPlaceholderText('https://…'), {
+      target: { value: 'javascript:alert(1)' },
+    });
+
+    expect(screen.getByRole('button', { name: 'Zveřejnit akci' })).toBeDisabled();
+    expect(screen.getByText('Zadej odkaz http:// nebo https://')).toBeInTheDocument();
+  });
+
+  it('leaves publish enabled when the url field is left empty', () => {
+    render(<EventComposer onDone={() => {}} />);
+    fillRequired();
+    expect(screen.getByRole('button', { name: 'Zveřejnit akci' })).toBeEnabled();
+  });
+
+  // `form-control` and
+  // `label-text` are both DaisyUI 4; daisyui@5.7.22 defines neither, so the
+  // <label> kept its default `display: inline` and its <span> shared a line
+  // box with the control. The url input carries no width of its own beyond
+  // daisyUI's `clamp(3rem, 20rem, 100%)`, so as soon as the composer was
+  // wider than roughly 440px the 20rem input fitted beside the label and rode
+  // up over it — measured at -22.7px of overlap at 1024px, the iPad landscape
+  // width the phone tree is shipped at. The phone widths hid it: there the
+  // 20rem cap already exceeded the container, so the input wrapped by luck.
+  //
+  // verify-ui's collision probe cannot catch this — it compares text-bearing
+  // boxes, and an <input> placeholder is not a DOM text node.
+  it('stacks the url label above its input rather than relying on the removed form-control class', () => {
+    render(<EventComposer onDone={() => {}} />);
+    const urlInput = screen.getByPlaceholderText('https://…');
+    const wrapper = urlInput.closest('label');
+
+    expect(wrapper?.className).toMatch(/(^|\s)flex(\s|$)/);
+    expect(wrapper?.className).toMatch(/flex-col/);
+    // The 20rem cap is what let the input share the label's line box, and it
+    // also made this the one control in the composer narrower than its
+    // siblings. w-full removes both problems.
+    expect(urlInput.className).toMatch(/w-full/);
+    // Neither dead DaisyUI 4 class may come back.
+    expect(wrapper?.className).not.toMatch(/form-control/);
+    expect(wrapper?.querySelector('span')?.className).not.toMatch(/label-text/);
+  });
+});

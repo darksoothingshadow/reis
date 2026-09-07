@@ -16,11 +16,16 @@ interface Props {
   onSearchSubject: (name: string) => void;
 }
 
-export function UnfulfilledCoursesSection({ selectedCodes, onToggle, onOpenSubject, onSearchSubject }: Props) {
+export function UnfulfilledCoursesSection({
+  selectedCodes,
+  onToggle,
+  onOpenSubject,
+  onSearchSubject,
+}: Props) {
   const { t } = useTranslation();
   const plan = useStudyPlan();
-  const loaded = useAppStore(s => s.studyPlanLoaded);
-  const successRates = useAppStore(s => s.successRates);
+  const loaded = useAppStore((s) => s.studyPlanLoaded);
+  const successRates = useAppStore((s) => s.successRates);
 
   const [targetSemesterOverride, setTargetSemester] = useState<number | null>(null);
 
@@ -31,9 +36,14 @@ export function UnfulfilledCoursesSection({ selectedCodes, onToggle, onOpenSubje
       .filter(({ block }) => {
         if (block.isWholePlanPool || !block.groups) return false;
         return block.groups
-          .filter(g => isCompulsoryGroup(g.name, block.title) || isCoreElectiveGroup(g.name) || isElectiveGroup(g.name, block.title))
-          .flatMap(g => g.subjects || [])
-          .some(s => !s.isFulfilled && !s.isEnrolled && isTransferableCourse(s));
+          .filter(
+            (g) =>
+              isCompulsoryGroup(g.name, block.title) ||
+              isCoreElectiveGroup(g.name) ||
+              isElectiveGroup(g.name, block.title)
+          )
+          .flatMap((g) => g.subjects || [])
+          .some((s) => !s.isFulfilled && !s.isEnrolled && isTransferableCourse(s));
       });
   }, [plan]);
 
@@ -46,9 +56,14 @@ export function UnfulfilledCoursesSection({ selectedCodes, onToggle, onOpenSubje
       .filter(({ block, index }) => {
         if (!block.isWholePlanPool && index < targetSemester) return false;
         const actionable = (block.groups || [])
-          .filter(g => isCompulsoryGroup(g.name, block.title) || isCoreElectiveGroup(g.name) || isElectiveGroup(g.name, block.title))
-          .flatMap(g => g.subjects || [])
-          .filter(s => isTransferableCourse(s) && !s.isFulfilled && !s.isEnrolled);
+          .filter(
+            (g) =>
+              isCompulsoryGroup(g.name, block.title) ||
+              isCoreElectiveGroup(g.name) ||
+              isElectiveGroup(g.name, block.title)
+          )
+          .flatMap((g) => g.subjects || [])
+          .filter((s) => isTransferableCourse(s) && !s.isFulfilled && !s.isEnrolled);
         return actionable.length > 0;
       });
   }, [plan, targetSemester]);
@@ -57,8 +72,10 @@ export function UnfulfilledCoursesSection({ selectedCodes, onToggle, onOpenSubje
     const isAdding = !selectedCodes.includes(code);
     onToggle(code);
     if (isAdding) {
-      const allSubjects = futureSemesters.flatMap(({ block }) => (block.groups || []).flatMap(g => g.subjects || []));
-      const subject = allSubjects.find(s => s.code === code);
+      const allSubjects = futureSemesters.flatMap(({ block }) =>
+        (block.groups || []).flatMap((g) => g.subjects || [])
+      );
+      const subject = allSubjects.find((s) => s.code === code);
       if (subject?.id) useAppStore.getState().fetchSyllabus(subject.code, subject.id);
     }
   };
@@ -73,7 +90,11 @@ export function UnfulfilledCoursesSection({ selectedCodes, onToggle, onOpenSubje
       const semesterType = isSummer ? 'LS' : isWinter ? 'ZS' : null;
 
       for (const group of block.groups) {
-        if (isCompulsoryGroup(group.name, block.title) || isCoreElectiveGroup(group.name) || isElectiveGroup(group.name, block.title)) {
+        if (
+          isCompulsoryGroup(group.name, block.title) ||
+          isCoreElectiveGroup(group.name) ||
+          isElectiveGroup(group.name, block.title)
+        ) {
           if (!group.subjects) continue;
           for (const s of group.subjects) {
             if (isTransferableCourse(s)) {
@@ -90,8 +111,15 @@ export function UnfulfilledCoursesSection({ selectedCodes, onToggle, onOpenSubje
     if (futureSemesters.length === 0) return;
     const codes = futureSemesters.flatMap(({ block }) =>
       (block.groups || [])
-        .filter(g => isCompulsoryGroup(g.name, block.title) || isCoreElectiveGroup(g.name) || isElectiveGroup(g.name, block.title))
-        .flatMap(g => (g.subjects || []).filter(s => isTransferableCourse(s)).map(s => s.code))
+        .filter(
+          (g) =>
+            isCompulsoryGroup(g.name, block.title) ||
+            isCoreElectiveGroup(g.name) ||
+            isElectiveGroup(g.name, block.title)
+        )
+        .flatMap((g) =>
+          (g.subjects || []).filter((s) => isTransferableCourse(s)).map((s) => s.code)
+        )
     );
     if (codes.length > 0) useAppStore.getState().fetchSuccessRateBatch(codes);
   }, [futureSemesters]);

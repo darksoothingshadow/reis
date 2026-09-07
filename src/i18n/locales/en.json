@@ -39,7 +39,6 @@
     "accounts": "Accounts",
     "cards": "Cards",
     "availableCapacity": "Available Capacity",
-    "housingOverview": "Housing Overview",
     "reservations": "Reservations",
     "foodDebit": "Food Debit",
     "logoutConfirmTitle": "Sign out of the app?",
@@ -225,7 +224,8 @@
     "copiedToClipboard": "Email copied to clipboard",
     "czk": "CZK",
     "download": "Download",
-    "errorGeneric": "Something went wrong. Please try again."
+    "errorGeneric": "Something went wrong. Please try again.",
+    "refresh": "Refresh"
   },
   "search": {
     "placeholder": "Search subjects, people, pages... ({shortcut}K)",
@@ -953,7 +953,23 @@
     "passwordChanged": "Password changed",
     "passwordChangeFailed": "Could not change the password",
     "createAccount": "Create account",
-    "displayName": "Display name"
+    "displayName": "Display name",
+    "urlLabel": "Link (optional)",
+    "urlHint": "https://…",
+    "urlInvalid": "Enter an http:// or https:// link",
+    "statsTab": "Statistics",
+    "stats": {
+      "today": "Today",
+      "d7": "7 days",
+      "d30": "30 days",
+      "byFaculty": "By faculty (30 days)",
+      "byPlatform": "By platform (30 days)",
+      "weekly": "Weekly active installs (12 weeks)",
+      "installsNote": "We count installs, not people: a student on a phone and a laptop counts twice.",
+      "under5": "under 5",
+      "unknown": "unknown",
+      "loadFailed": "Could not load statistics."
+    }
   },
   "mobile": {
     "header": {
@@ -980,7 +996,8 @@
       "nextWeek": "Next week",
       "loading": "Loading your timetable…",
       "holiday": "Public holiday",
-      "teachingStarts": "Teaching starts {date}"
+      "teachingStarts": "Teaching starts {date}",
+      "recentFiles": "Recently opened"
     },
     "exams": {
       "title": "Exams",
@@ -1086,8 +1103,7 @@
       "enlargePhoto": "Enlarge photo",
       "copied": "Copied!",
       "teamsChat": "Message on Teams",
-      "navigateToRoom": "Show {room} on the map",
-      "showSubject": "Open subject"
+      "navigateToRoom": "Show {room} on the map"
     },
     "profile": {
       "appearance": "Appearance",
@@ -1098,6 +1114,21 @@
       "title": "Couldn't load your data",
       "body": "Check your connection and try again.",
       "retry": "Try again"
+    },
+    "pdfInk": {
+      "saveFailedTitle": "Your ink couldn't be saved",
+      "saveFailedMessage": "There may be no space left on this iPad. Keep editing and try again, or discard the changes.",
+      "keepEditing": "Keep editing",
+      "discard": "Discard",
+      "openFailed": "Couldn't open this file.",
+      "addPage": "Add a page",
+      "export": "Share with notes",
+      "exportFailed": "Couldn't prepare the file to share.",
+      "pages": "Pages",
+      "search": "Search",
+      "page": "Page",
+      "noMatches": "Nothing found",
+      "removePage": "Remove page"
     }
   },
   "session": {

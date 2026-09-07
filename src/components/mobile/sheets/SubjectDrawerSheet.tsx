@@ -17,6 +17,7 @@ import { useSubjects } from '../../../hooks/data/useSubjects';
 import { useSchedule } from '../../../hooks/data/useSchedule';
 import { useSyncStatus } from '../../../hooks/data/useSyncStatus';
 import { usePdfPreview } from '../../../hooks/ui/usePdfPreview';
+import { listSubjectPdfs } from '../../SubjectFileDrawer/utils/listSubjectPdfs';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { useAppStore } from '../../../store/useAppStore';
 
@@ -69,18 +70,25 @@ export function SubjectDrawerSheet({ sheet, onClose }: SubjectDrawerSheetProps) 
   // Tapping a PDF opens it in the reader rather than exporting it: on iOS the
   // download path is the share sheet, so "just let me read page 3" meant saving
   // the file out of the app first. The row's own download button is untouched.
-  const { previewUrl, viewPdf, closePreview, openFile, downloadSingle } = usePdfPreview();
-
   const resolvedCourseId =
     courseId || schedule.find((s) => s.courseCode === courseCode && s.courseId)?.courseId || '';
 
   const { files, isLoading: isFilesLoading } = useFiles(courseCode);
+  const groupedFiles = groupAndSortFiles(files, courseCode, t);
+  // The course keys the iPad reader's ink and PDF cache, and its PDFs fill the
+  // reader's sidebar so a student can switch files without coming back here —
+  // in the drawer's grouped order, so both lists read the same.
+  const { previewUrl, viewPdf, closePreview, openFile, downloadSingle } = usePdfPreview(
+    courseCode,
+    {
+      title: courseName || courseCode,
+      files: listSubjectPdfs(groupedFiles.flatMap((g) => g.files)),
+    }
+  );
   const { classmates } = useClassmates(courseCode);
   const pushSheet = useAppStore((s) => s.pushSheet);
   const { data: zaznamnikData } = useZaznamnik(courseCode);
   const syllabusResult = useSyllabus(courseCode, resolvedCourseId, courseName);
-
-  const groupedFiles = groupAndSortFiles(files, courseCode, t);
 
   const filesCount = files?.reduce((acc, f) => acc + f.files.length, 0) ?? 0;
   const zaznamnikCount = zaznamnikData

@@ -72,7 +72,7 @@ export function StudyPlanPage({
       <div className="flex items-center gap-2 min-w-0">
         <button
           onClick={onBack}
-          className="btn btn-ghost btn-sm btn-circle text-base-content/60"
+          className="btn btn-ghost btn-sm btn-circle text-base-content/75"
           aria-label={t('common.back')}
         >
           <ArrowLeft className="w-4 h-4" />

@@ -7,6 +7,18 @@ import { installNodeRuntime } from './lib/nodeRuntime';
 const LOGIN_URL = 'https://is.mendelu.cz/system/login.pl';
 const OUT = resolve(process.cwd(), 'public/dev-real-data.json');
 const verbose = process.argv.includes('--verbose');
+// `--dump-html` writes the raw IS pages a parser reads, in BOTH languages, so a
+// parser change can be made against real markup. CLAUDE.md requires exactly
+// that as evidence, and until now there was no way to get it without hand-
+// saving pages from a browser. Output is gitignored: it is one student's real
+// record, not a fixture — trim by hand before committing anything from it.
+//
+// Deliberately NOT under public/. Vite copies publicDir into the build output
+// verbatim, and stripDevRealDataPlugin only removes `dev-real-data.json` by
+// name — so a folder of real study plans parked there would ride into
+// dist-web/, which is the directory that gets deployed from a laptop.
+const dumpHtml = process.argv.includes('--dump-html');
+const HTML_OUT = resolve(process.cwd(), '.is-html');
 
 async function login(): Promise<string> {
   const user = process.env.MENDELU_USER;
@@ -35,12 +47,43 @@ async function login(): Promise<string> {
   }
 }
 
+/**
+ * Save the pages the brittle parsers read, one file per language.
+ *
+ * Uses the same runtime the collectors do, so what lands here is byte-for-byte
+ * what the parser was handed — not a browser's re-serialised DOM.
+ */
+async function dumpRawHtml() {
+  const { getUserParams } = await import('@/utils/userParams');
+  const { fetchWithAuth, BASE_URL } = await import('@/api/client');
+  const params = await getUserParams();
+  const studium = params?.studium;
+  if (!studium) {
+    process.stderr.write('[dump] no studium in userParams — skipping HTML dump\n');
+    return;
+  }
+  mkdirSync(HTML_OUT, { recursive: true });
+  const pages: Array<[string, string]> = [
+    ['study-plan', `${BASE_URL}/auth/studijni/studijni_povinnosti.pl?studium=${studium}`],
+  ];
+  for (const [name, base] of pages) {
+    for (const lang of ['cz', 'en']) {
+      const res = await fetchWithAuth(`${base};lang=${lang}`);
+      const html = await res.text();
+      const file = resolve(HTML_OUT, `${name}.${lang}.html`);
+      writeFileSync(file, html);
+      process.stderr.write(`[dump] ${file} (${html.length} bytes)\n`);
+    }
+  }
+}
+
 async function main() {
   const startedAt = Date.now();
   process.stderr.write('[scrape] logging in…\n');
   const cookieHeader = await login();
   process.stderr.write('[scrape] session acquired, collecting data…\n');
   await installNodeRuntime(cookieHeader);
+  if (dumpHtml) await dumpRawHtml();
   const { collectRealData } = await import('./lib/collectRealData');
   const data = await collectRealData();
   mkdirSync(resolve(process.cwd(), 'public'), { recursive: true });

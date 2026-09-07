@@ -31,6 +31,12 @@ export interface FileGroup {
   files: ParsedFile[];
 }
 
+/** What a PDF row knows that the iPad reader needs: the display name and IS's document date. */
+export interface PdfRowMeta {
+  name: string;
+  date: string;
+}
+
 export interface FileListProps {
   groups: FileGroup[];
   selectedIds: string[];
@@ -39,7 +45,7 @@ export interface FileListProps {
   ignoreClickRef: React.MutableRefObject<boolean>;
   onToggleSelect: (id: string, e: React.SyntheticEvent) => void;
   onOpenFile: (link: string) => void;
-  onViewPdf?: (link: string) => void;
+  onViewPdf?: (link: string, meta: PdfRowMeta) => void;
   onDownloadSingle?: (link: string) => void;
   folderUrl?: string;
   lastVisitedAt?: number | null;

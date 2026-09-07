@@ -11,6 +11,7 @@ import { MobileAdminConsole } from './MobileAdminConsole';
 import { SuggestionsInbox } from './SuggestionsInbox';
 import { SocietyAccountsPanel } from './SocietyAccountsPanel';
 import { ChangeMyPasswordForm } from './ChangeMyPasswordForm';
+import { AdminStatsPanel } from './AdminStatsPanel';
 
 /**
  * The admin surface, reached only through "Spravovat spolky" in the profile
@@ -31,7 +32,8 @@ export function AdminConsole() {
   // nothing else — it has no business reading another society's students.
   const isReisAdmin = useAppStore((s) => s.adminRole === 'reis_admin');
   const unread = useAppStore((s) => s.suggestionsUnread);
-  const [pane, setPane] = useState<'events' | 'suggestions' | 'accounts'>('events');
+  const loadAdminStats = useAppStore((s) => s.loadAdminStats);
+  const [pane, setPane] = useState<'events' | 'suggestions' | 'accounts' | 'stats'>('events');
   const { t } = useTranslation();
 
   if (!session) {
@@ -67,7 +69,7 @@ export function AdminConsole() {
               role="tab"
               aria-selected={pane === 'events'}
               onClick={() => setPane('events')}
-              className={`tab flex-1 ${pane === 'events' ? 'tab-active font-semibold' : ''}`}
+              className={`tab flex-1 ${pane === 'events' ? 'tab-active font-semibold' : 'text-base-content'}`}
             >
               {t('admin.listTab')}
             </button>
@@ -77,7 +79,7 @@ export function AdminConsole() {
                 role="tab"
                 aria-selected={pane === 'suggestions'}
                 onClick={() => setPane('suggestions')}
-                className={`tab flex-1 gap-1 ${pane === 'suggestions' ? 'tab-active font-semibold' : ''}`}
+                className={`tab flex-1 gap-1 ${pane === 'suggestions' ? 'tab-active font-semibold' : 'text-base-content'}`}
               >
                 {t('admin.suggestionsTab')}
                 {unread > 0 && (
@@ -87,18 +89,33 @@ export function AdminConsole() {
                 )}
               </button>
             )}
+            {isReisAdmin && (
+              <button
+                type="button"
+                role="tab"
+                aria-selected={pane === 'stats'}
+                onClick={() => {
+                  void loadAdminStats();
+                  setPane('stats');
+                }}
+                className={`tab flex-1 ${pane === 'stats' ? 'tab-active font-semibold' : 'text-base-content'}`}
+              >
+                {t('admin.statsTab')}
+              </button>
+            )}
             <button
               type="button"
               role="tab"
               aria-selected={pane === 'accounts'}
               onClick={() => setPane('accounts')}
-              className={`tab flex-1 ${pane === 'accounts' ? 'tab-active font-semibold' : ''}`}
+              className={`tab flex-1 ${pane === 'accounts' ? 'tab-active font-semibold' : 'text-base-content'}`}
             >
               {t('admin.accountsTab')}
             </button>
           </div>
           <div className="min-h-0 flex-1 overflow-y-auto p-2">
             {isReisAdmin && pane === 'suggestions' && <SuggestionsInbox />}
+            {isReisAdmin && pane === 'stats' && <AdminStatsPanel />}
             {pane === 'accounts' && (
               <div className="flex flex-col gap-6">
                 {isReisAdmin && <SocietyAccountsPanel />}

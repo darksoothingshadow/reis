@@ -49,7 +49,14 @@ function App() {
   if (isPhone) return <MobileApp />;
 
   return (
-    <div className="flex h-screen overflow-hidden bg-base-200 font-sans text-base-content">
+    // data-testid is what `verify:ui --expect-shell` reads. The dev webapp
+    // renders whichever shell the viewport asks for, so a desktop run at a
+    // phone width silently measures MobileApp instead — a clean report about a
+    // screen that was never on screen.
+    <div
+      data-testid="desktop-app"
+      className="flex h-screen overflow-hidden bg-base-200 font-sans text-base-content"
+    >
       <Toaster position="top-center" />
       <Sidebar
         currentView={s.currentView}

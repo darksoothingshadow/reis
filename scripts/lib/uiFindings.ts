@@ -286,3 +286,38 @@ export function analyzeProbe(p: ProbeResult): Finding[] {
   const rank = (f: Finding) => (f.severity === 'error' ? 0 : 1);
   return capPerKind(all.sort((a, b) => rank(a) - rank(b)));
 }
+
+/** Which app shell the dev webapp actually rendered. */
+export type Shell = 'desktop' | 'phone' | 'none' | 'both';
+
+export function describeShell(hasDesktop: boolean, hasPhone: boolean): Shell {
+  if (hasDesktop && hasPhone) return 'both';
+  if (hasDesktop) return 'desktop';
+  if (hasPhone) return 'phone';
+  return 'none';
+}
+
+/**
+ * Fail a run that measured the wrong shell.
+ *
+ * The desktop tree (Sidebar + AppMain) and the phone tree (MobileApp) are
+ * different components, and the dev webapp picks between them by viewport. A
+ * desktop sweep run at a phone width therefore photographs MobileApp and
+ * reports it clean — the screen under test never appeared. `none` is its own
+ * failure: an app that never mounted measures as a blank page with no findings,
+ * which also reads as success.
+ */
+export function assertShell(expected: 'desktop' | 'phone', actual: Shell, width: number): void {
+  if (actual === expected) return;
+  const why =
+    actual === 'none'
+      ? 'no app shell mounted at all — the page is blank or still booting'
+      : `the ${actual} shell rendered instead`;
+  throw new Error(
+    `Expected the ${expected} shell at ${width}px, but ${why}. ` +
+      'Nothing measured in this run describes the screen you asked for. ' +
+      (expected === 'desktop'
+        ? 'The desktop tree needs a viewport above the phone breakpoint, and ?mobile=0 on the URL.'
+        : 'The phone tree needs a width below 767px, or ?mobile=1 on the URL.')
+  );
+}

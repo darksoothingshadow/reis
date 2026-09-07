@@ -363,7 +363,7 @@ export function SubjectFileDrawer({
       title={lesson?.courseName || lesson?.courseCode || t('course.title')}
     >
       {isPdfLoading && (
-        <div className="absolute inset-0 z-20 flex items-center justify-center bg-base-100/50 rounded-2xl">
+        <div className="absolute inset-0 z-20 flex items-center justify-center bg-base-100/85 rounded-2xl">
           <span className="loading loading-spinner loading-lg text-primary" />
         </div>
       )}

@@ -44,6 +44,18 @@ const ANDROID_ONLY: Record<string, string> = {
   Downloads: 'no iOS half — the share sheet covers it there',
 };
 
+/**
+ * The mirror of ANDROID_ONLY: plugins whose Android half does not exist because
+ * the feature is iPad-only IN FACT, with the reason. JS must gate every call on
+ * `Capacitor.getPlatform() === 'ios'` (src/mobile/pdfInkNative.ts does), so on
+ * Android the plugin is never even asked.
+ */
+const IOS_ONLY: Record<string, string> = {
+  // native/capacitor-pdf-ink: PDFKit + PencilKit reader. Android keeps the
+  // pdf.js viewer; there is no PencilKit to reuse there.
+  PdfInk: 'iPad-only PencilKit reader — Android keeps the pdf.js viewer',
+};
+
 function walk(dir: string, out: string[] = []): string[] {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     if (entry.name === 'node_modules' || entry.name.startsWith('.')) continue;
@@ -141,6 +153,13 @@ describe('native plugins are reachable from JS', { timeout: 30_000 }, () => {
     expect(stale, `These now have an iOS class and should leave ANDROID_ONLY`).toEqual([]);
   });
 
+  it('keeps the iOS-only list honest', () => {
+    const javaDir = join(root, 'android/app/src/main/java/cz/reis/app');
+    const java = existsSync(javaDir) ? readdirSync(javaDir).join('\n') : '';
+    const stale = Object.keys(IOS_ONLY).filter((name) => java.includes(`${name}Plugin.java`));
+    expect(stale, `These now have an Android class and should leave IOS_ONLY`).toEqual([]);
+  });
+
   it('has no native plugin directory that nothing depends on', () => {
     // An undeclared package is never synced, so it is not a plugin — it is a
     // directory that looks like one.
@@ -162,7 +181,9 @@ describe('native plugins are reachable from JS', { timeout: 30_000 }, () => {
     // app target — but a plugin with neither half is a dead call on both.
     const javaDir = join(root, 'android/app/src/main/java/cz/reis/app');
     const java = existsSync(javaDir) ? readdirSync(javaDir).join('\n') : '';
-    const missing = registeredNames().filter((name) => !java.includes(`${name}Plugin.java`));
+    const missing = registeredNames().filter(
+      (name) => !java.includes(`${name}Plugin.java`) && !(name in IOS_ONLY)
+    );
     expect(missing, `No <Name>Plugin.java under ${javaDir}`).toEqual([]);
   });
 });

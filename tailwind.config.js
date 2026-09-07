@@ -215,6 +215,11 @@ export default {
         },
     },
     plugins: [daisyui],
+    // NOTE: Tailwind v4 does not read this block. The themes that actually
+    // ship are declared with `@plugin "daisyui/theme"` in src/index.css, and
+    // nothing here does `@config`. Editing the colours below changes nothing —
+    // it looks like it worked, and the app keeps the old palette. Kept only
+    // because the surrounding `theme.extend` is still referenced by tooling.
     daisyui: {
         themes: [
             {
