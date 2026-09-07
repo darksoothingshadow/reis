@@ -168,9 +168,12 @@ final class ReaderBarTests: XCTestCase {
 
         // Right to left, so this reads share on the edge and the counter
         // nearest the title.
+        // `map`, not `compactMap`: an item added without an accessibility label
+        // would be dropped by compactMap and this assertion would still pass
+        // while a fifth button sat in the bar.
         let trailing = try XCTUnwrap(reader.navigationItem.rightBarButtonItems)
         XCTAssertEqual(
-            trailing.compactMap(\.accessibilityLabel),
+            trailing.map(\.accessibilityLabel),
             [strings.export, strings.addPage, strings.search, strings.pages],
             "the reader's bar gained or lost a tool")
     }
@@ -187,5 +190,39 @@ final class ReaderBarTests: XCTestCase {
         XCTAssertFalse(
             trailing.contains { $0.accessibilityLabel == strings.close },
             "the reader's own Close is back; leaving is the sidebar's Close")
+    }
+}
+
+/**
+ * The way out of the space.
+ *
+ * The reader's own Close was withdrawn, so the sidebar's X is the only one left
+ * and its wiring is the whole exit. It is one assignment in `PdfInkSpace.init`
+ * and the sort of line a refactor drops silently, which is why it is asserted
+ * here rather than left to the device checklist.
+ */
+@available(iOS 16.0, *)
+final class SpaceExitTests: XCTestCase {
+    func testTheSidebarsCloseClosesTheSpace() throws {
+        let ink = FileManager.default.temporaryDirectory
+            .appendingPathComponent("\(UUID().uuidString).ink")
+        let space = PdfInkSpace(
+            courseTitle: "EBC-AP",
+            files: [
+                .init(
+                    link: "l1", name: "Přednáška 1", date: "1. 1. 2026", pdfURL: nil, inkURL: ink)
+            ],
+            currentLink: "l1",
+            strings: PdfInkStrings(nil))
+        var closed = false
+        space.onClose = { _ in closed = true }
+
+        let list = try XCTUnwrap(
+            space.split.viewController(for: .primary) as? FileListViewController)
+        list.loadViewIfNeeded()
+        let close = try XCTUnwrap(list.navigationItem.leftBarButtonItem)
+        _ = try XCTUnwrap(close.target).perform(try XCTUnwrap(close.action), with: close)
+
+        XCTAssertTrue(closed, "the sidebar's Close did not close the space — there is no way out")
     }
 }

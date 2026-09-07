@@ -4,11 +4,11 @@ import UIKit
 /**
  * One subject's PDFs in a Notes-style space: Apple's split view with the file
  * list on the left and the reader on the right, the system sidebar toggle in the
- * reader's bar, and a system Close on the list — the one way out. The space owns
- * switching: a
- * cached file loads at once; anything else is requested from the app through
- * `onNeedsFile` and shown when `deliver` arrives. Closing persists first and
- * reports every link that was displayed.
+ * reader's bar, and a system Close on the list — the one way out, since the
+ * reader has no Close of its own. The space owns switching: a cached file loads
+ * at once; anything else is requested from the app through `onNeedsFile` and
+ * shown when `deliver` arrives. Closing persists first and reports every link
+ * that was displayed.
  *
  * `currentLink` is the file the reader is actually showing — "" while it shows
  * a spinner or a message — and only becomes a link once that file has loaded,

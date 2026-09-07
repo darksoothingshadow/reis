@@ -5,10 +5,13 @@ import UIKit
  * What PDFKit puts over one page.
  *
  * The canvas used to be handed to PDFKit directly. It is wrapped now, and the
- * wrapper does exactly one job: keep the canvas the same size as the page. The
- * wrapper is what `willEndDisplayingOverlayView` matches on by identity, which
- * is what makes harvesting strokes across a file switch work — so it stays now
- * that the canvas is alone under it again.
+ * wrapper does exactly one job: keep the canvas the same size as the page.
+ *
+ * The cover layer it was introduced for is gone, so the canvas is alone under it
+ * again and the wrapper looks pointless. It stays anyway, and the reason is
+ * plain caution, not a constraint: `willEndDisplayingOverlayView` would
+ * identity-match bare canvases just as well, but unwrapping means touching the
+ * one thing in this plugin that must not move (see below) for no gain.
  *
  * That size is load-bearing. A `PKDrawing`'s coordinates are the canvas's
  * coordinates, and every archive ever written assumed those are the page's — an

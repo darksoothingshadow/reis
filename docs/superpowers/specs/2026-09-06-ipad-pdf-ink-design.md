@@ -415,10 +415,13 @@ What is left of it, and why:
   would make every one of those files a "newer version", which `InkArchive.decode`
   refuses and the store quarantines — the student's ink would go with the covers.
   `testAnArchiveCarryingCoversStillOpensWithItsInk` holds that line.
-- **`PageOverlayView` stays.** The canvas is alone under it again, so the wrapper
-  looks pointless — but it is what `willEndDisplayingOverlayView` matches on by
-  identity, and that identity match is what harvests strokes correctly across a
-  file switch. Handing PDFKit the canvas directly again would reopen that bug.
+- **`PageOverlayView` stays**, and the reason is caution rather than a
+  constraint. The canvas is alone under it again, so the wrapper looks pointless;
+  `willEndDisplayingOverlayView` would identity-match bare canvases just as well,
+  as it did before the wrapper existed. But the wrapper's job is to keep the
+  canvas exactly the size of the page, and a `PKDrawing`'s coordinates are the
+  canvas's coordinates — an inset of one point moves the ink in every archive on
+  the device. Unwrapping touches that for no gain, so it does not get touched.
 - **Leaving is the sidebar's Close.** The reader's bar is four buttons: share,
   add a page, search, page counter. Apple's sidebar toggle is one tap away on the
   leading edge, and the Close is on the sidebar behind it. That is one tap more
