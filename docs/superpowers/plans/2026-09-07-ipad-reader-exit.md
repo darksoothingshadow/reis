@@ -274,7 +274,19 @@ with:
         reader.onCloseSpace = { [weak self] in self?.closeTapped() }
 ```
 
-Also update the class doc comment's first sentence: replace `and a system Close on the list — the one way out, since the\n * reader has no Close of its own.` with `a system Close on the list and an X in the reader's own bar — two\n * doors into the same `closeTapped()`.` (keep the rest of the sentence flowing: `The space owns switching: …`).
+Also update the class doc comment's first sentence. Replace:
+
+```swift
+ * reader's bar, and a system Close on the list — the one way out, since the
+ * reader has no Close of its own. The space owns switching: a cached file loads
+```
+
+with:
+
+```swift
+ * reader's bar, a system Close on the list and an X in the reader's own bar —
+ * two doors into the same `closeTapped()`. The space owns switching: a cached file loads
+```
 
 - [ ] **Step 5: Run the full Swift suite**
 

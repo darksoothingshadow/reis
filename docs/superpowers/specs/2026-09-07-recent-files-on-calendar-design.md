@@ -82,3 +82,26 @@ dismissRecentPdf(key: string): Promise<void>;
 
 Per-day scoping (needs an open-event log). Deleting the cached copy from the
 strip (a dismiss that can destroy ink is a trap). Any change to eviction.
+
+## Addendum 2026-09-07 (evening): every day, and a way back to today
+
+Two findings from Dominik's first device session with the build:
+
+- **The strip is on every day now, not only today.** Paging to another day made
+  "Naposledy otevřené" vanish with no way to tell why. The today-only gate above
+  was inferred from "opened on that day" — a data constraint — but the heading
+  names a recency shelf, not a fact about the day, and a shelf follows the
+  student while the agenda follows the day. Relabelling it "Otevřené dnes" was
+  considered and rejected: it would be false (yesterday's files are in it).
+  Under the agenda in the scroller, it costs nothing above the fold on any day.
+- **A Dnes / Today pill** in the header's own-control slot (`ScreenHeader.below`,
+  where Exams puts its count), shown only off-day, calling
+  `setMobileSelectedDay(null)`. The arrows and chips only ever stepped away
+  from today. Ink on a tint (`bg-base-content/10 text-base-content`): the lime
+  `text-primary` measured 1.89:1 on a light surface — the same failure the day
+  chips and the bottom nav already carry, which is why it does not copy them.
+- **The reopened file's sidebar is the subject's listing**, not just the cached
+  copies: the first cut listed nine files under a subject that has seventeen,
+  with the subject's name over them. `groupAndSortFiles → listSubjectPdfs` from
+  the files slice (persisted, so offline too); cached copies are the fallback
+  only when the store has no listing at all.

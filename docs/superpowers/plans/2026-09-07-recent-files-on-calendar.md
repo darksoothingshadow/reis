@@ -272,6 +272,19 @@ describe('createRecentPdfsSlice', () => {
     expect(useAppStore.getState().recentPdfs).toEqual([]);
     expect(idb.get).not.toHaveBeenCalled();
   });
+
+  it('keeps a dismissal made while a refresh was in flight', async () => {
+    let release!: (v: unknown) => void;
+    idb.get.mockReturnValueOnce(new Promise((r) => (release = r)));
+    const refreshing = useAppStore.getState().refreshRecentPdfs();
+    vi.spyOn(Date, 'now').mockReturnValue(1000);
+    await useAppStore.getState().dismissRecentPdf('a');
+    release({}); // the stored map predates the dismissal
+    await refreshing;
+
+    expect(useAppStore.getState().dismissedRecentPdfs).toEqual({ a: 1000 });
+    expect(useAppStore.getState().recentPdfs.map((p) => p.key)).toEqual(['b']);
+  });
 });
 ```
 
@@ -307,6 +320,15 @@ export interface RecentPdfsSlice {
 
 const DISMISSED_KEY = 'recent_pdfs_dismissed';
 
+function mergeDismissed(
+  a: Record<string, number>,
+  b: Record<string, number>
+): Record<string, number> {
+  const out = { ...b };
+  for (const [key, at] of Object.entries(a)) out[key] = Math.max(out[key] ?? 0, at);
+  return out;
+}
+
 function isDismissedRecord(v: unknown): v is Record<string, number> {
   return (
     !!v &&
@@ -338,7 +360,13 @@ export const createRecentPdfsSlice: AppSlice<RecentPdfsSlice> = (set, get) => ({
         readIndex(capacitorPdfCacheFs),
         IndexedDBService.get('meta', DISMISSED_KEY),
       ]);
-      const dismissed = isDismissedRecord(stored) ? stored : get().dismissedRecentPdfs;
+      // Merge, newest timestamp wins: a dismissal made while this read was in
+      // flight is only in memory, and taking the stored map alone would undo
+      // it until the next refresh.
+      const dismissed = mergeDismissed(
+        get().dismissedRecentPdfs,
+        isDismissedRecord(stored) ? stored : {}
+      );
       const cachedPdfs = listablePdfs(index);
       set({
         cachedPdfs,
@@ -417,7 +445,7 @@ export const createMobileUiSlice: AppSlice<MobileUiSlice> = (set, get) => ({
 npx vitest run src/store/slices/__tests__/createRecentPdfsSlice.test.ts src/store/slices/__tests__/createMobileUiSlice.test.ts && npx tsc -b
 ```
 
-Expected: `4 passed` for the new file, the mobile-ui file still green, `tsc` silent.
+Expected: `5 passed` for the new file, the mobile-ui file still green, `tsc` silent.
 
 - [ ] **Step 7: Commit**
 
