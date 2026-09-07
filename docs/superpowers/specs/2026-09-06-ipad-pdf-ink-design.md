@@ -463,3 +463,8 @@ it now takes the cell's own tint and redraws on `tintColorDidChange`.
 Measured on the simulator by rendering the space and sampling the page indicator: #0088ff → #00548f
 in light, #0091ff → #3a81f5 in dark. In dark the accent sits a shade off systemBlue, so the visible
 change is light mode's; the two hexes in `pdfInkTint.ts` are the only place a colour is named.
+
+What that proves and what it does not: the reader's own view and the grid's ring are asserted in
+`PdfInkSpaceTintTests`, and the page indicator is pixel-sampled. The bar glyphs are SF Symbols,
+which do not draw in a headless render — they inherit `split.view`'s tint by the same route the
+indicator does, but nobody has looked at them. Checklist step 26 is what closes that.

@@ -71,6 +71,41 @@ final class PdfInkSpaceTintTests: XCTestCase {
         XCTAssertEqual(try readerTint(of: space), [0x3b, 0x82, 0xf6, 255])
     }
 
+    /**
+     * The page grid is presented, so it inherits nothing and is tinted by hand —
+     * and its current-page ring is a `cgColor` on a layer, the one place the
+     * tint is resolved rather than inherited. Read back off the layer that
+     * actually draws it.
+     */
+    func testThePageGridsCurrentPageRingTakesTheTint() throws {
+        let size = CGSize(width: 200, height: 260)
+        let data = UIGraphicsPDFRenderer(bounds: CGRect(origin: .zero, size: size)).pdfData { ctx in
+            for _ in 0..<3 {
+                ctx.beginPage()
+                UIColor.white.setFill()
+                ctx.cgContext.fill(CGRect(origin: .zero, size: size))
+            }
+        }
+        let grid = PageGridViewController(
+            document: try XCTUnwrap(PDFDocument(data: data)), title: "Pages", current: 1,
+            strings: PdfInkStrings(nil), inked: { _ in false }, added: { _ in false })
+        let sheet = UINavigationController(rootViewController: grid)
+        // Exactly what PdfInkViewController.present(inSheet:) does.
+        sheet.view.tintColor = PdfInkTint.dynamic(light: "#00548f", dark: "#3b82f6")
+
+        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 700, height: 900))
+        window.overrideUserInterfaceStyle = .light
+        window.rootViewController = sheet
+        window.isHidden = false
+        window.layoutIfNeeded()
+        windows.append(window)
+        grid.collectionView.layoutIfNeeded()
+
+        let cell = try XCTUnwrap(grid.collectionView.cellForItem(at: IndexPath(item: 1, section: 0)))
+        let ring = try XCTUnwrap(cell.contentView.subviews.first { $0.layer.borderWidth == 2 })
+        XCTAssertEqual(rgb(UIColor(cgColor: try XCTUnwrap(ring.layer.borderColor))), [0, 0x54, 0x8f, 255])
+    }
+
     /// No tint from the app leaves iPadOS's, rather than a colour of our choosing.
     func testWithoutATintTheReaderIsLeftOnTheSystemOne() throws {
         let space = try show(tint: nil, style: .light)
