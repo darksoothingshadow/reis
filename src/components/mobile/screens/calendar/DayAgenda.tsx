@@ -1,14 +1,16 @@
 import type { AgendaRow } from '../../../../utils/mobile/dayAgenda';
+import type { BlockLesson } from '../../../../types/calendarTypes';
 import { AgendaEvent } from './AgendaEvent';
 import { GapMarker } from './GapMarker';
 
 export interface DayAgendaProps {
   rows: AgendaRow[];
-  onOpenEvent: (eventId: string) => void;
+  onOpenSubject: (lesson: BlockLesson) => void;
+  onShowOnMap: (lesson: BlockLesson) => void;
 }
 
 /** The day's timeline: a start/end rail on the left, event cards and gap markers on the right. */
-export function DayAgenda({ rows, onOpenEvent }: DayAgendaProps) {
+export function DayAgenda({ rows, onOpenSubject, onShowOnMap }: DayAgendaProps) {
   const events = rows.filter((r): r is Extract<AgendaRow, { type: 'event' }> => r.type === 'event');
   const railStart = events[0]?.lesson.startTime ?? '';
   const railEnd = events[events.length - 1]?.lesson.endTime ?? '';
@@ -33,7 +35,8 @@ export function DayAgenda({ rows, onOpenEvent }: DayAgendaProps) {
             <AgendaEvent
               key={row.lesson.id}
               lesson={row.lesson}
-              onOpen={() => onOpenEvent(row.lesson.id)}
+              onOpenSubject={() => onOpenSubject(row.lesson)}
+              onShowOnMap={() => onShowOnMap(row.lesson)}
             />
           )
         )}
