@@ -140,6 +140,17 @@ reader. The subject's own file drawer is still listed live: with no IS session e
 Seen on the simulator on 2026-09-07 once its session expired. Closing this properly means the
 drawer falling back to what is cached, the same stale-if-error rule `serveFile` already follows.
 
+## 26. The tint is the app's, in both appearances
+
+Open the reader in light. Every glyph in both bars — the sidebar's Close and toggle, the page
+counter, search, add-a-page, share — is MENDELU green (#4a7a0d), and so is the page grid's current
+page, ring and number together. Switch the iPad to dark and look again: the brand lime, #79be15.
+
+On iPadOS 26 this only works because the tint is set on each bar item; a black glyph means that
+item was missed. Record the iPad's iPadOS version next to what you saw.
+
+The tool picker, the share sheet and the paper are Apple's and must not have changed at all.
+
 ## Report back
 
 Record any finding not in the design here, with the step number.

@@ -31,16 +31,21 @@ final class PdfInkSpace: NSObject {
     private let reader: PdfInkViewController
     private let list: FileListViewController
     private let strings: PdfInkStrings
+    private let tint: UIColor?
     private var files: [File]
     private var currentLink = ""
     private var pendingLink: String?
     private var shown: [String] = []
     private var closed = false
 
-    init(courseTitle: String, files: [File], currentLink: String, strings: PdfInkStrings) {
+    init(
+        courseTitle: String, files: [File], currentLink: String, strings: PdfInkStrings,
+        tint: UIColor? = nil
+    ) {
         self.files = files
         self.strings = strings
-        reader = PdfInkViewController(strings: strings)
+        self.tint = tint
+        reader = PdfInkViewController(strings: strings, tint: tint)
         list = FileListViewController(
             title: courseTitle,
             items: files.map {
@@ -72,6 +77,24 @@ final class PdfInkSpace: NSObject {
         // Two doors, one path: both persist first and share the save-failed alert.
         list.onClose = { [weak self] in self?.closeTapped() }
         reader.onCloseSpace = { [weak self] in self?.closeTapped() }
+    }
+
+    /**
+     * Paints the app's accent over the whole space: both columns, both bars and
+     * everything they contain. Called by the plugin just before presenting, so
+     * this is the first thing that loads `split.view` — never earlier.
+     */
+    func applyTint() {
+        guard let tint else { return }
+        split.view.tintColor = tint
+        // iPadOS 26 draws bar buttons as monochrome glass and ignores a tint
+        // inherited from a parent view: measured on the simulator, the whole bar
+        // had no coloured pixel. A tint set on the item itself does get through,
+        // and is what iPadOS 16-18 would have taken from the view anyway.
+        for controller in [list as UIViewController, reader] {
+            controller.loadViewIfNeeded()
+            PdfInkTint.apply(tint, toBarItemsOf: controller.navigationItem)
+        }
     }
 
     /// Shows the initial file; the plugin has already proved PDFKit can open it.
@@ -192,6 +215,9 @@ final class PdfInkSpace: NSObject {
             preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: strings.keepEditing, style: .cancel))
         alert.addAction(UIAlertAction(title: strings.discard, style: .destructive) { _ in discard() })
+        // An alert is presented over the window, not inside `split.view`, so it
+        // inherits nothing: every presented thing in here is tinted by hand.
+        if let tint { alert.view.tintColor = tint }
         split.present(alert, animated: true)
     }
 

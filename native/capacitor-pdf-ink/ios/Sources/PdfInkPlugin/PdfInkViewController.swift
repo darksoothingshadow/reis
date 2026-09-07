@@ -40,6 +40,8 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
     PKCanvasViewDelegate, UIAdaptivePresentationControllerDelegate
 {
     private let strings: PdfInkStrings
+    /// Presented things are not in this view's subtree, so they cannot inherit it.
+    private let tint: UIColor?
     private let pdfView = InkPDFView()
     private let toolPicker = PKToolPicker()
     private let spinner = UIActivityIndicatorView(style: .large)
@@ -96,8 +98,9 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
     }
     var fittedPageScale: CGFloat { pdfView.scaleFactorForSizeToFit }
 
-    init(strings: PdfInkStrings) {
+    init(strings: PdfInkStrings, tint: UIColor? = nil) {
         self.strings = strings
+        self.tint = tint
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -437,6 +440,11 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         sheet.sheetPresentationController?.detents = [.medium(), .large()]
         sheet.sheetPresentationController?.prefersGrabberVisible = true
         sheet.presentationController?.delegate = self
+        if let tint {
+            sheet.view.tintColor = tint
+            controller.loadViewIfNeeded()
+            PdfInkTint.apply(tint, toBarItemsOf: controller.navigationItem)
+        }
         toolPicker.setVisible(false, forFirstResponder: pdfView)
         present(sheet, animated: true)
     }
@@ -491,6 +499,7 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
                 title: strings.exportFailed, message: error.localizedDescription,
                 preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: strings.close, style: .cancel))
+            if let tint { alert.view.tintColor = tint }
             present(alert, animated: true)
             return
         }

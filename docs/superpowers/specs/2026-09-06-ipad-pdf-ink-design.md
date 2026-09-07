@@ -430,3 +430,47 @@ What is left of it, and why:
 
 The whole design of the covers is in this file's history if it is ever wanted
 back.
+
+## Addendum 2026-09-07: the chrome carries the theme accent
+
+Everything in the reader was system-coloured, so it read as an iPad app the student had opened
+from inside reIS rather than as part of it. `open` now takes a `tint` and `PdfInkSpace.applyTint`
+puts it on `split.view`, which is the whole space.
+
+This is the one deliberate exception to "everything the student touches is Apple's", and it is a
+narrow one — `tintColor` moves and nothing else. `PKToolPicker`, the share sheet and the context
+menus have no styling API; the paper stays white because the canvases are forced `.light` and
+PencilKit would invert the ink otherwise.
+
+**Two hexes, not one.** `PdfInkTint.dynamic` builds a `UIColor(dynamicProvider:)` from the two in
+`src/mobile/pdfInkTint.ts`. The dark bar gets the brand lime itself, #79be15, at 7.5:1 on it. The
+light bar cannot have it — see below — so it gets the same hue darkened, #4a7a0d, at 5.2:1.
+
+**The lime, but only where it can be seen.** reIS is green and the reader should read as green.
+The constraint is the white bar, where #79be15 is 2.29:1 — the number `src/index.css` already
+records, where the same finding moved `--color-primary-content` off white. A bar button the student
+has to find and tap owes 3:1 (WCAG 1.4.11) and the system blue it replaces clears ~4:1, so shipping
+the lime there would have been a regression dressed as a brand. Darkening the same hue keeps the
+brand and clears the floor.
+
+Anything that does not parse means no tint at all: half a brand — one appearance ours, the other
+Apple's — is worse than Apple's.
+
+Two things worth knowing. Presented things are not inside `split.view` and inherit nothing, so the
+sheets and both alerts are tinted by hand. And the page grid's current-page ring was drawing
+`UIColor.tintColor.cgColor`, which resolves outside any view and always came out the system blue —
+it now takes the cell's own tint and redraws on `tintColorDidChange`.
+
+**Measured, not assumed.** The reader was hosted in a throwaway app on an iPad Air 11-inch
+simulator (iPadOS 26.5) and screenshotted with and without the tint.
+
+The first attempt tinted only `split.view` and changed almost nothing: the page grid's current page
+moved and the bar did not. **On iPadOS 26 bar buttons are monochrome glass and ignore a tint
+inherited from a parent view** — the whole bar region had no coloured pixel either way. A tint set
+on the `UIBarButtonItem` itself does get through, so `applyTint` walks both navigation items and
+the reader's sheets do the same for theirs. With that, every glyph in both bars is green: 1483
+coloured pixels of #4a7a0d in light where there were none, and #79be15 in dark.
+
+An earlier headless render had suggested the inherited tint alone reached the bars. It did not — a
+headless render does not apply the glass bar styling, and only a hosted app on a real screen
+settles a question about chrome.

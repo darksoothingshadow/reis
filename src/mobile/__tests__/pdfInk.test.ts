@@ -140,8 +140,22 @@ describe('openPdfWithInk', () => {
         },
       ],
       strings: STRINGS,
+      tint: { light: '#4a7a0d', dark: '#79be15' },
     });
     expect((await readIndex(fs))[key]).toMatchObject({ date: '12. 3. 2026', lastOpenedAt: 5000 });
+  });
+
+  it('tints the reader with the theme accent, one hex per appearance', async () => {
+    const { deps, input, open } = harness();
+
+    await openPdfWithInk(deps, input);
+
+    // MENDELU green. The lime itself only on the dark bar (7.5:1); on a white
+    // one it is 2.29:1, so light gets the same hue darkened to 5.2:1.
+    expect((open.mock.calls[0]?.[0] as { tint: unknown }).tint).toEqual({
+      light: '#4a7a0d',
+      dark: '#79be15',
+    });
   });
 
   it('gives the sidebar a cached path only for copies that are fresh for their date', async () => {
