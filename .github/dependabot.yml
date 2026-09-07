@@ -1,9 +1,15 @@
 version: 2
 updates:
-  - package-ecosystem: "npm"
-    directory: "/"
+  - package-ecosystem: 'npm'
+    directory: '/'
+    # Bumps go through the release train like everything else: feature → test →
+    # main. Without this Dependabot targets the default branch, main, which only
+    # ever accepts the test → main release PR — so every bump PR sat BLOCKED on
+    # the release gate and had to be retargeted by hand (#299/#300, 2026-09-07),
+    # and Dependabot refuses to rebase a PR whose base someone changed for it.
+    target-branch: 'test'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
     open-pull-requests-limit: 10
     # These major bumps are blocked by third-party peer-dependency ranges, not by
     # our code — they fail `npm ci` with ERESOLVE and can't merge until the named
@@ -15,45 +21,46 @@ updates:
       # so anything from 6.1 up (incl. the 7.x native port) fails `npm ci` with
       # ERESOLVE (PR #138 was TS 7.0.2). Block every major >= 6 until the toolchain
       # widens its peer range; lift once typescript-eslint supports the target major.
-      - dependency-name: "typescript"
-        versions: [">= 6"]
+      - dependency-name: 'typescript'
+        versions: ['>= 6']
       # eslint 10 / @eslint/js 10 conflict with the eslint peer range used
       # transitively by typescript-eslint. Both must move together. Lift when
       # typescript-eslint supports eslint 10.
-      - dependency-name: "eslint"
-        versions: ["10.x"]
-      - dependency-name: "@eslint/js"
-        versions: ["10.x"]
+      - dependency-name: 'eslint'
+        versions: ['10.x']
+      - dependency-name: '@eslint/js'
+        versions: ['10.x']
       # vite 8 — @wxt-dev/module-react and @tailwindcss/vite peers cap at vite 7.
       # (vite 7 is still allowed through; only 8 is blocked.) Lift when both
       # WXT and the Tailwind vite plugin list `^8`.
-      - dependency-name: "vite"
-        versions: ["8.x"]
+      - dependency-name: 'vite'
+        versions: ['8.x']
       # vitest 4 — @vitest/coverage-v8 4 pins `vitest@4` exactly, and vitest 4
       # broke our test suite when trialed. Both must move together. Lift when we
       # do the deliberate vitest 4 migration.
-      - dependency-name: "vitest"
-        versions: ["4.x"]
-      - dependency-name: "@vitest/coverage-v8"
-        versions: ["4.x"]
+      - dependency-name: 'vitest'
+        versions: ['4.x']
+      - dependency-name: '@vitest/coverage-v8'
+        versions: ['4.x']
       # @playwright/test > 1.60 — @serenity-js/playwright-test (latest 3.44.0)
       # peers `@playwright/test ~1.60.0`, so 1.61+ fails npm ci. Block minor/major
       # (1.60.x patches still flow) and drop it from the dev group so the group's
       # other members can still merge. Lift when Serenity widens its peer range.
-      - dependency-name: "@playwright/test"
-        update-types: ["version-update:semver-minor", "version-update:semver-major"]
+      - dependency-name: '@playwright/test'
+        update-types: ['version-update:semver-minor', 'version-update:semver-major']
     groups:
       # Batch low-risk bumps into one PR each to cut noise. Majors are excluded
       # from groups so they arrive individually for careful review (they have
       # broken the test suite before — the vite 8 / vitest 4 group).
       dev-dependencies:
-        dependency-type: "development"
-        update-types: ["minor", "patch"]
+        dependency-type: 'development'
+        update-types: ['minor', 'patch']
       production-dependencies:
-        dependency-type: "production"
-        update-types: ["minor", "patch"]
+        dependency-type: 'production'
+        update-types: ['minor', 'patch']
 
-  - package-ecosystem: "github-actions"
-    directory: "/"
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    target-branch: 'test'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
