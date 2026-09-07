@@ -68,12 +68,13 @@ export function CalendarScreen() {
   // The arrows and chips only ever step AWAY from today; this is the step back.
   // In the header's own-control slot like Exams' count, and only off-day, so
   // today's screen is exactly what it was. `null` is "today" in the store, so
-  // the day re-derives itself at midnight rather than pinning a date.
+  // the day re-derives itself at midnight rather than pinning a date. Ink on
+  // a tint, not the lime: text-primary on a light surface is 1.89:1.
   const todayPill = isToday ? undefined : (
     <button
       type="button"
       onClick={() => setMobileSelectedDay(null)}
-      className="w-fit whitespace-nowrap rounded-full bg-primary/15 px-3 py-1.5 text-sm font-semibold text-primary"
+      className="w-fit whitespace-nowrap rounded-full bg-base-content/10 px-3 py-1.5 text-sm font-semibold text-base-content"
     >
       {t('common.today')}
     </button>
