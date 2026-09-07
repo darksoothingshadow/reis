@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { formatSnapshotAge, mountSnapshotAge, badgeTop } from '../snapshotAge';
 import { DEMO_BANNER_HEIGHT } from '../../src/components/mobile/toastOffset';
 
@@ -86,6 +86,16 @@ describe('badgeTop', () => {
 describe('mountSnapshotAge', () => {
   beforeEach(() => {
     document.body.innerHTML = '';
+    // The age is counted from the real clock, so a fixture dated "two days
+    // before the day this was written" became three days, then four. Two of
+    // these tests had already rotted into a red CI. Pin the clock instead: the
+    // point is the wording, not what today happens to be.
+    vi.useFakeTimers();
+    vi.setSystemTime(NOW);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it('shows nothing outside the real-data build', () => {

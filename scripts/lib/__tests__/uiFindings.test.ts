@@ -1,5 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { analyzeProbe, type ProbeElement, type ProbeResult } from '../uiFindings';
+import {
+  analyzeProbe,
+  assertShell,
+  describeShell,
+  type ProbeElement,
+  type ProbeResult,
+} from '../uiFindings';
 import { parseCssColor, OPAQUE_BLACK } from '../contrast';
 
 const BASE_200 = parseCssColor('#0f172a')!;
@@ -357,5 +363,33 @@ describe('analyzeProbe — output shape', () => {
     const firstWarn = f.findIndex((x) => x.severity === 'warn');
     const lastError = f.map((x) => x.severity).lastIndexOf('error');
     expect(firstWarn === -1 || lastError < firstWarn).toBe(true);
+  });
+});
+
+describe('describeShell / assertShell', () => {
+  it('names whichever shell mounted', () => {
+    expect(describeShell(true, false)).toBe('desktop');
+    expect(describeShell(false, true)).toBe('phone');
+    expect(describeShell(false, false)).toBe('none');
+    expect(describeShell(true, true)).toBe('both');
+  });
+
+  it('passes when the shell is the one asked for', () => {
+    expect(() => assertShell('desktop', 'desktop', 1440)).not.toThrow();
+  });
+
+  it('fails a desktop sweep that actually photographed the phone tree', () => {
+    // The whole point: this run would otherwise report "no findings" about a
+    // screen that never rendered.
+    expect(() => assertShell('desktop', 'phone', 390)).toThrow(/phone shell rendered instead/);
+  });
+
+  it('treats a page where nothing mounted as a failure, not a clean run', () => {
+    expect(() => assertShell('desktop', 'none', 1440)).toThrow(/no app shell mounted/);
+  });
+
+  it('says how to get the shell it wanted', () => {
+    expect(() => assertShell('desktop', 'phone', 390)).toThrow(/\?mobile=0/);
+    expect(() => assertShell('phone', 'desktop', 1440)).toThrow(/\?mobile=1/);
   });
 });

@@ -6,7 +6,7 @@ import { ZaznamnikTab } from './ZaznamnikTab';
 import { SuccessRateTab } from '../SuccessRateTab';
 import { SelectionBox, DragHint } from './DragHint';
 import { ISBacklink } from './ISBacklink';
-import type { FileGroup, DrawerTab } from './types';
+import type { FileGroup, DrawerTab, PdfRowMeta } from './types';
 import type { SyllabusRequirements, ParsedFile } from '../../types/documents';
 import { useTranslation } from '../../hooks/useTranslation';
 import type { BlockLesson } from '../../types/calendarTypes';
@@ -29,7 +29,7 @@ interface DrawerTabBodyProps {
   ignoreClickRef: React.MutableRefObject<boolean>;
   toggleSelect: (id: string, e: React.SyntheticEvent) => void;
   openFile: (link: string) => void;
-  onViewPdf?: (link: string) => void;
+  onViewPdf?: (link: string, meta: PdfRowMeta) => void;
   onDownloadSingle?: (link: string) => void;
   resolvedCourseId: string;
   syllabusResult: { syllabus: SyllabusRequirements | null; isLoading: boolean };

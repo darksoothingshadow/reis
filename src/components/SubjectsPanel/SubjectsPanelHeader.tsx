@@ -57,25 +57,33 @@ function getProgressionInfo(stats: StudyStats): {
   return { level: 'danger', threshold, earned, deficit, enrolledEnough };
 }
 
+// The tint, the border, the bar and the icon carry the state; the sentence is
+// set in ink. `text-success` on `bg-success/8` measured 2.13:1 in the light
+// theme — the line telling a student their progression is fine was the least
+// readable line on the screen. The /8 fills were also invisible against the
+// card (1.039:1), so each is /15 now.
 const levelConfig = {
   safe: {
-    bg: 'bg-success/8',
+    bg: 'bg-success/12',
     border: 'border-success/20',
-    text: 'text-success',
+    text: 'text-[var(--tone-success)]',
+    icon: 'text-success',
     bar: 'bg-success',
     Icon: CheckCircle2,
   },
   warning: {
-    bg: 'bg-warning/8',
+    bg: 'bg-warning/12',
     border: 'border-warning/20',
-    text: 'text-warning',
+    text: 'text-[var(--tone-warning)]',
+    icon: 'text-warning',
     bar: 'bg-warning',
     Icon: AlertTriangle,
   },
   danger: {
-    bg: 'bg-error/8',
+    bg: 'bg-error/12',
     border: 'border-error/20',
-    text: 'text-error',
+    text: 'text-[var(--tone-error)]',
+    icon: 'text-error',
     bar: 'bg-error',
     Icon: ShieldAlert,
   },
@@ -197,7 +205,7 @@ export function SubjectsPanelHeader({
 
       <div className={`rounded-lg border px-3.5 py-2 ${cfg.bg} ${cfg.border}`}>
         <div className="flex items-center gap-2 mb-1.5">
-          <Icon className={`w-4 h-4 ${cfg.text} shrink-0`} />
+          <Icon className={`w-4 h-4 ${cfg.icon} shrink-0`} />
           <span className={`text-sm font-semibold ${cfg.text}`}>
             {level === 'safe'
               ? t('subjects.progressionSafe')
@@ -205,7 +213,7 @@ export function SubjectsPanelHeader({
                 ? t('subjects.progressionWarning')
                 : t('subjects.progressionDanger')}
           </span>
-          <span className="ml-auto text-xs text-base-content/50 font-medium">
+          <span className="ml-auto text-xs text-base-content/70 font-medium">
             {creditsAcquired} / {creditsRequired}
             <span className="hidden md:inline"> {t('subjects.credits')}</span>
           </span>
@@ -221,9 +229,9 @@ export function SubjectsPanelHeader({
 
         {/* Detail / zaměření line */}
         {(hasDetailLine || (zameraniMin !== undefined && zameraniMin > 0)) && (
-          <div className="flex items-center gap-2 text-[11px] text-base-content/50 mt-1">
+          <div className="flex items-center gap-2 text-[11px] text-base-content/70 mt-1">
             {zameraniMin !== undefined && zameraniMin > 0 ? (
-              <span className="flex items-center gap-1.5 text-[10px] text-base-content/60">
+              <span className="flex items-center gap-1.5 text-[10px] text-base-content/75">
                 <Layers className="w-3 h-3 shrink-0" />
                 <span className="md:hidden">
                   {zameraniTouched} / {zameraniMin}

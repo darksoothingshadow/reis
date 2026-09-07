@@ -10,6 +10,7 @@ import { gradeBadge } from '@/utils/gradeLookup';
 import { useAppStore } from '@/store/useAppStore';
 import { isZameraniCode } from './utils';
 import { resolvePredmetId } from './resolvePredmetId';
+import { failRateTone, failRateToneHover } from './failRateTone';
 
 interface SubjectRowProps {
   subject: SubjectStatus;
@@ -84,7 +85,7 @@ export function SubjectRow({
   const badgeEl = badge ? (
     <span className="flex items-baseline gap-1 shrink-0">
       <span
-        className={`text-sm font-mono font-medium ${badge.kind === 'letter' && !badge.passed ? 'text-error/60' : 'text-success/60'}`}
+        className={`text-sm font-mono font-medium ${badge.kind === 'letter' && !badge.passed ? 'text-error' : 'text-success/60'}`}
         title={grade?.gradeText}
       >
         {badge.kind === 'letter'
@@ -104,7 +105,7 @@ export function SubjectRow({
   const hasSuccessGrade = !!badge && (badge.kind !== 'letter' || badge.passed);
   const typeEl =
     typeLabel && !(hideTypeWhenGraded && hasSuccessGrade) ? (
-      <span className="hidden md:inline text-[10px] font-mono uppercase text-base-content/40 shrink-0">
+      <span className="hidden md:inline text-[10px] font-mono uppercase text-base-content/70 shrink-0">
         {typeLabel}
       </span>
     ) : null;
@@ -133,18 +134,18 @@ export function SubjectRow({
           onClick={handleClick}
           onMouseEnter={hover.onMouseEnter}
           onMouseLeave={hover.onMouseLeave}
-          className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-md hover:bg-base-200/50 transition-colors text-left ${isUnfulfilled ? 'text-error/60' : 'text-base-content/40'}`}
+          className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-md hover:bg-base-300 transition-colors text-left ${isUnfulfilled ? 'text-error' : 'text-base-content/70'}`}
         >
           <span className="flex-1 text-sm font-medium truncate">{displayName}</span>
           {timeline && (
-            <span className="text-[9px] font-bold text-primary/60 shrink-0">
+            <span className="text-[9px] font-bold text-[var(--tone-primary)] shrink-0">
               {timeline.formatted}
             </span>
           )}
           {badgeEl}
           {typeEl}
           {showCredits && (
-            <span className="hidden md:inline text-xs text-base-content/50 shrink-0">
+            <span className="hidden md:inline text-xs text-base-content/70 shrink-0">
               {subject.credits} kr.
             </span>
           )}
@@ -153,7 +154,7 @@ export function SubjectRow({
               <>
                 <CheckCircle2 className="w-4 h-4 text-success/50" />
                 {subject.fulfillmentDate && (
-                  <span className="text-[11px] text-base-content/45 font-mono font-medium">
+                  <span className="text-[11px] text-base-content/70 font-mono font-medium">
                     {subject.fulfillmentDate}
                   </span>
                 )}
@@ -175,23 +176,23 @@ export function SubjectRow({
     return (
       <div className="w-full flex flex-col gap-1.5 px-3 py-2.5 rounded-lg bg-base-200/30 border border-dashed border-base-300 text-left">
         <div className="flex items-center gap-2">
-          <Layers className="w-3.5 h-3.5 text-base-content/50 shrink-0" />
+          <Layers className="w-3.5 h-3.5 text-base-content/70 shrink-0" />
           <span className="text-sm font-medium truncate flex-1">{displayName}</span>
           {progressLabel && (
-            <span className="text-[10px] font-mono text-base-content/60 shrink-0">
+            <span className="text-[10px] font-mono text-base-content/75 shrink-0">
               {progressLabel}
             </span>
           )}
           <span className="badge badge-sm badge-ghost text-[10px]">{t('subjects.zamerani')}</span>
         </div>
         {zamerani?.description && (
-          <p className="pl-5 text-[11px] text-base-content/60 leading-snug line-clamp-3">
+          <p className="pl-5 text-[11px] text-base-content/75 leading-snug line-clamp-3">
             {zamerani.description}
           </p>
         )}
         {zamerani && zamerani.subjects.length > 0 && (
           <div className="pl-5 flex flex-col gap-0.5">
-            <div className="text-[10px] uppercase tracking-wider text-base-content/40">
+            <div className="text-[10px] uppercase tracking-wider text-base-content/70">
               {t('subjects.zameraniMembers')}
             </div>
             {[...zamerani.subjects]
@@ -207,20 +208,14 @@ export function SubjectRow({
                   <button
                     key={s.code}
                     onClick={() => onSearchSubject(s.code)}
-                    className="text-[11px] text-base-content/60 flex items-center gap-1.5 min-w-0 w-full text-left rounded hover:bg-base-200 px-1 -mx-1 transition-colors"
+                    className="text-[11px] text-base-content/75 flex items-center gap-1.5 min-w-0 w-full text-left rounded hover:bg-base-200 px-1 -mx-1 transition-colors"
                   >
                     <span className="font-mono text-base-content/70 shrink-0">{s.code}</span>
                     {s.name !== s.code && <span className="truncate"> — {s.name}</span>}
                     <span className="flex items-center gap-1.5 shrink-0 ml-auto">
                       {rate != null && (
                         <span
-                          className={`flex items-center justify-center h-4 px-1 rounded text-[10px] font-medium tracking-wide ${
-                            rate >= 25
-                              ? 'bg-error/10 text-error'
-                              : rate >= 20
-                                ? 'bg-warning/15 text-warning-content'
-                                : 'bg-base-content/5 text-base-content/40'
-                          }`}
+                          className={`flex items-center justify-center h-4 px-1 rounded text-[10px] font-medium tracking-wide ${failRateTone(rate)}`}
                         >
                           {rate}%
                         </span>
@@ -229,7 +224,7 @@ export function SubjectRow({
                         sems.map((n) => (
                           <span
                             key={n}
-                            className="text-[10px] text-base-content/40 font-medium whitespace-nowrap"
+                            className="text-[10px] text-base-content/70 font-medium whitespace-nowrap"
                           >
                             {n}. {t('subjects.semesterShort')}
                           </span>
@@ -250,12 +245,12 @@ export function SubjectRow({
         onClick={handleClick}
         onMouseEnter={hover.onMouseEnter}
         onMouseLeave={hover.onMouseLeave}
-        className="w-full flex items-center gap-1.5 md:gap-3 px-2 md:px-3 py-2 md:py-2.5 rounded-lg hover:bg-base-200 transition-colors text-left group"
+        className="w-full flex items-center gap-1.5 md:gap-3 px-2 md:px-3 py-2 md:py-2.5 rounded-lg hover:bg-base-300 transition-colors text-left group"
       >
         <div className="flex-1 min-w-0 flex flex-col">
           <span className="text-sm truncate font-medium">{displayName}</span>
           {timeline && (
-            <div className="flex items-center gap-1 text-[10px] font-bold text-primary/60 mt-0.5">
+            <div className="flex items-center gap-1 text-[10px] font-bold text-[var(--tone-primary)] mt-0.5">
               <Timer size={10} />
               <span>{timeline.formatted}</span>
             </div>
@@ -265,13 +260,9 @@ export function SubjectRow({
         {typeEl}
         {failRate != null && !subject.isFulfilled && !badge && (
           <span
-            className={`group/fail flex items-center justify-center h-5 px-1.5 rounded text-[10px] font-medium tracking-wide shrink-0 cursor-pointer transition-colors ${
-              failRate >= 25
-                ? 'bg-error/10 text-error hover:bg-error/15'
-                : failRate >= 20
-                  ? 'bg-warning/15 text-warning-content hover:bg-warning/20'
-                  : 'bg-base-content/5 text-base-content/40 hover:bg-base-content/10'
-            }`}
+            className={`group/fail flex items-center justify-center h-5 px-1.5 rounded text-[10px] font-medium tracking-wide shrink-0 cursor-pointer transition-colors ${failRateTone(
+              failRate
+            )} ${failRateToneHover(failRate)}`}
             onClick={(e) => {
               e.stopPropagation();
               if (hasId) onOpenSubject(subject.code, subject.name, resolvedId, undefined, 'stats');
@@ -287,19 +278,19 @@ export function SubjectRow({
           </span>
         )}
         {zameraniTag && (
-          <span className="text-[9px] font-mono tracking-widest text-primary/50 bg-primary/8 px-1.5 py-0.5 rounded shrink-0">
+          <span className="text-[9px] font-mono tracking-widest text-[var(--tone-primary)] bg-primary/8 px-1.5 py-0.5 rounded shrink-0">
             {zameraniTag}
           </span>
         )}
         {showCredits && (
-          <span className="hidden md:inline text-xs text-base-content/50 shrink-0">
+          <span className="hidden md:inline text-xs text-base-content/70 shrink-0">
             {subject.credits} kr.
           </span>
         )}
         {subject.isFulfilled && subject.fulfillmentDate ? (
           <span className="flex items-center gap-1.5 text-[11px] shrink-0">
             <CheckCircle2 className="w-4 h-4 text-success/50" />
-            <span className="font-mono font-medium text-base-content/45">
+            <span className="font-mono font-medium text-base-content/70">
               {subject.fulfillmentDate}
             </span>
           </span>
@@ -322,12 +313,12 @@ export function SubjectRow({
               {subject.rawStatusText}
             </span>
           ) : !hasId ? (
-            <span className="badge badge-sm md:badge-ghost gap-1 text-base-content/40 bg-transparent border-none p-0 md:bg-base-content/5 md:px-2 shrink-0">
+            <span className="badge badge-sm md:badge-ghost gap-1 text-base-content/70 bg-transparent border-none p-0 md:bg-base-content/5 md:px-2 shrink-0">
               <Search className="w-3.5 h-3.5" />
               <span className="hidden md:inline">{t('subjects.searchToOpen')}</span>
             </span>
           ) : (
-            <span className="badge badge-sm badge-ghost text-base-content/40 hidden md:inline-flex shrink-0">
+            <span className="badge badge-sm badge-ghost text-base-content/70 hidden md:inline-flex shrink-0">
               {subject.rawStatusText || t('subjects.notFulfilled')}
             </span>
           ))}

@@ -79,10 +79,10 @@ function LATableAOption({
     <div className="flex flex-col gap-3 group/option">
       <div className="flex items-center justify-between px-1">
         <div className="flex items-center gap-2">
-          <div className="badge badge-sm font-black tracking-wider bg-primary/10 text-primary border-primary/20">
+          <div className="badge badge-sm font-black tracking-wider bg-primary/10 text-base-content border-primary/20">
             {index + 1}
           </div>
-          <span className="text-[10px] uppercase tracking-widest font-bold text-base-content/50">
+          <span className="text-[10px] uppercase tracking-widest font-bold text-base-content/70">
             {t('erasmus.receivingInstitution')}
           </span>
         </div>
@@ -99,10 +99,10 @@ function LATableAOption({
 
       <div className="bg-base-100 border border-base-300 rounded-xl overflow-hidden shadow-sm flex flex-col">
         {/* Institution header */}
-        <div className="p-4 flex flex-col gap-3 border-b border-base-300/50 bg-base-200/20">
+        <div className="p-4 flex flex-col gap-3 border-b border-base-300/50 bg-base-200">
           <div className="grid grid-cols-2 gap-3">
             <div className="flex flex-col gap-1">
-              <label className="text-[10px] uppercase tracking-wider font-bold text-base-content/40 ml-1">
+              <label className="text-[10px] uppercase tracking-wider font-bold text-base-content/70 ml-1">
                 {t('erasmus.country')}
               </label>
               <div className="relative">
@@ -116,20 +116,20 @@ function LATableAOption({
               </div>
             </div>
             <div className="flex flex-col gap-1">
-              <label className="text-[10px] uppercase tracking-wider font-bold text-base-content/40 ml-1">
+              <label className="text-[10px] uppercase tracking-wider font-bold text-base-content/70 ml-1">
                 {t('erasmus.erasmusCode')}
               </label>
               <div className="relative">
                 <input
                   type="text"
-                  className="input input-sm input-bordered w-full pl-8 text-xs focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
+                  className="input input-sm input-bordered bg-base-200 w-full pl-8 text-xs focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
                   placeholder="SI MARIBOR01"
                   value={option.erasmusCode}
                   onChange={(e) => updateHeader(option.id, { erasmusCode: e.target.value })}
                 />
                 <Hash
                   size={14}
-                  className="absolute left-2.5 top-1/2 -translate-y-1/2 text-base-content/40 z-10"
+                  className="absolute left-2.5 top-1/2 -translate-y-1/2 text-base-content/70 z-10"
                 />
               </div>
             </div>
@@ -137,7 +137,7 @@ function LATableAOption({
 
           <div className="grid grid-cols-2 gap-3">
             <div className="flex flex-col gap-1">
-              <label className="text-[10px] uppercase tracking-wider font-bold text-base-content/40 ml-1">
+              <label className="text-[10px] uppercase tracking-wider font-bold text-base-content/70 ml-1">
                 {t('erasmus.institution')}
               </label>
               <UniversityPicker
@@ -154,7 +154,7 @@ function LATableAOption({
               />
             </div>
             <div className="flex flex-col gap-1">
-              <label className="text-[10px] uppercase tracking-wider font-bold text-base-content/40 ml-1 flex items-center gap-1.5">
+              <label className="text-[10px] uppercase tracking-wider font-bold text-base-content/70 ml-1 flex items-center gap-1.5">
                 {t('erasmus.courseCatalogue')}
                 {!option.link && option.institutionName && (
                   <span className="animate-in fade-in slide-in-from-left-1 duration-300">
@@ -176,14 +176,14 @@ function LATableAOption({
               <div className="relative">
                 <input
                   type="text"
-                  className="input input-sm input-bordered w-full pl-8 text-xs focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all"
+                  className="input input-sm input-bordered bg-base-200 w-full pl-8 text-xs focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all"
                   placeholder="https://..."
                   value={option.link}
                   onChange={(e) => updateHeader(option.id, { link: e.target.value })}
                 />
                 <Link
                   size={14}
-                  className="absolute left-2.5 top-1/2 -translate-y-1/2 text-base-content/40 z-10"
+                  className="absolute left-2.5 top-1/2 -translate-y-1/2 text-base-content/70 z-10"
                 />
               </div>
             </div>
@@ -192,16 +192,16 @@ function LATableAOption({
 
         {/* Table A label */}
         <div className="flex items-center gap-2 px-3 py-2 border-b border-base-300/60">
-          <div className="badge badge-sm font-black tracking-wider bg-primary/10 text-primary border-primary/20">
+          <div className="badge badge-sm font-black tracking-wider bg-primary/10 text-base-content border-primary/20">
             A
           </div>
-          <span className="text-[10px] uppercase tracking-widest font-bold text-base-content/50">
+          <span className="text-[10px] uppercase tracking-widest font-bold text-base-content/70">
             {t('erasmus.tableATitle')}
           </span>
         </div>
 
         {/* Table A header */}
-        <div className="grid grid-cols-[auto_auto_1fr_auto_auto_auto] gap-2 px-3 py-2 bg-base-200/50 border-b border-base-300 text-[10px] uppercase tracking-wider font-bold text-base-content/40">
+        <div className="grid grid-cols-[auto_auto_1fr_auto_auto_auto] gap-2 px-3 py-2 bg-base-200 border-b border-base-300 text-[10px] uppercase tracking-wider font-bold text-base-content/70">
           <span className="w-4" />
           <span className="w-20">{t('erasmus.colCode')}</span>
           <span>{t('erasmus.colCourse')}</span>
@@ -216,25 +216,25 @@ function LATableAOption({
             key={i}
             onMouseEnter={() => setHoveredRowIndex(i)}
             onMouseLeave={() => setHoveredRowIndex(null)}
-            className="grid grid-cols-[auto_auto_1fr_auto_auto_auto] gap-2 items-center px-3 py-2 border-b border-base-300/50 text-xs hover:bg-base-200/50 transition-colors"
+            className="grid grid-cols-[auto_auto_1fr_auto_auto_auto] gap-2 items-center px-3 py-2 border-b border-base-300/50 text-xs hover:bg-base-200 transition-colors"
           >
             <div className="flex flex-col gap-0">
               <button
                 onClick={() => reorderCourseA(option.id, i, i - 1)}
                 disabled={i === 0}
-                className="btn btn-ghost w-4 h-3.5 min-h-0 p-0 text-base-content/20 hover:text-primary disabled:opacity-0 disabled:pointer-events-none rounded-none"
+                className="btn btn-ghost w-4 h-3.5 min-h-0 p-0 text-base-content/20 hover:text-[var(--tone-primary)] disabled:opacity-0 disabled:pointer-events-none rounded-none"
               >
                 <ChevronUp size={11} />
               </button>
               <button
                 onClick={() => reorderCourseA(option.id, i, i + 1)}
                 disabled={i === option.courses.length - 1}
-                className="btn btn-ghost w-4 h-3.5 min-h-0 p-0 text-base-content/20 hover:text-primary disabled:opacity-0 disabled:pointer-events-none rounded-none"
+                className="btn btn-ghost w-4 h-3.5 min-h-0 p-0 text-base-content/20 hover:text-[var(--tone-primary)] disabled:opacity-0 disabled:pointer-events-none rounded-none"
               >
                 <ChevronDown size={11} />
               </button>
             </div>
-            <span className="font-mono text-base-content/50 w-20 truncate">{course.code}</span>
+            <span className="font-mono text-base-content/70 w-20 truncate">{course.code}</span>
             <span className="truncate font-medium">{course.name}</span>
             <span className="tabular-nums font-bold text-base-content/70 w-12 text-right">
               {course.credits}
@@ -250,7 +250,7 @@ function LATableAOption({
 
         {/* Add row form */}
         {adding && (
-          <div className="grid grid-cols-[auto_1fr_auto_auto] gap-2 items-center px-3 py-2 border-b border-base-300/50 bg-base-200/20">
+          <div className="grid grid-cols-[auto_1fr_auto_auto] gap-2 items-center px-3 py-2 border-b border-base-300/50 bg-base-200">
             <input
               ref={codeInputRef}
               autoFocus
@@ -276,7 +276,7 @@ function LATableAOption({
             />
             <button
               onClick={() => setAdding(false)}
-              className="btn btn-ghost btn-xs w-5 h-5 min-h-0 p-0 text-base-content/30 hover:text-error rounded-full"
+              className="btn btn-ghost btn-xs w-5 h-5 min-h-0 p-0 text-base-content/70 hover:text-error rounded-full"
             >
               <X size={12} />
             </button>
@@ -286,7 +286,7 @@ function LATableAOption({
         {/* Add course button */}
         <button
           onClick={() => (adding ? handleAddCourse() : setAdding(true))}
-          className="flex items-center gap-1.5 px-3 py-2 text-[10px] text-primary hover:bg-primary/10 transition-colors w-full border-b border-base-300/50 font-bold"
+          className="flex items-center gap-1.5 px-3 py-2 text-[10px] text-[var(--tone-primary)] hover:bg-primary/10 transition-colors w-full border-b border-base-300/50 font-bold"
         >
           <Plus size={12} />
           <span>{t('erasmus.addCourse')}</span>
@@ -294,9 +294,9 @@ function LATableAOption({
 
         {/* Table A total */}
         {option.courses.length > 0 && (
-          <div className="grid grid-cols-[auto_auto_1fr_auto_auto_auto] gap-2 items-center px-3 py-2 bg-base-200/30 text-xs border-b border-base-300/50">
+          <div className="grid grid-cols-[auto_auto_1fr_auto_auto_auto] gap-2 items-center px-3 py-2 bg-base-200 text-xs border-b border-base-300/50">
             <span className="w-4" />
-            <span className="font-bold text-base-content/50 w-20">{t('erasmus.total')}</span>
+            <span className="font-bold text-base-content/70 w-20">{t('erasmus.total')}</span>
             <span />
             <span className="tabular-nums font-black w-12 text-right">{totalCredits}</span>
             <span className="w-4" />
@@ -323,7 +323,7 @@ function LATableAOption({
       <div className="flex flex-col gap-0">
         <button
           onClick={() => setBuilderOpen(!builderOpen)}
-          className="flex items-center gap-2 px-2 py-2 text-xs font-bold text-primary/70 hover:text-primary transition-colors group w-full"
+          className="flex items-center gap-2 px-2 py-2 text-xs font-bold text-[var(--tone-primary)] hover:text-[var(--tone-primary)] transition-colors group w-full"
         >
           {builderOpen ? (
             <ChevronDown size={14} className="transition-transform rotate-180" />
@@ -332,7 +332,7 @@ function LATableAOption({
           )}
           <span>{t('erasmus.addCourses')}</span>
           {!builderOpen && (
-            <span className="text-[10px] font-normal text-base-content/30 ml-1">
+            <span className="text-[10px] font-normal text-base-content/70 ml-1">
               {t('erasmus.addCoursesHint')}
             </span>
           )}

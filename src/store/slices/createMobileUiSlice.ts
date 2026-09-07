@@ -11,7 +11,7 @@ import { clampRailWidth, RAIL_PX } from '../../utils/mapRail';
  * Purely-local disclosure state (which accordion is open) deliberately stays
  * in component useState — this slice is for state that crosses components.
  */
-export const createMobileUiSlice: AppSlice<MobileUiSlice> = (set) => ({
+export const createMobileUiSlice: AppSlice<MobileUiSlice> = (set, get) => ({
   mobileTab: 'calendar',
   mobileSelectedDayIso: null,
   mobileSheets: [],
@@ -45,7 +45,12 @@ export const createMobileUiSlice: AppSlice<MobileUiSlice> = (set) => ({
   },
 
   // Switching tabs closes sheets: a sheet belongs to the screen that opened it.
-  setMobileTab: (tab) => set({ mobileTab: tab, mobileSheets: [] }),
+  setMobileTab: (tab) => {
+    set({ mobileTab: tab, mobileSheets: [] });
+    // A file opened from the Subjects tab should be in the calendar's
+    // "recently opened" strip by the time the student gets there.
+    if (tab === 'calendar') void get().refreshRecentPdfs();
+  },
   setMobileSelectedDay: (iso) => set({ mobileSelectedDayIso: iso }),
 
   // A push onto a sheet of the SAME kind swaps in place instead of stacking.

@@ -51,7 +51,11 @@ export const Sidebar = ({
       <div className="flex flex-col gap-3 w-full px-2">
         {menuItems.map((item) => {
           if (item.type === 'divider') {
-            return <div key={item.id} className="h-px bg-base-300 w-full my-1 opacity-50" />;
+            return (
+              // bg-base-300 on base-200 is 1.006:1 in the dark theme — the
+              // divider was simply not there. A base-content tint reads on both.
+              <div key={item.id} className="h-px bg-base-content/10 w-full my-1" />
+            );
           }
           if (item.type === 'header') {
             return (

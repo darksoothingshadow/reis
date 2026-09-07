@@ -3,6 +3,7 @@ import { Flame, ChevronDown } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useCourseName } from '@/hooks/ui/useCourseName';
 import type { HardestEntry } from './insights';
+import { failRateTone } from './failRateTone';
 
 interface Props {
   entries: HardestEntry[];
@@ -15,12 +16,6 @@ interface Props {
     isFulfilled?: boolean
   ) => void;
   onSearchSubject: (name: string) => void;
-}
-
-function rateClass(rate: number): string {
-  if (rate >= 25) return 'bg-error/10 text-error';
-  if (rate >= 20) return 'bg-warning/15 text-warning-content';
-  return 'bg-base-content/5 text-base-content/40';
 }
 
 function Row({
@@ -46,13 +41,13 @@ function Row({
       className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-base-200 transition-colors text-left"
     >
       {semesters.length > 0 && (
-        <span className="font-mono text-[10px] text-base-content/40 whitespace-nowrap shrink-0">
+        <span className="font-mono text-[10px] text-base-content/70 whitespace-nowrap shrink-0">
           {semesters.join('·')}.<span className="hidden md:inline"> sem.</span>
         </span>
       )}
       <span className="flex-1 text-sm truncate">{displayName}</span>
       <span
-        className={`group/fail flex items-center justify-center h-5 px-1.5 rounded text-[10px] font-medium shrink-0 ${rateClass(stat.rate)}`}
+        className={`group/fail flex items-center justify-center h-5 px-1.5 rounded text-[10px] font-medium shrink-0 ${failRateTone(stat.rate)}`}
       >
         {/* Always shown, never hover-revealed — the same fix #265 made to
             SubjectRow, which this card was missed out of. It was
@@ -79,7 +74,7 @@ export function HardestUpcomingCard({ entries, onOpenSubject, onSearchSubject }:
         <Flame className="w-4 h-4 text-error shrink-0" />
         <span className="text-sm font-semibold flex-1">{t('subjects.insights.hardestTitle')}</span>
         <ChevronDown
-          className={`w-4 h-4 text-base-content/40 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+          className={`w-4 h-4 text-base-content/70 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
         />
       </button>
       {open && (

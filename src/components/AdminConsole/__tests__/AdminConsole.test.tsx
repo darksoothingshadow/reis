@@ -147,4 +147,28 @@ describe('AdminConsole', () => {
     expect(screen.queryByRole('tab', { name: /Návrhy/ })).toBeNull();
     expect(screen.queryByTestId('suggestions-badge')).toBeNull();
   });
+
+  // The statistics aggregate is reIS-wide, same reasoning as the suggestions
+  // inbox above — a society login must not see it.
+  it('shows no statistics tab for a society login', () => {
+    loggedIn({ adminRole: 'association' });
+    render(<AdminConsole />);
+    expect(screen.queryByRole('tab', { name: 'Statistiky' })).toBeNull();
+  });
+
+  it('gives a reIS admin a statistics tab', () => {
+    loggedIn({ adminRole: 'reis_admin', adminAssociationId: null, adminActiveAssociationId: null });
+    render(<AdminConsole />);
+    expect(screen.getByRole('tab', { name: 'Statistiky' })).toBeInTheDocument();
+  });
+
+  // Same bug as MobileAdminConsole's tab bar (see MobileAdminConsole.test.tsx):
+  // DaisyUI's inactive-.tab default (base-content at 60% opacity) measured
+  // 3.37:1 by hand, below the 4.5:1 WCAG AA floor.
+  it('keeps the desktop pane-switcher inactive tab text at full opacity for AA contrast', () => {
+    loggedIn();
+    render(<AdminConsole />);
+    const inactive = screen.getByRole('tab', { name: /Účty/ });
+    expect(inactive.className).toContain('text-base-content');
+  });
 });

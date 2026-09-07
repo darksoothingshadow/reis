@@ -40,7 +40,10 @@ const FORBIDDEN_URL_PATTERNS: { pattern: RegExp; why: string }[] = [
  * `supabase.rpc()` as a POST, read-only ones included, so `get_event_rsvps` is
  * a POST that is perfectly fine.
  */
-const READ_ONLY_SUPABASE_RPCS = ['get_event_rsvps'];
+const READ_ONLY_SUPABASE_RPCS = [
+  'get_event_rsvps',
+  'usage_stats' /* read-only aggregate, no writes */,
+];
 
 const READ_ONLY_METHODS = ['GET', 'HEAD', 'OPTIONS'];
 

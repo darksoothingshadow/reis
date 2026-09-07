@@ -10,9 +10,9 @@ interface Props {
 
 export function StudentInfoSection({ userParams, dob }: Props) {
   const { t } = useTranslation();
-  const info = useAppStore(s => s.erasmusStudentInfo);
-  const setInfo = useAppStore(s => s.setErasmusStudentInfo);
-  const initInfo = useAppStore(s => s.initErasmusStudentInfo);
+  const info = useAppStore((s) => s.erasmusStudentInfo);
+  const setInfo = useAppStore((s) => s.setErasmusStudentInfo);
+  const initInfo = useAppStore((s) => s.initErasmusStudentInfo);
 
   useEffect(() => {
     if (!userParams) return;
@@ -28,14 +28,17 @@ export function StudentInfoSection({ userParams, dob }: Props) {
     setInfo({ dob });
   }, [dob, info.dob, setInfo]);
 
-  const inputCls = 'input input-sm input-bordered w-full text-xs focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20';
-  const labelCls = 'text-[10px] uppercase tracking-wider font-bold text-base-content/40 ml-1';
+  const inputCls =
+    'input input-sm input-bordered bg-base-200 w-full text-xs focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20';
+  const labelCls = 'text-[10px] uppercase tracking-wider font-bold text-base-content/70 ml-1';
 
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center gap-2 px-1">
-        <div className="badge badge-sm font-black tracking-wider bg-base-content/10 text-base-content/50 border-base-content/20">S</div>
-        <span className="text-[10px] uppercase tracking-widest font-bold text-base-content/50">
+        <div className="badge badge-sm font-black tracking-wider bg-base-content/10 text-base-content/70 border-base-content/20">
+          S
+        </div>
+        <span className="text-[10px] uppercase tracking-widest font-bold text-base-content/70">
           {t('erasmus.studentInfo')}
         </span>
       </div>
@@ -49,7 +52,7 @@ export function StudentInfoSection({ userParams, dob }: Props) {
                 type="text"
                 className={inputCls}
                 value={info.firstName}
-                onChange={e => setInfo({ firstName: e.target.value })}
+                onChange={(e) => setInfo({ firstName: e.target.value })}
               />
             </div>
             <div className="flex flex-col gap-1">
@@ -58,7 +61,7 @@ export function StudentInfoSection({ userParams, dob }: Props) {
                 type="text"
                 className={inputCls}
                 value={info.lastName}
-                onChange={e => setInfo({ lastName: e.target.value })}
+                onChange={(e) => setInfo({ lastName: e.target.value })}
               />
             </div>
           </div>
@@ -71,7 +74,7 @@ export function StudentInfoSection({ userParams, dob }: Props) {
                 className={inputCls}
                 placeholder="DD.MM.YYYY"
                 value={info.dob}
-                onChange={e => setInfo({ dob: e.target.value })}
+                onChange={(e) => setInfo({ dob: e.target.value })}
               />
             </div>
             <div className="flex flex-col gap-1">
@@ -80,7 +83,7 @@ export function StudentInfoSection({ userParams, dob }: Props) {
                 type="text"
                 className={inputCls}
                 value={info.studyCode}
-                onChange={e => setInfo({ studyCode: e.target.value })}
+                onChange={(e) => setInfo({ studyCode: e.target.value })}
               />
             </div>
           </div>
@@ -89,7 +92,7 @@ export function StudentInfoSection({ userParams, dob }: Props) {
             <div className="flex flex-col gap-1">
               <label className={labelCls}>{t('erasmus.semesterOfStay')}</label>
               <div className="join">
-                {(['WS', 'SS'] as const).map(sem => (
+                {(['WS', 'SS'] as const).map((sem) => (
                   <button
                     key={sem}
                     onClick={() => setInfo({ semester: info.semester === sem ? '' : sem })}
@@ -106,7 +109,7 @@ export function StudentInfoSection({ userParams, dob }: Props) {
                 type="text"
                 className={inputCls}
                 value={info.studentId}
-                onChange={e => setInfo({ studentId: e.target.value })}
+                onChange={(e) => setInfo({ studentId: e.target.value })}
               />
             </div>
           </div>
