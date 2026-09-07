@@ -1140,7 +1140,8 @@
       "removePage": "Odstranit stránku",
       "openAlongside": "Otevřít další soubor vedle",
       "closePane": "Zavřít tuto polovinu",
-      "pickFile": "Vyber soubor ze seznamu."
+      "pickFile": "Vyber soubor ze seznamu.",
+      "cover": "Zakrýt odpověď"
     }
   },
   "session": {

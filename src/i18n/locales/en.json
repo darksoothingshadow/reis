@@ -1140,7 +1140,8 @@
       "removePage": "Remove page",
       "openAlongside": "Open another file beside this one",
       "closePane": "Close this half",
-      "pickFile": "Pick a file from the list."
+      "pickFile": "Pick a file from the list.",
+      "cover": "Cover an answer"
     }
   },
   "session": {

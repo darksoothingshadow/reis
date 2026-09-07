@@ -139,6 +139,18 @@ branch should carry.
         by hand rather than by the split view, and neither its wiring nor its appearance can be
         checked without a device — if it ever stops working, a swipe from the left edge still
         brings the sidebar out.
+29. [ ] Covers: turn the cover tool on (the button fills in and the tool picker goes), drag a
+        block over an answer, turn the tool off. Tap the block → the answer shows through with a
+        dashed outline left behind; tap again → hidden. Close the file and reopen it → the block
+        is there and it is shut.
+30. [ ] With the tool on, drag a small block on top of a big one → a new block, not a deletion.
+        Tap a block with the tool on → it goes.
+31. [ ] Draw with the Pencil next to a cover → the ink goes down normally; the covered patch
+        itself does not take ink. Scrolling past a covered page and back keeps the block.
+32. [ ] A file whose only content is covers: no strokes at all, close and reopen → the covers are
+        still there (an empty archive used to be deleted).
+33. [ ] Share a file that has covers → the exported PDF shows the answers. Covers are a study aid
+        and deliberately do not travel with the file.
 
 ## Still open: the drawer itself is tied to reaching IS
 

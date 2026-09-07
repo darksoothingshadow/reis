@@ -43,6 +43,8 @@ export interface PdfInkStrings {
   closePane: string;
   /** The empty half, before the student has picked what goes in it. */
   pickFile: string;
+  /** The tool that blocks out an answer so it can be recalled before looking. */
+  cover: string;
 }
 
 export interface PdfInkPlugin {

@@ -14,12 +14,16 @@ import UIKit
  */
 final class PageOverlayView: UIView {
     let canvas = PKCanvasView()
+    /// Above the ink: a cover hides the student's own answer as readily as the
+    /// teacher's.
+    let coverLayer = CoverLayerView()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
         backgroundColor = .clear
         isOpaque = false
         addSubview(canvas)
+        addSubview(coverLayer)
     }
 
     required init?(coder: NSCoder) { fatalError("PageOverlayView is code-only") }
@@ -27,5 +31,6 @@ final class PageOverlayView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         canvas.frame = bounds
+        coverLayer.frame = bounds
     }
 }

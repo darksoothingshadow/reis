@@ -89,6 +89,7 @@ export function usePdfPreview(courseCode?: string, subject?: PdfPreviewSubject) 
       openAlongside: t('mobile.pdfInk.openAlongside'),
       closePane: t('mobile.pdfInk.closePane'),
       pickFile: t('mobile.pdfInk.pickFile'),
+      cover: t('mobile.pdfInk.cover'),
     }),
     [t]
   );

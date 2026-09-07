@@ -25,6 +25,7 @@ struct PdfInkStrings {
     let openAlongside: String
     let closePane: String
     let pickFile: String
+    let cover: String
 
     init(_ object: JSObject?) {
         saveFailedTitle = object?["saveFailedTitle"] as? String ?? "Your ink couldn't be saved"
@@ -47,5 +48,6 @@ struct PdfInkStrings {
         openAlongside = object?["openAlongside"] as? String ?? "Open another file beside this one"
         closePane = object?["closePane"] as? String ?? "Close this half"
         pickFile = object?["pickFile"] as? String ?? "Pick a file from the list."
+        cover = object?["cover"] as? String ?? "Cover an answer"
     }
 }

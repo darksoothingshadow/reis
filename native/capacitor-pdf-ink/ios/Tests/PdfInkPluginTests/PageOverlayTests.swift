@@ -67,6 +67,76 @@ final class PageOverlayTests: XCTestCase {
         XCTAssertTrue(once === twice, "a second overlay would leave the first one's strokes behind")
     }
 
+    /// The point of covers: they are still there next time, and they are shut.
+    /// Which ones were open is a fact about one sitting, not about the file.
+    func testACoverComesBackAndComesBackShut() throws {
+        let reader = PdfInkViewController(strings: PdfInkStrings(nil), toolPicker: PKToolPicker())
+        reader.loadViewIfNeeded()
+        let document = try page(CGSize(width: 200, height: 200))
+        let inkURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent("\(UUID().uuidString).ink")
+        XCTAssertTrue(reader.load(document: document, inkURL: inkURL, title: "test"))
+        let first = try XCTUnwrap(document.page(at: 0))
+        let overlay = try XCTUnwrap(
+            reader.pdfView(PDFView(), overlayViewFor: first) as? PageOverlayView)
+
+        let block = CGRect(x: 10, y: 10, width: 60, height: 30)
+        overlay.coverLayer.onCreate?(block)
+        overlay.coverLayer.onToggle?(0)
+        XCTAssertEqual(overlay.coverLayer.revealed, [0], "tapping it did not open it")
+
+        // Away and back, the way closing the file and opening it again goes.
+        let reopened = PdfInkViewController(
+            strings: PdfInkStrings(nil), toolPicker: PKToolPicker())
+        reopened.loadViewIfNeeded()
+        let again = try page(CGSize(width: 200, height: 200))
+        XCTAssertTrue(reopened.load(document: again, inkURL: inkURL, title: "test"))
+        let reopenedOverlay = try XCTUnwrap(
+            reopened.pdfView(PDFView(), overlayViewFor: try XCTUnwrap(again.page(at: 0)))
+                as? PageOverlayView)
+
+        XCTAssertEqual(reopenedOverlay.coverLayer.covers, [block], "the cover was not kept")
+        XCTAssertTrue(reopenedOverlay.coverLayer.revealed.isEmpty, "it came back already open")
+        InkStore.delete(at: inkURL)
+    }
+
+    /// A cover is the only thing in the file: it still has to be worth a file.
+    func testAFileWithOnlyCoversIsNotThrownAway() throws {
+        let reader = PdfInkViewController(strings: PdfInkStrings(nil), toolPicker: PKToolPicker())
+        reader.loadViewIfNeeded()
+        let document = try page(CGSize(width: 200, height: 200))
+        let inkURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent("\(UUID().uuidString).ink")
+        XCTAssertTrue(reader.load(document: document, inkURL: inkURL, title: "test"))
+        let overlay = try XCTUnwrap(
+            reader.pdfView(PDFView(), overlayViewFor: try XCTUnwrap(document.page(at: 0)))
+                as? PageOverlayView)
+
+        overlay.coverLayer.onCreate?(CGRect(x: 1, y: 1, width: 40, height: 40))
+        XCTAssertTrue(reader.persistNow())
+
+        let archive = try XCTUnwrap(InkStore.load(from: inkURL), "the covers were deleted")
+        XCTAssertEqual(archive.covers[0]?.count, 1)
+        InkStore.delete(at: inkURL)
+    }
+
+    /// The layer is invisible to everything that is not about covers, or drawing
+    /// and scrolling would stop working over a page that has one.
+    func testTheCoverLayerOnlyTakesTouchesOnACover() {
+        let layer = CoverLayerView(frame: CGRect(x: 0, y: 0, width: 200, height: 200))
+        layer.covers = [CGRect(x: 0, y: 0, width: 50, height: 50)]
+
+        XCTAssertTrue(layer.hitTest(CGPoint(x: 25, y: 25), with: nil) === layer)
+        XCTAssertNil(
+            layer.hitTest(CGPoint(x: 150, y: 150), with: nil),
+            "bare page touches must reach the canvas underneath")
+
+        layer.isMakingCovers = true
+        XCTAssertTrue(
+            layer.hitTest(CGPoint(x: 150, y: 150), with: nil) === layer,
+            "a new cover has to be draggable on bare page")
+    }
+
     private func page(_ size: CGSize) throws -> PDFDocument {
         let data = UIGraphicsPDFRenderer(bounds: CGRect(origin: .zero, size: size)).pdfData { ctx in
             ctx.beginPage()
