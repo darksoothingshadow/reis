@@ -29,16 +29,4 @@ describe('Sidebar', () => {
     expect(onViewChange).toHaveBeenCalledWith('calendar');
   });
 
-  it('switches to the housing view', () => {
-    const onViewChange = vi.fn();
-    render(
-      <Sidebar
-        currentView="exams"
-        onViewChange={onViewChange}
-        items={[{ id: 'housing', label: 'Bydlení', icon: <span /> }]}
-      />
-    );
-    fireEvent.click(screen.getByText('Bydlení'));
-    expect(onViewChange).toHaveBeenCalledWith('housing');
-  });
 });

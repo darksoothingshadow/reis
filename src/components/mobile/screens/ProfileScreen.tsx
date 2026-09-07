@@ -127,15 +127,6 @@ export function ProfileScreen() {
           sublabel={t('mobile.student.documentsSub')}
           onClick={() => pushSheet({ kind: 'docs' })}
         />
-        {/* Housing: rooms from students for students. A settings-list row, not a
-            tab — it matters for two months a year. */}
-        <NavRow
-          icon={BedDouble}
-          label={t('mobile.profile.housing')}
-          sublabel={t('mobile.profile.housingSub')}
-          onClick={() => pushSheet({ kind: 'housing' })}
-        />
-
         <MapAppRow />
 
         <HiddenItemsSection />

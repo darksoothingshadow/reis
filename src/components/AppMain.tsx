@@ -7,7 +7,6 @@ import { SubjectsPanel } from './SubjectsPanel';
 import { StudyPlanPage } from './SubjectsPanel/StudyPlanPage';
 import { ErasmusPanel } from './ErasmusPanel';
 import { CampusMapView } from './CampusMap/CampusMapView';
-import { HousingPanel } from './housing/HousingPanel';
 import { NpsBanner } from './Feedback/NpsBanner';
 import { useAppStore } from '../store/useAppStore';
 
@@ -41,16 +40,6 @@ export function AppMain({
   searchPrefillRef,
   setCurrentView,
 }: AppMainProps) {
-  // A society post with the reis://housing token, or an event card carrying it,
-  // asks for the board through the store. Not a fetch — a view switch.
-  const housingOpenRequest = useAppStore((s) => s.housingOpenRequest);
-  const seenHousingRequest = useRef(housingOpenRequest);
-  useEffect(() => {
-    if (housingOpenRequest === seenHousingRequest.current) return;
-    seenHousingRequest.current = housingOpenRequest;
-    setCurrentView?.('housing');
-  }, [housingOpenRequest, setCurrentView]);
-
   return (
     <main className="flex-1 flex flex-col transition-all duration-300 overflow-hidden">
       <AppHeader
@@ -95,7 +84,6 @@ export function AppMain({
             />
           )}
           {currentView === 'map' && <CampusMapView />}
-          {currentView === 'housing' && <HousingPanel />}
         </div>
       </div>
     </main>

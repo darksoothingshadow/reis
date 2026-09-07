@@ -5,7 +5,6 @@ import { useAppStore } from '../../store/useAppStore';
 import { useTranslation } from '../../hooks/useTranslation';
 import { createPost, updatePost, type PostInput } from '../../api/societyPosts';
 import { isScheduledEvent, goLiveDate } from './eventWindow';
-import { isHousingLink } from '../../utils/housingLink';
 import { validateExternalUrl } from '../../mobile/openExternal';
 import { MiniCalendar } from './MiniCalendar';
 import { ComposerRoomSearch } from './ComposerRoomSearch';
@@ -75,12 +74,12 @@ export function EventComposer({ onDone }: { onDone: () => void }) {
   // The room stays the source of truth for a campus venue; draftCoord is the
   // map's VIEW of it, kept in step by selectRoom/clearRoom below.
   const coord = venue === 'campus' ? (room?.coord ?? null) : draftCoord;
-  // url is optional, but once something is typed it must be either the
-  // housing token or a URL openExternal will actually open — the same rule
-  // EventDetailCard enforces on the way OUT.
+  // url is optional, but once something is typed it must be a URL
+  // openExternal will actually open — the same rule EventDetailCard
+  // enforces on the way OUT.
   const trimmedUrl = url.trim();
   const urlInvalid =
-    trimmedUrl !== '' && !isHousingLink(trimmedUrl) && !validateExternalUrl(trimmedUrl);
+    trimmedUrl !== '' && !validateExternalUrl(trimmedUrl);
   // Time is required, not optional. A `time: null` row has no start, so it has
   // no "two hours before" and silently got no reminder at all — and the
   // composer is the only place these rows come from (the map reads
