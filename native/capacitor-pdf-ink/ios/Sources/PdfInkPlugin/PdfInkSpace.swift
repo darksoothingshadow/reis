@@ -4,7 +4,8 @@ import UIKit
 /**
  * One subject's PDFs in a Notes-style space: Apple's split view with the file
  * list on the left and the reader on the right, the system sidebar toggle in the
- * reader's bar, and a system Close on the list. The space owns switching: a
+ * reader's bar, and a system Close on the list — the one way out. The space owns
+ * switching: a
  * cached file loads at once; anything else is requested from the app through
  * `onNeedsFile` and shown when `deliver` arrives. Closing persists first and
  * reports every link that was displayed.
@@ -64,8 +65,6 @@ final class PdfInkSpace: NSObject {
         split.modalPresentationStyle = .fullScreen
         split.setViewController(list, for: .primary)
         split.setViewController(UINavigationController(rootViewController: reader), for: .secondary)
-
-        reader.onCloseSpace = { [weak self] in self?.closeTapped() }
 
         list.onSelect = { [weak self] link in self?.select(link: link) }
         list.onClose = { [weak self] in self?.closeTapped() }

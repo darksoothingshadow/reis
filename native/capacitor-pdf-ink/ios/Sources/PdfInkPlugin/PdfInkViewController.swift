@@ -52,11 +52,6 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
     private var overlays: [Int: PageOverlayView] = [:]
     /// Where the blank pages the student added sit in the document on screen.
     private var insertedPages: [Int] = []
-    /// Blocks over answers, per page, for practising recall. `revealed` is which
-    /// ones are open right now and is never saved.
-    private var covers: [Int: [CGRect]] = [:]
-    private var revealed: [Int: Set<Int>] = [:]
-    private var makingCovers = false
     private lazy var addPageItem = UIBarButtonItem(
         image: UIImage(systemName: "plus.rectangle.portrait"), style: .plain, target: self,
         action: #selector(addPageTapped))
@@ -66,22 +61,11 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
     /// a way to say where you are and to get somewhere else.
     private lazy var pagesItem = UIBarButtonItem(
         title: "", style: .plain, target: self, action: #selector(pagesTapped))
-    /// Turns the finger into something that draws blocks over the page instead
-    /// of ink. A mode, and deliberately a visible one: the button fills in.
-    private lazy var coverItem = UIBarButtonItem(
-        image: PdfInkViewController.coverImage(making: false), style: .plain, target: self,
-        action: #selector(coverTapped))
     private lazy var searchItem = UIBarButtonItem(
         barButtonSystemItem: .search, target: self, action: #selector(searchTapped))
-    /// Leaving used to mean opening the sidebar first and finding the X there.
-    /// A door you have to open a drawer to reach is not a door. It cannot go
-    /// beside the sidebar toggle, though: see `PdfInkSpace`.
-    private lazy var closeItem = UIBarButtonItem(
-        barButtonSystemItem: .close, target: self, action: #selector(closeTapped))
     private var saveTimer: Timer?
     private var laidOutWidth: CGFloat = 0
     private(set) var lastSaveError: Error?
-    var onCloseSpace: (() -> Void)?
 
     /// How big the page is drawn, and how big it would be if it just fitted.
     /// `ReaderScaleTests` is the only way the zoom behaviour of a half that
@@ -116,18 +100,11 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         shareItem.accessibilityLabel = strings.export
         pagesItem.accessibilityLabel = strings.pages
         searchItem.accessibilityLabel = strings.search
-        coverItem.accessibilityLabel = strings.cover
-        closeItem.accessibilityLabel = strings.close
         setBarItems(enabled: false)
-        // Share rightmost, as Notes and Files put it; the two ways of getting
-        // somewhere in the file sit together next to the title.
         // Right to left: Share on the edge, as Notes and Files put it, then the
-        // two ways of getting somewhere in the file, then the cover tool, and
-        // Close nearest the title — as close to the sidebar toggle as anything
-        // can get without displacing it.
-        navigationItem.rightBarButtonItems = [
-            shareItem, addPageItem, searchItem, pagesItem, coverItem, closeItem,
-        ]
+        // two ways of getting somewhere in the file. Leaving is the sidebar's
+        // Close — nothing here does it.
+        navigationItem.rightBarButtonItems = [shareItem, addPageItem, searchItem, pagesItem]
 
         // Provider and markup mode BEFORE any document: PDFView asks for overlays
         // as it lays pages out, and a page laid out with no provider never gets a
@@ -232,7 +209,6 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         self.title = title
         if let archive = InkStore.load(from: inkURL) {
             insertedPages = archive.insertedPages
-            covers = archive.covers
             // Before the document reaches the view: the ink indices below are
             // indices in the document WITH the added pages back in it.
             InkPages.apply(inserts: insertedPages, to: document)
@@ -295,9 +271,6 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         drawings = [:]
         overlays = [:]
         insertedPages = []
-        covers = [:]
-        revealed = [:]
-        if makingCovers { coverTapped() }
         lastSaveError = nil
         return true
     }
@@ -338,8 +311,6 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         let at = document.index(for: current) + 1
         harvestCanvases()
         drawings = InkPages.shifted(drawings, insertingAt: at)
-        covers = InkPages.shifted(covers, insertingAt: at)
-        revealed = InkPages.shifted(revealed, insertingAt: at)
         insertedPages = InkPages.shifted(insertedPages, insertingAt: at)
         document.insert(InkPages.blank(size: current.bounds(for: .mediaBox).size), at: at)
         reloadDocumentKeepingZoom()
@@ -369,8 +340,6 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         }
         harvestCanvases()
         drawings = InkPages.shifted(drawings, removingAt: index)
-        covers = InkPages.shifted(covers, removingAt: index)
-        revealed = InkPages.shifted(revealed, removingAt: index)
         insertedPages = InkPages.shifted(insertedPages, removingAt: index)
         document.removePage(at: index)
         reloadDocumentKeepingZoom()
@@ -383,81 +352,11 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         return true
     }
 
-    // MARK: - Leaving
-
-    @objc private func closeTapped() { onCloseSpace?() }
-
-    // MARK: - Covering an answer
-
-    /**
-     * Blocks over the page, for reading a lecture back to yourself before
-     * looking at the answer. Drag one out; tap it to look under; tap again to
-     * shut it. Tapping one while still in this mode takes it away.
-     *
-     * The tool picker goes while the mode is on: the finger is not drawing ink
-     * and a pen sitting there says otherwise.
-     */
-    @objc private func coverTapped() {
-        makingCovers.toggle()
-        coverItem.image = Self.coverImage(making: makingCovers)
-        for overlay in overlays.values { overlay.coverLayer.isMakingCovers = makingCovers }
-        // The page has to hold still. PDFKit scrolls on a drag, and a scroll view
-        // claims a drag the moment it moves — the block was never drawn because
-        // the page slid out from under it instead.
-        documentScrollView?.isScrollEnabled = !makingCovers
-        if makingCovers {
-            toolPicker.setVisible(false, forFirstResponder: pdfView)
-        } else {
-            showToolPicker()
-        }
-        NSLog("PdfInk: cover tool \(makingCovers ? "on" : "off"), scrolling \(!makingCovers)")
-    }
-
-    /// A missing symbol is a button with nothing in it — which is exactly how the
-    /// sidebar toggle broke once. `CoverToolTests` keeps both names honest.
-    static func coverImage(making: Bool) -> UIImage? {
-        let name = making ? "square.dashed.inset.filled" : "square.dashed"
-        return UIImage(systemName: name) ?? UIImage(systemName: "square.dashed")
-    }
-
-    /// PDFKit's own scroller, the one that moves the pages. Its first-level
-    /// subview, not the canvas's — that one lives further down and scrolls
-    /// nothing.
-    private var documentScrollView: UIScrollView? {
-        pdfView.subviews.compactMap { $0 as? UIScrollView }.first
-    }
-
-    private func addCover(_ rect: CGRect, onPage index: Int) {
-        covers[index, default: []].append(rect)
-        overlays[index]?.coverLayer.covers = covers[index] ?? []
-        persistNow()
-    }
-
-    private func removeCover(_ position: Int, onPage index: Int) {
-        guard var page = covers[index], page.indices.contains(position) else { return }
-        page.remove(at: position)
-        covers[index] = page.isEmpty ? nil : page
-        // Which ones are open is recorded by position, and the positions after
-        // this one have all just moved. Shut them rather than open the wrong one.
-        revealed[index] = nil
-        overlays[index]?.coverLayer.covers = covers[index] ?? []
-        overlays[index]?.coverLayer.revealed = []
-        persistNow()
-    }
-
-    private func toggleCover(_ position: Int, onPage index: Int) {
-        var open = revealed[index] ?? []
-        if open.contains(position) { open.remove(position) } else { open.insert(position) }
-        revealed[index] = open
-        overlays[index]?.coverLayer.revealed = open
-    }
-
     private func setBarItems(enabled: Bool) {
         addPageItem.isEnabled = enabled
         shareItem.isEnabled = enabled
         pagesItem.isEnabled = enabled
         searchItem.isEnabled = enabled
-        coverItem.isEnabled = enabled
         // The counter is a pill around a number. With no file open there is no
         // number, and an empty pill reads as a button that lost its label.
         pagesItem.isHidden = !enabled
@@ -598,12 +497,6 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         canvas.drawing = drawings[index] ?? PKDrawing()
         canvas.tool = toolPicker.selectedTool
         canvas.delegate = self
-        overlay.coverLayer.covers = covers[index] ?? []
-        overlay.coverLayer.revealed = revealed[index] ?? []
-        overlay.coverLayer.isMakingCovers = makingCovers
-        overlay.coverLayer.onCreate = { [weak self] rect in self?.addCover(rect, onPage: index) }
-        overlay.coverLayer.onRemove = { [weak self] at in self?.removeCover(at, onPage: index) }
-        overlay.coverLayer.onToggle = { [weak self] at in self?.toggleCover(at, onPage: index) }
         toolPicker.addObserver(canvas)
         toolPicker.setVisible(true, forFirstResponder: canvas)
         overlays[index] = overlay
@@ -645,8 +538,7 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         let pages = drawings.filter { !$0.value.strokes.isEmpty }
             .mapValues { $0.dataRepresentation() }
         return InkArchive(
-            pageCount: document.pageCount, pages: pages, insertedPages: insertedPages,
-            covers: covers)
+            pageCount: document.pageCount, pages: pages, insertedPages: insertedPages)
     }
 
     /// Writes the current file's ink. False means the strokes are still only in
@@ -657,7 +549,7 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         saveTimer = nil
         guard let inkURL, let archive = currentArchive() else { return true }
         do {
-            if archive.pages.isEmpty && archive.insertedPages.isEmpty && archive.covers.isEmpty {
+            if archive.pages.isEmpty && archive.insertedPages.isEmpty {
                 InkStore.delete(at: inkURL)
             } else {
                 try InkStore.save(archive, to: inkURL)

@@ -400,31 +400,29 @@ each on the same principle — Apple's control, no mode, nothing rewritten in th
 - **Share with notes.** `InkExport` redraws each page and stamps the `PKDrawing`
   over it, so the text stays text.
 
-## Addendum 2026-09-07: covering an answer
+## Addendum 2026-09-07: covering an answer — WITHDRAWN
 
-A block over part of the page, so a lecture can be read back before the answer
-is. Drag one out with the cover tool on; tap it to look under; tap again to shut
-it. Tapping one while the tool is still on takes it away.
+A block over part of the page, so a lecture could be read back before the answer
+was: drag one out with the cover tool on, tap it to look under, tap again to
+shut it. Built (`CoverLayerView`, `PageCovers`, archive v3's `covers` key) and
+then withdrawn the same day, on the author's call, to get this branch closed.
+The reader's own Close in the bar went with it.
 
-- **PencilKit cannot do this.** A stroke is not something you can tap. So covers
-  are their own layer above the canvas (`CoverLayerView` inside
-  `PageOverlayView`), with their rectangles in page coordinates.
-- **It is invisible to everything else.** Outside a cover the layer's `hitTest`
-  returns nothing, so drawing and scrolling reach the canvas exactly as before.
-  Inside one it takes the touch — which is also why a covered patch cannot be
-  drawn on. It is covered.
-- **Making them is a mode, and a visible one** (the bar button fills in and the
-  tool picker goes). Reading them is not: a tap opens and shuts a cover whenever
-  the file is open.
-- **Which covers are open is never saved.** Coming back to a file is exactly the
-  moment the answers should be hidden again — that is the whole point.
-- **Covers are not exported.** `InkExport` bakes in ink and nothing else: a
-  shared PDF is the student's notes, and a study aid that travelled with it would
-  hide the answer from whoever they sent it to. Decided, not inherited from the
-  signature.
-- **Archive v3** carries `covers`; v1 and v2 files read as having none, and a
-  file whose only content is covers is no longer deleted on save.
+What is left of it, and why:
 
-`PageCovers` owns the one genuinely ambiguous part: while the tool is on, a drag
-creates and a tap removes, and a short drag is a tap. A small cover drawn on top
-of a big one is a new cover, never a delete.
+- **Archive version stays at 3.** Files carrying a `covers` key are on devices
+  now. The key is no longer read or written, but dropping the version back to 2
+  would make every one of those files a "newer version", which `InkArchive.decode`
+  refuses and the store quarantines — the student's ink would go with the covers.
+  `testAnArchiveCarryingCoversStillOpensWithItsInk` holds that line.
+- **`PageOverlayView` stays.** The canvas is alone under it again, so the wrapper
+  looks pointless — but it is what `willEndDisplayingOverlayView` matches on by
+  identity, and that identity match is what harvests strokes correctly across a
+  file switch. Handing PDFKit the canvas directly again would reopen that bug.
+- **Leaving is the sidebar's Close.** The reader's bar is four buttons: share,
+  add a page, search, page counter. Apple's sidebar toggle is one tap away on the
+  leading edge, and the Close is on the sidebar behind it. That is one tap more
+  than the withdrawn X — recorded here so it is a known cost and not a surprise.
+
+The whole design of the covers is in this file's history if it is ever wanted
+back.

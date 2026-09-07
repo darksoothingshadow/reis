@@ -141,11 +141,14 @@ final class ReaderScaleTests: XCTestCase {
 /**
  * The reader's bar.
  *
- * Close lives at the end of the trailing group and the leading edge is left
- * entirely to the split view. Placing a button of our own beside the sidebar
- * toggle means placing the toggle by hand, and a hand-placed toggle is an empty
- * circle that does nothing — seen on the iPad, which is why the leading items
- * are asserted to stay untouched.
+ * Four tools and nothing else: share, add a page, search, and the page counter.
+ * The reader had a Close of its own and a cover tool beside it; both were
+ * withdrawn, and leaving is the sidebar's Close.
+ *
+ * The leading edge is left entirely to the split view. Placing a button of our
+ * own beside the sidebar toggle means placing the toggle by hand, and a
+ * hand-placed toggle is an empty circle that does nothing — seen on the iPad,
+ * which is why the leading items are asserted to stay untouched.
  */
 @available(iOS 16.0, *)
 final class ReaderBarTests: XCTestCase {
@@ -158,25 +161,31 @@ final class ReaderBarTests: XCTestCase {
             "a leading item of ours displaces the sidebar toggle and it never comes back")
     }
 
-    func testCloseIsInTheBarAndNearestTheTitle() throws {
-        let reader = PdfInkViewController(strings: PdfInkStrings(nil))
+    func testTheBarCarriesTheFourFileToolsAndNothingElse() throws {
+        let strings = PdfInkStrings(nil)
+        let reader = PdfInkViewController(strings: strings)
         reader.loadViewIfNeeded()
 
-        // The array runs right to left, so the last one sits nearest the title.
+        // Right to left, so this reads share on the edge and the counter
+        // nearest the title.
         let trailing = try XCTUnwrap(reader.navigationItem.rightBarButtonItems)
-        let close = try XCTUnwrap(trailing.last)
-        XCTAssertEqual(close.accessibilityLabel, PdfInkStrings(nil).close)
+        XCTAssertEqual(
+            trailing.compactMap(\.accessibilityLabel),
+            [strings.export, strings.addPage, strings.search, strings.pages],
+            "the reader's bar gained or lost a tool")
     }
 
-    func testCloseReportsToTheSpace() throws {
-        let reader = PdfInkViewController(strings: PdfInkStrings(nil))
+    /// The withdrawn Close carried an accessibility label, so its absence is
+    /// checkable by name. `close` is still a string — the save-failed alert and
+    /// the sidebar's own Close both use it.
+    func testTheReadersOwnCloseIsNotBack() throws {
+        let strings = PdfInkStrings(nil)
+        let reader = PdfInkViewController(strings: strings)
         reader.loadViewIfNeeded()
-        var closed = false
-        reader.onCloseSpace = { closed = true }
 
-        let close = try XCTUnwrap(reader.navigationItem.rightBarButtonItems?.last)
-        _ = try XCTUnwrap(close.target).perform(try XCTUnwrap(close.action), with: close)
-
-        XCTAssertTrue(closed, "the bar's Close did not close the reader")
+        let trailing = try XCTUnwrap(reader.navigationItem.rightBarButtonItems)
+        XCTAssertFalse(
+            trailing.contains { $0.accessibilityLabel == strings.close },
+            "the reader's own Close is back; leaving is the sidebar's Close")
     }
 }

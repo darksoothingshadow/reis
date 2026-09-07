@@ -22,7 +22,6 @@ struct PdfInkStrings {
     let noMatches: String
     let removePage: String
     let cancel: String
-    let cover: String
 
     init(_ object: JSObject?) {
         saveFailedTitle = object?["saveFailedTitle"] as? String ?? "Your ink couldn't be saved"
@@ -42,6 +41,5 @@ struct PdfInkStrings {
         noMatches = object?["noMatches"] as? String ?? "Nothing found"
         removePage = object?["removePage"] as? String ?? "Remove page"
         cancel = object?["cancel"] as? String ?? "Cancel"
-        cover = object?["cover"] as? String ?? "Cover an answer"
     }
 }

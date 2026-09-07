@@ -96,8 +96,9 @@ Device: ______ iPadOS: ______ Build: ______ Pencil: ______
         `select` without a matching tap is the unreproduced finding above — report it.
 16. [ ] Hide the sidebar with Apple's toggle, draw, show it again → the selection highlight is
         still on the current file and the pencil mark appears on it.
-17. [ ] Close with the X → back in the drawer; reopen the same file → strokes present, sidebar
-        selection on it.
+17. [ ] Show the sidebar with Apple's toggle and Close with the X there → back in the drawer;
+        reopen the same file → strokes present, sidebar selection on it. That X is the only way
+        out: the reader has no Close of its own.
 18. [ ] Add a page with "+" mid-deck, draw on it with the Pencil, add a second one, switch files
         and come back → both pages are where you put them and the ink is on them, not on their
         neighbours.
@@ -113,23 +114,11 @@ Device: ______ iPadOS: ______ Build: ______ Pencil: ______
 23. [ ] Share (the bar's export button) on a file with ink → the sheet names the file; save it to
         Files and open it in Apple's Preview: the ink is in the pages, added pages included, and
         the text is still selectable. Print the same file and check the ink is on the paper.
-24. [ ] The reader's own Close (beside the sidebar toggle) leaves the subject without opening the
-        sidebar first, and the toggle beside it still opens the sidebar. The toggle is placed by
-        hand rather than by the split view, and neither its wiring nor its appearance can be
-        checked without a device — if it ever stops working, a swipe from the left edge still
+24. [ ] The reader's bar carries four buttons and no more: share, add a page, search and the
+        page counter. No X and no cover tool — the reader's own Close and the cover tool were
+        both withdrawn from this branch. Apple's sidebar toggle is on the leading edge and it
+        still opens the sidebar; if it ever stops working, a swipe from the left edge still
         brings the sidebar out.
-25. [ ] Covers: turn the cover tool on (the button fills in and the tool picker goes), drag a
-        block over an answer, turn the tool off. Tap the block → the answer shows through with a
-        dashed outline left behind; tap again → hidden. Close the file and reopen it → the block
-        is there and it is shut.
-26. [ ] With the tool on, drag a small block on top of a big one → a new block, not a deletion.
-        Tap a block with the tool on → it goes.
-27. [ ] Draw with the Pencil next to a cover → the ink goes down normally; the covered patch
-        itself does not take ink. Scrolling past a covered page and back keeps the block.
-28. [ ] A file whose only content is covers: no strokes at all, close and reopen → the covers are
-        still there (an empty archive used to be deleted).
-29. [ ] Share a file that has covers → the exported PDF shows the answers. Covers are a study aid
-        and deliberately do not travel with the file.
 
 ## Known edge, not fixed
 

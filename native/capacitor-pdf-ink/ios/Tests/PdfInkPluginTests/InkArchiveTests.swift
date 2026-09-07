@@ -37,29 +37,26 @@ final class InkArchiveTests: XCTestCase {
         XCTAssertEqual(decoded.insertedPages, [])
     }
 
-    func testCoversSurviveARoundTrip() throws {
-        let archive = InkArchive(
-            pageCount: 2, pages: [:],
-            covers: [1: [CGRect(x: 10, y: 20, width: 30, height: 40)]])
-
-        let decoded = try InkArchive.decode(archive.encoded())
-
-        XCTAssertEqual(decoded.covers, [1: [CGRect(x: 10, y: 20, width: 30, height: 40)]])
-        XCTAssertEqual(decoded.version, 3)
-    }
-
-    /// Every file written before covers existed. They must still open.
-    func testReadsAnOlderArchiveAsHavingNoCovers() throws {
-        let v2: [String: Any] = [
-            "version": 2, "pageCount": 4, "pages": [String: Data](), "insertedPages": [2],
+    /// Archives written while the cover tool existed are on devices now. The
+    /// key is gone from the struct, so it is simply not read — but the version
+    /// stayed at 3 on purpose: dropping back to 2 would make every one of those
+    /// files a "newer version", and the reader quarantines those. The ink has to
+    /// survive.
+    func testAnArchiveCarryingCoversStillOpensWithItsInk() throws {
+        let withCovers: [String: Any] = [
+            "version": 3, "pageCount": 4, "pages": ["7": Data([1, 2, 3])],
+            "insertedPages": [2],
+            // Whatever shape the rects were written in: the key is not read at
+            // all now, which is the thing under test.
+            "covers": ["1": [[10.0, 20.0, 30.0, 40.0]]],
         ]
         let data = try PropertyListSerialization.data(
-            fromPropertyList: v2, format: .binary, options: 0)
+            fromPropertyList: withCovers, format: .binary, options: 0)
 
         let decoded = try InkArchive.decode(data)
 
+        XCTAssertEqual(decoded.pages, [7: Data([1, 2, 3])], "the ink was dropped")
         XCTAssertEqual(decoded.insertedPages, [2])
-        XCTAssertEqual(decoded.covers, [:])
     }
 
     func testRejectsJunk() {

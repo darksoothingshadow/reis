@@ -86,7 +86,6 @@ export function usePdfPreview(courseCode?: string, subject?: PdfPreviewSubject) 
       noMatches: t('mobile.pdfInk.noMatches'),
       removePage: t('mobile.pdfInk.removePage'),
       cancel: t('common.cancel'),
-      cover: t('mobile.pdfInk.cover'),
     }),
     [t]
   );

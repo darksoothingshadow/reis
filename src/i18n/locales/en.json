@@ -1137,8 +1137,7 @@
       "search": "Search",
       "page": "Page",
       "noMatches": "Nothing found",
-      "removePage": "Remove page",
-      "cover": "Cover an answer"
+      "removePage": "Remove page"
     }
   },
   "session": {

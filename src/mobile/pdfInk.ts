@@ -39,7 +39,6 @@ export interface PdfInkStrings {
   removePage: string;
   cancel: string;
   /** The tool that blocks out an answer so it can be recalled before looking. */
-  cover: string;
 }
 
 export interface PdfInkPlugin {

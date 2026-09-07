@@ -1137,8 +1137,7 @@
       "search": "Hledat",
       "page": "Strana",
       "noMatches": "Nic nenalezeno",
-      "removePage": "Odstranit stránku",
-      "cover": "Zakrýt odpověď"
+      "removePage": "Odstranit stránku"
     }
   },
   "session": {
