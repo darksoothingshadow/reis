@@ -135,6 +135,15 @@ Nothing is destroyed, and it needs both a shortened re-upload and an added page 
 end. Fixing it means shifting the ink keys by the same clamp delta — a larger change than this
 branch should carry.
 
+## Still open: the drawer itself is tied to reaching IS
+
+Checklist item 1 was "files must not disappear when IS cannot be reached". The reader's sidebar
+now keeps them (`keptFiles`, step 19), but that only helps a student who is already inside the
+reader. The subject's own file drawer is still listed live: with no IS session every subject reads
+"Žádné soubory nejsou k dispozici", and there is then no row to tap and no door into the reader.
+Seen on the simulator on 2026-09-07 once its session expired. Closing this properly means the
+drawer falling back to what is cached, the same stale-if-error rule `serveFile` already follows.
+
 ## Report back
 
 Record any finding not in the design here, with the step number.

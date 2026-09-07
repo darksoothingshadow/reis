@@ -81,6 +81,17 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
 
     enum SplitControl { case none, open, close }
 
+    /// How big the page is drawn, and how big it would be if it just fitted.
+    /// `ReaderScaleTests` is the only way the zoom behaviour of a half that
+    /// changes width can be checked without a device in hand. Writing the scale
+    /// is what a pinch does — PDFKit gives up its own fitting either way — so
+    /// the test can stand in for one.
+    var pageScale: CGFloat {
+        get { pdfView.scaleFactor }
+        set { pdfView.scaleFactor = newValue }
+    }
+    var fittedPageScale: CGFloat { pdfView.scaleFactorForSizeToFit }
+
     init(strings: PdfInkStrings, toolPicker: PKToolPicker) {
         self.strings = strings
         self.toolPicker = toolPicker
@@ -179,6 +190,10 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         guard width > 0 else { return }
         defer { laidOutWidth = width }
         guard laidOutWidth > 0, width != laidOutWidth, document != nil else { return }
+        // Only once the student has pinched. Until then PDFKit is still fitting
+        // the page itself and correcting it here applied the change twice, so a
+        // half that narrowed drew the page at half the size it should be.
+        guard !pdfView.autoScales else { return }
         pdfView.scaleFactor *= width / laidOutWidth
     }
 
@@ -282,6 +297,25 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
      * so their drawings are harvested and the document is handed back to the view
      * from scratch; PDFKit then asks for overlays again against the new numbering.
      */
+    /**
+     * Hands the document back to PDFKit after the pages have changed underneath
+     * it, without moving the student.
+     *
+     * Re-setting `document` resets the zoom to 100%, and adding a page is not a
+     * moment to be zoomed back out to the whole page — they are drawing on it.
+     */
+    private func reloadDocumentKeepingZoom() {
+        let scale = pdfView.scaleFactor
+        let fitting = pdfView.autoScales
+        pdfView.document = nil
+        pdfView.document = document
+        if fitting {
+            pdfView.autoScales = true
+        } else {
+            pdfView.scaleFactor = scale
+        }
+    }
+
     @discardableResult
     func addBlankPage() -> Bool {
         guard let document, let current = pdfView.currentPage else { return false }
@@ -294,8 +328,7 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         drawings = InkPages.shifted(drawings, insertingAt: at)
         insertedPages = InkPages.shifted(insertedPages, insertingAt: at)
         document.insert(InkPages.blank(size: current.bounds(for: .mediaBox).size), at: at)
-        pdfView.document = nil
-        pdfView.document = document
+        reloadDocumentKeepingZoom()
         if let page = document.page(at: at) { pdfView.go(to: page) }
         updatePageItem()
         pdfView.becomeFirstResponder()
@@ -328,8 +361,7 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         drawings = InkPages.shifted(drawings, removingAt: index)
         insertedPages = InkPages.shifted(insertedPages, removingAt: index)
         document.removePage(at: index)
-        pdfView.document = nil
-        pdfView.document = document
+        reloadDocumentKeepingZoom()
         if let page = document.page(at: min(index, document.pageCount - 1)) {
             pdfView.go(to: page)
         }
