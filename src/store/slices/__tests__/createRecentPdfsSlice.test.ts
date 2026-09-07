@@ -62,4 +62,19 @@ describe('createRecentPdfsSlice', () => {
     expect(useAppStore.getState().recentPdfs).toEqual([]);
     expect(idb.get).not.toHaveBeenCalled();
   });
+
+  // Boot and the calendar tab both refresh; a dismissal in that window is only
+  // in memory, and the stored map the refresh read predates it.
+  it('keeps a dismissal made while a refresh was in flight', async () => {
+    let release!: (v: unknown) => void;
+    idb.get.mockReturnValueOnce(new Promise((r) => (release = r)));
+    const refreshing = useAppStore.getState().refreshRecentPdfs();
+    vi.spyOn(Date, 'now').mockReturnValue(1000);
+    await useAppStore.getState().dismissRecentPdf('a');
+    release({}); // the stored map predates the dismissal
+    await refreshing;
+
+    expect(useAppStore.getState().dismissedRecentPdfs).toEqual({ a: 1000 });
+    expect(useAppStore.getState().recentPdfs.map((p) => p.key)).toEqual(['b']);
+  });
 });

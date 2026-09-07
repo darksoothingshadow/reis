@@ -18,6 +18,15 @@ export interface RecentPdfsSlice {
 
 const DISMISSED_KEY = 'recent_pdfs_dismissed';
 
+function mergeDismissed(
+  a: Record<string, number>,
+  b: Record<string, number>
+): Record<string, number> {
+  const out = { ...b };
+  for (const [key, at] of Object.entries(a)) out[key] = Math.max(out[key] ?? 0, at);
+  return out;
+}
+
 function isDismissedRecord(v: unknown): v is Record<string, number> {
   return (
     !!v &&
@@ -49,7 +58,13 @@ export const createRecentPdfsSlice: AppSlice<RecentPdfsSlice> = (set, get) => ({
         readIndex(capacitorPdfCacheFs),
         IndexedDBService.get('meta', DISMISSED_KEY),
       ]);
-      const dismissed = isDismissedRecord(stored) ? stored : get().dismissedRecentPdfs;
+      // Merge, newest timestamp wins: a dismissal made while this read was in
+      // flight is only in memory, and taking the stored map alone would undo
+      // it until the next refresh.
+      const dismissed = mergeDismissed(
+        get().dismissedRecentPdfs,
+        isDismissedRecord(stored) ? stored : {}
+      );
       const cachedPdfs = listablePdfs(index);
       set({
         cachedPdfs,
