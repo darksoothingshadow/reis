@@ -58,7 +58,7 @@ dismissRecentPdf(key: string): Promise<void>;
   dismiss `X` icon button on the right, `aria-label = t('common.close')`,
   `stopPropagation`.
 - Row tap → `openRecent(row)` in `usePdfPreview`: `openPdfWithInk` with
-  `courseTitle = useSubjects().getSubject(courseCode)?.name ?? courseCode`
+  `courseTitle = subjects?.data[courseCode]?.displayName ?? courseCode` (`SubjectInfo` has `displayName`, not `name`)
   (the lookup `SubjectDrawerSheet.tsx:56` already uses), `files` = every
   cached entry of the same `courseCode` from the index (the sidebar shows what
   the device has), `fetchPdf` = the existing session fetch (stale-if-error
