@@ -626,6 +626,7 @@ export type AppState = ScheduleSlice &
   ViewportSlice &
   MobileUiSlice &
   import('./slices/createSearchSlice').SearchSlice &
+  import('./slices/createRecentPdfsSlice').RecentPdfsSlice &
   import('./slices/createPersonProfileSlice').PersonProfileSlice &
   MapSlice &
   import('./slices/createRsvpSlice').RsvpSlice &
