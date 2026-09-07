@@ -130,7 +130,16 @@ export function CalendarScreen() {
   // just later. (The first run in a process always fetches, so a missing
   // arrival here cannot be a TTL skip.)
   if (firstSyncSettled && !syncLoaded.schedule && schedule.length === 0) {
-    return shell(<ScreenError testId="calendar-error" />);
+    // The recent-files shelf needs no schedule and no IS — it is the device's
+    // own — so the state where the fetch FAILED (offline, on the tram) is
+    // exactly where it earns its place. Not under the skeleton: loading is
+    // transient and a real card under placeholder bars reads as a glitch.
+    return shell(
+      <div className="flex flex-1 flex-col overflow-y-auto pb-24">
+        <ScreenError testId="calendar-error" />
+        <RecentFilesStrip />
+      </div>
+    );
   }
 
   const now = new Date();

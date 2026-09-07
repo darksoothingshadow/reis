@@ -6,13 +6,20 @@ const idb = vi.hoisted(() => ({
 }));
 vi.mock('../../../services/storage', () => ({ IndexedDBService: idb }));
 
-const native = vi.hoisted(() => ({
-  available: true,
-  indexJson: '{}',
-}));
+const native = vi.hoisted(() => {
+  const state = {
+    available: true,
+    indexJson: '{}',
+    readText: async (): Promise<string | null> => state.indexJson,
+  };
+  return state;
+});
 vi.mock('../../../mobile/pdfInkNative', () => ({
   isPdfInkAvailable: async () => native.available,
-  capacitorPdfCacheFs: { readText: async () => native.indexJson },
+  capacitorPdfCacheFs: {
+    // Overridable per call so a test can hold one read open past another.
+    readText: () => native.readText(),
+  },
   nativePdfInkDeps: { tag: 'native-deps' },
 }));
 
@@ -29,6 +36,7 @@ describe('createRecentPdfsSlice', () => {
     vi.clearAllMocks();
     native.available = true;
     native.indexJson = JSON.stringify(INDEX);
+    native.readText = async () => native.indexJson;
     idb.get.mockResolvedValue(null);
     useAppStore.setState({ cachedPdfs: [], recentPdfs: [], dismissedRecentPdfs: {} } as never);
   });
@@ -65,6 +73,29 @@ describe('createRecentPdfsSlice', () => {
 
   // Boot and the calendar tab both refresh; a dismissal in that window is only
   // in memory, and the stored map the refresh read predates it.
+  // Boot, the calendar tab and a closed reader can all refresh at once. The
+  // index read is async, so an OLDER snapshot can resolve last; without a guard
+  // it overwrote the newer list and a just-reopened file vanished from the
+  // strip until the next refresh.
+  it('an older refresh that resolves last does not overwrite a newer one', async () => {
+    const newer = { ...INDEX, c: { ...INDEX.a, name: 'C', lastOpenedAt: 40, link: 'l-c' } };
+    let releaseOld!: (v: string) => void;
+    let call = 0;
+    native.readText = () =>
+      ++call === 1
+        ? new Promise<string>((r) => (releaseOld = r)) // first (older) read hangs
+        : Promise.resolve(JSON.stringify(newer)); // second (newer) read is instant
+
+    const older = useAppStore.getState().refreshRecentPdfs();
+    await useAppStore.getState().refreshRecentPdfs();
+    expect(useAppStore.getState().recentPdfs.map((p) => p.key)).toEqual(['c', 'a', 'b']);
+
+    releaseOld(JSON.stringify(INDEX)); // the stale snapshot arrives late
+    await older;
+
+    expect(useAppStore.getState().recentPdfs.map((p) => p.key)).toEqual(['c', 'a', 'b']);
+  });
+
   it('keeps a dismissal made while a refresh was in flight', async () => {
     let release!: (v: unknown) => void;
     idb.get.mockReturnValueOnce(new Promise((r) => (release = r)));

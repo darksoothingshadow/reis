@@ -84,6 +84,30 @@ describe('useRecentPdfOpen', () => {
     ]);
   });
 
+  // A listing that names no PDF at all, for a subject the student has a cached
+  // PDF of, is a listing that is stale or incomplete — the file in hand proves
+  // it. Cached copies are the better sidebar then, not an empty one.
+  it("falls back to the cached copies when the store's listing has no PDFs in it", async () => {
+    useAppStore.setState({
+      files: {
+        'EBC-AP': [
+          {
+            subfolder: '',
+            file_name: 'Slides',
+            file_comment: '',
+            author: '',
+            date: '1. 1. 2026',
+            files: [{ name: 'slides.pptx', type: 'pptx', link: 'https://is/slides.pptx' }],
+          },
+        ],
+      },
+    } as never);
+    const { result } = renderHook(() => useRecentPdfOpen());
+    await act(async () => void (await result.current.openRecentPdf(row('a', 'EBC-AP', 'A'))));
+    const input = openPdfWithInk.mock.calls[0]?.[1] as { files: { link: string }[] };
+    expect(input.files.map((f) => f.link).sort()).toEqual(['https://is/a', 'https://is/b']);
+  });
+
   it("falls back to the subject's cached copies when the store has no listing for it", async () => {
     const { result } = renderHook(() => useRecentPdfOpen());
     await act(async () => void (await result.current.openRecentPdf(row('a', 'EBC-AP', 'A'))));
