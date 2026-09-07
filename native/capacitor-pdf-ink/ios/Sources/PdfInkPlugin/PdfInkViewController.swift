@@ -50,7 +50,8 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
     private var document: PDFDocument?
     private var inkURL: URL?
     private var drawings: [Int: PKDrawing] = [:]
-    private var canvases: [Int: PKCanvasView] = [:]
+    /// What PDFKit currently has over each page. The canvases live inside these.
+    private var overlays: [Int: PageOverlayView] = [:]
     /// Where the blank pages the student added sit in the document on screen.
     private var insertedPages: [Int] = []
     private lazy var addPageItem = UIBarButtonItem(
@@ -286,7 +287,7 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
     private func leaveCurrentFile(discardingUnsaved: Bool) -> Bool {
         if !persistNow() && !discardingUnsaved { return false }
         drawings = [:]
-        canvases = [:]
+        overlays = [:]
         insertedPages = []
         lastSaveError = nil
         return true
@@ -326,11 +327,7 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
     func addBlankPage() -> Bool {
         guard let document, let current = pdfView.currentPage else { return false }
         let at = document.index(for: current) + 1
-        for (index, canvas) in canvases {
-            drawings[index] = canvas.drawing
-            toolPicker.removeObserver(canvas)
-        }
-        canvases = [:]
+        harvestCanvases()
         drawings = InkPages.shifted(drawings, insertingAt: at)
         insertedPages = InkPages.shifted(insertedPages, insertingAt: at)
         document.insert(InkPages.blank(size: current.bounds(for: .mediaBox).size), at: at)
@@ -359,11 +356,7 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         guard let document, insertedPages.contains(index), document.pageCount > 1 else {
             return false
         }
-        for (page, canvas) in canvases {
-            drawings[page] = canvas.drawing
-            toolPicker.removeObserver(canvas)
-        }
-        canvases = [:]
+        harvestCanvases()
         drawings = InkPages.shifted(drawings, removingAt: index)
         insertedPages = InkPages.shifted(insertedPages, removingAt: index)
         document.removePage(at: index)
@@ -522,8 +515,18 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
 
     /// A canvas on screen is ahead of `drawings` until the next save, so both are asked.
     private func hasInk(onPage index: Int) -> Bool {
-        if let canvas = canvases[index] { return !canvas.drawing.strokes.isEmpty }
+        if let overlay = overlays[index] { return !overlay.canvas.drawing.strokes.isEmpty }
         return !(drawings[index]?.strokes.isEmpty ?? true)
+    }
+
+    /// Takes what is on screen back into `drawings` and lets the picker go of it.
+    /// Called before the pages are renumbered underneath the canvases.
+    private func harvestCanvases() {
+        for (index, overlay) in overlays {
+            drawings[index] = overlay.canvas.drawing
+            toolPicker.removeObserver(overlay.canvas)
+        }
+        overlays = [:]
     }
 
     // MARK: - Export
@@ -569,8 +572,9 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
     func pdfView(_ view: PDFView, overlayViewFor page: PDFPage) -> UIView? {
         guard let document else { return nil }
         let index = document.index(for: page)
-        if let canvas = canvases[index] { return canvas }
-        let canvas = PKCanvasView()
+        if let overlay = overlays[index] { return overlay }
+        let overlay = PageOverlayView()
+        let canvas = overlay.canvas
         NSLog("PdfInk: canvas created for page \(index)")
         canvas.tag = index
         canvas.backgroundColor = .clear
@@ -584,8 +588,8 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         canvas.delegate = self
         toolPicker.addObserver(canvas)
         toolPicker.setVisible(true, forFirstResponder: canvas)
-        canvases[index] = canvas
-        return canvas
+        overlays[index] = overlay
+        return overlay
     }
 
     func pdfView(
@@ -593,19 +597,21 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
     ) {
         // Matched by identity, not page index: after a file switch PDFKit may
         // still release the previous document's overlays, whose indices would
-        // otherwise collide with the new file's canvases.
-        guard let canvas = overlayView as? PKCanvasView,
-            let index = canvases.first(where: { $0.value === canvas })?.key
+        // otherwise collide with the new file's canvases. Matching the WRAPPER
+        // is what makes this work now — asking whether it is a canvas would
+        // never match again, and the page's strokes would go unharvested.
+        guard let overlay = overlayView as? PageOverlayView,
+            let index = overlays.first(where: { $0.value === overlay })?.key
         else { return }
-        drawings[index] = canvas.drawing
-        toolPicker.removeObserver(canvas)
-        canvases[index] = nil
+        drawings[index] = overlay.canvas.drawing
+        toolPicker.removeObserver(overlay.canvas)
+        overlays[index] = nil
     }
 
     // MARK: - PKCanvasViewDelegate
 
     func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
-        guard canvases[canvasView.tag] === canvasView else { return }
+        guard overlays[canvasView.tag]?.canvas === canvasView else { return }
         drawings[canvasView.tag] = canvasView.drawing
         saveTimer?.invalidate()
         saveTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) {
@@ -617,7 +623,7 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
 
     private func currentArchive() -> InkArchive? {
         guard let document else { return nil }
-        for (index, canvas) in canvases { drawings[index] = canvas.drawing }
+        for (index, overlay) in overlays { drawings[index] = overlay.canvas.drawing }
         let pages = drawings.filter { !$0.value.strokes.isEmpty }
             .mapValues { $0.dataRepresentation() }
         return InkArchive(
