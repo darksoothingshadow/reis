@@ -437,7 +437,6 @@ export type MobileSheet =
   // `dayIso` disambiguates the occurrence: the store holds the whole semester
   // and IS reuses a lesson id across the weeks it repeats, so the id alone does
   // not identify which one was tapped.
-  | { kind: 'eventDetail'; eventId: string; dayIso?: string }
   | { kind: 'subjectDrawer'; courseCode: string; courseName?: string; courseId?: string }
   | { kind: 'studyPlan' }
   | { kind: 'person'; personId: string; personName?: string }
@@ -468,9 +467,6 @@ export type MobileSheet =
   // inside CalendarScreen while its button shipped on every screen's header —
   // so it opened from one tab out of five.
   | { kind: 'bulletin' }
-  // The housing board. Opened from the profile tab, from a society post whose
-  // url is `reis://housing`, and from an event card carrying that token.
-  | { kind: 'housing' }
   | { kind: 'confirm'; confirmId: string };
 
 export interface MobileUiSlice {
@@ -633,8 +629,6 @@ export type AppState = ScheduleSlice &
   import('./slices/createPersonProfileSlice').PersonProfileSlice &
   MapSlice &
   import('./slices/createRsvpSlice').RsvpSlice &
-  import('./slices/createHousingSlice').HousingSlice &
-  import('./slices/createHousingAdminSlice').HousingAdminSlice &
   import('./slices/createAdminStatsSlice').AdminStatsSlice &
   import('./slices/createAdminSlice').AdminSlice &
   import('./slices/createSuggestionsSlice').SuggestionsSlice &

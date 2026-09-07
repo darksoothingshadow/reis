@@ -394,8 +394,7 @@ describe('EventComposer — a start time is required', () => {
 /**
  * `url` is optional, but when it's filled in it becomes an <a href> in
  * EventDetailCard and openExternal — a `javascript:` scheme there would run
- * in the page. Same rule housing links get: reis://housing is the one
- * non-http scheme allowed through.
+ * in the page. Only http(s) links validateExternalUrl accepts get through.
  */
 describe('EventComposer — url validation', () => {
   const fillRequired = () => {
@@ -411,30 +410,12 @@ describe('EventComposer — url validation', () => {
     fillRequired();
     expect(screen.getByRole('button', { name: 'Zveřejnit akci' })).toBeEnabled();
 
-    fireEvent.change(
-      screen.getByPlaceholderText('https://… nebo reis://housing pro otevření nástěnky bydlení'),
-      {
-        target: { value: 'javascript:alert(1)' },
-      }
-    );
+    fireEvent.change(screen.getByPlaceholderText('https://…'), {
+      target: { value: 'javascript:alert(1)' },
+    });
 
     expect(screen.getByRole('button', { name: 'Zveřejnit akci' })).toBeDisabled();
-    expect(screen.getByText('Zadej odkaz https:// nebo reis://housing')).toBeInTheDocument();
-  });
-
-  it('allows the reis://housing token through, with no error and publish enabled', () => {
-    render(<EventComposer onDone={() => {}} />);
-    fillRequired();
-
-    fireEvent.change(
-      screen.getByPlaceholderText('https://… nebo reis://housing pro otevření nástěnky bydlení'),
-      {
-        target: { value: 'reis://housing' },
-      }
-    );
-
-    expect(screen.getByRole('button', { name: 'Zveřejnit akci' })).toBeEnabled();
-    expect(screen.queryByText('Zadej odkaz https:// nebo reis://housing')).toBeNull();
+    expect(screen.getByText('Zadej odkaz http:// nebo https://')).toBeInTheDocument();
   });
 
   it('leaves publish enabled when the url field is left empty', () => {
@@ -443,7 +424,7 @@ describe('EventComposer — url validation', () => {
     expect(screen.getByRole('button', { name: 'Zveřejnit akci' })).toBeEnabled();
   });
 
-  // Same defect as HousingForm's district field. `form-control` and
+  // `form-control` and
   // `label-text` are both DaisyUI 4; daisyui@5.7.22 defines neither, so the
   // <label> kept its default `display: inline` and its <span> shared a line
   // box with the control. The url input carries no width of its own beyond
@@ -457,9 +438,7 @@ describe('EventComposer — url validation', () => {
   // boxes, and an <input> placeholder is not a DOM text node.
   it('stacks the url label above its input rather than relying on the removed form-control class', () => {
     render(<EventComposer onDone={() => {}} />);
-    const urlInput = screen.getByPlaceholderText(
-      'https://… nebo reis://housing pro otevření nástěnky bydlení'
-    );
+    const urlInput = screen.getByPlaceholderText('https://…');
     const wrapper = urlInput.closest('label');
 
     expect(wrapper?.className).toMatch(/(^|\s)flex(\s|$)/);

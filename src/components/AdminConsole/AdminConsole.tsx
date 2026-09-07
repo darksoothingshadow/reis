@@ -11,7 +11,6 @@ import { MobileAdminConsole } from './MobileAdminConsole';
 import { SuggestionsInbox } from './SuggestionsInbox';
 import { SocietyAccountsPanel } from './SocietyAccountsPanel';
 import { ChangeMyPasswordForm } from './ChangeMyPasswordForm';
-import { HousingModerationPanel } from './HousingModerationPanel';
 import { AdminStatsPanel } from './AdminStatsPanel';
 
 /**
@@ -33,11 +32,8 @@ export function AdminConsole() {
   // nothing else — it has no business reading another society's students.
   const isReisAdmin = useAppStore((s) => s.adminRole === 'reis_admin');
   const unread = useAppStore((s) => s.suggestionsUnread);
-  const loadAdminHousing = useAppStore((s) => s.loadAdminHousing);
   const loadAdminStats = useAppStore((s) => s.loadAdminStats);
-  const [pane, setPane] = useState<'events' | 'suggestions' | 'accounts' | 'housing' | 'stats'>(
-    'events'
-  );
+  const [pane, setPane] = useState<'events' | 'suggestions' | 'accounts' | 'stats'>('events');
   const { t } = useTranslation();
 
   if (!session) {
@@ -97,20 +93,6 @@ export function AdminConsole() {
               <button
                 type="button"
                 role="tab"
-                aria-selected={pane === 'housing'}
-                onClick={() => {
-                  void loadAdminHousing();
-                  setPane('housing');
-                }}
-                className={`tab flex-1 ${pane === 'housing' ? 'tab-active font-semibold' : 'text-base-content'}`}
-              >
-                {t('admin.housingTab')}
-              </button>
-            )}
-            {isReisAdmin && (
-              <button
-                type="button"
-                role="tab"
                 aria-selected={pane === 'stats'}
                 onClick={() => {
                   void loadAdminStats();
@@ -133,7 +115,6 @@ export function AdminConsole() {
           </div>
           <div className="min-h-0 flex-1 overflow-y-auto p-2">
             {isReisAdmin && pane === 'suggestions' && <SuggestionsInbox />}
-            {isReisAdmin && pane === 'housing' && <HousingModerationPanel />}
             {isReisAdmin && pane === 'stats' && <AdminStatsPanel />}
             {pane === 'accounts' && (
               <div className="flex flex-col gap-6">
