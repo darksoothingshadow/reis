@@ -39,7 +39,7 @@ export function useRecentPdfOpen() {
       try {
         const { subjects, cachedPdfs, refreshRecentPdfs } = useAppStore.getState();
         const listing = listSubjectPdfs(
-          groupAndSortFiles(subjectFiles[row.courseCode], row.courseCode, t).flatMap((g) => g.files)
+          groupAndSortFiles(subjectFiles[row.courseCode] ?? null, row.courseCode, t).flatMap((g) => g.files)
         );
         const files = listing.length
           ? listing
