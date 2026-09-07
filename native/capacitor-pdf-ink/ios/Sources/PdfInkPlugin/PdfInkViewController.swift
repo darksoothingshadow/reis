@@ -73,11 +73,16 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         image: UIImage(systemName: "xmark"), style: .plain, target: self,
         action: #selector(closePaneTapped))
     private var splitControl = SplitControl.none
+    /// Leaving used to mean opening the sidebar first and finding the X there.
+    /// A door you have to open a drawer to reach is not a door.
+    private lazy var closeItem = UIBarButtonItem(
+        barButtonSystemItem: .close, target: self, action: #selector(closeTapped))
     private var saveTimer: Timer?
     private var laidOutWidth: CGFloat = 0
     private(set) var lastSaveError: Error?
     var onSplitOpen: (() -> Void)?
     var onSplitClose: (() -> Void)?
+    var onCloseSpace: (() -> Void)?
 
     enum SplitControl { case none, open, close }
 
@@ -117,6 +122,7 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         searchItem.accessibilityLabel = strings.search
         splitItem.accessibilityLabel = strings.openAlongside
         closePaneItem.accessibilityLabel = strings.closePane
+        closeItem.accessibilityLabel = strings.close
         setBarItems(enabled: false)
         applyBarItems()
 
@@ -420,6 +426,21 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         navigationItem.standardAppearance = appearance
         navigationItem.scrollEdgeAppearance = appearance
     }
+
+    /**
+     * Puts Close beside Apple's sidebar toggle, on the half that carries it.
+     *
+     * The toggle has to be passed in and placed by hand. Left to itself the
+     * split view inserts one that never appears in `leftBarButtonItems`, so
+     * there is nothing to append to — setting the items would simply take the
+     * sidebar away. `PdfInkSpace` turns the automatic one off in exchange.
+     */
+    func showCloseButton(besides sidebarToggle: UIBarButtonItem) {
+        loadViewIfNeeded()
+        navigationItem.leftBarButtonItems = [sidebarToggle, closeItem]
+    }
+
+    @objc private func closeTapped() { onCloseSpace?() }
 
     @objc private func splitTapped() { onSplitOpen?() }
 

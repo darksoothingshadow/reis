@@ -137,3 +137,55 @@ final class ReaderScaleTests: XCTestCase {
         super.tearDown()
     }
 }
+
+/**
+ * The reader's leading bar: Apple's sidebar toggle with a Close beside it.
+ *
+ * The toggle is placed by hand because the automatic one cannot be appended to,
+ * and a hand-placed one is only useful if it still works — so that is what is
+ * asserted, not just that the button is there. Losing it leaves the file list
+ * unreachable.
+ */
+@available(iOS 16.0, *)
+final class ReaderBarTests: XCTestCase {
+    private func split(_ reader: PdfInkViewController) -> UISplitViewController {
+        let split = UISplitViewController(style: .doubleColumn)
+        split.preferredDisplayMode = .secondaryOnly
+        split.displayModeButtonVisibility = .never
+        split.setViewController(UIViewController(), for: .primary)
+        split.setViewController(UINavigationController(rootViewController: reader), for: .secondary)
+        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 820, height: 1000))
+        window.rootViewController = split
+        window.isHidden = false
+        window.layoutIfNeeded()
+        return split
+    }
+
+    func testTheSidebarToggleKeepsItsPlaceWithCloseBesideIt() throws {
+        let reader = PdfInkViewController(strings: PdfInkStrings(nil), toolPicker: PKToolPicker())
+        let split = split(reader)
+        // Vended fresh on every read, so it has to be held to be compared.
+        let toggle = split.displayModeButtonItem
+
+        reader.showCloseButton(besides: toggle)
+
+        let leading = reader.navigationItem.leftBarButtonItems ?? []
+        XCTAssertEqual(leading.count, 2, "expected the toggle and a Close, got \(leading)")
+        XCTAssertTrue(leading.first === toggle, "the toggle must stay leftmost, where Notes has it")
+        reader.view.window?.isHidden = true
+    }
+
+    func testCloseReportsToTheSpace() throws {
+        let reader = PdfInkViewController(strings: PdfInkStrings(nil), toolPicker: PKToolPicker())
+        let split = split(reader)
+        var closed = false
+        reader.onCloseSpace = { closed = true }
+        reader.showCloseButton(besides: split.displayModeButtonItem)
+
+        let close = try XCTUnwrap(reader.navigationItem.leftBarButtonItems?.last)
+        _ = try XCTUnwrap(close.target).perform(try XCTUnwrap(close.action), with: close)
+
+        XCTAssertTrue(closed, "the bar's Close did not close the reader")
+        reader.view.window?.isHidden = true
+    }
+}

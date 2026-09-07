@@ -70,7 +70,9 @@ final class PdfInkSpace: NSObject {
         split.preferredDisplayMode = .secondaryOnly
         split.preferredSplitBehavior = .tile
         split.primaryBackgroundStyle = .sidebar
-        split.displayModeButtonVisibility = .automatic
+        // Placed by hand rather than automatically, so a Close can sit beside it
+        // — leaving used to mean opening the sidebar first to find the X there.
+        split.displayModeButtonVisibility = .never
         split.presentsWithGesture = true
         split.modalPresentationStyle = .fullScreen
         split.setViewController(list, for: .primary)
@@ -79,6 +81,12 @@ final class PdfInkSpace: NSObject {
         // in the leading half's own bar: each half is a navigation controller.
         stack.setPanes(panes.map(\.controller))
         split.setViewController(stack, for: .secondary)
+        // Only the leading half: it is the one carrying the sidebar toggle, and
+        // the trailing half's X already means "close this half".
+        // If a hand-placed toggle ever stops working, `presentsWithGesture` still
+        // brings the sidebar out with a swipe from the edge, and the Close beside
+        // it means nobody is stuck in a file either way.
+        panes[0].reader.showCloseButton(besides: split.displayModeButtonItem)
 
         stack.onFocus = { [weak self] index in
             guard let self, index != focused else { return }
@@ -93,6 +101,7 @@ final class PdfInkSpace: NSObject {
         let pane = ReaderPane(strings: strings, toolPicker: toolPicker)
         pane.reader.onSplitOpen = { [weak self] in self?.openAlongside() }
         pane.reader.onSplitClose = { [weak self] in self?.closeAlongside() }
+        pane.reader.onCloseSpace = { [weak self] in self?.closeTapped() }
         return pane
     }
 

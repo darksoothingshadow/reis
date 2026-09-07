@@ -134,6 +134,11 @@ it was drawn at, so the blank page comes back empty and those strokes are held b
 Nothing is destroyed, and it needs both a shortened re-upload and an added page beyond the new
 end. Fixing it means shifting the ink keys by the same clamp delta — a larger change than this
 branch should carry.
+28. [ ] The reader's own Close (beside the sidebar toggle) leaves the subject without opening the
+        sidebar first, and the toggle beside it still opens the sidebar. The toggle is now placed
+        by hand rather than by the split view, and neither its wiring nor its appearance can be
+        checked without a device — if it ever stops working, a swipe from the left edge still
+        brings the sidebar out.
 
 ## Still open: the drawer itself is tied to reaching IS
 
