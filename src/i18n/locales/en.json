@@ -996,7 +996,8 @@
       "nextWeek": "Next week",
       "loading": "Loading your timetable…",
       "holiday": "Public holiday",
-      "teachingStarts": "Teaching starts {date}"
+      "teachingStarts": "Teaching starts {date}",
+      "recentFiles": "Recently opened"
     },
     "exams": {
       "title": "Exams",

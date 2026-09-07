@@ -18,6 +18,7 @@ import { DayChips } from './calendar/DayChips';
 import { DayAgenda } from './calendar/DayAgenda';
 import { CalendarEmptyDay } from './calendar/CalendarEmptyDay';
 import { MenuCard } from './calendar/MenuCard';
+import { RecentFilesStrip } from './calendar/RecentFilesStrip';
 import { formatHeaderDate } from '../../../utils/mobile/formatHeaderDate';
 
 function CalendarSkeleton() {
@@ -63,6 +64,7 @@ export function CalendarScreen() {
   // student with no route to any of them for as long as a crawl took, which on
   // a first sign-in is minutes.
   const selectedIso = mobileSelectedDayIso ?? toIso(new Date());
+  const isToday = selectedIso === toIso(new Date());
 
   // Lifted above `chrome` so it is computed once for the strip below, in every
   // state including the skeleton — with no schedule the set is simply empty,
@@ -185,6 +187,9 @@ export function CalendarScreen() {
             }}
           />
         )}
+        {/* Today only: the way back into the file you were reading. Below the
+            agenda for the same reason MenuCard is — the timetable first. */}
+        <RecentFilesStrip visible={isToday} />
         {/* Under the day's agenda, inside the scroller: lunch is what you look
             at after the timetable, not before it, and on a full teaching day
             the card must not push the 8am lecture off the screen. */}
