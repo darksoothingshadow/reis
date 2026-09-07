@@ -81,7 +81,6 @@ export const Sidebar = ({
                 else if (item.id === 'subjects') onViewChange('subjects');
                 else if (item.id === 'erasmus') onViewChange('erasmus');
                 else if (item.id === 'map') onViewChange('map');
-                else if (item.id === 'housing') onViewChange('housing');
                 else if (item.href) window.open(item.href, '_blank');
               }}
               onViewChange={onViewChange}

@@ -39,7 +39,6 @@
     "accounts": "Konta",
     "cards": "Karty",
     "availableCapacity": "Volné kapacity",
-    "housingOverview": "Přehled ubytování",
     "reservations": "Rezervace",
     "foodDebit": "Inkaso za stravu",
     "logoutConfirmTitle": "Odhlásit se z aplikace?",
@@ -75,8 +74,7 @@
     "more": "Více",
     "isPages": "IS stránky",
     "people": "Lidé",
-    "map": "Mapa",
-    "housing": "Bydlení"
+    "map": "Mapa"
   },
   "common": {
     "loading": "Načítání...",
@@ -956,14 +954,9 @@
     "passwordChangeFailed": "Nepodařilo se změnit heslo",
     "createAccount": "Vytvořit účet",
     "displayName": "Zobrazovaný název",
-    "housingTab": "Bydlení",
     "urlLabel": "Odkaz (nepovinný)",
-    "urlHint": "https://… nebo reis://housing pro otevření nástěnky bydlení",
-    "urlInvalid": "Zadej odkaz https:// nebo reis://housing",
-    "housingHide": "Skrýt",
-    "housingUnhide": "Zobrazit",
-    "housingDelete": "Smazat",
-    "housingHidden": "skryto",
+    "urlHint": "https://…",
+    "urlInvalid": "Zadej odkaz http:// nebo https://",
     "statsTab": "Statistiky",
     "stats": {
       "today": "Dnes",
@@ -1115,9 +1108,7 @@
     "profile": {
       "appearance": "Vzhled",
       "settings": "Nastavení",
-      "societies": "Spolky na mapě",
-      "housing": "Bydlení",
-      "housingSub": "Pokoje od studentů pro studenty"
+      "societies": "Spolky na mapě"
     },
     "loadFailed": {
       "title": "Data se nepodařilo načíst",
@@ -1143,55 +1134,5 @@
     "partnersLabel": "Spolupracujeme s firmami",
     "partnersBody": "Vybíráme si je sami, podle oborů, které se tu studují. Jde nám o stáže a akce. Nevidí žádná data z tvého ISu.",
     "eyBody": "Díky nim reIS běží."
-  },
-  "housing": {
-    "title": "Bydlení",
-    "subtitle": "Pokoje od studentů pro studenty",
-    "tabOffer": "Nabízím",
-    "tabRequest": "Hledám",
-    "empty": "Zatím tu nic není. Buď první.",
-    "loadFailed": "Nabídky se nepodařilo načíst.",
-    "add": "Přidat",
-    "mine": "Moje inzeráty",
-    "noMine": "Nemáš žádný aktivní inzerát.",
-    "close": "Uzavřít",
-    "report": "Nahlásit",
-    "reported": "Díky, podíváme se na to.",
-    "verify": "Ověřit v IS",
-    "contact": "Kontakt",
-    "freeFrom": "Volné od",
-    "freeUntil": "do",
-    "priceUnit": "Kč/měsíc",
-    "expires": "Vyprší {date}",
-    "kind": {
-      "offer": "Nabízím",
-      "request": "Hledám"
-    },
-    "roomType": {
-      "bed_shared": "Lůžko ve sdíleném pokoji",
-      "room_private": "Vlastní pokoj",
-      "flat": "Celý byt"
-    },
-    "form": {
-      "title": "Nový inzerát",
-      "kind": "Co chceš?",
-      "roomType": "Typ",
-      "district": "Čtvrť",
-      "districtPlaceholder": "např. Královo Pole",
-      "price": "Cena (Kč/měsíc)",
-      "freeFrom": "Volné od",
-      "freeUntil": "Volné do (nepovinné)",
-      "note": "Poznámka",
-      "notePlaceholder": "Velikost, spolubydlící, kauce, cokoli důležitého",
-      "contact": "Kontakt pro zájemce",
-      "contactPlaceholder": "e-mail, telefon nebo Instagram",
-      "loginLabel": "Zveřejní se jako",
-      "consent": "Souhlasím, že můj IS login, odkaz na můj profil v IS a zadaný kontakt uvidí kdokoli, kdo používá reIS, dokud inzerát nevyprší (14 dní) nebo ho neuzavřu.",
-      "publish": "Zveřejnit",
-      "published": "Inzerát je venku.",
-      "refused": "Teď to nejde: nejvíc 3 aktivní inzeráty a 5 pokusů za hodinu.",
-      "failed": "Odeslání se nepovedlo. Zkus to znovu.",
-      "cancel": "Zrušit"
-    }
   }
 }

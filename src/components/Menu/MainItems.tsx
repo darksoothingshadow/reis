@@ -9,7 +9,6 @@ import {
   Wifi,
   Map,
   FileText,
-  BedDouble,
 } from 'lucide-react';
 import type { MenuItem } from '../menuConfig';
 
@@ -28,7 +27,6 @@ export const mainItems = (
   { id: 'exams', label: t('sidebar.exams'), icon: <CalendarCheck className="w-5 h-5" /> },
   { id: 'subjects', label: t('sidebar.subjects'), icon: <Book className="w-5 h-5" /> },
   { id: 'map', label: t('sidebar.map'), icon: <Map className="w-5 h-5" /> },
-  { id: 'housing', label: t('sidebar.housing'), icon: <BedDouble className="w-5 h-5" /> },
   {
     id: 'is',
     label: t('sidebar.is'),

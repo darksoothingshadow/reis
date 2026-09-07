@@ -57,13 +57,6 @@ const SUPABASE_CALLERS = new Set([
   // supabase.rpc), which is why the guard newly matches it; the privacy posture
   // is unchanged.
   'src/api/suggestions.ts',
-  // Housing board. Sends the post the student composed plus their IS login
-  // and IS person id — ONLY after the consent tick on the form, shown to every
-  // reIS user so the poster can be verified in IS, deleted with the post after
-  // 14 days. Reads take no identity. The install id is the random per-install
-  // UUID, never anything derived from the student. Disclosed in PRIVACY.md
-  // ("Housing board") and docs/privacy-policy-app.md item 4.
-  'src/api/housing.ts',
   // Random install id only. Reads take no identity argument at all.
   'src/api/eventRsvp.ts',
   // Random install id only, since the privacy refactor. Since September 2026
@@ -91,12 +84,10 @@ const DIGEST_CALLERS = new Set(['src/utils/pkce.ts', 'src/services/notes/imageNo
  * be argued for and added here explicitly.
  */
 const IDENTIFYING_EXCEPTIONS: Record<string, string[]> = {
-  // Housing board. isLogin and personId are the poster's IS login and IS
-  // person id, sent ONLY after the consent tick on the housing form, shown
-  // to every reIS user so a reader can verify the poster in IS, and deleted
-  // with the post. Disclosed in PRIVACY.md ("Housing board") and
-  // docs/privacy-policy-app.md.
-  'src/api/housing.ts': ['isLogin', 'personId'],
+  // Deliberately empty. The housing board was the only entry, and it was
+  // withdrawn before release: no file may send an identifying field to
+  // Supabase. Adding a key here means a reviewer has agreed reIS should
+  // transmit a student identity — argue it in writing, or don't add it.
 };
 
 function walk(dir: string, out: string[] = []): string[] {

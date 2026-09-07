@@ -8,8 +8,6 @@ import { useTranslation } from '../../hooks/useTranslation';
 import type { SpolekNotification } from '../../services/spolky';
 import type { DeadlineAlert } from '../../hooks/useDeadlineAlerts';
 import { useIsMobile } from '../../hooks/ui/useIsMobile';
-import { isHousingLink } from '../../utils/housingLink';
-import { useAppStore } from '../../store/useAppStore';
 
 interface NotificationDropdownProps {
   notifications: SpolekNotification[];
@@ -30,7 +28,6 @@ export function NotificationDropdown({
 }: NotificationDropdownProps) {
   const { t } = useTranslation();
   const isMobile = useIsMobile();
-  const openHousingBoard = useAppStore((s) => s.openHousingBoard);
   const hasContent = notifications.length > 0 || deadlineAlerts.length > 0;
 
   // Cards in a gapped column, not `divide-y` rows: the two row components are
@@ -60,12 +57,6 @@ export function NotificationDropdown({
               notification={n}
               onVisible={() => onVisible(n.id)}
               onClick={() => {
-                if (isHousingLink(n.link)) {
-                  if (!n.associationId?.startsWith('academic_')) trackNotificationClick(n.id);
-                  onClose();
-                  openHousingBoard();
-                  return;
-                }
                 if (n.link) {
                   if (!n.associationId?.startsWith('academic_')) trackNotificationClick(n.id);
                   // openExternal, not window.open: this dropdown portals to a
