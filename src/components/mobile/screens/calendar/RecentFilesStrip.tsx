@@ -8,22 +8,26 @@ import { useRecentPdfOpen } from '../../../../hooks/ui/useRecentPdfOpen';
  *
  * Both routes to a PDF (calendar → lesson → subject → file, Subjects → subject
  * → file) make the student walk the subject again to reopen the file they were
- * reading ten minutes ago. This is the way back. Today only — the cache knows
- * one `lastOpenedAt` per file, which is exactly "recent", and not "opened on a
- * given day"; for today those are the same question.
+ * reading ten minutes ago. This is the way back.
+ *
+ * On every day, not only today. It started today-only, reasoning that the
+ * cache knows one `lastOpenedAt` per file and cannot say what was opened on a
+ * given day — true, but the heading says "recently opened", a shelf and not a
+ * fact about the day, and a student paging to Thursday watched it vanish with
+ * no idea why. The shelf follows the student; the agenda follows the day.
  *
  * Under the agenda, inside its scroller: on a full teaching day it must not
- * push the 8am lecture off the screen. Renders nothing off-day or when empty
- * (the slice is empty wherever there is no native reader).
+ * push the 8am lecture off the screen. Renders nothing when empty (the slice
+ * is empty wherever there is no native reader).
  */
-export function RecentFilesStrip({ visible }: { visible: boolean }) {
+export function RecentFilesStrip() {
   const { t } = useTranslation();
   const recent = useAppStore((s) => s.recentPdfs);
   const subjects = useAppStore((s) => s.subjects);
   const dismissRecentPdf = useAppStore((s) => s.dismissRecentPdf);
   const { openRecentPdf, isOpening } = useRecentPdfOpen();
 
-  if (!visible || recent.length === 0) return null;
+  if (recent.length === 0) return null;
 
   return (
     // Same card as MenuCard: a hairline on the base-200 backdrop, because a

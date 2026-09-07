@@ -36,7 +36,7 @@ function CalendarSkeleton() {
 }
 
 export function CalendarScreen() {
-  const { language } = useTranslation();
+  const { t, language } = useTranslation();
   const locale = language === 'en' ? 'en-US' : 'cs-CZ';
   const { schedule } = useSchedule();
   const mobileSelectedDayIso = useAppStore((s) => s.mobileSelectedDayIso);
@@ -65,6 +65,19 @@ export function CalendarScreen() {
   // a first sign-in is minutes.
   const selectedIso = mobileSelectedDayIso ?? toIso(new Date());
   const isToday = selectedIso === toIso(new Date());
+  // The arrows and chips only ever step AWAY from today; this is the step back.
+  // In the header's own-control slot like Exams' count, and only off-day, so
+  // today's screen is exactly what it was. `null` is "today" in the store, so
+  // the day re-derives itself at midnight rather than pinning a date.
+  const todayPill = isToday ? undefined : (
+    <button
+      type="button"
+      onClick={() => setMobileSelectedDay(null)}
+      className="w-fit whitespace-nowrap rounded-full bg-primary/15 px-3 py-1.5 text-sm font-semibold text-primary"
+    >
+      {t('common.today')}
+    </button>
+  );
 
   // Lifted above `chrome` so it is computed once for the strip below, in every
   // state including the skeleton — with no schedule the set is simply empty,
@@ -78,7 +91,10 @@ export function CalendarScreen() {
           they did not already know, and a week label was tried there and
           rejected the same way — the strip and the title already say which
           week and which day this is. */}
-      <ScreenHeader title={formatHeaderDate(new Date(`${selectedIso}T00:00:00`), locale)} />
+      <ScreenHeader
+        title={formatHeaderDate(new Date(`${selectedIso}T00:00:00`), locale)}
+        below={todayPill}
+      />
     </>
   );
   const shell = (body: ReactNode) => (
@@ -187,9 +203,9 @@ export function CalendarScreen() {
             }}
           />
         )}
-        {/* Today only: the way back into the file you were reading. Below the
-            agenda for the same reason MenuCard is — the timetable first. */}
-        <RecentFilesStrip visible={isToday} />
+        {/* The way back into the file you were reading, on every day. Below
+            the agenda for the same reason MenuCard is — the timetable first. */}
+        <RecentFilesStrip />
         {/* Under the day's agenda, inside the scroller: lunch is what you look
             at after the timetable, not before it, and on a full teaching day
             the card must not push the 8am lecture off the screen. */}

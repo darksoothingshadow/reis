@@ -32,33 +32,36 @@ describe('RecentFilesStrip', () => {
     } as never);
   });
 
-  it('renders nothing when the selected day is not today', () => {
-    render(<RecentFilesStrip visible={false} />);
-    expect(screen.queryByTestId('recent-files')).toBeNull();
+  // It used to render only on today. A student paging to another day watched
+  // "recently opened" vanish and could not tell why: the heading names a
+  // recency shelf, not a fact about the day, so it is on every day now.
+  it('renders on any day there is something recent', () => {
+    render(<RecentFilesStrip />);
+    expect(screen.getByTestId('recent-files')).toBeInTheDocument();
   });
 
   it('renders nothing when there is nothing recent', () => {
     useAppStore.setState({ recentPdfs: [] } as never);
-    render(<RecentFilesStrip visible />);
+    render(<RecentFilesStrip />);
     expect(screen.queryByTestId('recent-files')).toBeNull();
   });
 
   it('lists the files under the heading, subject code as the second line', () => {
-    render(<RecentFilesStrip visible />);
+    render(<RecentFilesStrip />);
     expect(screen.getByText('Naposledy otevřené')).toBeInTheDocument();
     expect(screen.getByText('Přednáška 09')).toBeInTheDocument();
     expect(screen.getAllByText('EBC-AP')).toHaveLength(2);
   });
 
   it('tapping a row opens it and does not dismiss it', () => {
-    render(<RecentFilesStrip visible />);
+    render(<RecentFilesStrip />);
     fireEvent.click(screen.getByText('Skripta'));
     expect(openRecentPdf).toHaveBeenCalledWith(expect.objectContaining({ key: 'b' }));
     expect(dismissRecentPdf).not.toHaveBeenCalled();
   });
 
   it('the X dismisses that row and does not open it', () => {
-    render(<RecentFilesStrip visible />);
+    render(<RecentFilesStrip />);
     fireEvent.click(screen.getAllByRole('button', { name: 'Zavřít' })[0]!);
     expect(dismissRecentPdf).toHaveBeenCalledWith('a');
     expect(openRecentPdf).not.toHaveBeenCalled();
