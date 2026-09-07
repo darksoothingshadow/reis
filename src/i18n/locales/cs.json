@@ -996,7 +996,8 @@
       "nextWeek": "Další týden",
       "loading": "Načítám rozvrh…",
       "holiday": "Státní svátek",
-      "teachingStarts": "Výuka začíná {date}"
+      "teachingStarts": "Výuka začíná {date}",
+      "recentFiles": "Naposledy otevřené"
     },
     "exams": {
       "title": "Zkoušky",

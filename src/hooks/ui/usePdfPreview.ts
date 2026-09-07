@@ -3,7 +3,9 @@ import { toast } from 'sonner';
 import { useFileActions } from './useFileActions';
 import { useTranslation } from '../useTranslation';
 import { logError } from '../../utils/reportError';
-import { openPdfWithInk, type PdfInkStrings } from '../../mobile/pdfInk';
+import { openPdfWithInk } from '../../mobile/pdfInk';
+import { usePdfInkStrings } from './usePdfInkStrings';
+import { useAppStore } from '../../store/useAppStore';
 import type { SubjectPdfInput } from '../../mobile/pdfInkFiles';
 import { isPdfInkAvailable, nativePdfInkDeps } from '../../mobile/pdfInkNative';
 
@@ -69,26 +71,7 @@ export function usePdfPreview(courseCode?: string, subject?: PdfPreviewSubject) 
     };
   }, []);
 
-  const inkStrings = useCallback(
-    (): PdfInkStrings => ({
-      saveFailedTitle: t('mobile.pdfInk.saveFailedTitle'),
-      saveFailedMessage: t('mobile.pdfInk.saveFailedMessage'),
-      keepEditing: t('mobile.pdfInk.keepEditing'),
-      discard: t('mobile.pdfInk.discard'),
-      openFailed: t('mobile.pdfInk.openFailed'),
-      addPage: t('mobile.pdfInk.addPage'),
-      export: t('mobile.pdfInk.export'),
-      exportFailed: t('mobile.pdfInk.exportFailed'),
-      close: t('common.close'),
-      pages: t('mobile.pdfInk.pages'),
-      search: t('mobile.pdfInk.search'),
-      page: t('mobile.pdfInk.page'),
-      noMatches: t('mobile.pdfInk.noMatches'),
-      removePage: t('mobile.pdfInk.removePage'),
-      cancel: t('common.cancel'),
-    }),
-    [t]
-  );
+  const inkStrings = usePdfInkStrings();
 
   /**
    * Native reader first. `handled` means the tap is done (shown, or failed and
@@ -111,6 +94,9 @@ export function usePdfPreview(courseCode?: string, subject?: PdfPreviewSubject) 
         strings: inkStrings(),
         fetchPdf: (target) => fetchPdfBlob(target),
       });
+      // The reader has closed by now (open resolves on Close) and the index has
+      // the new lastOpenedAt: the calendar's strip should show this file.
+      void useAppStore.getState().refreshRecentPdfs();
       if (result.kind === 'shown') return { kind: 'handled' };
       if (result.kind === 'unreadable') {
         return { kind: 'viewer', blobUrl: URL.createObjectURL(result.blob) };

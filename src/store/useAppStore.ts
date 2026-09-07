@@ -27,6 +27,7 @@ import { createPulseSlice } from './slices/createPulseSlice';
 import { createCustomEventsSlice } from './slices/createCustomEventsSlice';
 import { createNotificationSlice } from './slices/createNotificationSlice';
 import { createSearchSlice } from './slices/createSearchSlice';
+import { createRecentPdfsSlice } from './slices/createRecentPdfsSlice';
 import { createPersonProfileSlice } from './slices/createPersonProfileSlice';
 import { createBulletinSlice } from './slices/createBulletinSlice';
 import { createViewportSlice } from './slices/createViewportSlice';
@@ -73,6 +74,7 @@ export const useAppStore = create<AppState>()((...a) => ({
   ...createCustomEventsSlice(...a),
   ...createNotificationSlice(...a),
   ...createSearchSlice(...a),
+  ...createRecentPdfsSlice(...a),
   ...createPersonProfileSlice(...a),
   ...createBulletinSlice(...a),
   ...createViewportSlice(...a),
@@ -162,6 +164,7 @@ export const initializeStore = async () => {
     s2.loadCalendarCustomEvents();
     s2.fetchTeachingWeek();
     s2.loadRecentSearches();
+    s2.refreshRecentPdfs();
     s2.hydrateBulletin();
     s2.loadMapEvents();
     // Predictive prefetch — files for subjects scheduled today.
