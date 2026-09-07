@@ -139,53 +139,44 @@ final class ReaderScaleTests: XCTestCase {
 }
 
 /**
- * The reader's leading bar: Apple's sidebar toggle with a Close beside it.
+ * The reader's bar.
  *
- * The toggle is placed by hand because the automatic one cannot be appended to,
- * and a hand-placed one is only useful if it still works — so that is what is
- * asserted, not just that the button is there. Losing it leaves the file list
- * unreachable.
+ * Close lives at the end of the trailing group and the leading edge is left
+ * entirely to the split view. Placing a button of our own beside the sidebar
+ * toggle means placing the toggle by hand, and a hand-placed toggle is an empty
+ * circle that does nothing — seen on the iPad, which is why the leading items
+ * are asserted to stay untouched.
  */
 @available(iOS 16.0, *)
 final class ReaderBarTests: XCTestCase {
-    private func split(_ reader: PdfInkViewController) -> UISplitViewController {
-        let split = UISplitViewController(style: .doubleColumn)
-        split.preferredDisplayMode = .secondaryOnly
-        split.displayModeButtonVisibility = .never
-        split.setViewController(UIViewController(), for: .primary)
-        split.setViewController(UINavigationController(rootViewController: reader), for: .secondary)
-        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 820, height: 1000))
-        window.rootViewController = split
-        window.isHidden = false
-        window.layoutIfNeeded()
-        return split
+    func testTheLeadingEdgeIsLeftToTheSplitView() {
+        let reader = PdfInkViewController(strings: PdfInkStrings(nil))
+        reader.loadViewIfNeeded()
+
+        XCTAssertTrue(
+            reader.navigationItem.leftBarButtonItems?.isEmpty ?? true,
+            "a leading item of ours displaces the sidebar toggle and it never comes back")
     }
 
-    func testTheSidebarToggleKeepsItsPlaceWithCloseBesideIt() throws {
+    func testCloseIsInTheBarAndNearestTheTitle() throws {
         let reader = PdfInkViewController(strings: PdfInkStrings(nil))
-        let split = split(reader)
-        // Vended fresh on every read, so it has to be held to be compared.
-        let toggle = split.displayModeButtonItem
+        reader.loadViewIfNeeded()
 
-        reader.showCloseButton(besides: toggle)
-
-        let leading = reader.navigationItem.leftBarButtonItems ?? []
-        XCTAssertEqual(leading.count, 2, "expected the toggle and a Close, got \(leading)")
-        XCTAssertTrue(leading.first === toggle, "the toggle must stay leftmost, where Notes has it")
-        reader.view.window?.isHidden = true
+        // The array runs right to left, so the last one sits nearest the title.
+        let trailing = try XCTUnwrap(reader.navigationItem.rightBarButtonItems)
+        let close = try XCTUnwrap(trailing.last)
+        XCTAssertEqual(close.accessibilityLabel, PdfInkStrings(nil).close)
     }
 
     func testCloseReportsToTheSpace() throws {
         let reader = PdfInkViewController(strings: PdfInkStrings(nil))
-        let split = split(reader)
+        reader.loadViewIfNeeded()
         var closed = false
         reader.onCloseSpace = { closed = true }
-        reader.showCloseButton(besides: split.displayModeButtonItem)
 
-        let close = try XCTUnwrap(reader.navigationItem.leftBarButtonItems?.last)
+        let close = try XCTUnwrap(reader.navigationItem.rightBarButtonItems?.last)
         _ = try XCTUnwrap(close.target).perform(try XCTUnwrap(close.action), with: close)
 
         XCTAssertTrue(closed, "the bar's Close did not close the reader")
-        reader.view.window?.isHidden = true
     }
 }

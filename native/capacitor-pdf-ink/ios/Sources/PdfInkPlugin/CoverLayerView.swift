@@ -70,6 +70,7 @@ final class CoverLayerView: UIView {
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let point = touches.first?.location(in: self) else { return }
+        NSLog("PdfInk: cover touch began at \(point), making=\(isMakingCovers) size=\(bounds.size)")
         dragStart = point
         dragEnd = point
     }
@@ -81,6 +82,7 @@ final class CoverLayerView: UIView {
     }
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        NSLog("PdfInk: cover touch ended, making=\(isMakingCovers) covers=\(covers.count)")
         defer {
             dragStart = nil
             dragEnd = nil
@@ -89,10 +91,15 @@ final class CoverLayerView: UIView {
         guard let start = dragStart, let end = touches.first?.location(in: self) else { return }
         guard isMakingCovers else {
             // Reading: a tap on a cover looks under it, and again puts it back.
+            // Only a tap — a finger that travelled was trying to go somewhere,
+            // and opening an answer on the way past is not what it asked for.
+            guard PageCovers.isTap(from: start, to: end) else { return }
             if let index = PageCovers.index(at: end, in: covers) { onToggle?(index) }
             return
         }
-        switch PageCovers.gesture(from: start, to: end, over: covers) {
+        let gesture = PageCovers.gesture(from: start, to: end, over: covers)
+        NSLog("PdfInk: cover gesture \(gesture) from \(start) to \(end)")
+        switch gesture {
         case .create(let rect): onCreate?(rect)
         case .remove(let index): onRemove?(index)
         case .nothing: break
@@ -100,6 +107,8 @@ final class CoverLayerView: UIView {
     }
 
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        // Something above took the gesture — a scroll view, most likely.
+        NSLog("PdfInk: cover touch cancelled, making=\(isMakingCovers)")
         dragStart = nil
         dragEnd = nil
         setNeedsDisplay()

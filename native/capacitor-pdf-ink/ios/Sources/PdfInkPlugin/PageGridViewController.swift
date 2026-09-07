@@ -138,7 +138,10 @@ final class PageGridViewController: UICollectionViewController {
         guard onRemove?(index) == true else { return }
         // Every page after it has a new number, so no cached picture is trustworthy.
         thumbnails.removeAll()
-        current = min(current, document.pageCount - 1)
+        // Where the reader goes, not where the grid was: `removeAddedPage`
+        // lands on min(index, last), and a grid still pointing at its old row
+        // highlights a page nobody is looking at.
+        current = min(index, document.pageCount - 1)
         collectionView.reloadData()
     }
 

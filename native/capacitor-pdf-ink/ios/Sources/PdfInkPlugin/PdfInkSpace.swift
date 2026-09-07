@@ -56,18 +56,15 @@ final class PdfInkSpace: NSObject {
         split.preferredDisplayMode = .secondaryOnly
         split.preferredSplitBehavior = .tile
         split.primaryBackgroundStyle = .sidebar
-        // Placed by hand rather than automatically, so a Close can sit beside it
-        // — leaving used to mean opening the sidebar first to find the X there.
-        split.displayModeButtonVisibility = .never
+        // Automatic, and left well alone. Placing the toggle by hand — the only
+        // way to get a button of our own beside it — hands out an item with no
+        // glyph and no action: an empty circle where the sidebar used to be.
+        split.displayModeButtonVisibility = .automatic
         split.presentsWithGesture = true
         split.modalPresentationStyle = .fullScreen
         split.setViewController(list, for: .primary)
         split.setViewController(UINavigationController(rootViewController: reader), for: .secondary)
 
-        // If a hand-placed toggle ever stops working, `presentsWithGesture` still
-        // brings the sidebar out with a swipe from the edge, and the Close beside
-        // it means nobody is stuck in a file either way.
-        reader.showCloseButton(besides: split.displayModeButtonItem)
         reader.onCloseSpace = { [weak self] in self?.closeTapped() }
 
         list.onSelect = { [weak self] link in self?.select(link: link) }
@@ -136,6 +133,12 @@ final class PdfInkSpace: NSObject {
                 else { return false }
                 let previous = currentLink
                 currentLink = ""
+                // Forget the cached copy too, or `select` keeps handing back the
+                // same unreadable bytes and `onNeedsFile` is never asked for a
+                // replacement — the file could not be recovered by tapping it.
+                if let row = files.firstIndex(where: { $0.link == file.link }) {
+                    files[row].pdfURL = nil
+                }
                 refreshInkMark(for: previous)
                 return true
             }

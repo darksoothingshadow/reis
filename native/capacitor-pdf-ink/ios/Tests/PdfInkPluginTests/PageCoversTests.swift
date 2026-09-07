@@ -63,3 +63,43 @@ final class PageCoversTests: XCTestCase {
         XCTAssertEqual(gesture, .nothing)
     }
 }
+
+import UIKit
+
+/**
+ * Every symbol the reader's bar asks for, by name.
+ *
+ * `UIImage(systemName:)` returns nil for a name that does not exist and a bar
+ * button with a nil image is a circle with nothing in it — which is exactly how
+ * the sidebar toggle broke on the iPad. A name is a string; nothing else checks
+ * it.
+ */
+@available(iOS 16.0, *)
+final class BarSymbolTests: XCTestCase {
+    func testEverySymbolTheBarAsksForExists() {
+        for name in [
+            "plus.rectangle.portrait", "square.dashed", "square.dashed.inset.filled", "pencil.tip",
+        ] {
+            XCTAssertNotNil(UIImage(systemName: name), "\(name) is not a symbol on this OS")
+        }
+    }
+
+    func testTheCoverButtonHasAPictureInBothStates() {
+        XCTAssertNotNil(PdfInkViewController.coverImage(making: false))
+        XCTAssertNotNil(PdfInkViewController.coverImage(making: true))
+    }
+}
+
+/// Reading mode: a finger that travelled was going somewhere.
+@available(iOS 16.0, *)
+final class CoverTapTests: XCTestCase {
+    func testAStillFingerIsATap() {
+        XCTAssertTrue(PageCovers.isTap(from: CGPoint(x: 50, y: 50), to: CGPoint(x: 53, y: 47)))
+    }
+
+    func testAFingerThatTravelledIsNot() {
+        // A scroll that happens to start on a cover must not open the answer.
+        XCTAssertFalse(PageCovers.isTap(from: CGPoint(x: 50, y: 50), to: CGPoint(x: 50, y: 300)))
+        XCTAssertFalse(PageCovers.isTap(from: CGPoint(x: 50, y: 50), to: CGPoint(x: 300, y: 50)))
+    }
+}

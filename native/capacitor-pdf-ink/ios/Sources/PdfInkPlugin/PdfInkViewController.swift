@@ -69,12 +69,13 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
     /// Turns the finger into something that draws blocks over the page instead
     /// of ink. A mode, and deliberately a visible one: the button fills in.
     private lazy var coverItem = UIBarButtonItem(
-        image: UIImage(systemName: "square.dashed"), style: .plain, target: self,
+        image: PdfInkViewController.coverImage(making: false), style: .plain, target: self,
         action: #selector(coverTapped))
     private lazy var searchItem = UIBarButtonItem(
         barButtonSystemItem: .search, target: self, action: #selector(searchTapped))
     /// Leaving used to mean opening the sidebar first and finding the X there.
-    /// A door you have to open a drawer to reach is not a door.
+    /// A door you have to open a drawer to reach is not a door. It cannot go
+    /// beside the sidebar toggle, though: see `PdfInkSpace`.
     private lazy var closeItem = UIBarButtonItem(
         barButtonSystemItem: .close, target: self, action: #selector(closeTapped))
     private var saveTimer: Timer?
@@ -120,8 +121,12 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         setBarItems(enabled: false)
         // Share rightmost, as Notes and Files put it; the two ways of getting
         // somewhere in the file sit together next to the title.
+        // Right to left: Share on the edge, as Notes and Files put it, then the
+        // two ways of getting somewhere in the file, then the cover tool, and
+        // Close nearest the title — as close to the sidebar toggle as anything
+        // can get without displacing it.
         navigationItem.rightBarButtonItems = [
-            shareItem, addPageItem, searchItem, pagesItem, coverItem,
+            shareItem, addPageItem, searchItem, pagesItem, coverItem, closeItem,
         ]
 
         // Provider and markup mode BEFORE any document: PDFView asks for overlays
@@ -292,6 +297,7 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
         insertedPages = []
         covers = [:]
         revealed = [:]
+        if makingCovers { coverTapped() }
         lastSaveError = nil
         return true
     }
@@ -379,19 +385,6 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
 
     // MARK: - Leaving
 
-    /**
-     * Puts Close beside Apple's sidebar toggle.
-     *
-     * The toggle has to be passed in and placed by hand. Left to itself the
-     * split view inserts one that never appears in `leftBarButtonItems`, so
-     * there is nothing to append to — setting the items would simply take the
-     * sidebar away. `PdfInkSpace` turns the automatic one off in exchange.
-     */
-    func showCloseButton(besides sidebarToggle: UIBarButtonItem) {
-        loadViewIfNeeded()
-        navigationItem.leftBarButtonItems = [sidebarToggle, closeItem]
-    }
-
     @objc private func closeTapped() { onCloseSpace?() }
 
     // MARK: - Covering an answer
@@ -406,14 +399,32 @@ final class PdfInkViewController: UIViewController, PDFPageOverlayViewProvider,
      */
     @objc private func coverTapped() {
         makingCovers.toggle()
-        coverItem.image = UIImage(
-            systemName: makingCovers ? "square.dashed.inset.filled" : "square.dashed")
+        coverItem.image = Self.coverImage(making: makingCovers)
         for overlay in overlays.values { overlay.coverLayer.isMakingCovers = makingCovers }
+        // The page has to hold still. PDFKit scrolls on a drag, and a scroll view
+        // claims a drag the moment it moves — the block was never drawn because
+        // the page slid out from under it instead.
+        documentScrollView?.isScrollEnabled = !makingCovers
         if makingCovers {
             toolPicker.setVisible(false, forFirstResponder: pdfView)
         } else {
             showToolPicker()
         }
+        NSLog("PdfInk: cover tool \(makingCovers ? "on" : "off"), scrolling \(!makingCovers)")
+    }
+
+    /// A missing symbol is a button with nothing in it — which is exactly how the
+    /// sidebar toggle broke once. `CoverToolTests` keeps both names honest.
+    static func coverImage(making: Bool) -> UIImage? {
+        let name = making ? "square.dashed.inset.filled" : "square.dashed"
+        return UIImage(systemName: name) ?? UIImage(systemName: "square.dashed")
+    }
+
+    /// PDFKit's own scroller, the one that moves the pages. Its first-level
+    /// subview, not the canvas's — that one lives further down and scrolls
+    /// nothing.
+    private var documentScrollView: UIScrollView? {
+        pdfView.subviews.compactMap { $0 as? UIScrollView }.first
     }
 
     private func addCover(_ rect: CGRect, onPage index: Int) {

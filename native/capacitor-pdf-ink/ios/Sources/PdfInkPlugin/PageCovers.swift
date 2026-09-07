@@ -14,6 +14,15 @@ enum PageCovers {
     /// cover worth having: below it there is nothing to hide.
     static let minimumSide: CGFloat = 24
 
+    /// Further than this and the finger was going somewhere, not tapping. Used
+    /// when reading, where a scroll that happens to start on a cover must not
+    /// open it on the way past.
+    static let tapSlop: CGFloat = 10
+
+    static func isTap(from start: CGPoint, to end: CGPoint) -> Bool {
+        abs(end.x - start.x) <= tapSlop && abs(end.y - start.y) <= tapSlop
+    }
+
     /// What a drag from one point to another means while covers are being made.
     enum Gesture: Equatable {
         case create(CGRect)
