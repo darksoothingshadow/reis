@@ -23,7 +23,11 @@ export function MapSidePanel() {
       id={`map-tab-${key}`}
       aria-selected={tab === key}
       aria-controls="map-tabpanel"
-      className={`tab flex-1 whitespace-nowrap px-1 ${tab === key ? 'tab-active font-semibold' : ''}`}
+      // DaisyUI's resting tab colour measured 3.34:1 in the light theme; an
+      // unselected tab is still a control you have to read to choose.
+      className={`tab flex-1 whitespace-nowrap px-1 ${
+        tab === key ? 'tab-active font-semibold' : 'text-base-content/70'
+      }`}
       onClick={() => setTab(key)}
     >
       {label}

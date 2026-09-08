@@ -1,6 +1,6 @@
 # Privacy Policy for reIS
 
-**Last Updated: 4 September 2026**
+**Last Updated: 6 September 2026**
 
 reIS is a student-built project that simplifies the Mendel University in Brno
 Information System (IS Mendelu). It is a browser extension (Chrome, Edge,
@@ -28,7 +28,7 @@ platform.
 
 | what | when | what it carries |
 |---|---|---|
-| Daily count | once a day | a random install identifier — a UUID unrelated to you. Counts **installs, not people** |
+| Daily count | once a day | a random install identifier — a UUID unrelated to you. Counts **installs, not people**, plus faculty and platform as group labels. |
 | Feedback | you press send | your message, any contact detail you type, the screen name, app version, browser, window size |
 | In-app survey, event RSVP | you answer / RSVP | the same random install identifier |
 | Society post view or click | you open one | a post id |

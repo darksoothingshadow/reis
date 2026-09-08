@@ -37,6 +37,8 @@ interface UseFileActionsResult {
   isDownloading: boolean;
   downloadProgress: DownloadProgress | null;
   openFile: (link: string) => Promise<void>;
+  /** The bytes of an IS PDF, or null when IS served a viewer page instead. */
+  fetchPdfBlob: (link: string) => Promise<Blob | null>;
   openPdfInline: (link: string) => Promise<string | null>;
   downloadSingle: (link: string) => Promise<void>;
   downloadZip: (fileLinks: string[], zipFileName: string) => Promise<void>;
@@ -92,11 +94,20 @@ export function useFileActions(): UseFileActionsResult {
     [t]
   );
 
-  const openPdfInline = useCallback(async (link: string): Promise<string | null> => {
+  /**
+   * IS serves viewer pages, and Office files, under anchors that look the same
+   * as a document download — and reports no usable type for many of them. The
+   * bytes are the only reliable answer, so a copy that is not a PDF is null and
+   * the caller downloads it instead. It also keeps non-PDF bytes out of the iPad
+   * reader's cache, which stores what it is given under a `.pdf` name.
+   */
+  const looksLikePdf = async (blob: Blob): Promise<boolean> =>
+    (await blob.slice(0, 1024).text()).includes('%PDF-');
+
+  const fetchPdfBlob = useCallback(async (link: string): Promise<Blob | null> => {
     const fullUrl = normalizeFileUrl(link);
     try {
-      // Capacitor: fetch natively, then hand the inline viewer a blob URL
-      // exactly as on desktop — no window.open, so no escape to Chrome.
+      // Capacitor: fetch natively — no window.open, so no escape to Chrome.
       if (isNativeHost()) {
         const { fetchIsBinary } = await import('../../api/capacitorBinary');
         const { loadStoredToken } = await import('../../platform/tokenStore');
@@ -106,21 +117,33 @@ export function useFileActions(): UseFileActionsResult {
           setCookie: (o) => CapacitorCookies.setCookie(o),
           httpGet: (o) => CapacitorHttp.get(o),
         });
-        // A viewer page is not a PDF — returning null lets the caller
-        // fall back to its normal "can't preview" path.
+        // A viewer page is not a PDF — null lets the caller fall back to its
+        // normal "can't preview" path. Neither are the Office files IS serves
+        // through the same anchors, hence the byte check.
         if (result.kind !== 'binary') return null;
-        return URL.createObjectURL(result.blob);
+        return (await looksLikePdf(result.blob)) ? result.blob : null;
       }
       assertNotDemo();
       const response = await fetch(fullUrl, { credentials: 'include' });
       if (!response.ok) return null;
       const blob = await response.blob();
-      return URL.createObjectURL(blob);
+      return (await looksLikePdf(blob)) ? blob : null;
     } catch (e) {
       log.error('Failed to fetch PDF inline', e);
       return null;
     }
   }, []);
+
+  // The web viewer's input. The iPad reader (usePdfPreview → openPdfWithInk)
+  // takes fetchPdfBlob directly, so both consume ONE fetch and a fallback from
+  // one to the other never refetches.
+  const openPdfInline = useCallback(
+    async (link: string): Promise<string | null> => {
+      const blob = await fetchPdfBlob(link);
+      return blob ? URL.createObjectURL(blob) : null;
+    },
+    [fetchPdfBlob]
+  );
 
   const downloadSingle = useCallback(
     async (link: string) => {
@@ -246,5 +269,13 @@ export function useFileActions(): UseFileActionsResult {
     }
   }, []);
 
-  return { isDownloading, downloadProgress, openFile, openPdfInline, downloadSingle, downloadZip };
+  return {
+    isDownloading,
+    downloadProgress,
+    openFile,
+    fetchPdfBlob,
+    openPdfInline,
+    downloadSingle,
+    downloadZip,
+  };
 }

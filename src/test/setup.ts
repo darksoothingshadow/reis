@@ -1,5 +1,15 @@
 import 'fake-indexeddb/auto';
 import { vi, expect } from 'vitest';
+
+// happy-dom 20.12 grew `Element.animate()`. motion feature-detects it and takes
+// the Web Animations path, and on unmount `Animation.cancel()` rejects a
+// `finished` promise nobody awaits — every run then ends in
+// "Unhandled Rejection: AbortError: The animation was canceled" although all
+// tests pass (happy-dom 20.14 / motion 13.2, 2026-09-07). Before 20.12 there
+// was no `animate` and motion used its JS fallback; removing it puts the tests
+// back on exactly that path, and lets happy-dom keep updating.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+delete (Element.prototype as any).animate;
 import * as matchers from '@testing-library/jest-dom/matchers';
 
 expect.extend(matchers);

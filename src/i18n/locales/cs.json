@@ -39,7 +39,6 @@
     "accounts": "Konta",
     "cards": "Karty",
     "availableCapacity": "Volné kapacity",
-    "housingOverview": "Přehled ubytování",
     "reservations": "Rezervace",
     "foodDebit": "Inkaso za stravu",
     "logoutConfirmTitle": "Odhlásit se z aplikace?",
@@ -93,7 +92,8 @@
     "copiedToClipboard": "Email byl zkopírován do schránky",
     "czk": "Kč",
     "download": "Stáhnout",
-    "errorGeneric": "Něco se nepovedlo. Zkuste to prosím znovu."
+    "errorGeneric": "Něco se nepovedlo. Zkuste to prosím znovu.",
+    "refresh": "Obnovit"
   },
   "search": {
     "placeholder": "Hledej předměty, lidi, stránky... ({shortcut}K)",
@@ -953,7 +953,23 @@
     "passwordChanged": "Heslo změněno",
     "passwordChangeFailed": "Nepodařilo se změnit heslo",
     "createAccount": "Vytvořit účet",
-    "displayName": "Zobrazovaný název"
+    "displayName": "Zobrazovaný název",
+    "urlLabel": "Odkaz (nepovinný)",
+    "urlHint": "https://…",
+    "urlInvalid": "Zadej odkaz http:// nebo https://",
+    "statsTab": "Statistiky",
+    "stats": {
+      "today": "Dnes",
+      "d7": "7 dní",
+      "d30": "30 dní",
+      "byFaculty": "Podle fakulty (30 dní)",
+      "byPlatform": "Podle platformy (30 dní)",
+      "weekly": "Týdně aktivní instalace (12 týdnů)",
+      "installsNote": "Počítáme instalace, ne lidi: student s telefonem i notebookem je dvakrát.",
+      "under5": "méně než 5",
+      "unknown": "neznámo",
+      "loadFailed": "Statistiky se nepodařilo načíst."
+    }
   },
   "mobile": {
     "header": {
@@ -980,7 +996,8 @@
       "nextWeek": "Další týden",
       "loading": "Načítám rozvrh…",
       "holiday": "Státní svátek",
-      "teachingStarts": "Výuka začíná {date}"
+      "teachingStarts": "Výuka začíná {date}",
+      "recentFiles": "Naposledy otevřené"
     },
     "exams": {
       "title": "Zkoušky",
@@ -1086,8 +1103,7 @@
       "enlargePhoto": "Zvětšit fotku",
       "copied": "Zkopírováno!",
       "teamsChat": "Napsat na Teams",
-      "navigateToRoom": "Ukázat {room} na mapě",
-      "showSubject": "Ukázat předmět"
+      "navigateToRoom": "Ukázat {room} na mapě"
     },
     "profile": {
       "appearance": "Vzhled",
@@ -1098,6 +1114,21 @@
       "title": "Data se nepodařilo načíst",
       "body": "Zkontroluj připojení k internetu a zkus to znovu.",
       "retry": "Zkusit znovu"
+    },
+    "pdfInk": {
+      "saveFailedTitle": "Poznámky se nepodařilo uložit",
+      "saveFailedMessage": "Na iPadu možná není místo. Pokračujte v úpravách a zkuste to znovu, nebo změny zahoďte.",
+      "keepEditing": "Pokračovat v úpravách",
+      "discard": "Zahodit",
+      "openFailed": "Soubor se nepodařilo otevřít.",
+      "addPage": "Přidat stránku",
+      "export": "Sdílet s poznámkami",
+      "exportFailed": "Soubor ke sdílení se nepodařilo připravit.",
+      "pages": "Stránky",
+      "search": "Hledat",
+      "page": "Strana",
+      "noMatches": "Nic nenalezeno",
+      "removePage": "Odstranit stránku"
     }
   },
   "session": {

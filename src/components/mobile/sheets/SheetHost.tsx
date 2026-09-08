@@ -1,6 +1,5 @@
 import { useAppStore } from '../../../store/useAppStore';
 import { SubjectDrawerSheet } from './SubjectDrawerSheet';
-import { EventDetailSheet } from './EventDetailSheet';
 import { StudyPlanSheet } from './StudyPlanSheet';
 import { NotificationsSheet } from './NotificationsSheet';
 import { PersonSheet } from './PersonSheet';
@@ -31,8 +30,6 @@ export function SheetHost() {
         switch (sheet.kind) {
           case 'subjectDrawer':
             return <SubjectDrawerSheet key={index} sheet={sheet} onClose={popSheet} />;
-          case 'eventDetail':
-            return <EventDetailSheet key={index} sheet={sheet} onClose={popSheet} />;
           case 'studyPlan':
             return <StudyPlanSheet key={index} onClose={popSheet} />;
           case 'notifications':

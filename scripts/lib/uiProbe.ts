@@ -59,9 +59,12 @@ export function probeSource(): ProbeResult {
     nodes.push(node);
   }
 
+  // Four classes, not two. `button.w-full.flex` matches a dozen buttons in this
+  // app, and a finding you cannot locate is a finding you cannot fix — tracing
+  // one cost more time than fixing three.
   const describe = (node: HTMLElement) => {
-    const cls = Array.from(node.classList).slice(0, 2).join('.');
-    return (node.tagName.toLowerCase() + (cls ? `.${cls}` : '')).slice(0, 60);
+    const cls = Array.from(node.classList).slice(0, 4).join('.');
+    return (node.tagName.toLowerCase() + (cls ? `.${cls}` : '')).slice(0, 110);
   };
 
   // Third-party widgets that position their own internals outside their box

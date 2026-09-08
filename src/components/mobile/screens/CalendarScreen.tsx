@@ -11,12 +11,13 @@ import { getCzechHoliday } from '../../../utils/holidays';
 import { isOutsideTeaching } from '../../../utils/mobile/teachingPeriod';
 import { semesterStart } from '../../../utils/mobile/semesterStart';
 import { toIso } from '../../../utils/mobile/weekDays';
+import { roomCodeFor } from '../../../utils/mobile/lessonActions';
 import { ScreenHeader } from './calendar/ScreenHeader';
 import { NowNextCard } from './calendar/NowNextCard';
 import { DayChips } from './calendar/DayChips';
-import { DayAgenda } from './calendar/DayAgenda';
-import { CalendarEmptyDay } from './calendar/CalendarEmptyDay';
-import { MenuCard } from './calendar/MenuCard';
+import { DayBody } from './calendar/DayBody';
+import { TodayPill } from './calendar/TodayPill';
+import { RecentFilesStrip } from './calendar/RecentFilesStrip';
 import { formatHeaderDate } from '../../../utils/mobile/formatHeaderDate';
 
 function CalendarSkeleton() {
@@ -40,7 +41,6 @@ export function CalendarScreen() {
   const mobileSelectedDayIso = useAppStore((s) => s.mobileSelectedDayIso);
   const setMobileSelectedDay = useAppStore((s) => s.setMobileSelectedDay);
   const setMobileTab = useAppStore((s) => s.setMobileTab);
-  const pushSheet = useAppStore((s) => s.pushSheet);
   const focusRoomByCode = useAppStore((s) => s.focusRoomByCode);
   const handshakeDone = useAppStore((s) => s.syncStatus.handshakeDone);
   const handshakeTimedOut = useAppStore((s) => s.syncStatus.handshakeTimedOut);
@@ -62,7 +62,6 @@ export function CalendarScreen() {
   // student with no route to any of them for as long as a crawl took, which on
   // a first sign-in is minutes.
   const selectedIso = mobileSelectedDayIso ?? toIso(new Date());
-
   // Lifted above `chrome` so it is computed once for the strip below, in every
   // state including the skeleton — with no schedule the set is simply empty,
   // and the strip falls back to Mon–Fri.
@@ -74,14 +73,19 @@ export function CalendarScreen() {
           eyebrow under a "Ahoj, {name}" greeting that told the student nothing
           they did not already know, and a week label was tried there and
           rejected the same way — the strip and the title already say which
-          week and which day this is. */}
+          week and which day this is. The way back to today is not here
+          either: the header is full at a date and three actions (see
+          TodayPill), so it floats above the tab bar instead. */}
       <ScreenHeader title={formatHeaderDate(new Date(`${selectedIso}T00:00:00`), locale)} />
     </>
   );
   const shell = (body: ReactNode) => (
-    <div data-testid="calendar-screen" className="flex flex-1 flex-col overflow-hidden">
+    // `relative` anchors the floating Dnes pill; it renders in every state,
+    // skeleton and error included, because the day strip works in all of them.
+    <div data-testid="calendar-screen" className="relative flex flex-1 flex-col overflow-hidden">
       {chrome}
       {body}
+      <TodayPill selectedIso={selectedIso} />
     </div>
   );
 
@@ -109,7 +113,15 @@ export function CalendarScreen() {
   // just later. (The first run in a process always fetches, so a missing
   // arrival here cannot be a TTL skip.)
   if (firstSyncSettled && !syncLoaded.schedule && schedule.length === 0) {
-    return shell(<ScreenError testId="calendar-error" />);
+    // The recent-files shelf needs no schedule and no IS, so a FAILED fetch
+    // (offline) is exactly where it earns its place. Not under the skeleton:
+    // loading is transient and a card under placeholder bars reads as a glitch.
+    return shell(
+      <div className="flex flex-1 flex-col overflow-y-auto pb-36">
+        <ScreenError testId="calendar-error" />
+        <RecentFilesStrip />
+      </div>
+    );
   }
 
   const now = new Date();
@@ -138,9 +150,8 @@ export function CalendarScreen() {
 
   const openRoute = () => {
     if (!nowNext?.next) return;
-    const room = nowNext.next.room.replace(/\s*\([^)]*\)\s*$/, '').trim();
     setMobileTab('map');
-    focusRoomByCode(room);
+    focusRoomByCode(roomCodeFor(nowNext.next));
   };
 
   return shell(
@@ -166,28 +177,13 @@ export function CalendarScreen() {
         lessonDates={lessonDates}
       />
 
-      <div className="flex-1 overflow-y-auto pb-24">
-        {agenda.length === 0 ? (
-          <CalendarEmptyDay
-            holiday={holiday}
-            outsideTeaching={outsideTeaching}
-            teachingStartsOn={teachingStartsOn}
-          />
-        ) : (
-          <DayAgenda
-            rows={agenda}
-            // The day travels with the id: a lesson that repeats weekly shares
-            // one id across the whole semester the store holds.
-            onOpenEvent={(eventId) =>
-              pushSheet({ kind: 'eventDetail', eventId, dayIso: selectedIso })
-            }
-          />
-        )}
-        {/* Under the day's agenda, inside the scroller: lunch is what you look
-            at after the timetable, not before it, and on a full teaching day
-            the card must not push the 8am lecture off the screen. */}
-        <MenuCard dayIso={selectedIso} />
-      </div>
+      <DayBody
+        agenda={agenda}
+        selectedIso={selectedIso}
+        holiday={holiday}
+        outsideTeaching={outsideTeaching}
+        teachingStartsOn={teachingStartsOn}
+      />
     </>
   );
 }

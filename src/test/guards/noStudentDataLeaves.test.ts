@@ -36,6 +36,8 @@ const IDENTIFYING = [
   'rodneCislo',
   'personalNumber',
   'studiumId',
+  'personId',
+  'isLogin',
 ];
 
 /**
@@ -57,7 +59,10 @@ const SUPABASE_CALLERS = new Set([
   'src/api/suggestions.ts',
   // Random install id only. Reads take no identity argument at all.
   'src/api/eventRsvp.ts',
-  // Random install id only, since the privacy refactor.
+  // Random install id only, since the privacy refactor. Since September 2026
+  // the daily-usage event also carries two GROUP labels (faculty, platform) —
+  // counts over thousands of installs, not per-student data. Disclosed in
+  // PRIVACY.md ("Daily Usage & NPS Feedback") and docs/privacy-policy-app.md.
   'src/api/feedback.ts',
   // Society post view/click counters; sends a post row id and nothing else.
   'src/services/spolky/spolkyService.ts',
@@ -67,9 +72,30 @@ const SUPABASE_CALLERS = new Set([
 
 /**
  * Files permitted to call crypto.subtle.digest. None of these hash a student
- * identifier: PKCE verifiers and image fingerprints.
+ * identifier: PKCE verifiers, image fingerprints, and the iPad reader's on-device
+ * filename for a subject PDF (`courseCode:fileLink` — a course code and an IS
+ * document URL, hashed only because a URL is not a filename; the result is a
+ * path in the app sandbox and is never transmitted).
  */
-const DIGEST_CALLERS = new Set(['src/utils/pkce.ts', 'src/services/notes/imageNormalize.ts']);
+const DIGEST_CALLERS = new Set([
+  'src/utils/pkce.ts',
+  'src/services/notes/imageNormalize.ts',
+  'src/mobile/pdfInk.ts',
+]);
+
+/**
+ * (file path) -> identifying names THAT SPECIFIC FILE is allowed to send to
+ * Supabase, because a reviewer read the file and confirmed the reason below.
+ * Unlike SUPABASE_CALLERS this exempts individual names, not the whole file:
+ * a new identifying field appearing in an already-exempted file still has to
+ * be argued for and added here explicitly.
+ */
+const IDENTIFYING_EXCEPTIONS: Record<string, string[]> = {
+  // Deliberately empty. The housing board was the only entry, and it was
+  // withdrawn before release: no file may send an identifying field to
+  // Supabase. Adding a key here means a reviewer has agreed reIS should
+  // transmit a student identity — argue it in writing, or don't add it.
+};
 
 function walk(dir: string, out: string[] = []): string[] {
   for (const entry of readdirSync(dir)) {
@@ -166,9 +192,13 @@ describe('no student data leaves the device', () => {
         const near = lines.slice(Math.max(0, i - 2), i + 14).join('\n');
         if (!/\bsupabase\s*\.\s*(rpc|from)\s*\(/.test(near)) return;
         for (const name of IDENTIFYING) {
+          if (IDENTIFYING_EXCEPTIONS[f.path]?.includes(name)) continue;
           // `p_student_id:` is the column name on legacy tables; flag only when
-          // an identifying VALUE is being passed, not the parameter name.
-          const re = new RegExp(`:\\s*[^,\\n]*\\b${name}\\b`);
+          // an identifying VALUE is being passed, not the parameter name. The
+          // second alternative catches the ES2015 shorthand property
+          // (`{ personId }`), which carries the identifying value with no
+          // colon at all.
+          const re = new RegExp(`:\\s*[^,\\n]*\\b${name}\\b|[{,]\\s*${name}\\s*[,}]`);
           if (re.test(line) && !line.trim().startsWith('//') && !line.trim().startsWith('*')) {
             offences.push(`${f.path}:${i + 1}  ${line.trim()}`);
           }

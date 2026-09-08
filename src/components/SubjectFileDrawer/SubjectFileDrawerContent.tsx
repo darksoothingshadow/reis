@@ -1,5 +1,5 @@
 import { DrawerTabBody } from './DrawerTabBody';
-import type { FileGroup, DrawerTab } from './types';
+import type { FileGroup, DrawerTab, PdfRowMeta } from './types';
 import type { SyllabusRequirements, ParsedFile } from '../../types/documents';
 import type { BlockLesson } from '../../types/calendarTypes';
 import type { SelectedSubject } from '../../types/app';
@@ -20,7 +20,7 @@ interface SubjectFileDrawerContentProps {
   ignoreClickRef: React.MutableRefObject<boolean>;
   toggleSelect: (id: string, e: React.SyntheticEvent) => void;
   openFile: (link: string) => void;
-  onViewPdf?: (link: string) => void;
+  onViewPdf?: (link: string, meta: PdfRowMeta) => void;
   onDownloadSingle?: (link: string) => void;
   resolvedCourseId: string;
   syllabusResult: { syllabus: SyllabusRequirements | null; isLoading: boolean };

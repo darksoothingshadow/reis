@@ -69,4 +69,22 @@ describe('EventDetailCard', () => {
     expect(screen.getByText('Q01')).toBeTruthy();
     expect(screen.queryByText('BA39N1009')).toBeNull();
   });
+
+  // A society post's `url` is data from Supabase, not something the app
+  // typed. A `javascript:` scheme handed straight to an <a href> would run
+  // in the page the moment a student tapped "More info".
+  it('renders no More-info link for a javascript: url', () => {
+    const unsafeEvent: MapEvent = { ...ev, url: 'javascript:alert(1)' };
+    render(<EventDetailCard event={unsafeEvent} />);
+    expect(screen.queryByRole('link', { name: /more info/i })).toBeNull();
+  });
+
+  it('still renders the More-info link for a plain https url', () => {
+    const safeEvent: MapEvent = { ...ev, url: 'https://example.com/event' };
+    render(<EventDetailCard event={safeEvent} />);
+    expect(screen.getByRole('link', { name: /more info/i })).toHaveAttribute(
+      'href',
+      'https://example.com/event'
+    );
+  });
 });
