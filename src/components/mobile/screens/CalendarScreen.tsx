@@ -69,14 +69,15 @@ export function CalendarScreen() {
   const lessonDates = new Set(visibleSchedule.map((l) => l.date));
   const chrome = (
     <>
-      {/* The date IS the title, and the eyebrow stays empty. It was the
-          eyebrow under a "Ahoj, {name}" greeting that told the student nothing
-          they did not already know, and a week label was tried there and
-          rejected the same way — the strip and the title already say which
-          week and which day this is. */}
+      {/* The date IS the title. The eyebrow row above it says nothing on
+          today — an "Ahoj, {name}" greeting and then a week label were tried
+          there and both told the student what the strip and the title already
+          say — and on any other day it holds the one control that belongs
+          there, the way back to today (see TodayPill for why not beside or
+          under the date). */}
       <ScreenHeader
+        eyebrow={<TodayPill selectedIso={selectedIso} />}
         title={formatHeaderDate(new Date(`${selectedIso}T00:00:00`), locale)}
-        beside={<TodayPill selectedIso={selectedIso} />}
       />
     </>
   );

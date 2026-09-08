@@ -33,9 +33,22 @@ describe('CalendarScreen — back to today', () => {
   });
   afterEach(() => vi.useRealTimers());
 
-  it('offers no Today button while today is shown', () => {
+  it('offers no Today button while today is shown, but keeps its row so the date does not jump', () => {
     render(<CalendarScreen />);
     expect(screen.queryByRole('button', { name: 'Dnes' })).toBeNull();
+    expect(screen.getByTestId('today-pill-spacer')).toBeInTheDocument();
+  });
+
+  // Above the date, in the eyebrow row, not beside or under it: beside never
+  // fit on a phone, and under it made the calendar header one line taller
+  // than every other tab's.
+  it('puts the Today button above the date, in the eyebrow row', () => {
+    useAppStore.setState({ mobileSelectedDayIso: '2026-04-28' } as never);
+    render(<CalendarScreen />);
+    const pill = screen.getByRole('button', { name: 'Dnes' });
+    const title = screen.getByText('Úterý 28. dubna');
+    expect(pill.compareDocumentPosition(title) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(pill.parentElement).toBe(title.parentElement);
   });
 
   it('offers a Today button on any other day, and it goes back to today', () => {

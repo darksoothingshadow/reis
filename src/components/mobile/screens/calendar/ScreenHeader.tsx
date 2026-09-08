@@ -2,10 +2,15 @@ import type { ReactNode } from 'react';
 import { HeaderActions } from '../HeaderActions';
 
 export interface ScreenHeaderProps {
-  /** Optional: omit where the title already says it. Student's "IS MENDELU
-   *  v kapse" was a tagline rather than context, unlike the other screens'
-   *  eyebrows, which carry the semester or exam period. */
-  eyebrow?: string;
+  /**
+   * Optional: omit where the title already says it. Student's "IS MENDELU
+   * v kapse" was a tagline rather than context, unlike the other screens'
+   * eyebrows, which carry the semester or exam period. A string renders as
+   * the muted one-line label; a node (the calendar's Dnes pill) renders as-is
+   * in the same row, so a small control can take the eyebrow's place without
+   * moving the title.
+   */
+  eyebrow?: ReactNode;
   title: string;
   /**
    * The screen's OWN control, on its own row under the title — Subjects' study
@@ -13,14 +18,6 @@ export interface ScreenHeaderProps {
    * targets plus a text button overflows a 320px viewport.
    */
   below?: ReactNode;
-  /**
-   * A small control beside the title, in the title's own column — the
-   * calendar's Dnes pill. Inline when title and control both fit at their
-   * natural widths, on its own line under the title when they do not: flex
-   * wraps on natural widths, so the date is never truncated to make room
-   * (measured: inline, "Pondělí 14. září" clipped at both 320 and 390).
-   */
-  beside?: ReactNode;
 }
 
 /**
@@ -32,7 +29,7 @@ export interface ScreenHeaderProps {
  * three destinations were reachable from one of five tabs; making the actions
  * part of the header means a screen cannot render one without them.
  */
-export function ScreenHeader({ eyebrow, title, below, beside }: ScreenHeaderProps) {
+export function ScreenHeader({ eyebrow, title, below }: ScreenHeaderProps) {
   return (
     // The top padding carries --safe-top because this is the topmost element on
     // every mobile screen and targetSdk 36 forces edge-to-edge: without it the
@@ -50,15 +47,14 @@ export function ScreenHeader({ eyebrow, title, below, beside }: ScreenHeaderProp
                   ("B-OI prez - ZS 2025/2026") wrapped at 320px and pushed the
                   title out of line with the actions beside it. */}
         <div className="flex min-w-0 flex-col gap-0.5">
-          {eyebrow && (
+          {typeof eyebrow === 'string' ? (
             <span className="truncate text-sm font-medium text-base-content/60">{eyebrow}</span>
+          ) : (
+            eyebrow
           )}
-          <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
-            <span className="truncate font-display text-2xl font-extrabold tracking-tight max-[359px]:text-xl">
-              {title}
-            </span>
-            {beside}
-          </div>
+          <span className="truncate font-display text-2xl font-extrabold tracking-tight max-[359px]:text-xl">
+            {title}
+          </span>
         </div>
         <HeaderActions />
       </div>
