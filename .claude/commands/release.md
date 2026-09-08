@@ -51,8 +51,7 @@ extension is NOT part of this — see "Publishing the extension" at the bottom.
 
 ## Publishing the extension
 
-`publish.yml` is `workflow_dispatch`-only and submits to Chrome, Firefox and
-Edge. Run it deliberately, against a tag:
+`publish.yml` is `workflow_dispatch`-only and submits to Chrome and Firefox. Run it deliberately, against a tag:
 
 ```bash
 gh workflow run publish.yml --ref vX.Y.Z -f tag=vX.Y.Z
