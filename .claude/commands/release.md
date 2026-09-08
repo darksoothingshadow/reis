@@ -57,4 +57,4 @@ extension is NOT part of this — see "Publishing the extension" at the bottom.
 gh workflow run publish.yml --ref vX.Y.Z -f tag=vX.Y.Z
 ```
 
-Review SLAs: Chrome 1–3 days, Firefox AMO days–weeks. Edge is not a target — Edge users install from the Chrome Web Store. Chrome goes through API v2 (service account); the four `CHROME_*` secrets are named in `publish.yml`.
+Review SLAs: Chrome usually a few days, up to a few weeks; Firefox AMO days–weeks. Edge is not a target — Edge users install from the Chrome Web Store. Chrome goes through API v2 (service account); the four `CHROME_*` secrets are named in `publish.yml`.
