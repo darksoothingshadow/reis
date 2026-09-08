@@ -34,7 +34,7 @@ export function DayBody({
   const focusRoomByCode = useAppStore((s) => s.focusRoomByCode);
 
   return (
-    <div className="flex-1 overflow-y-auto pb-24">
+    <div className="flex-1 overflow-y-auto pb-36">
       {agenda.length === 0 ? (
         <CalendarEmptyDay
           holiday={holiday}

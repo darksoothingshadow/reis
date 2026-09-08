@@ -73,17 +73,19 @@ export function CalendarScreen() {
           eyebrow under a "Ahoj, {name}" greeting that told the student nothing
           they did not already know, and a week label was tried there and
           rejected the same way — the strip and the title already say which
-          week and which day this is. */}
-      <ScreenHeader
-        title={formatHeaderDate(new Date(`${selectedIso}T00:00:00`), locale)}
-        beside={<TodayPill selectedIso={selectedIso} />}
-      />
+          week and which day this is. The way back to today is not here
+          either: the header is full at a date and three actions (see
+          TodayPill), so it floats above the tab bar instead. */}
+      <ScreenHeader title={formatHeaderDate(new Date(`${selectedIso}T00:00:00`), locale)} />
     </>
   );
   const shell = (body: ReactNode) => (
-    <div data-testid="calendar-screen" className="flex flex-1 flex-col overflow-hidden">
+    // `relative` anchors the floating Dnes pill; it renders in every state,
+    // skeleton and error included, because the day strip works in all of them.
+    <div data-testid="calendar-screen" className="relative flex flex-1 flex-col overflow-hidden">
       {chrome}
       {body}
+      <TodayPill selectedIso={selectedIso} />
     </div>
   );
 
@@ -115,7 +117,7 @@ export function CalendarScreen() {
     // (offline) is exactly where it earns its place. Not under the skeleton:
     // loading is transient and a card under placeholder bars reads as a glitch.
     return shell(
-      <div className="flex flex-1 flex-col overflow-y-auto pb-24">
+      <div className="flex flex-1 flex-col overflow-y-auto pb-36">
         <ScreenError testId="calendar-error" />
         <RecentFilesStrip />
       </div>
