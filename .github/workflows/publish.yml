@@ -13,7 +13,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Tag to build and submit to Chrome, Firefox and Edge (e.g. v5.1.1)'
+        description: 'Tag to build and submit to Chrome and Firefox (e.g. v5.1.1)'
         required: true
         type: string
 
@@ -57,19 +57,26 @@ jobs:
       - run: npm run zip:firefox
 
       - name: Submit to stores
+        # Chrome goes through Chrome Web Store API v2: a Google Cloud service
+        # account (its JSON key's client_email + private_key) that is added
+        # under Account in the CWS developer dashboard, plus the publisher id
+        # from the dashboard URL. v1.1 (client id/secret + refresh token) stops
+        # working on 2026-10-15; the 5.2.0 run was the last one on it.
+        #
+        # No Edge: there is no reIS listing on Edge Add-ons and Edge users
+        # install from the Chrome Web Store. The 5.2.0 run failed on an expired
+        # Edge key while both real submissions had already succeeded, which is
+        # exactly the false red this line removes.
         run: npx wxt submit
           --chrome-zip .output/*-chrome.zip
           --firefox-zip .output/*-firefox.zip
           --firefox-sources-zip .output/*-sources.zip
-          --edge-zip .output/*-chrome.zip
         env:
+          CHROME_API_VERSION: v2
           CHROME_EXTENSION_ID: ${{ secrets.CHROME_EXTENSION_ID }}
-          CHROME_CLIENT_ID: ${{ secrets.CHROME_CLIENT_ID }}
-          CHROME_CLIENT_SECRET: ${{ secrets.CHROME_CLIENT_SECRET }}
-          CHROME_REFRESH_TOKEN: ${{ secrets.CHROME_REFRESH_TOKEN }}
+          CHROME_PUBLISHER_ID: ${{ secrets.CHROME_PUBLISHER_ID }}
+          CHROME_SERVICE_ACCOUNT_CLIENT_EMAIL: ${{ secrets.CHROME_SERVICE_ACCOUNT_CLIENT_EMAIL }}
+          CHROME_SERVICE_ACCOUNT_PRIVATE_KEY: ${{ secrets.CHROME_SERVICE_ACCOUNT_PRIVATE_KEY }}
           FIREFOX_EXTENSION_ID: ${{ secrets.FIREFOX_EXTENSION_ID }}
           FIREFOX_JWT_ISSUER: ${{ secrets.FIREFOX_API_KEY }}
           FIREFOX_JWT_SECRET: ${{ secrets.FIREFOX_API_SECRET }}
-          EDGE_PRODUCT_ID: ${{ secrets.EDGE_PRODUCT_ID }}
-          EDGE_CLIENT_ID: ${{ secrets.EDGE_CLIENT_ID }}
-          EDGE_API_KEY: ${{ secrets.EDGE_API_KEY }}

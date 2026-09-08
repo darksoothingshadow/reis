@@ -58,4 +58,4 @@ Edge. Run it deliberately, against a tag:
 gh workflow run publish.yml --ref vX.Y.Z -f tag=vX.Y.Z
 ```
 
-Review SLAs: Chrome 1–3 days, Edge 1–7 days, Firefox AMO days–weeks.
+Review SLAs: Chrome 1–3 days, Firefox AMO days–weeks. Edge is not a target — Edge users install from the Chrome Web Store. Chrome goes through API v2 (service account); the four `CHROME_*` secrets are named in `publish.yml`.
