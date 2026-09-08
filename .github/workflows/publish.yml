@@ -13,9 +13,14 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Tag to build and submit to Chrome and Firefox (e.g. v5.1.1)'
+        description: 'Tag to build and submit to Chrome and Firefox (e.g. v5.2.0)'
         required: true
         type: string
+      dry_run:
+        description: 'Only check the store credentials: build the zips, upload nothing, submit nothing'
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -67,7 +72,11 @@ jobs:
         # install from the Chrome Web Store. The 5.2.0 run failed on an expired
         # Edge key while both real submissions had already succeeded, which is
         # exactly the false red this line removes.
-        run: npx wxt submit
+        #
+        # `dry_run` proves the credentials from CI, where they live, without a
+        # submission: the store clients authenticate and stop. It is how a new
+        # key gets verified — never by re-running a real submit.
+        run: npx wxt submit ${{ inputs.dry_run && '--dry-run' || '' }}
           --chrome-zip .output/*-chrome.zip
           --firefox-zip .output/*-firefox.zip
           --firefox-sources-zip .output/*-sources.zip
