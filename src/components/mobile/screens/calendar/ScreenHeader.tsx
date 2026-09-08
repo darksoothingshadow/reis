@@ -13,14 +13,6 @@ export interface ScreenHeaderProps {
    * targets plus a text button overflows a 320px viewport.
    */
   below?: ReactNode;
-  /**
-   * A small control beside the title, in the title's own column — the
-   * calendar's Dnes pill. Inline when title and control both fit at their
-   * natural widths, on its own line under the title when they do not: flex
-   * wraps on natural widths, so the date is never truncated to make room
-   * (measured: inline, "Pondělí 14. září" clipped at both 320 and 390).
-   */
-  beside?: ReactNode;
 }
 
 /**
@@ -32,7 +24,7 @@ export interface ScreenHeaderProps {
  * three destinations were reachable from one of five tabs; making the actions
  * part of the header means a screen cannot render one without them.
  */
-export function ScreenHeader({ eyebrow, title, below, beside }: ScreenHeaderProps) {
+export function ScreenHeader({ eyebrow, title, below }: ScreenHeaderProps) {
   return (
     // The top padding carries --safe-top because this is the topmost element on
     // every mobile screen and targetSdk 36 forces edge-to-edge: without it the
@@ -53,12 +45,9 @@ export function ScreenHeader({ eyebrow, title, below, beside }: ScreenHeaderProp
           {eyebrow && (
             <span className="truncate text-sm font-medium text-base-content/60">{eyebrow}</span>
           )}
-          <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
-            <span className="truncate font-display text-2xl font-extrabold tracking-tight max-[359px]:text-xl">
-              {title}
-            </span>
-            {beside}
-          </div>
+          <span className="truncate font-display text-2xl font-extrabold tracking-tight max-[359px]:text-xl">
+            {title}
+          </span>
         </div>
         <HeaderActions />
       </div>

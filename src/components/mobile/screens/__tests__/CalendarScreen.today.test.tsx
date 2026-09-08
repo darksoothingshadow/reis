@@ -42,7 +42,14 @@ describe('CalendarScreen — back to today', () => {
     useAppStore.setState({ mobileSelectedDayIso: '2026-04-28' } as never);
     render(<CalendarScreen />);
 
-    fireEvent.click(screen.getByRole('button', { name: 'Dnes' }));
+    const pill = screen.getByRole('button', { name: 'Dnes' });
+    // It floats in the screen shell, above the tab bar — not in the header,
+    // which is full at a date and three actions (beside the date it never fit
+    // on a phone; under it the header outgrew the other tabs').
+    expect(pill.parentElement).toBe(screen.getByTestId('calendar-screen'));
+    expect(pill.className).toContain('absolute');
+
+    fireEvent.click(pill);
 
     // null is "today" in the store, so the day re-derives itself at midnight.
     expect(useAppStore.getState().mobileSelectedDayIso).toBeNull();
