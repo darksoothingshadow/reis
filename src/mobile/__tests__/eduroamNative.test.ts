@@ -122,7 +122,6 @@ describe('the dev-webapp gate override', () => {
   });
 });
 
-
 /**
  * reIS on a Mac is the iOS app under "Designed for iPad", so Capacitor answers
  * `ios` and every gate here used to admit the one-tap path. It cannot work:
