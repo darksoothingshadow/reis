@@ -34,7 +34,33 @@ public class EduroamPlugin: CAPPlugin, CAPBridgedPlugin {
     public let jsName = "Eduroam"
     public let pluginMethods: [CAPPluginMethod] = [
         CAPPluginMethod(name: "configure", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "isAvailable", returnType: CAPPluginReturnPromise),
     ]
+
+    /**
+     * Whether this device's OS will take a Wi-Fi configuration from the app.
+     *
+     * False on a Mac. reIS ships to Macs as this same iOS app under "Designed
+     * for iPad", so `Capacitor.getPlatform()` answers `ios` and the JS gate used
+     * to offer the one-tap path there. It cannot work: every type in this file's
+     * `import NetworkExtension` is declared
+     * `API_AVAILABLE(ios(11.0)) API_UNAVAILABLE(macos, ...)`. The classes DO
+     * resolve in the iOS-on-Mac runtime — which is what made this look supported
+     * when it was first probed — but the system refuses the configuration, and a
+     * student on a MacBook saw a red error banner from a build that worked on
+     * their iPhone.
+     *
+     * `isiOSAppOnMac` rather than a user-agent test on the JS side: a WKWebView
+     * calls itself `Macintosh` in more than one situation, which is the guess
+     * `eduroamNative.ts` has always refused to make.
+     */
+    private static var supported: Bool {
+        !ProcessInfo.processInfo.isiOSAppOnMac
+    }
+
+    @objc func isAvailable(_ call: CAPPluginCall) {
+        call.resolve(["available": Self.supported])
+    }
 
     private static let ssid = "eduroam"
     /// The anchor the working .mobileconfig has pinned since June. Matched
@@ -52,6 +78,15 @@ public class EduroamPlugin: CAPPlugin, CAPBridgedPlugin {
     }
 
     @objc func configure(_ call: CAPPluginCall) {
+        // Belt to isAvailable's braces: the JS gate should never route a Mac
+        // here, and if it ever does the student gets a sentence that names the
+        // reason rather than whatever NEHotspotConfigurationManager throws.
+        guard Self.supported else {
+            call.reject(
+                "FAILED at stage=platform: macOS cannot be configured by the app; install the eduroam profile instead",
+                "unavailable")
+            return
+        }
         guard let p12Base64 = call.getString("p12Base64"),
             let passphrase = call.getString("passphrase"),
             let caDerBase64 = call.getString("caDerBase64")

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { saveAs } from 'file-saver';
+import { deliverEduroamProfile } from '../../../mobile/eduroamProfile';
 import { useEduroamSetup } from '../useEduroamSetup';
 
 vi.mock('../../../api/eduroam', () => ({
@@ -22,7 +22,13 @@ vi.mock('qrcode', () => ({
   },
 }));
 
-vi.mock('file-saver', () => ({ saveAs: vi.fn() }));
+// The delivery moved off file-saver: a blob download is a silent no-op inside
+// the app, and the Mac target is now reached from there too. See
+// src/mobile/eduroamProfile.ts.
+vi.mock('../../../mobile/eduroamProfile', () => ({
+  deliverEduroamProfile: vi.fn(async () => {}),
+  buildProfileDelivery: vi.fn(() => ({ kind: 'web' })),
+}));
 
 vi.mock('../../../services/eduroam/eapConfig', () => ({
   generateEapConfig: vi.fn().mockReturnValue('<eap-config/>'),
@@ -89,7 +95,11 @@ describe('useEduroamSetup', () => {
 
     expect(result.current.status).toBe('done');
     expect(result.current.password).toBe('pw123');
-    expect(saveAs).toHaveBeenCalledWith(expect.any(Blob), 'eduroam-reis.eap-config');
+    expect(deliverEduroamProfile).toHaveBeenCalledWith(
+      expect.any(Blob),
+      'eduroam-reis.eap-config',
+      expect.anything()
+    );
   });
 
   it('configures the network natively on the phone', async () => {
@@ -120,7 +130,7 @@ describe('useEduroamSetup', () => {
       });
 
       expect(result.current.status).toBe('error');
-      expect(saveAs).not.toHaveBeenCalled();
+      expect(deliverEduroamProfile).not.toHaveBeenCalled();
     }
   );
 

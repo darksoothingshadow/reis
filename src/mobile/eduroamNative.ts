@@ -8,6 +8,8 @@ interface EduroamNativePlugin {
     caDerBase64: string;
     passphrase: string;
   }): Promise<NativeConfigureResult>;
+  /** Whether THIS device can be configured by the OS. See resolveNativeEduroamSupport. */
+  isAvailable(): Promise<{ available: boolean }>;
 }
 
 /**
@@ -21,6 +23,53 @@ const Eduroam = registerPlugin<EduroamNativePlugin>('Eduroam');
 export const nativeEduroamDeps: ConfigureEduroamDeps = {
   configure: (o) => Eduroam.configure(o),
 };
+
+/**
+ * Whether the OS on THIS device will take a Wi-Fi configuration from the app.
+ *
+ * `null` until the boot asks, and null means yes — see the failure mode below.
+ */
+let nativeSupported: boolean | null = null;
+
+/**
+ * Asks the plugin once, at boot, before the React root renders.
+ *
+ * The gates below are read during render and so must stay synchronous, while
+ * the only trustworthy answer comes from native and so is asynchronous. This
+ * resolves that once into a module-level cache, the way `isPdfInkAvailable`
+ * caches its own plugin call — and it is the reason both call sites keep the
+ * signature they had.
+ *
+ * **Why the question exists at all.** reIS on a Mac is this same iOS app under
+ * "Designed for iPad", so `Capacitor.getPlatform()` answers `ios` and every
+ * gate here used to admit the one-tap path. It cannot work there:
+ * NEHotspotConfiguration is `API_AVAILABLE(ios) API_UNAVAILABLE(macos)` in the
+ * iOS SDK. The classes do resolve in the iOS-on-Mac runtime — measured, which
+ * is what made this look supported at first — but the system refuses the
+ * configuration, and a student on a MacBook got a red error banner while the
+ * same build worked on their iPhone. `ProcessInfo.isiOSAppOnMac` is the only
+ * honest way to tell the two apart; the user agent says `Macintosh` in BOTH the
+ * Mac app and some WKWebViews, which is exactly the guess `nativeEduroamTarget`
+ * already refuses to make.
+ *
+ * **Failing open.** A plugin that cannot answer — an older native half, a
+ * rejected call — leaves the cache alone and the phones keep the path that
+ * works for them. The worst case is then a Mac behaving as it does today, not
+ * an iPhone losing a shipped feature.
+ */
+export async function resolveNativeEduroamSupport(): Promise<void> {
+  if (getPlatform().kind !== 'capacitor') return;
+  try {
+    nativeSupported = (await Eduroam.isAvailable()).available;
+  } catch {
+    nativeSupported = true;
+  }
+}
+
+/** Test-only. Never call from app code. */
+export function __setNativeEduroamSupportForTests(value: boolean | null): void {
+  nativeSupported = value;
+}
 
 export type NativeEduroamTarget = 'ios' | 'android';
 
@@ -36,6 +85,9 @@ export function nativeEduroamTarget(): NativeEduroamTarget | null {
   const forced = devForcedTarget();
   if (forced) return forced;
   if (getPlatform().kind !== 'capacitor') return null;
+  // The iOS app on a Mac: no phone OS is going to take this configuration, so
+  // the sheet must fall through to its `mac` branch and hand over a profile.
+  if (nativeSupported === false) return null;
   const os = Capacitor.getPlatform();
   return os === 'ios' || os === 'android' ? os : null;
 }
@@ -74,5 +126,6 @@ function devForcedTarget(): NativeEduroamTarget | null {
  */
 export function canConfigureEduroamNatively(target: string): boolean {
   if (target !== 'android' && target !== 'ios') return false;
+  if (nativeSupported === false) return false;
   return getPlatform().kind === 'capacitor' || devForcedTarget() !== null;
 }

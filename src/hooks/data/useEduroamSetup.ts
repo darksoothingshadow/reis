@@ -1,10 +1,10 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { saveAs } from 'file-saver';
 import { fetchEduroamCertMaterial, fetchEduroamPassword } from '../../api/eduroam';
 import { generateEduroamMobileconfig } from '../../services/eduroam/mobileconfig';
 import { generateEapConfig } from '../../services/eduroam/eapConfig';
 import { configureEduroam, type EduroamConfigOutcome } from '../../mobile/configureEduroam';
 import { canConfigureEduroamNatively, nativeEduroamDeps } from '../../mobile/eduroamNative';
+import { deliverEduroamProfile, buildProfileDelivery } from '../../mobile/eduroamProfile';
 import { logError } from '../../utils/reportError';
 
 export type EduroamStatus = 'idle' | 'working' | 'done' | 'error';
@@ -75,15 +75,26 @@ export function useEduroamSetup(autoSelectTarget?: EduroamTarget) {
 
       const xml = generateEduroamMobileconfig({ rootCaDer, clientP12 });
 
+      // Not `saveAs`. In a browser it is the same anchor download it always
+      // was, but the Mac target is now also reached from INSIDE the app — reIS
+      // on a Mac is the iOS app, where NEHotspotConfiguration is unavailable
+      // and a blob download is a silent no-op. deliverEduroamProfile writes the
+      // file natively and hands it to the share sheet there.
+      const delivery = buildProfileDelivery();
       if (t === 'windows') {
         // Windows: same .eap-config as Android, but reIS runs on this PC, so we
         // save it straight to disk. geteduroam (Windows) opens it on double-click.
         const eap = generateEapConfig({ rootCaDer, clientP12 });
-        saveAs(new Blob([eap], { type: 'application/eap-config' }), 'eduroam-reis.eap-config');
+        await deliverEduroamProfile(
+          new Blob([eap], { type: 'application/eap-config' }),
+          'eduroam-reis.eap-config',
+          delivery
+        );
       } else {
-        saveAs(
+        await deliverEduroamProfile(
           new Blob([xml], { type: 'application/x-apple-aspen-config' }),
-          'eduroam-reis.mobileconfig'
+          'eduroam-reis.mobileconfig',
+          delivery
         );
       }
 
