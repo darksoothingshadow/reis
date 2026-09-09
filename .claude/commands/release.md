@@ -51,11 +51,10 @@ extension is NOT part of this — see "Publishing the extension" at the bottom.
 
 ## Publishing the extension
 
-`publish.yml` is `workflow_dispatch`-only and submits to Chrome, Firefox and
-Edge. Run it deliberately, against a tag:
+`publish.yml` is `workflow_dispatch`-only and submits to Chrome and Firefox. Run it deliberately, against a tag:
 
 ```bash
 gh workflow run publish.yml --ref vX.Y.Z -f tag=vX.Y.Z
 ```
 
-Review SLAs: Chrome 1–3 days, Edge 1–7 days, Firefox AMO days–weeks.
+Review SLAs: Chrome usually a few days, up to a few weeks; Firefox AMO days–weeks. Edge is not a target — Edge users install from the Chrome Web Store. Chrome goes through API v2 (service account); the four `CHROME_*` secrets are named in `publish.yml`.

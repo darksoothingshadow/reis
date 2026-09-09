@@ -623,6 +623,10 @@
           "shot": "PC připojené k eduroam"
         }
       }
+    },
+    "macApp": {
+      "button": "Uložit eduroam profil",
+      "installStep": "Ulož soubor a pak ho otevři — macOS profil nainstaluje v Nastavení systému. Při instalaci zadej heslo z prvního kroku."
     }
   },
   "erasmus": {

@@ -623,6 +623,10 @@
           "shot": "PC connected to eduroam"
         }
       }
+    },
+    "macApp": {
+      "button": "Save eduroam profile",
+      "installStep": "Save the file, then open it — macOS installs the profile in System Settings. Use the password from step one when it asks."
     }
   },
   "erasmus": {
