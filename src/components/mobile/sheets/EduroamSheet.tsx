@@ -6,6 +6,7 @@ import { useEduroamSetup, type EduroamTarget } from '../../../hooks/data/useEdur
 import { useTranslation } from '../../../hooks/useTranslation';
 import { isMac, isMobile } from '../../../utils/platform';
 import { canConfigureEduroamNatively, nativeEduroamTarget } from '../../../mobile/eduroamNative';
+import { getPlatform } from '../../../platform';
 import { isEduroamConfigured } from '../../../mobile/configureEduroam';
 
 export interface EduroamSheetProps {
@@ -52,6 +53,14 @@ export function EduroamSheet({ onClose }: EduroamSheetProps) {
   // profile to download, no QR to scan, and no password for anyone to type.
   // That collapses the flow from three steps to two.
   const native = canConfigureEduroamNatively(target);
+  /**
+   * reIS on a Mac: inside the app, but with no OS that will take the
+   * configuration (see resolveNativeEduroamSupport). The student gets the same
+   * profile a desktop browser would download, except it arrives through the
+   * share sheet — so the flow gains a step the browser never needed, saying
+   * what to do with the file once it is saved.
+   */
+  const macInApp = !native && target === 'mac' && getPlatform().kind === 'capacitor';
 
   return (
     <Sheet size="content" onClose={onClose}>
@@ -158,12 +167,23 @@ export function EduroamSheet({ onClose }: EduroamSheetProps) {
                 : t('eduroam.preparing')
               : native
                 ? t('eduroam.native.button')
-                : t('eduroam.download')}
+                : macInApp
+                  ? t('eduroam.macApp.button')
+                  : t('eduroam.download')}
           </button>
         </div>
 
+        {macInApp && (
+          <div className="flex items-center gap-3">
+            <NumberBadge n={3} />
+            <span className="flex-1 text-sm text-base-content/70">
+              {t('eduroam.macApp.installStep')}
+            </span>
+          </div>
+        )}
+
         <div className="flex items-center gap-3">
-          <NumberBadge n={native ? 2 : 3} />
+          <NumberBadge n={native ? 2 : macInApp ? 4 : 3} />
           <span className="flex-1 text-sm text-base-content/70">{t('eduroam.connectStep')}</span>
         </div>
 

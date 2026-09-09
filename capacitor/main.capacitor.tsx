@@ -24,6 +24,7 @@ import '@/index.css';
 import { ensureSession, LoginCancelledError } from '@/mobile/ensureSession';
 import { buildInAppLoginDeps } from '@/mobile/inAppLoginDeps';
 import { handleBackPress } from '@/mobile/backButton';
+import { resolveNativeEduroamSupport } from '@/mobile/eduroamNative';
 import { installMobileActionHandler } from '@/mobile/actionHandler';
 import { installExternalLinkHandler } from '@/mobile/openExternal';
 import { promptSessionRecovery } from '@/mobile/sessionRecovery';
@@ -103,6 +104,13 @@ export async function startApp({ demo }: { demo: boolean }): Promise<void> {
   // longer Capacitor-only, though: the deployed web preview registers the
   // same handler early, in dev/earlyDemoMode.ts, for the same reason.)
   setDemoErrorHandler(handleDemoError);
+
+  // Before the root renders, for the same reason as hydrateWelcome below: the
+  // welcome screen's eduroam card and the eduroam sheet both read the answer
+  // synchronously while rendering, and only the native half knows it. On a Mac
+  // it is what turns the one-tap card into the profile download that macOS can
+  // actually install. Never throws — see resolveNativeEduroamSupport.
+  await resolveNativeEduroamSupport();
 
   // Before the root renders, so the first frame is already either the welcome
   // or the app — never the app with the welcome flashing over it a tick later.
