@@ -61,7 +61,8 @@ export interface SheetDragConfig {
  *    gesture. Only a manual non-passive listener can hold the gesture.
  * 3. **Pointer capture.** Without it the events stop arriving the moment the
  *    finger leaves the panel: a long drag stalls, no `pointerup` ever lands,
- *    and `start` stays set so the NEXT touch continues the old drag.
+ *    and `start` stays set so the NEXT touch continues the old drag. Taken on
+ *    the first move PAST THE SLOP, never on the press — see `capture` below.
  * 4. **Click suppression.** A drag ends in a click on whatever was under the
  *    finger, which could cast an RSVP or follow a link as a side effect of
  *    closing. Swallowed once in the capture phase.
@@ -100,6 +101,29 @@ export function useSheetDrag({
   const samples = useRef<DragSample[]>([]);
   /** Whether this gesture moved the sheet, so its trailing click must be eaten. */
   const dragged = useRef(false);
+  /**
+   * Whether this gesture has taken pointer capture yet.
+   *
+   * Capture is deferred to the first move past the slop, and this is what keeps
+   * it to one call per gesture.
+   *
+   * It used to be taken on `pointerdown`, which broke EVERY button inside EVERY
+   * sheet under a mouse. While a pointer is captured WebKit fires the trailing
+   * `click` at the CAPTURE element rather than at what was pressed, so the
+   * panel swallowed it and the button's onClick never ran. Measured in WebKit
+   * against the search sheet: pressing "Zavřít" logged `gotpointercapture` on
+   * the panel and then `click target=DIV`, and the sheet stayed open. Touch
+   * never showed it — iOS synthesises its click from the gesture recogniser,
+   * not from the pointer — so it surfaced only once reIS ran on a Mac, where
+   * "Designed for iPad" delivers a real mouse. reIS on Mac, reported as
+   * "many buttons don't work at all".
+   *
+   * A press that never moves is a tap and needs no capture: nothing has left
+   * the panel, so there is nothing to keep. By the time the pointer HAS moved
+   * far enough to be a drag, it is still on the panel — capture there is early
+   * enough to hold everything mechanism 3 exists for.
+   */
+  const captured = useRef(false);
 
   const releaseCapture = (pointerId: number) => {
     const panel = panelRef.current;
@@ -120,8 +144,7 @@ export function useSheetDrag({
     const height = panelRef.current?.getBoundingClientRect().height ?? 0;
     start.current = { id: e.pointerId, y: e.clientY, t: e.timeStamp, height };
     samples.current = [{ pos: e.clientY, t: e.timeStamp }];
-    // Guarded: happy-dom implements neither of these.
-    panelRef.current?.setPointerCapture?.(e.pointerId);
+    captured.current = false;
   };
 
   const onPointerMove = (e: ReactPointerEvent<HTMLElement>) => {
@@ -132,7 +155,14 @@ export function useSheetDrag({
     // The sheet follows the finger from the first pixel, but only past the slop
     // does the gesture count as a drag for click suppression — otherwise the
     // jitter in an ordinary tap swallows it.
-    if (Math.abs(dy) >= DRAG_SLOP_PX) dragged.current = true;
+    if (Math.abs(dy) >= DRAG_SLOP_PX) {
+      dragged.current = true;
+      if (!captured.current) {
+        captured.current = true;
+        // Guarded: happy-dom implements neither this nor the release below.
+        panelRef.current?.setPointerCapture?.(e.pointerId);
+      }
+    }
     samples.current.push({ pos: e.clientY, t: e.timeStamp });
     if (samples.current.length > 24) samples.current.shift();
     onMove(dy, from.height);
@@ -142,6 +172,7 @@ export function useSheetDrag({
     const from = start.current;
     if (from && from.id !== e.pointerId) return;
     start.current = null;
+    captured.current = false;
     releaseCapture(e.pointerId);
     if (!from) return;
     samples.current.push({ pos: e.clientY, t: e.timeStamp });
@@ -161,6 +192,7 @@ export function useSheetDrag({
     if (start.current && start.current.id !== e.pointerId) return;
     start.current = null;
     samples.current = [];
+    captured.current = false;
     releaseCapture(e.pointerId);
     dragged.current = false;
     onCancel();

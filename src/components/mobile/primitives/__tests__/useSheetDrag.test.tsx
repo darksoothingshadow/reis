@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { useRef } from 'react';
 import { useSheetDrag, type SheetDragConfig } from '../useSheetDrag';
+import { DRAG_SLOP_PX } from '../sheetDrag';
 
 /**
  * The shared drag gesture, tested on its own.
@@ -154,7 +155,50 @@ describe('useSheetDrag', () => {
     const capture = vi.fn();
     (panel() as unknown as { setPointerCapture: unknown }).setPointerCapture = capture;
     fireEvent.pointerDown(panel(), { clientY: 100, pointerId: 9 });
+    fireEvent.pointerMove(panel(), { clientY: 100 + DRAG_SLOP_PX, pointerId: 9 });
     expect(capture).toHaveBeenCalledWith(9);
+  });
+
+  /**
+   * Capturing on `pointerdown` broke every button inside every sheet under a
+   * MOUSE. While a pointer is captured WebKit fires the trailing `click` at the
+   * CAPTURE element, not at what was pressed — measured in WebKit against the
+   * search sheet: pressing "Zavrit" logged `gotpointercapture` on the panel and
+   * then `click target=DIV`, and the sheet never closed. Touch never showed it
+   * because iOS synthesises its click from the gesture recogniser rather than
+   * from the pointer, which is why this only surfaced on reIS for Mac.
+   *
+   * So the press alone must capture nothing. A press that never moves is a tap.
+   */
+  it('captures nothing on a press that has not moved, so a click reaches its button', () => {
+    render(<Harness rec={rec} />);
+    const capture = vi.fn();
+    (panel() as unknown as { setPointerCapture: unknown }).setPointerCapture = capture;
+    fireEvent.pointerDown(panel(), { clientY: 100, pointerId: 9 });
+    expect(capture).not.toHaveBeenCalled();
+    // Jitter under the slop is still a tap, not a drag.
+    fireEvent.pointerMove(panel(), { clientY: 100 + DRAG_SLOP_PX - 1, pointerId: 9 });
+    expect(capture).not.toHaveBeenCalled();
+  });
+
+  it('captures once, not on every move of the same drag', () => {
+    render(<Harness rec={rec} />);
+    const capture = vi.fn();
+    (panel() as unknown as { setPointerCapture: unknown }).setPointerCapture = capture;
+    fireEvent.pointerDown(panel(), { clientY: 100, pointerId: 4 });
+    fireEvent.pointerMove(panel(), { clientY: 140, pointerId: 4 });
+    fireEvent.pointerMove(panel(), { clientY: 180, pointerId: 4 });
+    fireEvent.pointerMove(panel(), { clientY: 220, pointerId: 4 });
+    expect(capture).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not capture travel the sheet refuses to absorb', () => {
+    render(<Harness rec={rec} absorbs={() => false} />);
+    const capture = vi.fn();
+    (panel() as unknown as { setPointerCapture: unknown }).setPointerCapture = capture;
+    fireEvent.pointerDown(panel(), { clientY: 100, pointerId: 7 });
+    fireEvent.pointerMove(panel(), { clientY: 300, pointerId: 7 });
+    expect(capture).not.toHaveBeenCalled();
   });
 
   it('releases the capture on release, so the next tap is not swallowed', () => {
