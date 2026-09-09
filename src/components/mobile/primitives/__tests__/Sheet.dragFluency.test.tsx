@@ -30,7 +30,7 @@ import { Sheet } from '../Sheet';
  * moment the finger leaves the panel, so a long drag simply stalls.
  */
 describe('Sheet drag fluency', () => {
-  it('captures the pointer, so the gesture survives leaving the panel', () => {
+  it('captures the pointer once the press becomes a drag, so it survives leaving the panel', () => {
     render(
       <Sheet size="content" onClose={() => {}}>
         body
@@ -41,6 +41,11 @@ describe('Sheet drag fluency', () => {
     // happy-dom does not implement it; the assertion is that Sheet ASKS.
     (panel as unknown as { setPointerCapture: unknown }).setPointerCapture = capture;
     fireEvent.pointerDown(panel, { clientY: 300, pointerId: 7 });
+    // Not on the press: a captured pointer makes WebKit fire the trailing click
+    // at the panel, which killed every button inside every sheet under a mouse
+    // (reIS for Mac). See the `captured` ref in useSheetDrag.
+    expect(capture).not.toHaveBeenCalled();
+    fireEvent.pointerMove(panel, { clientY: 340, pointerId: 7 });
     expect(capture).toHaveBeenCalledWith(7);
   });
 
