@@ -23,12 +23,14 @@ import '@fontsource/inter/latin-ext-700.css';
 import '@/index.css';
 import { ensureSession, LoginCancelledError } from '@/mobile/ensureSession';
 import { buildInAppLoginDeps } from '@/mobile/inAppLoginDeps';
+import { discardDeadSession } from '@/mobile/verifySession';
+import { fetchWithAuth, BASE_URL } from '@/api/client';
 import { handleBackPress } from '@/mobile/backButton';
 import { resolveNativeEduroamSupport } from '@/mobile/eduroamNative';
 import { installMobileActionHandler } from '@/mobile/actionHandler';
 import { installExternalLinkHandler } from '@/mobile/openExternal';
 import { promptSessionRecovery } from '@/mobile/sessionRecovery';
-import { purgePlaintextToken } from '@/platform/tokenStore';
+import { purgePlaintextToken, loadStoredToken, clearStoredToken } from '@/platform/tokenStore';
 import { setSessionExpiredHandler } from '@/services/sessionExpiry';
 import { setDemoErrorHandler } from '@/utils/reportError';
 import { handleDemoError } from '@/mobile/demoToast';
@@ -62,6 +64,24 @@ async function boot(): Promise<void> {
   // once and the plaintext copy is gone by deletion rather than by trusting a
   // copy step.
   await purgePlaintextToken();
+
+  // BEFORE ensureSession too, and for a related reason: ensureSession accepts
+  // the stored token on SHAPE alone, and on iOS that token outlives the app —
+  // the shared keychain group hands a reinstall the credential the previous
+  // install left behind. IS stopped honouring it long ago, so login was never
+  // presented and the student landed on the first-run welcome screen, whose
+  // one-tap eduroam card is the first thing in the app to actually talk to IS.
+  // It 401'd, and the "sign in?" prompt arrived AFTER the failure.
+  //
+  // `studium.pl` rather than a fresh endpoint: schedule.ts already GETs it on
+  // every mobile sync, so it is proven to come back as authenticated HTML
+  // through this exact transport. Nothing here throws, and only a real
+  // authentication failure discards anything — see discardDeadSession.
+  await discardDeadSession({
+    getStored: () => loadStoredToken().catch(() => undefined),
+    probe: () => fetchWithAuth(`${BASE_URL}/auth/student/studium.pl`),
+    clear: () => clearStoredToken(),
+  });
 
   // Same deps as re-login after a lapse (mobile/sessionRecovery), deliberately
   // shared: ensureSession's cookie-polling contract only holds if onPageLoaded
