@@ -52,7 +52,9 @@ describe('discardDeadSession', () => {
 
   it('does not probe a stored value that is not a plausible token', async () => {
     const probe = vi.fn();
-    const verdict = await discardDeadSession(deps({ getStored: () => Promise.resolve('nope'), probe }));
+    const verdict = await discardDeadSession(
+      deps({ getStored: () => Promise.resolve('nope'), probe })
+    );
     expect(verdict).toBe('no-token');
     expect(probe).not.toHaveBeenCalled();
   });
@@ -93,7 +95,10 @@ describe('discardDeadSession', () => {
 
   it('keeps the token when clearing it fails, and never throws at boot', async () => {
     const verdict = await discardDeadSession(
-      deps({ probe: () => Promise.reject(authError()), clear: () => Promise.reject(new Error('keychain')) })
+      deps({
+        probe: () => Promise.reject(authError()),
+        clear: () => Promise.reject(new Error('keychain')),
+      })
     );
     expect(verdict).toBe('unverified');
   });

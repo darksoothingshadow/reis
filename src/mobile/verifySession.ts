@@ -110,4 +110,3 @@ export async function discardDeadSession(deps: VerifySessionDeps): Promise<Sessi
     clearTimeout(timer);
   }
 }
-
