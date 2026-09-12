@@ -25,6 +25,7 @@ import { ensureSession, LoginCancelledError } from '@/mobile/ensureSession';
 import { buildInAppLoginDeps } from '@/mobile/inAppLoginDeps';
 import { discardDeadSession } from '@/mobile/verifySession';
 import { fetchWithAuth, BASE_URL } from '@/api/client';
+import { IndexedDBService } from '@/services/storage';
 import { handleBackPress } from '@/mobile/backButton';
 import { resolveNativeEduroamSupport } from '@/mobile/eduroamNative';
 import { installMobileActionHandler } from '@/mobile/actionHandler';
@@ -79,6 +80,10 @@ async function boot(): Promise<void> {
   // authentication failure discards anything — see discardDeadSession.
   await discardDeadSession({
     getStored: () => loadStoredToken().catch(() => undefined),
+    // Same key hydrateWelcome reads below. IndexedDB goes with the app
+    // container, the keychain does not — so its absence beside a token is the
+    // reinstall, and its presence means skip and keep the offline cold start.
+    shouldVerify: async () => (await IndexedDBService.get('meta', 'welcome_dismissed')) !== true,
     probe: () => fetchWithAuth(`${BASE_URL}/auth/student/studium.pl`),
     clear: () => clearStoredToken(),
   });

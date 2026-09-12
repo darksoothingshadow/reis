@@ -21,6 +21,26 @@ function deps(over: Partial<VerifySessionDeps> = {}): VerifySessionDeps {
 }
 
 describe('discardDeadSession', () => {
+  it('does not probe a device that has already got past the welcome screen', async () => {
+    const probe = vi.fn();
+    const clear = vi.fn(() => Promise.resolve());
+    const verdict = await discardDeadSession(
+      deps({ shouldVerify: () => Promise.resolve(false), probe, clear })
+    );
+    expect(verdict).toBe('skipped');
+    expect(probe).not.toHaveBeenCalled();
+    expect(clear).not.toHaveBeenCalled();
+  });
+
+  it('probes when the check itself cannot be made', async () => {
+    const probe = vi.fn(() => Promise.resolve());
+    const verdict = await discardDeadSession(
+      deps({ shouldVerify: () => Promise.reject(new Error('idb closed')), probe })
+    );
+    expect(verdict).toBe('live');
+    expect(probe).toHaveBeenCalledTimes(1);
+  });
+
   it('does not probe when nothing is stored', async () => {
     const probe = vi.fn();
     const verdict = await discardDeadSession(

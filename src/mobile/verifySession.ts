@@ -9,7 +9,7 @@ const DEFAULT_PROBE_TIMEOUT_MS = 8000;
  * `unverified` is deliberately not a failure: it means the question could not
  * be answered, and the token is kept.
  */
-export type SessionVerdict = 'no-token' | 'live' | 'discarded' | 'unverified';
+export type SessionVerdict = 'no-token' | 'skipped' | 'live' | 'discarded' | 'unverified';
 
 export interface VerifySessionDeps {
   /** The stored token, or anything falsy/implausible when there is none. */
@@ -18,6 +18,13 @@ export interface VerifySessionDeps {
   probe(): Promise<unknown>;
   /** Removes the stored token, so the next `ensureSession` presents login. */
   clear(): Promise<void>;
+  /**
+   * Whether this launch is worth a blocking request at all. Absent means yes.
+   *
+   * Defaults to yes because a caller that cannot answer must not silently opt
+   * out of the check that presents login.
+   */
+  shouldVerify?(): Promise<boolean>;
   /** How long to wait for IS before giving up and keeping the token. */
   timeoutMs?: number;
 }
@@ -54,6 +61,26 @@ export async function discardDeadSession(deps: VerifySessionDeps): Promise<Sessi
     return 'no-token';
   }
   if (!isPlausibleToken(stored)) return 'no-token';
+
+  // This sits in front of the splash screen, so it must not become a network
+  // round-trip every returning student pays to open the app — on bad campus
+  // wi-fi that is seconds of splash where a timetable used to be, a visible
+  // regression traded for a bug only a reinstall can hit.
+  //
+  // It does not have to be. The bug is an ASYMMETRY between two stores: the
+  // token survives in the shared keychain group, while `welcome_dismissed`
+  // lives in IndexedDB, inside the app container iOS deletes with the app. So
+  // "a token, but no record of ever having got past the welcome screen" is the
+  // signature of exactly the population with the bug, and everyone else keeps
+  // the offline cold start they had. A dead token there still surfaces the way
+  // it always has — `promptSessionRecovery`, with cached data on screen.
+  //
+  // Fails OPEN: an unanswerable question means probe, never skip.
+  try {
+    if ((await deps.shouldVerify?.()) === false) return 'skipped';
+  } catch {
+    // Probe.
+  }
 
   // Bounded, because this sits between the splash screen and the first frame.
   // CapacitorHttp's own read timeout is the platform default and can be
